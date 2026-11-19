@@ -1,6 +1,6 @@
 # Evolora: Roadmap
 
-**Status:** First draft, waiting for Gil's review
+**Status:** Draft 2, in review
 **Last updated:** 2026-11-20
 
 This document says what goes into each version. Each item refers to requirement numbers in [requirements.md](requirements.md).
@@ -24,10 +24,10 @@ This document says what goes into each version. Each item refers to requirement 
 | REQ-5.7 | Assign lessons to a class or selected students |
 | REQ-5.11 | Grade dashboard (basic) |
 | REQ-6.1 to 6.4, 6.6 | Student home, taking a lesson, attempts and scoring, progress, audio answers |
-| REQ-9.1 to 9.3 | Hebrew, Arabic, English; right-to-left and left-to-right |
+| REQ-9.1 to 9.4 | Hebrew, Arabic, English; right-to-left and left-to-right; each person chooses their language |
 | REQ-10.4, 11.1 to 11.3, 12.1 to 12.3 | Hosting, safety basics, Chromebook web app, speed, no lost work |
 
-**Done when:** Gil builds his first lesson in Evolora, assigns it to a real class, the students complete it, and Gil sees their grades.
+**Done when:** the Archimedes and density lesson is in Evolora, Gil assigns it to a real class, the students complete it, and Gil sees their grades.
 
 ### Milestone B: Full teacher tools (aim: about 2 more weeks)
 
@@ -35,7 +35,7 @@ This document says what goes into each version. Each item refers to requirement 
 |---|---|
 | REQ-1.1, 4.8, 4.9 | Attribution and licence shown, copy any lesson, lesson library |
 | REQ-4.7 | Lesson versions |
-| REQ-4.10, 6.7 | Courses, public courses without a teacher |
+| REQ-4.10 | Courses, public or private (unlisted) |
 | REQ-5.3 | Email invites |
 | REQ-5.5 | Co-teachers |
 | REQ-5.8, 5.9 | Fixed order or choice, due dates, redo setting |
@@ -43,7 +43,6 @@ This document says what goes into each version. Each item refers to requirement 
 | REQ-5.12 to 5.15 | Review screen, comments (text and audio), send back, grade changes |
 | REQ-5.16 | Messages |
 | REQ-6.5 | Redo a lesson |
-| REQ-9.4 | Class language setting |
 
 **Done when:** every MVP acceptance criterion in requirements.md passes when Gil checks it in the app.
 
@@ -60,6 +59,8 @@ Each AI item first gets a cost estimate for Gil's approval.
 | REQ-7.3 | AI lesson suggestion from a document |
 | REQ-7.4, 10.5 | Audio transcription and recording retention |
 | REQ-5.17 | Google Classroom connection |
+| REQ-6.7 | Public courses without a teacher |
+| REQ-9.5 | Class language setting |
 
 ## Later / ideas
 

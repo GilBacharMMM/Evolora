@@ -63,13 +63,13 @@ Entry format:
 **Affects:** Section 7
 
 ### D-5: Everything open
-**Date:** 2026-11-20 · **Status:** Decided (licences still Proposed) · **Decided by:** Gil
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
 **Context:** Who owns and can reuse lessons and code.
 **Options considered:**
 1. Closed: each creator's lessons are private.
 2. Open, like Wikipedia or GNU: anyone may use and change lessons and code, with credit to creators.
 
-**Decision:** Open. Any teacher can use any lesson, any creator can copy and change any lesson, and creators are credited by name. Proposed licences: CC BY-SA 4.0 for lessons and AGPL-3.0 for code (OPEN Q-1).
+**Decision:** Open. Any teacher can use any lesson, any creator can copy and change any lesson, and creators are credited by name. Licences: CC BY-SA 4.0 for lessons (the Wikipedia licence) and AGPL-3.0 for code (a GNU licence that also covers websites, so anyone who runs a changed version must share their changes). Gil approved the licences on 2026-11-20.
 **Reason:** Gil's goal is an open lesson library that grows through sharing.
 **Affects:** REQ-1.1, 4.8, 4.9
 
@@ -120,14 +120,14 @@ Entry format:
 **Affects:** roadmap.md
 
 ### D-10: Host on Google Cloud, Israel region
-**Date:** 2026-11-20 · **Status:** Proposed · **Decided by:** awaiting Gil
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
 **Context:** Where Evolora runs.
 **Options considered:**
 1. Google Cloud (Firebase): fits the school's Google accounts, has an Israel (Tel Aviv) region, and makes Gemini easy to add later. A pilot this size likely costs little or nothing per month.
 2. Other cloud providers (Amazon, Microsoft, Vercel and others): equally capable, but no advantage for a Google school.
 3. School servers: more maintenance, harder to reach from home.
 
-**Decision:** Option 1 (proposed).
+**Decision:** Option 1. Gil sets up the account (see docs/setup-google-cloud.md); who owns it long-term (Gil or the school) is still to be decided.
 **Reason:** Best fit with the school's Google setup and the planned use of Gemini.
 **Affects:** REQ-10.4, 11.2; OPEN Q-8
 
@@ -142,3 +142,26 @@ Entry format:
 **Decision:** Option 1 for the MVP; consider option 2 in version 2.
 **Reason:** With 5 teachers, joining by class code is quick; Classroom access needs school admin approval that could delay the pilot.
 **Affects:** REQ-5.17
+
+### D-12: "Private" course means unlisted
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
+**Context:** Everything in Evolora is open (D-5), so what can "private course" mean?
+**Options considered:**
+1. Truly private: no one else can see the course or its lessons. Conflicts with D-5.
+2. Unlisted: the course isn't shown in the course library and students can't enroll on their own, but its lessons remain open in the lesson library.
+3. No private courses at all.
+
+**Decision:** Option 2.
+**Reason:** Lets teachers keep their own course arrangements tidy without closing any content.
+**Affects:** REQ-4.10
+
+### D-13: Pilot without formal privacy approval
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
+**Context:** Students are minors. Should the school's management or IT formally approve Evolora before the pilot?
+**Options considered:**
+1. Get written approval first: safer, but may delay the pilot.
+2. Run the pilot with basic protections only (school accounts only, data in Israel, private messages, no student-to-student contact), and meet full privacy rules before any wider release.
+
+**Decision:** Option 2.
+**Reason:** The pilot is small and internal; Gil wants to start within weeks. Full compliance is required before release beyond the pilot (REQ-10.6).
+**Affects:** Section 10

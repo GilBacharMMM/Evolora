@@ -1,6 +1,6 @@
 # Evolora: Requirements
 
-**Status:** First draft, waiting for Gil's review
+**Status:** Draft 2: Gil's answers to the open questions are included; still in review
 **Last updated:** 2026-11-20
 
 ## How to read this document
@@ -20,11 +20,12 @@ Evolora helps students learn on their own, guided by teachers. Creators build le
 The first users are 5 teachers and about 120 seventh-grade students at Gil's school, using Chromebooks and the school's Google accounts.
 
 **REQ-1.1: Open and shared** (Priority: MVP)
-Every lesson in Evolora can be used by any teacher and copied and edited by any creator. The creator's name always stays attached to their work. The software code is open source.
+Every lesson in Evolora can be used by any teacher and copied and edited by any creator. The creator's name always stays attached to their work. Lessons are shared under the **CC BY-SA 4.0** licence (the Wikipedia licence). The software code is open source under the **AGPL-3.0** licence (a GNU licence for websites).
 
 *Acceptance criteria:*
 - [ ] Every lesson shows the name of its creator, and of the original creator if it is a copy.
-- [ ] Every lesson shows that it is shared under an open licence (see OPEN Q-1).
+- [ ] Every lesson shows that it is shared under CC BY-SA 4.0.
+- [ ] Before publishing a lesson for the first time, the creator is told that it will be shared under this licence.
 
 ---
 
@@ -99,15 +100,19 @@ In edit mode, a creator creates a lesson with a title, a short description, a le
 **REQ-4.2: Lesson content blocks** (Priority: MVP)
 A lesson is a sequence of blocks that the creator can add, edit, reorder and delete. Block types:
 - **Text**: with headings, bold, italics, lists and links
-- **Image**: uploaded from the computer
+- **Note box**: a highlighted text box, for example "Historical note"
+- **Image**: uploaded from the computer, with an optional caption and credit line
+- **Table**: rows and columns of text and numbers
 - **Formula**: see REQ-4.3
 - **Video**: a YouTube (or other) link, played inside the lesson
-- **Audio**: an uploaded audio file or a link, played inside the lesson
+- **Audio**: an uploaded audio file or a link, played inside the lesson (or opened in a new tab if the website doesn't allow playing it inside Evolora, as with some podcast sites)
 - **Simulation**: a link to an outside website, shown inside the lesson where the website allows it
+- **Link list**: a list of further-reading links with a title for each
 - **Question**: see REQ-4.4
 
 *Acceptance criteria:*
 - [ ] A creator can add one block of each type and see it correctly in the lesson.
+- [ ] Gil's first lesson (Archimedes and density) can be fully rebuilt in Evolora: story text, 6 images with captions, the metals density table, note boxes, podcast link, videos, the density simulation and the questions.
 - [ ] A creator can move a block up or down and delete it.
 - [ ] A YouTube video plays inside the lesson without leaving Evolora.
 - [ ] If a simulation website refuses to be shown inside Evolora, the student sees a button that opens it in a new tab.
@@ -171,11 +176,12 @@ Teachers and creators can browse and search all lessons by title, subject, grade
 - [ ] A teacher can filter lessons to show only Hebrew, 7th-grade math lessons.
 
 **REQ-4.10: Courses** (Priority: MVP)
-A creator or teacher can bundle lessons, their own or anyone's, into an ordered course. A course is either public (anyone can find and enroll in it) or private (see OPEN Q-2).
+A creator or teacher can bundle lessons, their own or anyone's, into an ordered course. A course is either **public** (listed in the course library) or **private**, which means unlisted: it doesn't appear in the course library and only classes it is assigned to can use it, but its lessons are still open to everyone in the lesson library.
 
 *Acceptance criteria:*
 - [ ] A teacher can create a course from 3 existing lessons and change their order.
 - [ ] A public course appears in the course library; a private one does not.
+- [ ] The lessons inside a private course can still be found in the lesson library.
 
 **REQ-4.11: Import from Google Docs and Word** (Priority: Later)
 A creator can import a Google Doc or Word document, and Evolora turns it into a lesson: text, images and formulas become blocks.
@@ -245,16 +251,16 @@ A teacher can assign a single lesson, a course, or any selection of lessons, to 
 **REQ-5.8: Fixed order or student's choice** (Priority: MVP)
 When assigning several lessons, the teacher chooses:
 - **Fixed order**: the student must finish each lesson before the next one opens.
-- **Student's choice**: the student chooses which lessons to do (see OPEN Q-3).
+- **Student's choice**: the student must do all the lessons, but chooses the order.
 
 *Acceptance criteria:*
 - [ ] In fixed order, the second lesson is locked until the first is finished.
-- [ ] In student's choice, all the lessons are open.
+- [ ] In student's choice, all the lessons are open, and the assignment counts as done only when all of them are finished.
 
 **REQ-5.9: Assignment settings** (Priority: MVP)
 When assigning, the teacher sets:
 - **Due date** (optional), and what happens after it: the grade is reduced by a set percentage, or the lesson is locked.
-- **Redo improves grade**: whether redoing a finished lesson can change its grade (see REQ-6.7).
+- **Redo counts**: whether redoing a finished lesson replaces its grade (see REQ-6.5).
 - **Who checks open answers**: in the MVP, always the teacher. AI options are in REQ-7.1.
 
 *Acceptance criteria:*
@@ -363,10 +369,11 @@ For each course or set of assigned lessons, the student sees the titles of the l
 - [ ] A student who finished 2 of 5 lessons sees 40% and the titles of the remaining 3.
 
 **REQ-6.5: Redo a lesson** (Priority: MVP)
-A student can redo a finished lesson. If the teacher allowed it when assigning (REQ-5.9), the new grade replaces the old one; otherwise the redo is for practice only. (See OPEN Q-5.)
+A student can redo a finished lesson. If the teacher allowed it when assigning (REQ-5.9), the grade of the latest redo replaces the old one, even if it is lower. Otherwise the redo is for practice only.
 
 *Acceptance criteria:*
-- [ ] With "redo improves grade" on, redoing a lesson with a better result raises the grade.
+- [ ] With "redo counts" on, redoing a lesson with a better result raises the grade.
+- [ ] With "redo counts" on, redoing a lesson with a worse result lowers the grade.
 - [ ] With it off, the grade stays the same after a redo.
 
 **REQ-6.6: Recording audio answers** (Priority: MVP)
@@ -376,12 +383,14 @@ A student can record, listen back to, re-record and submit an audio answer on a 
 - [ ] The first time, the browser asks for microphone permission; after allowing it, recording works.
 - [ ] The student can listen to the recording before submitting.
 
-**REQ-6.7: Public courses without a teacher** (Priority: MVP)
-A student can browse public courses and enroll in one on their own. They learn and answer questions as usual, but no teacher reviews their work (see OPEN Q-6).
+**REQ-6.7: Public courses without a teacher** (Priority: Later)
+A student can browse public courses and enroll in one on their own. Automatically checked questions work as usual. Audio questions are skipped. Open written questions can be answered for practice, but are not graded. No teacher reviews their work.
 
 *Acceptance criteria:*
 - [ ] A student enrolls in a public course and sees it on their home page.
 - [ ] Automatically checked questions work as usual.
+- [ ] Audio questions don't appear.
+- [ ] Open written questions can be answered, and show "practice, not graded".
 
 **REQ-6.8: Game-like progress** (Priority: Later)
 A more playful progress display (for example, a figure advancing along a path, like in a building-block instruction booklet) and possibly points or coins.
@@ -449,18 +458,24 @@ A lesson is displayed in its own language direction, whatever the interface lang
 - [ ] A Hebrew lesson shown in the English interface is still right-to-left.
 - [ ] A Hebrew sentence containing an English term and a number reads correctly.
 
-**REQ-9.4: Class language setting** (Priority: MVP)
-A teacher sets the class language and chooses whether students must use it or may choose their own interface language (see OPEN Q-7).
+**REQ-9.4: Choose interface language** (Priority: MVP)
+Each person chooses their own interface language, and Evolora remembers it.
 
 *Acceptance criteria:*
-- [ ] With the language set to Arabic and forced, students in the class see the Arabic interface.
-- [ ] With "students may choose", each student can pick their own interface language.
+- [ ] A student switches to Arabic, signs out and in again, and still sees Arabic.
+
+**REQ-9.5: Class language setting** (Priority: Later)
+A teacher sets a class language and chooses whether students must use it or may choose. A student can be in classes with different required languages (for example, Science in Hebrew and English class in English); the class's language applies while the student is inside that class.
+
+*Acceptance criteria:*
+- [ ] With the language set to English and required, students see the English interface inside that class.
+- [ ] The same student sees Hebrew inside their Hebrew-only Science class.
 
 ---
 
 ## 10. Privacy, safety and protection of minors
 
-Most students are minors (12 to 18). During the pilot, not every privacy rule will be fully met; the requirements below are the minimum. Full compliance comes before any wider release (REQ-10.6).
+Most students are minors (12 to 18). During the pilot, not every privacy rule will be fully met, and no formal school approval is needed (decision D-13). The requirements below are the minimum. Full compliance comes before any wider release (REQ-10.6).
 
 **REQ-10.1: Only school accounts** (Priority: MVP)
 See REQ-3.2.
@@ -472,7 +487,7 @@ See REQ-5.16. Messages are visible only to the student and that class's teachers
 See REQ-3.4.
 
 **REQ-10.4: Data stored in a safe place** (Priority: MVP)
-Student data is stored with a major cloud provider, preferably in its Israel region, and is backed up daily.
+Student data is stored on Google Cloud in its Israel (Tel Aviv) region, and is backed up daily.
 
 *Acceptance criteria:*
 - [ ] Claude can show Gil, in the hosting control panel, where the data is stored and when the last backup ran.
@@ -494,7 +509,7 @@ Evolora is a website used in the Chrome browser on school Chromebooks. Phones ar
 - [ ] Every screen works on a school Chromebook, at its normal screen size, without zooming.
 
 **REQ-11.2: Cloud hosting and own web address** (Priority: MVP)
-Evolora runs in the cloud and is reached at its own web address (see OPEN Q-8 and OPEN Q-9).
+Evolora runs on Google Cloud and is reached at its own web address (see OPEN Q-9). Until the address is bought, a temporary Google address is used.
 
 *Acceptance criteria:*
 - [ ] Typing the Evolora web address in Chrome opens the sign-in page.
@@ -540,16 +555,26 @@ Text is readable, colours are not the only way information is shown (status colo
 
 ## 14. Open questions
 
+### Still open
+
 | # | Question | Affects |
 |---|---|---|
-| **Q-1** | Which open licences? My proposal: lessons under **CC BY-SA 4.0** (the Wikipedia licence: anyone may use and change, must credit the creator and share alike), code under **AGPL-3.0** (a GNU licence for websites: anyone may use and change, must share their changes). | REQ-1.1 |
-| **Q-2** | If everything is open, what does a "private" course mean? My proposal: a private course is **unlisted**: it doesn't appear in the course library and students can't enroll on their own, but its lessons can still be found and copied by other teachers. | REQ-4.10 |
-| **Q-3** | In "student's choice", must the student do **all** the lessons in any order, or only **some** of them (for example, "choose 2 of these 4")? | REQ-5.8 |
-| **Q-4** | Starting rules for status colours. My proposal: **red** = 3 wrong attempts on any question in the past week; **orange** = an assignment is past its due date and unfinished; **green** = everything else. | REQ-5.10 |
-| **Q-5** | When a redo counts, is the grade the **latest** attempt or the **best** one? | REQ-6.5 |
-| **Q-6** | In a public course without a teacher, what happens to open and audio questions? Skip them, accept any answer, or don't allow them in public courses? | REQ-6.7 |
-| **Q-7** | A student is in two classes, one set to Arabic (forced) and one to Hebrew (forced). Which language do they see? My proposal: the forced language applies while they are inside that class. | REQ-9.4 |
-| **Q-8** | Hosting: approve Google Cloud in the Israel region? Who owns the cloud account: you personally, or the school? | REQ-11.2, REQ-10.4 |
-| **Q-9** | Web address: which name to buy? | REQ-11.2 |
-| **Q-10** | Privacy in the pilot: should the school's management or IT give written approval before real students use Evolora? | Section 10 |
-| **Q-11** | Your first lesson is a Google Doc. Since importing is Later, I'll rebuild it in Evolora by hand from your document. Please share it with me when you're ready (for example, export it as a Word file into this folder). | REQ-4.11 |
+| **Q-4** | Starting rules for status colours. My proposal: **red** = 3 wrong attempts on any question in the past week; **orange** = an assignment is past its due date and unfinished; **green** = everything else. *(Gil is reading.)* | REQ-5.10 |
+| **Q-9** | Web address: which name to buy? *(Gil is checking.)* | REQ-11.2 |
+| **Q-12** | **Image rights.** Lessons are shared under CC BY-SA, so every image in a lesson must be allowed to be shared that way: the creator's own, public domain, or under a compatible open licence. The Archimedes lesson has 6 images. Do you know where they come from? Should Evolora ask creators to confirm image rights when uploading? | REQ-1.1, REQ-4.2 |
+| **Q-13** | **Questions inside the lesson.** In the Archimedes document, all 7 questions are at the end, and they are all open written questions. Evolora is built around questions that appear *during* the lesson. For the first lesson, should I (a) keep them at the end as they are, or (b) suggest a few short multiple-choice questions along the way, which you approve? | REQ-4.5 |
+| **Q-14** | **The lesson documents and GitHub.** The repository is public on GitHub (or will be, as open source). Should the lesson drafts folder be stored there too? The Archimedes file is 7.7 MB and contains images whose rights are unclear (Q-12). My suggestion: keep drafts out of GitHub for now. | — |
+
+### Answered (2026-11-20)
+
+| # | Question | Answer |
+|---|---|---|
+| Q-1 | Which open licences? | CC BY-SA 4.0 for lessons, AGPL-3.0 for code. (REQ-1.1, D-5) |
+| Q-2 | What does "private course" mean? | Unlisted: not in the course library; its lessons stay open. (REQ-4.10, D-12) |
+| Q-3 | Student's choice: all lessons or some? | All of them, in any order. (REQ-5.8) |
+| Q-5 | Redo: latest or best grade? | Latest. (REQ-6.5) |
+| Q-6 | Open and audio questions in public courses? | Audio questions are skipped; written answers allowed for practice, not graded. Not MVP. (REQ-6.7) |
+| Q-7 | Student in two classes with different required languages? | Possible (for example, Science in Hebrew, English class in English). Not MVP. (REQ-9.5) |
+| Q-8 | Hosting? | Google Cloud. (REQ-11.2, D-10) |
+| Q-10 | School approval before the pilot? | Not needed for now. (D-13) |
+| Q-11 | First lesson? | "Density: Archimedes and his discovery", in the lessons_drafts folder. |

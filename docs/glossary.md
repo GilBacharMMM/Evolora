@@ -21,7 +21,9 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Question** | Something the student must answer inside a lesson, usually before they can continue. | proposed |
 | **Course** | An ordered bundle of lessons, made by a creator or teacher from their own lessons or anyone's. A course is either *public* or *private*. | proposed |
 | **Public course** | A course that any student can find and enroll in, even without a teacher. Students who learn this way get no teacher feedback. | proposed |
-| **Private course** | A course that isn't listed in the course library; only classes it is assigned to can use it. Its lessons are still open to everyone (see OPEN Q-2). | proposed |
+| **Private course** | An unlisted course: it isn't shown in the course library, and only classes it is assigned to can use it. Its lessons are still open to everyone. | agreed |
+| **Licence** | The terms for reusing content. Lessons use CC BY-SA 4.0 (reuse and change freely, credit the creator, share alike); code uses AGPL-3.0. | agreed |
+| **Note box** | A highlighted box inside a lesson for side notes, such as "Historical note". | proposed |
 | **Lesson library** | The searchable collection of all lessons in Evolora. Every lesson is open: any teacher can use it, and any creator can copy and change it. | proposed |
 | **Copy (of a lesson)** | A new lesson made from an existing one, edited by a new creator. It credits both the new and the original creator. | proposed |
 | **Attribution** | Showing the creator's name on their lessons, including on copies. | proposed |
@@ -40,7 +42,7 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Class code** | A unique code a teacher shares so students can join a class, as in Google Classroom. | proposed |
 | **Invite** | An email from a teacher that lets a student join a class. | proposed |
 | **Enroll** | To join a class (with a class code or invite) or a public course. | proposed |
-| **Assignment** | A lesson, a course, or a selection of lessons that a teacher gives to a whole class or to specific students. Its settings: fixed order or student's choice, optional due date, whether a redo can improve the grade, and who checks open answers. | proposed |
+| **Assignment** | A lesson, a course, or a selection of lessons that a teacher gives to a whole class or to specific students. Its settings: fixed order or student's choice (the student must still do all the lessons, but picks the order), optional due date, whether a redo counts (the latest redo's grade replaces the old one), and who checks open answers. | proposed |
 | **Answer** | What a student gives in response to a question. | proposed |
 | **Comment** | Feedback a teacher adds to a student's answer, either written text or an audio recording. | proposed |
 | **Send back for corrections** | A teacher returning a finished lesson, or just some of its questions, to a student to fix. The new answers are graded again. | proposed |
