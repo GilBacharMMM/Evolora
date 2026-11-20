@@ -1,0 +1,32 @@
+# Lesson files
+
+Each folder here holds one lesson in **lesson file** form: a plain-text version of the lesson, block by block, that Gil and Claude edit together before the lesson goes into Evolora. Later, Claude loads these files into the test site (REQ-12.6) and the real site.
+
+## How a lesson file is written
+
+The top of the file has the lesson details (title, language, subject, grade, creator, licence).
+
+Each block starts with a heading in square brackets, matching the block types in REQ-4.2:
+
+| Heading | Block |
+|---|---|
+| `[TEXT]` | Text |
+| `[NOTE BOX]` | Highlighted side note |
+| `[IMAGE]` | Image, with `file`, `caption` and `source` lines (REQ-4.15) |
+| `[TABLE]` | Table |
+| `[FORMULA]` | Formula |
+| `[VIDEO]` | Video link |
+| `[AUDIO]` | Audio link or file |
+| `[SIMULATION]` | Simulation link, with instructions for the student |
+| `[LINK LIST]` | Further-reading links |
+| `[QUESTION: multiple choice]` | Choices marked `(✔)` are correct |
+| `[QUESTION: open]` | Includes `Grading instructions` for the teacher |
+| `[QUESTION: audio]` | Recorded answer, with `Grading instructions` |
+
+## Notes and comments
+
+- `> 🟦 Claude:` a question or suggestion from Claude for Gil
+- `> 🟨 Gil:` Gil's notes or answers. Write them anywhere; Claude reads them all.
+- `[NEW: suggested by Claude]` on a block means Claude added it and Gil hasn't approved it yet. Delete the tag to approve, or delete the block to reject.
+
+Gil can edit the file directly in any text editor, or ask Claude to make changes.

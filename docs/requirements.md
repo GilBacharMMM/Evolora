@@ -69,15 +69,17 @@ People sign in with their Google account. There are no separate Evolora password
 *Acceptance criteria:*
 - [ ] On a school Chromebook, clicking "Sign in with Google" takes you into Evolora with your school account.
 
-**REQ-3.2: School accounts only during the pilot** (Priority: MVP)
-During the pilot, only accounts ending in **@taded.org.il** can sign in.
+**REQ-3.2: Any Google account during the pilot** (Priority: MVP)
+During the pilot, people sign in with a regular Google account, such as a Gmail address. School accounts (@taded.org.il) can't be used yet, because a website using them must first be approved by the Ministry of Education (decision D-19).
+
+A new person who signs in is a student with no classes. They see nothing except an empty home page with a box to enter a class code. They can only see lessons once they join a class (OPEN Q-15).
 
 *Acceptance criteria:*
-- [ ] Signing in with a @taded.org.il account works.
-- [ ] Signing in with any other Google account (for example, a personal Gmail) shows a clear message that access is limited to the school.
+- [ ] Signing in with a Gmail account works.
+- [ ] A new person who hasn't joined a class sees only the "enter class code" box, and no lessons, classes or people.
 
 **REQ-3.3: Other sign-in methods** (Priority: Later)
-Allow other accounts: any Google account (for example, for students taking public courses), and the Ministry of Education sign-in.
+Allow school accounts (@taded.org.il) after Ministry of Education approval, and the Ministry of Education sign-in.
 
 **REQ-3.4: People only see what they are allowed to** (Priority: MVP)
 Each person sees only what their role and classes allow.
@@ -101,7 +103,7 @@ In edit mode, a creator creates a lesson with a title, a short description, a le
 A lesson is a sequence of blocks that the creator can add, edit, reorder and delete. Block types:
 - **Text**: with headings, bold, italics, lists and links
 - **Note box**: a highlighted text box, for example "Historical note"
-- **Image**: uploaded from the computer, with an optional caption and credit line
+- **Image**: uploaded from the computer, with an optional caption and a required source (see REQ-4.15)
 - **Table**: rows and columns of text and numbers
 - **Formula**: see REQ-4.3
 - **Video**: a YouTube (or other) link, played inside the lesson
@@ -182,6 +184,20 @@ A creator or teacher can bundle lessons, their own or anyone's, into an ordered 
 - [ ] A teacher can create a course from 3 existing lessons and change their order.
 - [ ] A public course appears in the course library; a private one does not.
 - [ ] The lessons inside a private course can still be found in the lesson library.
+
+**REQ-4.15: Image sources** (Priority: MVP)
+For every image, the creator must say where it comes from, as on Wikipedia. Lessons are shared under CC BY-SA, so every image must be allowed to be shared that way. The choices are:
+- **My own work** (photo or drawing by the creator)
+- **AI-generated** (with the name of the AI tool, if known)
+- **From another source**: the creator enters the author, a link to the original, and its licence (for example, "Public domain" or "CC BY-SA 4.0")
+
+Students see a small "Source" note under each image. Clicking it shows the full details.
+
+*Acceptance criteria:*
+- [ ] A creator can't save an image without choosing its source.
+- [ ] For "From another source", the author, link and licence must all be filled in.
+- [ ] A student can click "Source" under an image and see where it comes from.
+- [ ] In the Archimedes lesson, the Renaissance woodcut shows its Wikimedia Commons source, and the other images show "AI-generated".
 
 **REQ-4.11: Import from Google Docs and Word** (Priority: Later)
 A creator can import a Google Doc or Word document, and Evolora turns it into a lesson: text, images and formulas become blocks.
@@ -477,8 +493,11 @@ A teacher sets a class language and chooses whether students must use it or may 
 
 Most students are minors (12 to 18). During the pilot, not every privacy rule will be fully met, and no formal school approval is needed (decision D-13). The requirements below are the minimum. Full compliance comes before any wider release (REQ-10.6).
 
-**REQ-10.1: Only school accounts** (Priority: MVP)
-See REQ-3.2.
+**REQ-10.1: Strangers see nothing** (Priority: MVP)
+Anyone with a Google account can sign in (REQ-3.2), so a person who hasn't joined a class must see no lessons, classes, names or student work.
+
+*Acceptance criteria:*
+- [ ] A Google account that has never joined a class sees only the "enter class code" box.
 
 **REQ-10.2: Private messages** (Priority: MVP)
 See REQ-5.16. Messages are visible only to the student and that class's teachers.
@@ -545,6 +564,27 @@ Text is readable, colours are not the only way information is shown (status colo
 
 ---
 
+**REQ-12.4: Test site** (Priority: MVP)
+There is a separate test site, with made-up data only, where Gil checks every new feature before it goes to the real site (decision D-18).
+
+*Acceptance criteria:*
+- [ ] The test site has its own address and clearly shows a "TEST SITE" banner on every screen.
+- [ ] Nothing done on the test site appears on the real site, and the other way round.
+
+**REQ-12.5: Switching users on the test site** (Priority: MVP)
+On the test site only, Gil can switch between made-up test users (for example, "Test Teacher 1" or "Test Student 3") with one click, without signing out. This lets Gil see each screen as each role. Gil's own Google accounts can also be used.
+
+*Acceptance criteria:*
+- [ ] On the test site, a "Switch user" menu lists the test users with their roles.
+- [ ] Choosing a test user shows Evolora exactly as that person would see it.
+- [ ] The "Switch user" menu doesn't exist on the real site.
+
+**REQ-12.6: Ready-made test data** (Priority: MVP)
+The test site can be filled with a standard set of test data with one command, by Claude: test teachers, test students, a test class, and the Archimedes lesson. It can be reset to that state at any time.
+
+*Acceptance criteria:*
+- [ ] After a reset, the test site has the same test users, class and lesson as before, and no leftover answers.
+
 ## 13. Out of scope for now
 
 - Phone apps
@@ -561,9 +601,9 @@ Text is readable, colours are not the only way information is shown (status colo
 | # | Question | Affects |
 |---|---|---|
 | **Q-4** | Starting rules for status colours. My proposal: **red** = 3 wrong attempts on any question in the past week; **orange** = an assignment is past its due date and unfinished; **green** = everything else. *(Gil is reading.)* | REQ-5.10 |
-| **Q-12** | **Image rights.** Lessons are shared under CC BY-SA, so every image in a lesson must be allowed to be shared that way: the creator's own, public domain, or under a compatible open licence. The Archimedes lesson has 6 images. Do you know where they come from? Should Evolora ask creators to confirm image rights when uploading? | REQ-1.1, REQ-4.2 |
-| **Q-13** | **Questions inside the lesson.** In the Archimedes document, all 7 questions are at the end, and they are all open written questions. Evolora is built around questions that appear *during* the lesson. For the first lesson, should I (a) keep them at the end as they are, or (b) suggest a few short multiple-choice questions along the way, which you approve? | REQ-4.5 |
-| **Q-14** | **The lesson documents and GitHub.** The repository is public on GitHub (or will be, as open source). Should the lesson drafts folder be stored there too? The Archimedes file is 7.7 MB and contains images whose rights are unclear (Q-12). My suggestion: keep drafts out of GitHub for now. | — |
+| **Q-14** | **Lessons on GitHub.** Now that the image sources are known (all AI-generated except one Wikimedia image), I've put the converted Archimedes lesson in the `lessons` folder, which *is* stored on GitHub, so it's backed up and open like the rest of the project. The original Word file stays out of GitHub. Is that OK? | — |
+| **Q-15** | **Who may sign in?** With regular Google accounts (REQ-3.2), anyone in the world could sign in. My proposal: anyone may sign in, but they see nothing until they join a class with a class code (REQ-10.1). Teachers are still only added by the system admin. Also note that Google only allows children under 13 to have a Gmail account under a parent's supervision (Google Family Link). Some 7th graders are 12, so some students may need a parent to set up their account. Is that acceptable for the pilot? | REQ-3.2, REQ-10.1 |
+| **Q-16** | **"Creator" or "builder"?** See the summary in my message. My recommendation: **creator** (in Hebrew: יוצר/ת שיעורים) for the person, and **lesson builder** for the editing screen. | Glossary |
 
 ### Answered (2026-11-20)
 
@@ -579,3 +619,9 @@ Text is readable, colours are not the only way information is shown (status colo
 | Q-9 | Web address? | **evoloraedu.org**, bought at Cloudflare. (REQ-11.2, D-14) |
 | Q-10 | School approval before the pilot? | Not needed for now. (D-13) |
 | Q-11 | First lesson? | "Density: Archimedes and his discovery", in the lessons_drafts folder. |
+| Q-12 | Image rights? | All images in the Archimedes lesson are AI-generated, except the Renaissance woodcut from Wikimedia Commons. Every image must record its source, like Wikipedia. (REQ-4.15, D-20) |
+| Q-13 | Questions inside the lesson? | Yes: add questions during the lesson, move the simulation and the videos into the lesson itself, and develop the lesson together in an Evolora lesson file (lessons/archimedes-density). |
+| D-Q1 | First admin's school account? | School Google sign-in needs Ministry of Education approval, so the pilot uses regular Google accounts instead. (REQ-3.2, D-19) |
+| D-Q2 | Separate test site? | Approved. Created as Firebase project evolora-test. (REQ-12.4, D-18) |
+| D-Q3 | Email invites? | Approved: a free email service sending from noreply@evoloraedu.org (Milestone B). |
+| D-Q4 | Test accounts? | Approved, with a one-click user switcher on the test site; Gil's own Google accounts can also be used. (REQ-12.5, REQ-12.6) |

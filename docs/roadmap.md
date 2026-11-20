@@ -18,14 +18,15 @@ This document says what goes into each version. Each item refers to requirement 
 | Requirement | Short description |
 |---|---|
 | REQ-2.1, 2.2, 2.3 | Roles, admin registers teachers, edit mode |
-| REQ-3.1, 3.2, 3.4 | Google sign-in, school accounts only, access rules |
-| REQ-4.1 to 4.6 | Create lessons: content blocks, formula editor, 3 question types, preview |
+| REQ-3.1, 3.2, 3.4, 10.1 | Google sign-in with regular Google accounts, access rules, strangers see nothing |
+| REQ-4.1 to 4.6, 4.15 | Create lessons: content blocks, formula editor, 3 question types, preview, image sources |
 | REQ-5.1, 5.2, 5.4, 5.6 | Classes, class code, class list, many classes per student |
 | REQ-5.7 | Assign lessons to a class or selected students |
 | REQ-5.11 | Grade dashboard (basic) |
 | REQ-6.1 to 6.4, 6.6 | Student home, taking a lesson, attempts and scoring, progress, audio answers |
 | REQ-9.1 to 9.4 | Hebrew, Arabic, English; right-to-left and left-to-right; each person chooses their language |
 | REQ-10.4, 11.1 to 11.3, 12.1 to 12.3 | Hosting, safety basics, Chromebook web app, speed, no lost work |
+| REQ-12.4 to 12.6 | Test site, user switching, test data (built first, so Gil can test everything else) |
 
 **Done when:** the Archimedes and density lesson is in Evolora, Gil assigns it to a real class, the students complete it, and Gil sees their grades.
 
@@ -65,7 +66,7 @@ Each AI item first gets a cost estimate for Gil's approval.
 ## Later / ideas
 
 - REQ-2.4: creators who are not teachers
-- REQ-3.3: other sign-in methods (any Google account, Ministry of Education)
+- REQ-3.3: school accounts after Ministry approval, and Ministry of Education sign-in
 - REQ-4.13: simulations built into Evolora
 - REQ-4.14: lesson marketplace
 - REQ-6.8: game-like progress, points or coins

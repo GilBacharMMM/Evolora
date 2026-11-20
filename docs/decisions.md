@@ -189,7 +189,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-11.2, docs/setup-google-cloud.md
 
 ### D-16: Building blocks for the software
-**Date:** 2026-11-20 · **Status:** Proposed · **Decided by:** awaiting Gil
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
 **Context:** Which tools to build Evolora with. Gil won't work with these directly; what matters is that they're reliable, well known, free and open source, good at right-to-left text, and work well with Firebase (D-10).
 **Options considered:**
 1. React (the most widely used tool for building websites), with Firebase services for sign-in, database, storage and server logic.
@@ -201,7 +201,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** system-design.md
 
 ### D-17: Answers are checked in the cloud, not on the student's computer
-**Date:** 2026-11-20 · **Status:** Proposed · **Decided by:** awaiting Gil
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
 **Context:** Where multiple-choice answers are checked.
 **Options considered:**
 1. On the Chromebook: simplest and fastest, but the correct answers would be inside the web page, where a curious student could find them.
@@ -212,12 +212,36 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-6.3, REQ-12.1, system-design.md section 5
 
 ### D-18: A separate test site
-**Date:** 2026-11-20 · **Status:** Proposed · **Decided by:** awaiting Gil
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
 **Context:** Where new features are checked before real students see them.
 **Options considered:**
 1. Test on the real site: no extra setup, but real students may see unfinished features, and test data mixes with real grades.
 2. A separate Firebase project used only for testing, with made-up data. Gil approves each feature there before it goes to the real site.
 
-**Decision:** Option 2 (proposed).
+**Decision:** Option 2. The test site is the Firebase project **evolora-test**, with a one-click user switcher and ready-made test data (REQ-12.4 to 12.6).
 **Reason:** Protects real students and their data; gives Gil a safe place to check acceptance criteria.
 **Affects:** system-design.md sections 7.3 and 8
+
+### D-19: Regular Google accounts instead of school accounts for the pilot
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
+**Context:** The plan was to allow only @taded.org.il school accounts (D-2). Gil found that a website using school Google sign-in must first be approved by the Ministry of Education, which hasn't happened yet.
+**Options considered:**
+1. Wait for Ministry approval: safest, but delays the pilot by an unknown time.
+2. Use regular Google accounts (such as Gmail) for now; strangers who sign in see nothing until they join a class with a code.
+3. Email and password accounts made by Evolora: more to build, and passwords to manage.
+
+**Decision:** Option 2. This replaces the "school accounts only" part of D-2; Google sign-in itself stays.
+**Reason:** Lets the pilot start on time, while keeping content and student work hidden from anyone who hasn't joined a class.
+**Affects:** REQ-3.2, REQ-3.3, REQ-10.1; OPEN Q-15
+
+### D-20: Every image records its source
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
+**Context:** Lessons are shared under CC BY-SA (D-5), so every image must be allowed to be shared that way.
+**Options considered:**
+1. Trust creators, record nothing.
+2. A single "I have the rights" checkbox.
+3. Record each image's source, as Wikipedia does: own work, AI-generated, or another source with author, link and licence.
+
+**Decision:** Option 3.
+**Reason:** Gives proper credit, makes rights clear to anyone reusing the lesson, and fits the open model.
+**Affects:** REQ-4.2, REQ-4.15

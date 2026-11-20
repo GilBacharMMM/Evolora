@@ -61,3 +61,15 @@ When you buy the domain name (open question Q-9), Claude will tell you the two o
 | AI (Gemini) | Nothing; not part of the MVP |
 
 These are estimates. Claude will check the real billing page with you after the first month.
+
+---
+
+## Step 5: The test project (Evolora Test)
+
+Claude created a second project, **evolora-test**, for the test site (decision D-18). It's on the free plan, which is enough to start. When Milestone A needs file storage (images and audio) on the test site, it will also need the pay-as-you-go plan:
+
+1. Open **https://console.firebase.google.com/project/evolora-test/overview**.
+2. Click **Upgrade**, choose **Blaze**, and pick the **same billing account** you already created. You don't need to enter your card again.
+3. Set a budget alert, for example 20 ILS per month.
+
+Claude will tell you when this step is needed.

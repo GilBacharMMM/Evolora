@@ -1,6 +1,6 @@
 # Evolora: System Design
 
-**Status:** First draft, waiting for Gil's review
+**Status:** Approved by Gil on 2026-11-20 (D-16 to D-18), updated with the answers to D-Q1 to D-Q4
 **Last updated:** 2026-11-20
 
 This document explains, in plain language, how Evolora is built. It always follows [requirements.md](requirements.md). Significant choices link to their entry in [decisions.md](decisions.md), which explains why they were made.
@@ -47,7 +47,7 @@ There is one website at **evoloraedu.org**. After signing in, each person sees t
 | System admin | Manage teachers |
 
 ### 2.2 The lesson editor
-The editor works like a simple word processor made of **blocks** (REQ-4.2). The creator clicks "+" to add a block (text, note box, image, table, formula, video, audio, simulation, link list or question) and drags blocks to reorder them. A **Preview** button shows the lesson exactly as a student sees it (REQ-4.6).
+The editor works like a simple word processor made of **blocks** (REQ-4.2). This screen is called the **lesson builder**. The creator clicks "+" to add a block (text, note box, image, table, formula, video, audio, simulation, link list or question) and drags blocks to reorder them. Every image needs its source filled in: own work, AI-generated, or another source with author, link and licence (REQ-4.15). A **Preview** button shows the lesson exactly as a student sees it (REQ-4.6).
 
 Formulas use a visual formula editor, so creators click and type, without writing code (REQ-4.3, D-8). Behind the scenes, formulas are saved in the standard math format used by most science software (called LaTeX), so they can be imported from documents later.
 
@@ -97,11 +97,11 @@ The database is backed up automatically every day, and backups are kept for 7 da
 ## 4. Accounts and permissions
 
 ### 4.1 Signing in
-People sign in with "Sign in with Google" (REQ-3.1). Evolora checks the email address and only lets in **@taded.org.il** accounts (REQ-3.2). This check is in one place, so allowing other accounts later (REQ-3.3) is a small change.
+People sign in with "Sign in with Google" (REQ-3.1). People use a regular Google account such as Gmail (REQ-3.2, D-19). A newly signed-in person is a student with no classes and can see nothing until they enter a class code (REQ-10.1). Which accounts may sign in is decided in one place, so switching to school accounts later (REQ-3.3) is a small change.
 
 ### 4.2 Roles
 - A person's **role** is stored in their record. Everyone starts as a student. Only a system admin can make someone a teacher (REQ-2.2).
-- The first system admin is set up by Claude directly (see open question D-Q1 in section 10).
+- The first system admin is set up by Claude directly, using a Google account Gil chooses.
 - Edit mode is a switch on the teacher's own screen (REQ-2.3).
 
 ### 4.3 Who can see what
@@ -162,11 +162,12 @@ Everything runs in the Firebase project **evolora**, owned by Gil's personal Goo
 evoloraedu.org is registered at Cloudflare (D-14). To connect it, Claude will give Gil two or three records to add in Cloudflare. Google then sets up the secure connection (the padlock) automatically.
 
 ### 7.3 A separate test site
-Claude proposes a **second, separate Firebase project** used only for testing (decision D-18, proposed):
+There is a **second, separate Firebase project**, **evolora-test**, used only for testing (decision D-18, REQ-12.4):
 
 | | Test site | Real site |
 |---|---|---|
-| Address | evolora-test.web.app (or test.evoloraedu.org) | evoloraedu.org |
+| Address | evolora-test.web.app | evoloraedu.org |
+| Sign-in | Made-up test users (one-click switching), or Gil's own Google accounts | Google accounts |
 | Data | Made-up test classes and students | Real teachers and students |
 | Who uses it | Gil, to check new features | Teachers and students |
 
@@ -177,8 +178,12 @@ Claude proposes a **second, separate Firebase project** used only for testing (d
 
 This way, real students never see a half-finished feature, and testing never mixes made-up data with real grades.
 
+**Switching users (REQ-12.5).** On the test site, a "Switch user" menu lets Gil become any test user (for example, Test Teacher 1 or Test Student 3) with one click. The test users are simple made-up accounts that exist only in the test project. The menu is built so that it can't appear on the real site. Every test-site screen shows a "TEST SITE" banner.
+
+**Test data (REQ-12.6).** Claude can fill or reset the test site with a standard set: 2 test teachers, 6 test students, a test class, and the Archimedes lesson.
+
 ### 7.4 Email
-Email invites to classes (REQ-5.3) need a service that sends email. This is needed only in Milestone B. The options are in open question D-Q3.
+Email invites to classes (REQ-5.3) are sent through a free email service from **noreply@evoloraedu.org**. This needs a few extra settings in Cloudflare and is set up in Milestone B.
 
 ### 7.5 Costs
 For the pilot, Firebase's free allowance should cover almost everything. Storage for images and audio may cost a few shekels a month. The 50 ILS monthly alert (D-15) warns Gil well before costs become significant.
@@ -230,12 +235,7 @@ Reasons are in decision D-16.
 
 ## 10. Open design questions
 
-| # | Question | Why it matters |
-|---|---|---|
-| **D-Q1** | **Your school account.** Evolora only lets in @taded.org.il accounts, so your personal Gmail can't sign in to the app. Which @taded.org.il account should be the first system admin? Should it also be a teacher? | Needed before you can use the app at all. |
-| **D-Q2** | **Test site.** Do you approve the separate test site (section 7.3)? If yes, you'll need to create a second Firebase project, "Evolora Test", with the same 2 steps as before (about 10 minutes). | Keeps real student data safe from testing. |
-| **D-Q3** | **Sending email invites** (Milestone B). Options: (a) a free tier of an email service such as Resend or Brevo, sending from an address like noreply@evoloraedu.org (needs a few more Cloudflare settings); (b) teachers share the class code instead, and email invites wait. My recommendation: (a). | Needed for REQ-5.3. |
-| **D-Q4** | **Test accounts.** For testing as different students, may I create made-up test users on the test site only? They would be "pretend" accounts that aren't real Google accounts and only exist on the test site. | Needed so you can test as a student and as a teacher without real student accounts. |
+All four design questions (D-Q1 to D-Q4) were answered on 2026-11-20; see section 14 of requirements.md.
 
 ---
 
@@ -255,4 +255,5 @@ Which part of the system delivers each group of requirements:
 | REQ-9.1 to 9.4 (languages, direction) | Languages and direction (2.4) |
 | REQ-10.1 to 10.4 (privacy) | Permissions (4.3), Israel region and backups (3.3, 7.1) |
 | REQ-11.1 to 11.3 (platform, hosting, size) | Screen size (2.5), hosting (7) |
+| REQ-12.4 to 12.6 (test site, user switching, test data) | Test site (7.3) |
 | REQ-12.1 to 12.3 (speed, no lost work, accessibility) | Lesson player saves after every answer (2.3); tested in screen tests (8.1) |

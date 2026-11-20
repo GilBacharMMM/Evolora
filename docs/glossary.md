@@ -6,7 +6,7 @@ These are the terms we use in all documents and in the app. When a term is used,
 
 | Term | Meaning | Status |
 |---|---|---|
-| **Creator** | A person who creates and edits lessons and courses. A teacher can also be a creator. | proposed |
+| **Creator** | A person who creates and edits lessons and courses. A teacher can also be a creator. In Hebrew: יוצר/ת שיעורים. (Name under discussion, see OPEN Q-16.) | proposed |
 | **Teacher** | A person who runs one or more classes: decides which lessons each student gets, follows progress, and checks and comments on students' work. | proposed |
 | **Student** | A person who learns: reads the material, watches and listens to media, and answers questions. Gets lessons from a teacher, or enrolls in a public course alone. | proposed |
 | **System admin** | A person who manages Evolora itself, including registering teachers. | proposed |
@@ -31,6 +31,9 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Edit mode** | A mode any teacher (or creator) can switch on to create and edit lessons and courses. | proposed |
 | **Lesson version** | A saved state of a lesson. When a creator changes a lesson, students who already started it finish the version they started; new students get the new version. | proposed |
 | **Drag-and-drop question** | A question where the student drags items from a bank of snippets onto an image, like a puzzle. | proposed |
+| **Lesson builder** | The screen where a creator builds and edits a lesson, block by block. | proposed |
+| **Image source** | Where an image comes from: own work, AI-generated, or another source (with author, link and licence). Shown to students under each image. | agreed |
+| **Lesson file** | A plain-text version of a lesson, block by block, that Gil and Claude edit together before the lesson goes into Evolora. Stored in the `lessons` folder. | proposed |
 | **Import** | Bringing an existing lesson into Evolora from a Google Doc or Word document. | proposed |
 
 ## Classes and work
@@ -69,6 +72,8 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **MVP** | Minimum viable product: the first version, with only what is essential. | agreed |
 | **Stage 1 / Stage 2** | Stage 1 is the first working product (the MVP), with no AI. Stage 2 adds import from documents and AI features. | proposed |
 | **Pilot** | The first real use of Evolora at Gil's school: 5 teachers, about 120 seventh-grade students. | proposed |
+| **Test site** | A separate copy of Evolora with made-up data, where Gil checks new features before they go to the real site. | agreed |
+| **Test user** | A made-up person (for example, "Test Student 3") that exists only on the test site. | agreed |
 | **Milestone A / B** | The two parts of the MVP: A puts a first lesson in front of real students; B completes the teacher tools. | proposed |
 | **Class language** | The interface language a teacher sets for a class, either required for students or just a default they can change. | proposed |
 | **Requirement (REQ)** | A numbered statement of what the product must do, with acceptance criteria. | agreed |
