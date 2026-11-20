@@ -247,7 +247,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-4.2, REQ-4.15
 
 ### D-21: Creator-written hints and check-again questions, before AI
-**Date:** 2026-11-20 · **Status:** Decided in principle by Gil; details proposed (OPEN Q-18, Q-19, Q-22) · **Decided by:** Gil
+**Date:** 2026-11-20 · **Status:** Decided in principle by Gil; details proposed (OPEN Q-18, Q-19); timing decided: Milestone A · **Decided by:** Gil
 **Context:** Students who get a question wrong need help to understand, not just the correct answer. Earlier, this help was planned as an AI feature for stage 2 (old REQ-6.9).
 **Options considered:**
 1. Only show "wrong, try again", then the answer (the earlier MVP plan).
@@ -271,7 +271,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-6.9, REQ-7.2
 
 ### D-23: Question levels and secret student levels
-**Date:** 2026-11-20 · **Status:** Decided in principle by Gil; details proposed (OPEN Q-21, Q-22) · **Decided by:** Gil
+**Date:** 2026-11-20 · **Status:** Decided in principle by Gil; details proposed (OPEN Q-21); timing decided: Milestone B · **Decided by:** Gil
 **Context:** A class mixes weaker and stronger students. Hard questions can block weaker students, while stronger students need a challenge.
 **Options considered:**
 1. Every student gets every question.

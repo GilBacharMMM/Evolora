@@ -199,7 +199,7 @@ Students see a small "Source" note under each image. Clicking it shows the full 
 - [ ] A student can click "Source" under an image and see where it comes from.
 - [ ] In the Archimedes lesson, the Renaissance woodcut shows its Wikimedia Commons source, and the other images show "AI-generated".
 
-**REQ-4.16: Hints and full solution** (Priority: MVP, proposed; see OPEN Q-18 and Q-22)
+**REQ-4.16: Hints and full solution** (Priority: MVP, Milestone A; details in OPEN Q-18)
 For a multiple choice question, the creator can write, in advance:
 - **one or two hints**: short guidance on how to solve the question, without giving the answer
 - a **full solution**: the question solved step by step
@@ -212,7 +212,7 @@ When the student answers wrongly, Evolora shows the next hint and the student tr
 - [ ] After the last attempt is wrong, you see the full solution and can continue.
 - [ ] In the Archimedes lesson, the gold and silver question shows the two hints and the solution written for it.
 
-**REQ-4.17: Check-again questions** (Priority: MVP, proposed; see OPEN Q-19 and Q-22)
+**REQ-4.17: Check-again questions** (Priority: MVP, Milestone A; details in OPEN Q-19)
 The creator can add a bank of **check-again questions** to a multiple choice question: similar questions with different numbers or materials. For example, under "gold and silver, 100 grams each", a check-again question asks about "iron and tin, 200 grams each".
 
 When a student needed the full solution (REQ-4.16), Evolora picks one check-again question from the bank at random and asks it, to check that the student now understands. If the student answers it wrongly too, the teacher gets a **red flag** for that student and question, and the student continues.
@@ -223,7 +223,7 @@ When a student needed the full solution (REQ-4.16), Evolora picks one check-agai
 - [ ] Answering the check-again question wrongly sends a red flag; the teacher sees it on the class dashboard (REQ-5.10) with the student's name and the question.
 - [ ] Answering it correctly sends no flag.
 
-**REQ-4.18: Question levels** (Priority: MVP, proposed; see OPEN Q-21 and Q-22)
+**REQ-4.18: Question levels** (Priority: MVP, Milestone B; details in OPEN Q-21)
 Every question has a **level** from 1 to 3: 1 is the easiest, 3 the hardest. The creator sets it, and a new question starts at level 1. Who sees which questions is in REQ-6.10.
 
 For example, in the Archimedes lesson most questions are level 1, the tungsten question is level 2, and the challenge question about ships is level 3.
@@ -376,7 +376,7 @@ Each student has one private conversation with the teachers of each class they a
 - [ ] The student sees a notice when a teacher replies.
 - [ ] There is no way for a student to message another student.
 
-**REQ-5.18: Student levels (secret)** (Priority: MVP, proposed; see OPEN Q-21 and Q-22)
+**REQ-5.18: Student levels (secret)** (Priority: MVP, Milestone B; details in OPEN Q-21)
 Each student has a **student level** from 1 to 3 in each class. Only the class's teachers can see it; the student and other students never do. Every student starts at level 2. Only a teacher can raise or lower a student's level.
 
 To help the teacher, Evolora can **suggest** levels based on average grades: the weakest 10% of the class at level 1, the strongest 10% at level 3, and everyone else at level 2. The teacher sees the suggestions and approves or changes each one; nothing changes without the teacher.
@@ -473,7 +473,7 @@ If, after a few messages back and forth, the student still can't answer the ques
 - [ ] After the set number of messages without a correct answer, the teacher sees a red flag.
 - [ ] A teacher can open and read a student's help conversation.
 
-**REQ-6.10: Each student sees questions up to their level** (Priority: MVP, proposed; see OPEN Q-21 and Q-22)
+**REQ-6.10: Each student sees questions up to their level** (Priority: MVP, Milestone B; details in OPEN Q-21)
 A student sees only questions at or below their student level (REQ-5.18), and the lesson simply skips the others:
 - level 1 student: level 1 questions only
 - level 2 student: levels 1 and 2
@@ -684,12 +684,12 @@ The test site can be filled with a standard set of test data with one command, b
 | **Q-19** | **Check-again questions** (REQ-4.17). (a) Asked only after the full solution, or also when the student needed a hint? My proposal: only after the full solution. (b) How many tries? My proposal: one, no hints. (c) Does it change the grade? My proposal: no, it only decides whether the teacher gets a red flag. | REQ-4.17 |
 | **Q-20** | **The help line** (REQ-6.9). It needs AI, which the MVP doesn't have, so I put it in Version 2 (with a cost estimate first). (a) Until then, should the help line already appear in the MVP and send the question to the teacher as a message (REQ-5.16)? My recommendation: yes. (b) Does using help lower the grade? My proposal: no. (c) Red flag after how many messages? My proposal: after 5 messages from the student, if they still don't answer correctly. (d) The students are minors chatting with AI: the teacher can read every conversation, and the school must agree before we turn it on. OK? | REQ-6.9 |
 | **Q-21** | **Levels** (REQ-4.18, 5.18, 6.10). (a) Grade from only the questions the student saw? So a level 1 student who answers everything right gets 100. My proposal: yes, with the level shown next to the grade for the teacher. (b) Level per class, not one for the whole school? A student may be strong in science and weak in English. My proposal: per class. (c) If the teacher changes a level in the middle of a lesson, it applies from the next question. (d) Students may notice they got fewer questions than a friend. Is that acceptable? | REQ-4.18, REQ-5.18, REQ-6.10 |
-| **Q-22** | **When to build these?** My proposal: hints, full solution and check-again questions in Milestone A (so the Archimedes lesson has them from day one); levels in Milestone B; the help line to the teacher in Milestone B and with AI in Version 2. This adds a few days to the MVP. | Roadmap |
 
 ### Answered (2026-11-20)
 
 | # | Question | Answer |
 |---|---|---|
+| Q-22 | When to build hints, check-again questions, levels and the help line? | Hints, full solution and check-again questions in Milestone A; levels in Milestone B; the AI help line in Version 2. (REQ-4.16 to 4.18, 5.18, 6.9, 6.10, D-21 to D-23) |
 | Q-1 | Which open licences? | CC BY-SA 4.0 for lessons, AGPL-3.0 for code. (REQ-1.1, D-5) |
 | Q-2 | What does "private course" mean? | Unlisted: not in the course library; its lessons stay open. (REQ-4.10, D-12) |
 | Q-3 | Student's choice: all lessons or some? | All of them, in any order. (REQ-5.8) |
