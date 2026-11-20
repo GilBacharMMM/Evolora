@@ -187,3 +187,37 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Gil created the Firebase project (project ID **evolora**) with Gil's personal Google account as owner, and set a spending alert of 50 ILS per month. Others (for example, someone from the school) can be added as owners later.
 **Note:** Google's budget only sends warning emails; it doesn't stop the service or cap spending automatically. Claude will check the actual costs with Gil after the first month.
 **Affects:** REQ-11.2, docs/setup-google-cloud.md
+
+### D-16: Building blocks for the software
+**Date:** 2026-11-20 · **Status:** Proposed · **Decided by:** awaiting Gil
+**Context:** Which tools to build Evolora with. Gil won't work with these directly; what matters is that they're reliable, well known, free and open source, good at right-to-left text, and work well with Firebase (D-10).
+**Options considered:**
+1. React (the most widely used tool for building websites), with Firebase services for sign-in, database, storage and server logic.
+2. A ready-made learning platform such as Moodle, adapted to our needs: lots of features, but heavy, hard to shape to the "answer to continue" lesson flow, and needs its own server.
+3. Other website tools (Vue, Angular, Svelte): equally capable, with smaller communities.
+
+**Decision:** Option 1, with Tiptap for the lesson editor and MathLive for formulas (full list in system-design.md, section 9).
+**Reason:** Widely used, so future developers can pick it up easily; all the pieces are open source; Tiptap and MathLive handle right-to-left text and formulas well.
+**Affects:** system-design.md
+
+### D-17: Answers are checked in the cloud, not on the student's computer
+**Date:** 2026-11-20 · **Status:** Proposed · **Decided by:** awaiting Gil
+**Context:** Where multiple-choice answers are checked.
+**Options considered:**
+1. On the Chromebook: simplest and fastest, but the correct answers would be inside the web page, where a curious student could find them.
+2. In the cloud (the checking service): the correct answers stay in a protected area until the 3rd wrong attempt.
+
+**Decision:** Option 2.
+**Reason:** Grades must be trustworthy. The extra delay is a fraction of a second.
+**Affects:** REQ-6.3, REQ-12.1, system-design.md section 5
+
+### D-18: A separate test site
+**Date:** 2026-11-20 · **Status:** Proposed · **Decided by:** awaiting Gil
+**Context:** Where new features are checked before real students see them.
+**Options considered:**
+1. Test on the real site: no extra setup, but real students may see unfinished features, and test data mixes with real grades.
+2. A separate Firebase project used only for testing, with made-up data. Gil approves each feature there before it goes to the real site.
+
+**Decision:** Option 2 (proposed).
+**Reason:** Protects real students and their data; gives Gil a safe place to check acceptance criteria.
+**Affects:** system-design.md sections 7.3 and 8

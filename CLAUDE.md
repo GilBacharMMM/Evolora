@@ -24,6 +24,7 @@ Evolora is teaching software. It helps teachers create lessons and manage their 
 | `docs/decisions.md` | Log of significant decisions |
 | `docs/roadmap.md` | What goes into each version, starting with the MVP |
 | `docs/glossary.md` | Agreed meaning of the terms we use |
+| `docs/setup-google-cloud.md` | Steps Gil does personally in Google Cloud (accounts, payment, sign-in) |
 
 ## Practical notes
 
