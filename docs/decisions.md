@@ -165,3 +165,25 @@ Entry format:
 **Decision:** Option 2.
 **Reason:** The pilot is small and internal; Gil wants to start within weeks. Full compliance is required before release beyond the pilot (REQ-10.6).
 **Affects:** Section 10
+
+### D-14: Web address evoloraedu.org, registered at Cloudflare
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
+**Context:** Evolora needs its own web address.
+**Options considered:**
+1. evolora.org: preferred, but not available.
+2. evolora.cc: available, but .cc addresses are sometimes blocked by school web filters and look less trustworthy.
+3. evolora.app, evolora.net and similar.
+4. evoloraedu.org: .org fits an open, educational project, and "edu" says what it is.
+
+Registrars considered: GoDaddy (reliable, but higher renewal prices and many add-ons) and Cloudflare (sells at cost, no add-ons).
+
+**Decision:** evoloraedu.org, registered at Cloudflare.
+**Reason:** Trusted ending, unlikely to be blocked at school, low yearly cost.
+**Affects:** REQ-11.2
+
+### D-15: Firebase project and spending alert
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
+**Context:** Setting up the Google Cloud (Firebase) project from D-10.
+**Decision:** Gil created the Firebase project and set a spending alert of 50 ILS per month.
+**Note:** Google's budget only sends warning emails; it doesn't stop the service or cap spending automatically. Claude will check the actual costs with Gil after the first month.
+**Affects:** REQ-11.2, docs/setup-google-cloud.md

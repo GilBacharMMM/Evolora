@@ -509,10 +509,11 @@ Evolora is a website used in the Chrome browser on school Chromebooks. Phones ar
 - [ ] Every screen works on a school Chromebook, at its normal screen size, without zooming.
 
 **REQ-11.2: Cloud hosting and own web address** (Priority: MVP)
-Evolora runs on Google Cloud and is reached at its own web address (see OPEN Q-9). Until the address is bought, a temporary Google address is used.
+Evolora runs on Google Cloud (Firebase) and is reached at **evoloraedu.org**.
 
 *Acceptance criteria:*
-- [ ] Typing the Evolora web address in Chrome opens the sign-in page.
+- [ ] Typing evoloraedu.org in Chrome opens the Evolora sign-in page.
+- [ ] The browser shows the address as secure (padlock icon).
 
 **REQ-11.3: Pilot size** (Priority: MVP)
 Evolora supports 5 teachers and 120 students, with at least one full class of 30 students working at the same time. It can grow later.
@@ -560,7 +561,6 @@ Text is readable, colours are not the only way information is shown (status colo
 | # | Question | Affects |
 |---|---|---|
 | **Q-4** | Starting rules for status colours. My proposal: **red** = 3 wrong attempts on any question in the past week; **orange** = an assignment is past its due date and unfinished; **green** = everything else. *(Gil is reading.)* | REQ-5.10 |
-| **Q-9** | Web address: which name to buy? *(Gil is checking.)* | REQ-11.2 |
 | **Q-12** | **Image rights.** Lessons are shared under CC BY-SA, so every image in a lesson must be allowed to be shared that way: the creator's own, public domain, or under a compatible open licence. The Archimedes lesson has 6 images. Do you know where they come from? Should Evolora ask creators to confirm image rights when uploading? | REQ-1.1, REQ-4.2 |
 | **Q-13** | **Questions inside the lesson.** In the Archimedes document, all 7 questions are at the end, and they are all open written questions. Evolora is built around questions that appear *during* the lesson. For the first lesson, should I (a) keep them at the end as they are, or (b) suggest a few short multiple-choice questions along the way, which you approve? | REQ-4.5 |
 | **Q-14** | **The lesson documents and GitHub.** The repository is public on GitHub (or will be, as open source). Should the lesson drafts folder be stored there too? The Archimedes file is 7.7 MB and contains images whose rights are unclear (Q-12). My suggestion: keep drafts out of GitHub for now. | — |
@@ -576,5 +576,6 @@ Text is readable, colours are not the only way information is shown (status colo
 | Q-6 | Open and audio questions in public courses? | Audio questions are skipped; written answers allowed for practice, not graded. Not MVP. (REQ-6.7) |
 | Q-7 | Student in two classes with different required languages? | Possible (for example, Science in Hebrew, English class in English). Not MVP. (REQ-9.5) |
 | Q-8 | Hosting? | Google Cloud. (REQ-11.2, D-10) |
+| Q-9 | Web address? | **evoloraedu.org**, bought at Cloudflare. (REQ-11.2, D-14) |
 | Q-10 | School approval before the pilot? | Not needed for now. (D-13) |
 | Q-11 | First lesson? | "Density: Archimedes and his discovery", in the lessons_drafts folder. |
