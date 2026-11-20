@@ -128,6 +128,11 @@ These rules are tested automatically before every release (section 8).
 
 The correct answer reaches the student's Chromebook only after the 3rd wrong attempt. Before that, it isn't there to find, even by a student who knows how to look inside web pages (decision D-17).
 
+*Proposed, waiting for Gil's answers to Q-18, Q-19 and Q-21:*
+- **Hints and full solution (REQ-4.16):** these are kept in the protected area too. The checking service sends the next hint with each "try again", and sends the full solution (which contains the answer) only after the last wrong attempt.
+- **Check-again questions (REQ-4.17):** after the full solution, the checking service picks one check-again question at random and sends it without its answer. A wrong answer creates a red flag for the class's teachers.
+- **Levels (REQ-6.10):** the student's level is stored where only teachers and the checking service can read it. When the student opens a lesson, they receive only the questions up to their level, so the skipped questions never reach their Chromebook.
+
 ### 5.2 Open and audio questions
 The answer is saved and the question is marked **pending**. The student continues. When the teacher grades it on the review screen (REQ-5.12), the checking service recalculates the lesson grade.
 

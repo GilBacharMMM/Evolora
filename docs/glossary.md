@@ -51,6 +51,12 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Send back for corrections** | A teacher returning a finished lesson, or just some of its questions, to a student to fix. The new answers are graded again. | proposed |
 | **Send back for review** | A teacher returning comments that the student must read, but nothing needs fixing. | proposed |
 | **Pending notes** | Comments the student has not yet gone over. While a student has pending notes, they cannot start a new lesson. | proposed |
+| **Hint** | Short guidance, written in advance by the creator, that Evolora shows after a wrong answer to a multiple choice question. It helps without giving the answer. A question can have one or two. In Hebrew: רמז. | proposed |
+| **Full solution** | The question solved step by step, written by the creator. Shown when the student has used all attempts. In Hebrew: פתרון מלא. | proposed |
+| **Check-again question** | A similar question (different numbers or materials) from a bank under a multiple choice question. Asked after the student needed the full solution, to check they now understand. In Hebrew: שאלת בדיקה חוזרת. | proposed |
+| **Question level** | How hard a question is: 1 (easiest) to 3 (hardest). Set by the creator. In Hebrew: רמת שאלה. | proposed |
+| **Student level** | A secret level from 1 to 3 that a teacher gives each student in a class. Only the class's teachers see it. A student sees only questions at or below their level. Everyone starts at 2. In Hebrew: רמת תלמיד. | proposed |
+| **Help line** | The line under every question: "I didn't understand ___, please explain." Later, AI answers it without revealing the answer, staying on the question's subject. In Hebrew: שורת עזרה. | proposed |
 | **Grading instructions** | Guidance a creator writes for an open question, describing a good answer. Teachers, and later AI grading, use it. | proposed |
 | **Pending grade** | The lesson grade shown while open answers are still waiting for the teacher to grade them. | proposed |
 | **Review screen** | The teacher's screen for grading one question: every student's answer appears one below the other, and the teacher moves between students with the keyboard (Tab). | proposed |
@@ -59,9 +65,9 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Co-teacher** | A second (or further) teacher added to a class, with exactly the same permissions. When teachers change the same thing, the last change wins. | proposed |
 | **Student status** | A colour on the class dashboard for each student: green (on track), orange (behind), red (red flag). The exact rules will be defined after trying the system. | proposed |
 | **Messages** | A simple private conversation between one student and one teacher, for questions and answers. | proposed |
-| **Attempt** | One try at answering a question. In stage 1 a student gets up to 3 attempts: right on the 1st = full marks, 2nd = 2/3, 3rd = 1/3; after 3 wrong tries the system shows the correct answer and the question scores 0. | proposed |
+| **Attempt** | One try at answering a question. In stage 1 a student gets up to 3 attempts: right on the 1st = full marks, 2nd = 2/3, 3rd = 1/3; after 3 wrong tries the system shows the correct answer and the question scores 0. When the creator wrote hints, the number of attempts is the number of hints plus one. | proposed |
 | **Mastery** | The goal that every student fully understands every lesson, not just completes it. | proposed |
-| **Red flag** | An alert the teacher receives when a student keeps failing a question or lesson. | proposed |
+| **Red flag** | An alert the teacher receives when a student keeps failing a question or lesson: for example, a wrong answer to a check-again question, or (later) a help-line conversation that didn't lead to a correct answer. | proposed |
 | **Grade dashboard** | The teacher's view of grades per class, course, lesson and question, including who completed and who did not. An uncompleted lesson counts as grade 0. | proposed |
 | **Progress** | How far a student has got and how well they are doing, per lesson and per course. | proposed |
 

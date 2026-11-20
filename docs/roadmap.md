@@ -20,6 +20,7 @@ This document says what goes into each version. Each item refers to requirement 
 | REQ-2.1, 2.2, 2.3 | Roles, admin registers teachers, edit mode |
 | REQ-3.1, 3.2, 3.4, 10.1 | Google sign-in with regular Google accounts, access rules, strangers see nothing |
 | REQ-4.1 to 4.6, 4.15 | Create lessons: content blocks, formula editor, 3 question types, preview, image sources |
+| REQ-4.16, 4.17 | Hints, full solution and check-again questions *(proposed, OPEN Q-22)* |
 | REQ-5.1, 5.2, 5.4, 5.6 | Classes, class code, class list, many classes per student |
 | REQ-5.7 | Assign lessons to a class or selected students |
 | REQ-5.11 | Grade dashboard (basic) |
@@ -44,6 +45,8 @@ This document says what goes into each version. Each item refers to requirement 
 | REQ-5.12 to 5.15 | Review screen, comments (text and audio), send back, grade changes |
 | REQ-5.16 | Messages |
 | REQ-6.5 | Redo a lesson |
+| REQ-4.18, 5.18, 6.10 | Question levels and secret student levels *(proposed, OPEN Q-22)* |
+| REQ-6.9 (without AI) | Help line that sends the question to the teacher *(proposed, OPEN Q-20)* |
 
 **Done when:** every MVP acceptance criterion in requirements.md passes when Gil checks it in the app.
 
@@ -56,7 +59,7 @@ Each AI item first gets a cost estimate for Gil's approval.
 | REQ-4.11 | Import from Google Docs and Word |
 | REQ-4.12 | More question types, including drag-and-drop |
 | REQ-7.1 | AI grading options |
-| REQ-6.9, 7.2 | AI explanations and practice questions; red flag after repeated failure |
+| REQ-6.9, 7.2 | AI help line under every question (on topic, never reveals the answer); AI-suggested check-again questions |
 | REQ-7.3 | AI lesson suggestion from a document |
 | REQ-7.4, 10.5 | Audio transcription and recording retention |
 | REQ-5.17 | Google Classroom connection |

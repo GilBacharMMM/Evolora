@@ -245,3 +245,39 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 3.
 **Reason:** Gives proper credit, makes rights clear to anyone reusing the lesson, and fits the open model.
 **Affects:** REQ-4.2, REQ-4.15
+
+### D-21: Creator-written hints and check-again questions, before AI
+**Date:** 2026-11-20 · **Status:** Decided in principle by Gil; details proposed (OPEN Q-18, Q-19, Q-22) · **Decided by:** Gil
+**Context:** Students who get a question wrong need help to understand, not just the correct answer. Earlier, this help was planned as an AI feature for stage 2 (old REQ-6.9).
+**Options considered:**
+1. Only show "wrong, try again", then the answer (the earlier MVP plan).
+2. Wait for AI to explain and make up practice questions (stage 2).
+3. The creator writes hints, a full solution and a bank of similar check-again questions in advance; Evolora shows them in order and sends the teacher a red flag if the check-again question is also wrong.
+
+**Decision:** Option 3 (Gil's idea).
+**Reason:** It works without AI, so it can be in the MVP. The creator controls the wording, and the check-again question shows whether the student really understood rather than just reading the answer.
+**Affects:** REQ-4.16, REQ-4.17, REQ-6.3, REQ-5.10, REQ-7.2
+
+### D-22: "I didn't understand" help line on every question
+**Date:** 2026-11-20 · **Status:** Decided in principle by Gil; details proposed (OPEN Q-20) · **Decided by:** Gil
+**Context:** A student who is stuck should be able to ask for help at the moment they need it, not only after wrong answers.
+**Options considered:**
+1. No help inside the lesson; the student messages the teacher (REQ-5.16).
+2. A free AI chat.
+3. A help line under every question, answered by AI that must not reveal the answer and must stay on the question's subject, with a red flag to the teacher if it doesn't lead to a correct answer.
+
+**Decision:** Option 3, in Version 2, because the MVP has no AI. Claude recommends that, until then, the help line sends the student's question to the teacher (option 1 in the same place on screen).
+**Reason:** Keeps help focused and safe for minors, and teachers still find out who is struggling.
+**Affects:** REQ-6.9, REQ-7.2
+
+### D-23: Question levels and secret student levels
+**Date:** 2026-11-20 · **Status:** Decided in principle by Gil; details proposed (OPEN Q-21, Q-22) · **Decided by:** Gil
+**Context:** A class mixes weaker and stronger students. Hard questions can block weaker students, while stronger students need a challenge.
+**Options considered:**
+1. Every student gets every question.
+2. Separate lessons for each level.
+3. Each question has a level from 1 to 3; each student has a secret level from 1 to 3 (start at 2), set only by the teacher, with Evolora suggesting levels from average grades (weakest 10% at 1, strongest 10% at 3). A student sees questions at or below their level.
+
+**Decision:** Option 3 (Gil's idea).
+**Reason:** One lesson serves the whole class; the teacher keeps full control; students aren't labelled in front of others.
+**Affects:** REQ-4.18, REQ-5.18, REQ-6.10, REQ-12.6

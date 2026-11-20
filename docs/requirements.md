@@ -1,6 +1,6 @@
 # Evolora: Requirements
 
-**Status:** Draft 2: Gil's answers to the open questions are included; still in review
+**Status:** Draft 3: adds hints, check-again questions, levels and the help line (Gil's ideas, 2026-11-20); still in review
 **Last updated:** 2026-11-20
 
 ## How to read this document
@@ -199,6 +199,39 @@ Students see a small "Source" note under each image. Clicking it shows the full 
 - [ ] A student can click "Source" under an image and see where it comes from.
 - [ ] In the Archimedes lesson, the Renaissance woodcut shows its Wikimedia Commons source, and the other images show "AI-generated".
 
+**REQ-4.16: Hints and full solution** (Priority: MVP, proposed; see OPEN Q-18 and Q-22)
+For a multiple choice question, the creator can write, in advance:
+- **one or two hints**: short guidance on how to solve the question, without giving the answer
+- a **full solution**: the question solved step by step
+
+When the student answers wrongly, Evolora shows the next hint and the student tries again. When no hints are left and the answer is still wrong, Evolora shows the full solution with the correct answer, and the student continues. So the number of attempts is the number of hints plus one: 2 attempts with one hint, 3 attempts with two hints. Scoring is in REQ-6.3.
+
+*Acceptance criteria:*
+- [ ] A creator can add one or two hints and a full solution to a multiple choice question.
+- [ ] As a student, a wrong answer shows Hint 1 and lets you try again; a second wrong answer shows Hint 2.
+- [ ] After the last attempt is wrong, you see the full solution and can continue.
+- [ ] In the Archimedes lesson, the gold and silver question shows the two hints and the solution written for it.
+
+**REQ-4.17: Check-again questions** (Priority: MVP, proposed; see OPEN Q-19 and Q-22)
+The creator can add a bank of **check-again questions** to a multiple choice question: similar questions with different numbers or materials. For example, under "gold and silver, 100 grams each", a check-again question asks about "iron and tin, 200 grams each".
+
+When a student needed the full solution (REQ-4.16), Evolora picks one check-again question from the bank at random and asks it, to check that the student now understands. If the student answers it wrongly too, the teacher gets a **red flag** for that student and question, and the student continues.
+
+*Acceptance criteria:*
+- [ ] A creator can add several check-again questions under a multiple choice question.
+- [ ] As a student, after seeing the full solution you get one check-again question, and different students may get different ones.
+- [ ] Answering the check-again question wrongly sends a red flag; the teacher sees it on the class dashboard (REQ-5.10) with the student's name and the question.
+- [ ] Answering it correctly sends no flag.
+
+**REQ-4.18: Question levels** (Priority: MVP, proposed; see OPEN Q-21 and Q-22)
+Every question has a **level** from 1 to 3: 1 is the easiest, 3 the hardest. The creator sets it, and a new question starts at level 1. Who sees which questions is in REQ-6.10.
+
+For example, in the Archimedes lesson most questions are level 1, the tungsten question is level 2, and the challenge question about ships is level 3.
+
+*Acceptance criteria:*
+- [ ] A creator can set each question to level 1, 2 or 3.
+- [ ] In the lesson builder, each question shows its level.
+
 **REQ-4.11: Import from Google Docs and Word** (Priority: Later)
 A creator can import a Google Doc or Word document, and Evolora turns it into a lesson: text, images and formulas become blocks.
 
@@ -291,6 +324,7 @@ For each class, the teacher sees every student with a status colour: **green** (
 - [ ] The dashboard shows every student in the class with a colour.
 - [ ] A student who has 3 wrong attempts on a question turns red (under the starting rules).
 - [ ] Clicking a student shows which lessons they finished, which are in progress, and their grades.
+- [ ] Red flags from check-again questions (REQ-4.17) and, later, from the help line (REQ-6.9) appear here, saying which question caused them.
 
 **REQ-5.11: Grade dashboard** (Priority: MVP)
 A teacher sees grades per class, per course, per lesson and per question. An unfinished lesson counts as grade 0 and is clearly marked as not done.
@@ -342,6 +376,17 @@ Each student has one private conversation with the teachers of each class they a
 - [ ] The student sees a notice when a teacher replies.
 - [ ] There is no way for a student to message another student.
 
+**REQ-5.18: Student levels (secret)** (Priority: MVP, proposed; see OPEN Q-21 and Q-22)
+Each student has a **student level** from 1 to 3 in each class. Only the class's teachers can see it; the student and other students never do. Every student starts at level 2. Only a teacher can raise or lower a student's level.
+
+To help the teacher, Evolora can **suggest** levels based on average grades: the weakest 10% of the class at level 1, the strongest 10% at level 3, and everyone else at level 2. The teacher sees the suggestions and approves or changes each one; nothing changes without the teacher.
+
+*Acceptance criteria:*
+- [ ] On the class list, a teacher sees each student's level and can change it.
+- [ ] A new student in the class is at level 2.
+- [ ] Clicking "Suggest levels" in a class of 20 students suggests level 1 for the 2 lowest averages and level 3 for the 2 highest, and changes nothing until the teacher approves.
+- [ ] Signed in as a student, you cannot see your level anywhere.
+
 **REQ-5.17: Google Classroom connection** (Priority: Later)
 Import class lists from Google Classroom, and possibly post assignments and grades back to it. See the advice in the open questions summary.
 
@@ -369,6 +414,8 @@ For automatically checked questions, a student has up to 3 attempts:
 - 2nd attempt: 2/3 of the marks
 - 3rd attempt: 1/3 of the marks
 - 3 wrong attempts: the system shows the correct answer, the question scores 0, and the student continues
+
+When the creator wrote hints (REQ-4.16), each wrong attempt shows the next hint instead of only "wrong, try again", and the number of attempts is the number of hints plus one. *Proposed (OPEN Q-18):* each wrong attempt still costs 1/3 of the marks, so with one hint: 1st attempt full marks, 2nd attempt 2/3, then the full solution and 0. After the last wrong attempt, the full solution is shown (if the creator wrote one) and a check-again question may follow (REQ-4.17).
 
 For open and audio questions, the student submits once and continues. The lesson grade stays **pending** until the teacher grades them.
 
@@ -411,8 +458,34 @@ A student can browse public courses and enroll in one on their own. Automaticall
 **REQ-6.8: Game-like progress** (Priority: Later)
 A more playful progress display (for example, a figure advancing along a path, like in a building-block instruction booklet) and possibly points or coins.
 
-**REQ-6.9: AI help after wrong answers** (Priority: Later)
-After wrong answers, AI explains what went wrong and gives an extra practice question. After several failures, the student may continue but the teacher gets a red flag.
+**REQ-6.9: "I didn't understand" help line** (Priority: Later, uses AI; see OPEN Q-20)
+Under every question there is a help line: **"I didn't understand ______, please explain."** The student fills in the gap and sends it. AI answers in writing and tries to help **without revealing the answer**. It may go on for a few messages back and forth.
+
+The help must stay on the subject of the question. If the student asks about anything else (for example, a chocolate cake recipe), the AI politely refuses and brings them back to the question.
+
+If, after a few messages back and forth, the student still can't answer the question, the teacher gets a **red flag**. The class's teachers can read every help conversation.
+
+*Acceptance criteria:*
+- [ ] Every question shows the help line.
+- [ ] Asking "I didn't understand what density is" gets a short explanation that doesn't give away the answer.
+- [ ] Asking directly "what is the answer?" gets help, not the answer.
+- [ ] Asking for a cake recipe gets a polite refusal and a reminder to stay on the question.
+- [ ] After the set number of messages without a correct answer, the teacher sees a red flag.
+- [ ] A teacher can open and read a student's help conversation.
+
+**REQ-6.10: Each student sees questions up to their level** (Priority: MVP, proposed; see OPEN Q-21 and Q-22)
+A student sees only questions at or below their student level (REQ-5.18), and the lesson simply skips the others:
+- level 1 student: level 1 questions only
+- level 2 student: levels 1 and 2
+- level 3 student: all questions
+
+*Proposed (OPEN Q-21):* the lesson grade is calculated only from the questions the student saw, and the grade dashboard shows each student's level next to their grade.
+
+*Acceptance criteria:*
+- [ ] Signed in as a level 1 test student, the Archimedes lesson has no tungsten question and no ships question.
+- [ ] As a level 2 student, you get the tungsten question but not the ships question.
+- [ ] As a level 3 student, you get both.
+- [ ] Nothing on the student's screen says that questions were skipped.
 
 ---
 
@@ -427,8 +500,8 @@ When assigning, the teacher chooses who checks open answers:
 - (c) AI grades and writes a comment, the teacher approves
 - (d) AI grades and comments, without the teacher; the teacher can still look at the dashboard
 
-**REQ-7.2: AI explanations and practice questions** (Priority: Later)
-See REQ-6.9.
+**REQ-7.2: AI help and AI-suggested check-again questions** (Priority: Later)
+The help line is in REQ-6.9. In addition, AI may suggest check-again questions (REQ-4.17) for the creator to approve or change.
 
 **REQ-7.3: AI lesson suggestion** (Priority: Later)
 A creator gives Evolora a document; Evolora suggests a complete lesson, which the creator reviews and improves. AI can also suggest improvements to existing lessons.
@@ -584,6 +657,7 @@ The test site can be filled with a standard set of test data with one command, b
 
 *Acceptance criteria:*
 - [ ] After a reset, the test site has the same test users, class and lesson as before, and no leftover answers.
+- [ ] The test students include at least one student at each level (1, 2 and 3), so REQ-6.10 can be checked.
 
 ## 13. Out of scope for now
 
@@ -605,6 +679,12 @@ The test site can be filled with a standard set of test data with one command, b
 | **Q-15** | **Who may sign in?** With regular Google accounts (REQ-3.2), anyone in the world could sign in. My proposal: anyone may sign in, but they see nothing until they join a class with a class code (REQ-10.1). Teachers are still only added by the system admin. Also note that Google only allows children under 13 to have a Gmail account under a parent's supervision (Google Family Link). Some 7th graders are 12, so some students may need a parent to set up their account. Is that acceptable for the pilot? | REQ-3.2, REQ-10.1 |
 | **Q-16** | **"Creator" or "builder"?** See the summary in my message. My recommendation: **creator** (in Hebrew: יוצר/ת שיעורים) for the person, and **lesson builder** for the editing screen. | Glossary |
 | **Q-17** | **The name in Hebrew and Arabic.** On the test site I wrote Evolora as **אבולורה** in Hebrew and **إيفولورا** in Arabic. Are these the spellings you want? Also, the Arabic texts on the site were written by Claude; a native Arabic speaker (for example, an Arabic teacher) should check them before students see them. | REQ-9.1 |
+
+| **Q-18** | **Attempts and marks with hints** (REQ-4.16, 6.3). My proposal: attempts = number of hints + 1, and each wrong attempt costs 1/3 of the marks. A question with no hints keeps today's rule (3 attempts with "try again"). One thing to know: with 4 choices and 3 attempts, a student can find the answer just by trying choices one by one. Should questions with two hints have 5 choices, or is that fine? | REQ-4.16, REQ-6.3 |
+| **Q-19** | **Check-again questions** (REQ-4.17). (a) Asked only after the full solution, or also when the student needed a hint? My proposal: only after the full solution. (b) How many tries? My proposal: one, no hints. (c) Does it change the grade? My proposal: no, it only decides whether the teacher gets a red flag. | REQ-4.17 |
+| **Q-20** | **The help line** (REQ-6.9). It needs AI, which the MVP doesn't have, so I put it in Version 2 (with a cost estimate first). (a) Until then, should the help line already appear in the MVP and send the question to the teacher as a message (REQ-5.16)? My recommendation: yes. (b) Does using help lower the grade? My proposal: no. (c) Red flag after how many messages? My proposal: after 5 messages from the student, if they still don't answer correctly. (d) The students are minors chatting with AI: the teacher can read every conversation, and the school must agree before we turn it on. OK? | REQ-6.9 |
+| **Q-21** | **Levels** (REQ-4.18, 5.18, 6.10). (a) Grade from only the questions the student saw? So a level 1 student who answers everything right gets 100. My proposal: yes, with the level shown next to the grade for the teacher. (b) Level per class, not one for the whole school? A student may be strong in science and weak in English. My proposal: per class. (c) If the teacher changes a level in the middle of a lesson, it applies from the next question. (d) Students may notice they got fewer questions than a friend. Is that acceptable? | REQ-4.18, REQ-5.18, REQ-6.10 |
+| **Q-22** | **When to build these?** My proposal: hints, full solution and check-again questions in Milestone A (so the Archimedes lesson has them from day one); levels in Milestone B; the help line to the teacher in Milestone B and with AI in Version 2. This adds a few days to the MVP. | Roadmap |
 
 ### Answered (2026-11-20)
 
