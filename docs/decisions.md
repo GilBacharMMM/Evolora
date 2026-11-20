@@ -184,6 +184,6 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 ### D-15: Firebase project and spending alert
 **Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
 **Context:** Setting up the Google Cloud (Firebase) project from D-10.
-**Decision:** Gil created the Firebase project and set a spending alert of 50 ILS per month.
+**Decision:** Gil created the Firebase project (project ID **evolora**) with Gil's personal Google account as owner, and set a spending alert of 50 ILS per month. Others (for example, someone from the school) can be added as owners later.
 **Note:** Google's budget only sends warning emails; it doesn't stop the service or cap spending automatically. Claude will check the actual costs with Gil after the first month.
 **Affects:** REQ-11.2, docs/setup-google-cloud.md
