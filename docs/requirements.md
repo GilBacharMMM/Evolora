@@ -604,6 +604,7 @@ The test site can be filled with a standard set of test data with one command, b
 | **Q-14** | **Lessons on GitHub.** Now that the image sources are known (all AI-generated except one Wikimedia image), I've put the converted Archimedes lesson in the `lessons` folder, which *is* stored on GitHub, so it's backed up and open like the rest of the project. The original Word file stays out of GitHub. Is that OK? | — |
 | **Q-15** | **Who may sign in?** With regular Google accounts (REQ-3.2), anyone in the world could sign in. My proposal: anyone may sign in, but they see nothing until they join a class with a class code (REQ-10.1). Teachers are still only added by the system admin. Also note that Google only allows children under 13 to have a Gmail account under a parent's supervision (Google Family Link). Some 7th graders are 12, so some students may need a parent to set up their account. Is that acceptable for the pilot? | REQ-3.2, REQ-10.1 |
 | **Q-16** | **"Creator" or "builder"?** See the summary in my message. My recommendation: **creator** (in Hebrew: יוצר/ת שיעורים) for the person, and **lesson builder** for the editing screen. | Glossary |
+| **Q-17** | **The name in Hebrew and Arabic.** On the test site I wrote Evolora as **אבולורה** in Hebrew and **إيفولورا** in Arabic. Are these the spellings you want? Also, the Arabic texts on the site were written by Claude; a native Arabic speaker (for example, an Arabic teacher) should check them before students see them. | REQ-9.1 |
 
 ### Answered (2026-11-20)
 

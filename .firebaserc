@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "evolora-test",
+    "test": "evolora-test",
+    "production": "evolora"
+  }
+}

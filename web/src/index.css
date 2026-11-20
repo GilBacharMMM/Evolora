@@ -1,0 +1,92 @@
+/* Layout uses logical properties (inline-start/end) so it mirrors
+   automatically between right-to-left and left-to-right (REQ-9.2). */
+
+:root {
+  --bg: #f7f8fa;
+  --text: #1d2330;
+  --muted: #5b6475;
+  --brand: #2f5bd3;
+  --bar-bg: #ffffff;
+  --border: #dde1e8;
+  --test-bg: #ffd84d;
+  --test-text: #3a2e00;
+
+  font-family: 'Segoe UI', 'Noto Sans Hebrew', 'Noto Sans Arabic', Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+.test-banner {
+  background: var(--test-bg);
+  color: var(--test-text);
+  font-weight: 700;
+  text-align: center;
+  padding-block: 6px;
+  padding-inline: 16px;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 12px;
+  padding-inline: 24px;
+  background: var(--bar-bg);
+  border-block-end: 1px solid var(--border);
+}
+
+.app-name {
+  font-weight: 700;
+  color: var(--brand);
+  font-size: 1.2rem;
+}
+
+.language-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.language-picker select {
+  font: inherit;
+  padding-block: 4px;
+  padding-inline: 8px;
+}
+
+.home {
+  max-width: 720px;
+  margin-inline: auto;
+  padding-block: 48px;
+  padding-inline: 24px;
+}
+
+.home h1 {
+  margin-block: 0 8px;
+  font-size: 2.2rem;
+  color: var(--brand);
+}
+
+.tagline {
+  font-size: 1.2rem;
+  color: var(--muted);
+  margin-block-start: 0;
+}
+
+.status {
+  margin-block-start: 32px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
