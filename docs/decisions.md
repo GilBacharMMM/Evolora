@@ -315,13 +315,14 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Reason:** Gil sees the whole picture before choosing what comes first.
 **Affects:** Roadmap; all requirements marked "to be set by Gil"
 
-### D-27: The name stays Evolora
-**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
-**Context:** Gil also bought evolura.org, a shorter address, and considered renaming the product to Evolura (from "evolution").
+### D-27: Evolora is a working name; a new name will be chosen
+**Date:** 2026-11-20 · **Status:** Open: Gil will choose a new name · **Decided by:** Gil
+**Context:** Gil bought evolura.org and considered renaming to Evolura (from "evolution"). A check showed that both "Evolora" and "Evolura" are already used a lot by others.
 **Options considered:**
-1. Rename the product to Evolura and use evolura.org.
-2. Keep the name Evolora.
+1. Rename to Evolura and use evolura.org.
+2. Keep Evolora.
+3. Keep Evolora as a working name for now, and choose a new, unused name later.
 
-**Decision:** Option 2.
-**Reason:** Gil's choice. The main web address stays evoloraedu.org (D-14). What to do with evolura.org is still open.
-**Affects:** D-14, REQ-11.2
+**Decision:** Option 3. Claude may suggest names.
+**Reason:** Neither name is distinctive. Renaming later costs about an hour of Claude's work, as long as it happens before students see the name.
+**Affects:** D-14, REQ-11.2, OPEN Q-17
