@@ -15,7 +15,9 @@ These are the terms we use in all documents and in the app. When a term is used,
 
 | Term | Meaning | Status |
 |---|---|---|
-| **Lesson** | A single unit of learning made by a creator. It contains material (text, images, graphs, math formulas, video, audio, simulations) and questions. | proposed |
+| **Lesson** | A single unit of learning made by a creator. It contains material (text, images, graphs, math formulas, video, audio, simulations) and questions. A lesson is either a learning lesson or a practice lesson. | proposed |
+| **Learning lesson** | A lesson that teaches new material. In Hebrew: שיעור הקניה. | proposed |
+| **Practice lesson** | A lesson with questions only, on material already learned. No new material. In Hebrew: שיעור תרגול. (Details in OPEN Q-23.) | proposed |
 | **Material** | The learning content inside a lesson that the student reads, watches or listens to. | proposed |
 | **Simulation** | An interactive element inside a lesson: either a link or embed of an outside website, or one built into Evolora. | proposed |
 | **Question** | Something the student must answer inside a lesson, usually before they can continue. | proposed |
@@ -51,9 +53,9 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Send back for corrections** | A teacher returning a finished lesson, or just some of its questions, to a student to fix. The new answers are graded again. | proposed |
 | **Send back for review** | A teacher returning comments that the student must read, but nothing needs fixing. | proposed |
 | **Pending notes** | Comments the student has not yet gone over. While a student has pending notes, they cannot start a new lesson. | proposed |
-| **Hint** | Short guidance, written in advance by the creator, that Evolora shows after a wrong answer to a multiple choice question. It helps without giving the answer. A question can have one or two. In Hebrew: רמז. | proposed |
-| **Full solution** | The question solved step by step, written by the creator. Shown when the student has used all attempts. In Hebrew: פתרון מלא. | proposed |
-| **Check-again question** | A similar question (different numbers or materials) from a bank under a multiple choice question. Asked after the student needed the full solution, to check they now understand. In Hebrew: שאלת בדיקה חוזרת. | proposed |
+| **Hint** | Short guidance, written in advance by the creator, that Evolora shows after the 1st wrong answer to a multiple choice question. It helps without giving the answer. In Hebrew: רמז. | agreed |
+| **Full solution** | The question solved step by step, written by the creator. Shown after the 2nd wrong answer. In Hebrew: פתרון מלא. | agreed |
+| **Check-again question** | A similar question (different numbers or materials) from a bank under a multiple choice question. Asked right after the full solution, to check the student now understands. For a calculation, a similar calculation; for an understanding question, the same question in other words with different answers. In Hebrew: שאלת בדיקה חוזרת. | agreed |
 | **Question level** | How hard a question is: 1 (easiest) to 3 (hardest). Set by the creator. In Hebrew: רמת שאלה. | proposed |
 | **Student level** | A secret level from 1 to 3 that a teacher gives each student in a class. Only the class's teachers see it. A student sees only questions at or below their level. Everyone starts at 2. In Hebrew: רמת תלמיד. | proposed |
 | **Help line** | The line under every question: "I didn't understand ___, please explain." Later, AI answers it without revealing the answer, staying on the question's subject. In Hebrew: שורת עזרה. | proposed |
@@ -65,7 +67,7 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Co-teacher** | A second (or further) teacher added to a class, with exactly the same permissions. When teachers change the same thing, the last change wins. | proposed |
 | **Student status** | A colour on the class dashboard for each student: green (on track), orange (behind), red (red flag). The exact rules will be defined after trying the system. | proposed |
 | **Messages** | A simple private conversation between one student and one teacher, for questions and answers. | proposed |
-| **Attempt** | One try at answering a question. In stage 1 a student gets up to 3 attempts: right on the 1st = full marks, 2nd = 2/3, 3rd = 1/3; after 3 wrong tries the system shows the correct answer and the question scores 0. When the creator wrote hints, the number of attempts is the number of hints plus one. | proposed |
+| **Attempt** | One try at answering a question. In stage 1 a student gets up to 3 attempts: right on the 1st = full marks, 2nd = 2/3, 3rd = 1/3; after 3 wrong tries the system shows the correct answer and the question scores 0. Multiple choice questions have 2 attempts: after the 1st wrong one, a hint; after the 2nd, the full solution and a check-again question (REQ-4.16). | proposed |
 | **Mastery** | The goal that every student fully understands every lesson, not just completes it. | proposed |
 | **Red flag** | An alert the teacher receives when a student keeps failing a question or lesson: for example, a wrong answer to a check-again question, or (later) a help-line conversation that didn't lead to a correct answer. | proposed |
 | **Grade dashboard** | The teacher's view of grades per class, course, lesson and question, including who completed and who did not. An uncompleted lesson counts as grade 0. | proposed |

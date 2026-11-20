@@ -247,14 +247,14 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-4.2, REQ-4.15
 
 ### D-21: Creator-written hints and check-again questions, before AI
-**Date:** 2026-11-20 · **Status:** Decided in principle by Gil; details proposed (OPEN Q-18, Q-19); timing decided: Milestone A · **Decided by:** Gil
+**Date:** 2026-11-20 · **Status:** Decided (marks on the 2nd attempt still open, OPEN Q-18) · **Decided by:** Gil
 **Context:** Students who get a question wrong need help to understand, not just the correct answer. Earlier, this help was planned as an AI feature for stage 2 (old REQ-6.9).
 **Options considered:**
 1. Only show "wrong, try again", then the answer (the earlier MVP plan).
 2. Wait for AI to explain and make up practice questions (stage 2).
 3. The creator writes hints, a full solution and a bank of similar check-again questions in advance; Evolora shows them in order and sends the teacher a red flag if the check-again question is also wrong.
 
-**Decision:** Option 3 (Gil's idea).
+**Decision:** Option 3 (Gil's idea), with **2 attempts**: after the 1st wrong attempt, one hint; after the 2nd, the full solution and right away a check-again question. Check-again questions for calculations are similar calculations; for understanding questions, the same question in other words with different answers.
 **Reason:** It works without AI, so it can be in the MVP. The creator controls the wording, and the check-again question shows whether the student really understood rather than just reading the answer.
 **Affects:** REQ-4.16, REQ-4.17, REQ-6.3, REQ-5.10, REQ-7.2
 
@@ -271,7 +271,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-6.9, REQ-7.2
 
 ### D-23: Question levels and secret student levels
-**Date:** 2026-11-20 · **Status:** Decided in principle by Gil; details proposed (OPEN Q-21); timing decided: Milestone B · **Decided by:** Gil
+**Date:** 2026-11-20 · **Status:** Decided in principle by Gil; the grade counts only the questions the student received; other details proposed (OPEN Q-21) · **Decided by:** Gil
 **Context:** A class mixes weaker and stronger students. Hard questions can block weaker students, while stronger students need a challenge.
 **Options considered:**
 1. Every student gets every question.
@@ -281,3 +281,36 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 3 (Gil's idea).
 **Reason:** One lesson serves the whole class; the teacher keeps full control; students aren't labelled in front of others.
 **Affects:** REQ-4.18, REQ-5.18, REQ-6.10, REQ-12.6
+
+### D-24: Multiple choice answers in random order
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
+**Context:** Students sit next to each other on Chromebooks and can copy "the second answer".
+**Options considered:**
+1. Same order for everyone, as the creator wrote it.
+2. A random order for each student, kept the same when they come back.
+
+**Decision:** Option 2.
+**Reason:** Makes copying harder at no cost to the creator.
+**Affects:** REQ-4.19
+
+### D-25: Learning lessons and practice lessons
+**Date:** 2026-11-20 · **Status:** Decided in principle by Gil; details open (OPEN Q-23) · **Decided by:** Gil
+**Context:** Some subjects, especially mathematics, need lessons that only practise what was already taught.
+**Options considered:**
+1. One kind of lesson; creators simply make some with questions only.
+2. Two lesson types: learning (new material) and practice (questions only, on material already learned).
+
+**Decision:** Option 2.
+**Reason:** Teachers and students can tell at a glance what kind of lesson it is, and Evolora can treat practice lessons differently where needed.
+**Affects:** REQ-4.20
+
+### D-26: Gil sets feature priorities at the end of the requirements
+**Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
+**Context:** New ideas keep coming in while the requirements are being written, so deciding the build order one feature at a time is premature.
+**Options considered:**
+1. Claude places each feature in a milestone as it comes in.
+2. When the requirements are finished, Claude gives Gil a list of all features with suggestions, and Gil gives each one of 3 priority levels.
+
+**Decision:** Option 2. This replaces the earlier answer to Q-22 (hints in Milestone A, levels in Milestone B).
+**Reason:** Gil sees the whole picture before choosing what comes first.
+**Affects:** Roadmap; all requirements marked "to be set by Gil"
