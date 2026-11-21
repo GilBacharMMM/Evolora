@@ -4,7 +4,9 @@ Each folder here holds one lesson in **lesson file** form: a plain-text version 
 
 ## How a lesson file is written
 
-The top of the file has the lesson details (title, language, subject, grade, creator, licence).
+The top of the file has the lesson details (title, language, subject, grade, creator, licence, and type: learning lesson or practice lesson, REQ-4.20).
+
+A heading like `# [TOPIC 2: name]` starts a new topic (REQ-4.21). Every block after it, until the next topic, belongs to that topic.
 
 Each block starts with a heading in square brackets, matching the block types in REQ-4.2:
 

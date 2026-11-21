@@ -326,3 +326,15 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 3. Claude may suggest names.
 **Reason:** Neither name is distinctive. Renaming later costs about an hour of Claude's work, as long as it happens before students see the name.
 **Affects:** D-14, REQ-11.2, OPEN Q-17
+
+### D-28: No images copied from the web without permission
+**Date:** 2026-11-21 · **Status:** Decided · **Decided by:** Gil
+**Context:** The images in Gil's circles lesson were copied from the web without permission, so they can't be shared under the lesson's licence (D-5, D-20).
+**Options considered:**
+1. Keep them and hope no one objects.
+2. Look for free images (for example, on Wikimedia Commons) with a suitable licence.
+3. Replace them with similar images made by AI.
+
+**Decision:** Option 3. For the circles lesson, Claude drew the illustrations and diagrams itself; the source of each is recorded as "AI-generated (drawn by Claude)". Option 2 stays possible for future lessons.
+**Reason:** Clear rights, and the diagrams can be drawn exactly to match the mathematics.
+**Affects:** REQ-4.15, lessons/circles-pi

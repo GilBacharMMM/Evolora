@@ -117,6 +117,7 @@ A lesson is a sequence of blocks that the creator can add, edit, reorder and del
 - [ ] Gil's first lesson (Archimedes and density) can be fully rebuilt in Evolora: story text, 6 images with captions, the metals density table, note boxes, podcast link, videos, the density simulation and the questions.
 - [ ] A creator can move a block up or down and delete it.
 - [ ] A YouTube video plays inside the lesson without leaving Evolora.
+- [ ] In the circles lesson, each of the four videos plays inside the lesson, and the questions about it come right after it.
 - [ ] If a simulation website refuses to be shown inside Evolora, the student sees a button that opens it in a new tab.
 
 **REQ-4.3: Visual formula editor** (Priority: MVP)
@@ -251,6 +252,15 @@ When creating a lesson, the creator chooses its type:
 *Acceptance criteria:*
 - [ ] A creator chooses "learning" or "practice" when creating a lesson, and the lesson library shows each lesson's type.
 - [ ] A practice lesson contains questions only (the exact rules depend on OPEN Q-23).
+
+**REQ-4.21: Topics, with a minimum number of questions** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-24)
+A creator can divide a lesson into **topics** (for example, in the circles lesson: what a circle is, the circumference, the number π, the area). For each topic, the creator sets a **minimum number of questions** that every student must answer before moving on to the next topic, whatever their student level (REQ-6.10). Gil's rule for the circles lesson: at least 3 questions in each topic, even for the strongest students.
+
+*Acceptance criteria:*
+- [ ] A creator can group blocks into topics and give each topic a name.
+- [ ] A creator can set the minimum number of questions for a topic.
+- [ ] If a topic has fewer level 1 questions than its minimum, the lesson builder warns the creator (because level 1 students would not reach the minimum).
+- [ ] As a level 3 test student in the circles lesson, you answer at least 3 questions in each topic before the next topic opens.
 
 **REQ-4.11: Import from Google Docs and Word** (Priority: Later)
 A creator can import a Google Doc or Word document, and Evolora turns it into a lesson: text, images and formulas become blocks.
@@ -672,7 +682,7 @@ On the test site only, Gil can switch between made-up test users (for example, "
 - [ ] The "Switch user" menu doesn't exist on the real site.
 
 **REQ-12.6: Ready-made test data** (Priority: MVP)
-The test site can be filled with a standard set of test data with one command, by Claude: test teachers, test students, a test class, and the Archimedes lesson. It can be reset to that state at any time.
+The test site can be filled with a standard set of test data with one command, by Claude: test teachers, test students, a test class, the Archimedes lesson and the circles lesson. It can be reset to that state at any time.
 
 *Acceptance criteria:*
 - [ ] After a reset, the test site has the same test users, class and lesson as before, and no leftover answers.
@@ -703,6 +713,8 @@ The test site can be filled with a standard set of test data with one command, b
 | **Q-19** | **Check-again question details** (REQ-4.17). (a) How many tries? My proposal: one, with no hint. (b) Does it change the grade? My proposal: no; the question already scored 0, and the check-again question only decides whether the teacher gets a red flag. | REQ-4.17 |
 | **Q-20** | **The help line** (REQ-6.9). It needs AI. (a) Until AI is ready, should the help line send the student's question to the teacher as a message (REQ-5.16)? My recommendation: yes. (b) Red flag after how many messages? My proposal: after 5 messages from the student, if they still don't answer correctly. (c) The students are minors chatting with AI: the teacher can read every conversation, and the school must agree before we turn it on. OK? | REQ-6.9 |
 | **Q-21** | **Levels** (REQ-4.18, 5.18, 6.10). (a) Level per class, not one for the whole school? A student may be strong in science and weak in English. My proposal: per class. (b) If the teacher changes a level in the middle of a lesson, it applies from the next question. (c) Students may notice they got fewer questions than a friend. Is that acceptable? (d) Should the teacher see each student's level next to their grade? My proposal: yes. | REQ-4.18, REQ-5.18, REQ-6.10 |
+| **Q-24** | **Minimum questions per topic** (REQ-4.21). (a) Should this be a general Evolora feature (the creator sets a minimum for each topic), or was it a rule for writing the circles lesson only? I wrote the lesson so that it works either way: each topic has at least 3 level 1 questions. (b) Does "answer at least 3 questions" mean answer them (right or wrong), or answer 3 **correctly**? If correctly, Evolora would keep giving extra questions until the student gets 3 right, which is a bigger feature. My proposal: answer them, right or wrong; the check-again questions and red flags already catch students who don't understand. | REQ-4.21 |
+| **Q-25** | **A "type a number" question.** In the circles lesson I wrote the calculation questions as multiple choice, with the common mistakes as wrong choices. For calculation practice, it may be better if the student types the number, and Evolora checks it (allowing small rounding differences, for example 11.46 or 11.5). Should we add this question type? | REQ-4.4, REQ-4.12 |
 | **Q-23** | **Practice lessons** (REQ-4.20). You wrote that a practice lesson has "only questions that students saw before". Which do you mean? (a) **Questions on material already learned**: new questions that the creator writes for practice, like a math exercise sheet. (b) **The same questions again**: Evolora collects questions the students already met in learning lessons (for example, their check-again questions). (c) Both. Also: are practice lessons graded like learning lessons, or practice only? | REQ-4.20 |
 
 ### Answered (2026-11-20)
