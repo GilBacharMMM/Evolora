@@ -760,6 +760,17 @@ Anyone with a Google account can sign in (REQ-3.2), so a person who hasn't joine
 *Acceptance criteria:*
 - [ ] A Google account that has never joined a class sees only the "enter class code" box.
 
+**REQ-10.7: Alerting the system admin about attempts to guess class codes** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-29)
+Evolora tells the system admin when someone may be trying to guess class codes:
+- when one person enters **more than 10 wrong class codes** (the point where they must wait 5 minutes, REQ-5.2), and
+- when the number of wrong class codes in a week, across all of Evolora, is **more than twice the average of past weeks**.
+
+The alert says who tried (their Google account), how many times and when. *Proposed (OPEN Q-29):* alerts appear on the system admin's page and are also sent by email, at most once a day; the weekly comparison starts after 4 weeks of use, so there is a fair average to compare with.
+
+*Acceptance criteria:*
+- [ ] On the test site, a test student enters 11 wrong codes; the system admin sees an alert naming that student.
+- [ ] With made-up numbers on the test site (an average of 20 wrong codes a week, then 45 in one week), the system admin gets the weekly alert.
+
 **REQ-10.2: Private messages** (Priority: MVP)
 See REQ-5.16. Messages are visible only to the student and that class's teachers.
 
@@ -880,6 +891,7 @@ The test site can be filled with a standard set of test data with one command, b
 | **Q-20** | **The help line** (REQ-6.9). It needs AI. (a) Until AI is ready, should the help line send the student's question to the teacher as a message (REQ-5.16)? My recommendation: yes. (b) Red flag after how many messages? My proposal: after 5 messages from the student, if they still don't answer correctly. (c) The students are minors chatting with AI: the teacher can read every conversation, and the school must agree before we turn it on. OK? | REQ-6.9 |
 | **Q-21** | **Levels** (REQ-4.18, 5.18, 6.10). (a) Level per class, not one for the whole school? A student may be strong in science and weak in English. My proposal: per class. (b) If the teacher changes a level in the middle of a lesson, it applies from the next question. (c) Students may notice they got fewer questions than a friend. Is that acceptable? (d) Should the teacher see each student's level next to their grade? My proposal: yes. | REQ-4.18, REQ-5.18, REQ-6.10 |
 | **Q-27** | **More support for individual progress** (REQ-1.2). You asked me to point out other places where this matters. My suggestions: (a) **A progress map** on the class dashboard: where each student is in the course, so the teacher sees at a glance who is ahead and who is behind. (b) **A "not yet mastered" list** per student: the level 1 questions they haven't mastered yet, with their open flags (REQ-1.3). (c) **A nudge to the teacher** when a student finishes everything open to them, suggesting to open more lessons or raise their level. I suggest (a) and (b) in the MVP and (c) later. OK? | REQ-1.2, 1.3, 5.10 |
+| **Q-29** | **How should the system admin hear about class-code guessing?** (REQ-10.7) My proposal: on the admin's page, and also by email at most once a day (the email service comes in Milestone B). The weekly comparison starts after 4 weeks of use. OK? | REQ-10.7 |
 | **Q-28** | Your last message had a number 16 with nothing after it. Did you mean to add something? | — |
 | **Q-23** | **Practice lessons** (REQ-4.20). You wrote that a practice lesson has "only questions that students saw before". Which do you mean? (a) **Questions on material already learned**: new questions that the creator writes for practice, like a math exercise sheet. (b) **The same questions again**: Evolora collects questions the students already met in learning lessons (for example, their check-again questions). (c) Both. Also: are practice lessons graded like learning lessons, or practice only? | REQ-4.20 |
 

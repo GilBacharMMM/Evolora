@@ -408,7 +408,8 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 
 **Decision:** Option 3: 7 characters, letters and digits without look-alike characters, random, with a check character at the end; case doesn't matter; after 10 wrong codes in a row, a 5-minute wait. Joining needs no approval; the teacher can reset the code and turn joining off; only the teacher can remove a student.
 **Reason:** About 700 million possible codes, so guessing is practically impossible; the check character catches typing mistakes; the pause stops automated guessing without bothering real students.
-**Affects:** REQ-5.2, REQ-5.4
+**Affects:** REQ-5.2, REQ-5.4, REQ-10.7
+**Update (2026-11-22, Gil):** the system admin is alerted when one person enters more than 10 wrong codes, or when a week's wrong codes are more than twice the average of past weeks (REQ-10.7).
 
 ### D-35: Course orders and opening lessons for individual students
 **Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
