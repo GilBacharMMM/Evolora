@@ -6,7 +6,7 @@ Pilot teachers write lessons with the **lesson-writing kit** in [teacher-kit](te
 
 ## How a lesson file is written
 
-The top of the file has the lesson details (title, language, subject, grade, creator, licence, type: learning lesson or practice lesson, REQ-4.20, and the default minimum questions per topic, REQ-4.21).
+The top of the file has the lesson details (title, language, subject, grade, creator, licence, type: teaching lesson, practice lesson or exam, REQ-4.20, and the default minimum questions per topic, REQ-4.21).
 
 A heading like `# [TOPIC 2: name]` starts a new topic (REQ-4.21). Every block after it, until the next topic, belongs to that topic.
 
@@ -41,7 +41,7 @@ Extra lines for questions (REQ-4.16 to 4.18):
 
 ## Course files
 
-A course is written as a **course file** (REQ-4.10), in the `courses` folder, for example `courses/geometry-grade7.md`. It lists the course's learning lessons in order, each with its practice lessons (zero or more), by the names of their lesson folders:
+A course is written as a **course file** (REQ-4.10), in the `courses` folder, for example `courses/geometry-grade7.md`. It lists the course's teaching lessons in order, each with its practice lessons (zero or more), by the names of their lesson folders:
 
 ```
 ---
@@ -53,15 +53,19 @@ creator: <name>
 licence: CC BY-SA 4.0
 ---
 
-1. [LEARNING] circles-pi
+1. [TEACHING] circles-pi
    - [PRACTICE] circles-practice-1
    - [PRACTICE] circles-practice-2
-2. [LEARNING] triangles-intro
-3. [LEARNING] triangles-area
+2. [TEACHING] triangles-intro
+3. [TEACHING] triangles-area
    - [PRACTICE] triangles-practice
 ```
 
-Each listed lesson must exist as its own lesson folder, with `type: learning lesson` or `type: practice lesson` at the top. The teacher chooses the course order (one after another, paired or any order) when assigning the course (REQ-5.8), so it is not written in the file.
+An exam is listed as its own numbered line, for example `4. [EXAM] geometry-exam-1`. Each listed lesson must exist as its own lesson folder, with `type: teaching lesson`, `type: practice lesson` or `type: exam` at the top. The teacher chooses the course order (one after another, paired or any order) when assigning the course (REQ-5.8), so it is not written in the file.
+
+## Exams
+
+A lesson with `type: exam` follows the exam rules (REQ-4.26): one attempt per question, the same questions for every student, no `[EXTRA]` questions, no `Hint` and no `### Check-again question`. A `- Solution:` line may be written; students see it only after the teacher releases the results. Levels don't apply in exams, so `[LEVEL]` tags may be left out.
 
 ## Notes and comments
 

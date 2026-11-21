@@ -20,7 +20,7 @@ In this stage, lessons are not created inside Evolora. Each lesson is written as
 Before writing anything, ask the teacher (a few questions at a time, not all at once):
 1. Subject, grade, and the lesson's language.
 2. The topic, and what students should know or be able to do at the end.
-3. **Lesson type:** a **learning lesson** (teaches new material) or a **practice lesson** (only questions, on material already learned).
+3. **Lesson type:** a **teaching lesson** (teaches new material), a **practice lesson** (only questions, on material already learned) or an **exam** (questions only, with exam rules; see "Exams").
 4. What students already know before the lesson.
 5. Existing material: a Word or PDF document, notes, images the teacher made, videos, simulations. Ask the teacher to put files into this folder.
 6. How long the lesson should take (for example, one 45-minute period).
@@ -51,7 +51,7 @@ Show the teacher the lesson section by section, in plain words, not as raw file 
 When the teacher says the lesson is ready, go through the **final checklist** at the end of this file, fix what you can, and ask the teacher about the rest. Then tell the teacher which items you checked.
 
 ### Building a course (optional)
-A teacher may also want a **course**: an ordered set of lessons, usually for a semester. A course is a list of **learning lessons** in order; each learning lesson has **zero or more practice lessons** (practice lessons contain only questions, on that learning lesson's material). Write each lesson as its own lesson folder, and then a course file named `course.md` next to them:
+A teacher may also want a **course**: an ordered set of lessons, usually for a semester. A course is a list of **teaching lessons** in order; each teaching lesson has **zero or more practice lessons** (practice lessons contain only questions, on that teaching lesson's material). Write each lesson as its own lesson folder, and then a course file named `course.md` next to them:
 
 ```
 ---
@@ -63,15 +63,16 @@ creator: <the teacher's full name>
 licence: CC BY-SA 4.0
 ---
 
-1. [LEARNING] <lesson folder name>
+1. [TEACHING] <lesson folder name>
    - [PRACTICE] <lesson folder name>
    - [PRACTICE] <lesson folder name>
-2. [LEARNING] <lesson folder name>
-3. [LEARNING] <lesson folder name>
+2. [TEACHING] <lesson folder name>
+3. [TEACHING] <lesson folder name>
    - [PRACTICE] <lesson folder name>
+4. [EXAM] <lesson folder name>
 ```
 
-Each practice lesson has `type: practice lesson` at its top and a title that makes clear which learning lesson it practises. The teacher who assigns the course chooses the order in which lessons open, so don't write it in the file. When sending, put the course file and all its lesson folders in one zip file.
+Each practice lesson has `type: practice lesson` at its top and a title that makes clear which teaching lesson it practises. The teacher who assigns the course chooses the order in which lessons open, so don't write it in the file. When sending, put the course file and all its lesson folders in one zip file.
 
 ### Step 6: Send to Gil
 Create a zip file of the lesson folder (only `lesson.md` and `images/`, not the teacher's source documents). Tell the teacher to send the zip file to Gil. Tell them that Gil will load it into the Evolora test site, and that they will be able to try it there as a student before real students see it.
@@ -90,7 +91,7 @@ subject: <subject>
 grade: <grade, 7 to 12>
 creator: <the teacher's full name>
 licence: CC BY-SA 4.0
-type: learning lesson   (or: practice lesson)
+type: teaching lesson   (or: practice lesson, or: exam)
 minimum questions per topic: 3 (default; the teacher can change it when assigning)
 status: draft 1
 ---
@@ -180,6 +181,16 @@ Example:
 - **Calculation topics:** add 2 solved examples to each topic, before its questions.
 - **Open questions** always have grading instructions that describe a good answer, so any teacher can grade them the same way.
 - **Check every answer.** Calculate every numeric answer step by step, and check it a second time. Make sure exactly one choice is correct in every multiple choice question.
+
+## Exams
+An exam (`type: exam`) has questions only, and every student gets the same questions. During the exam each question has **one attempt**, with no hints, no solutions and no check-again questions. So in an exam:
+- don't write `[EXTRA]` questions, `- Hint:` lines or `### Check-again question` blocks
+- `[LEVEL]` tags may be left out (levels don't apply)
+- you may write a `- Solution:` line for each question; students see it only after the teacher releases the results
+- still use number questions for calculations, and plausible wrong choices for multiple choice
+- make sure the exam covers the lesson goals the teacher wants to test, and ask the teacher how many questions and how long it should be
+
+In a course file, an exam is its own numbered line, for example `4. [EXAM] <lesson folder name>`.
 
 ## Images
 Every image must have clear rights, because lessons are shared openly. Allowed sources:

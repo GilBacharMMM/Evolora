@@ -15,19 +15,20 @@ These are the terms we use in all documents and in the app. When a term is used,
 
 | Term | Meaning | Status |
 |---|---|---|
-| **Lesson** | A single unit of learning made by a creator. It contains material (text, images, graphs, math formulas, video, audio, simulations) and questions. A lesson is either a learning lesson or a practice lesson. | proposed |
+| **Lesson** | A single unit of learning made by a creator. It contains material (text, images, graphs, math formulas, video, audio, simulations) and questions. A lesson is either a teaching lesson or a practice lesson. | proposed |
 | **Topic** | A part of a lesson about one subject (for example, "the area of a circle"), with a minimum number of questions every student must answer before moving on. The creator sets a default minimum; the teacher can change it when assigning. In Hebrew: נושא. | proposed |
 | **Extra practice question** | A question in a topic that is asked only to students who haven't yet answered the topic's minimum number of questions correctly. In Hebrew: שאלת תרגול נוספת. | agreed |
 | **Solved example** | A question shown with its full answer, for the student to learn from, with nothing to answer. In Hebrew: דוגמה פתורה. | proposed |
 | **Type-a-number question** | A question where the student types a number, checked automatically; correct to one digit after the decimal point is enough. In Hebrew: שאלה עם תשובה מספרית. | proposed |
-| **Learning lesson** | A lesson that teaches new material. In Hebrew: שיעור הקניה. | proposed |
+| **Teaching lesson** | A lesson that teaches new material. In Hebrew: שיעור הקניה. (Earlier called "learning lesson".) | agreed |
 | **Practice lesson** | A lesson with questions only, on material already learned. No new material. In Hebrew: שיעור תרגול. (Details in OPEN Q-23.) | proposed |
+| **Exam** | A lesson with questions only and exam rules: one attempt per question, no hints, solutions or extra questions, and the same questions for every student. In Hebrew: מבחן. | proposed |
 | **Material** | The learning content inside a lesson that the student reads, watches or listens to. | proposed |
 | **Simulation** | An interactive element inside a lesson: either a link or embed of an outside website, or one built into Evolora. | proposed |
 | **Question** | Something the student must answer inside a lesson, usually before they can continue. | proposed |
-| **Course** | An ordered list of learning lessons, each with zero or more practice lessons paired with it. Usually one per semester. A course is either *public* or *private*. In stage 1, written as a course file. | proposed |
-| **Course file** | A plain-text list of a course's lessons, in order, with each learning lesson's practice lessons. In the `courses` folder. In Hebrew: קובץ קורס. | proposed |
-| **Course order** | How a course's lessons open for a student, chosen by the teacher when assigning: **one after another** (each lesson opens when the previous one is finished), **paired** (learning lessons in order; practice lessons of finished learning lessons open in any order; recommended), or **any order** (all open; not recommended). In Hebrew: סדר הקורס. | proposed |
+| **Course** | An ordered list of teaching lessons, each with zero or more practice lessons paired with it. Usually one per semester. A course is either *public* or *private*. In stage 1, written as a course file. | proposed |
+| **Course file** | A plain-text list of a course's lessons, in order, with each teaching lesson's practice lessons. In the `courses` folder. In Hebrew: קובץ קורס. | proposed |
+| **Course order** | How a course's lessons open for a student, chosen by the teacher when assigning: **one after another** (each lesson opens when the previous one is finished), **paired** (teaching lessons in order; practice lessons of finished teaching lessons open in any order; recommended), or **any order** (all open; not recommended). In Hebrew: סדר הקורס. | proposed |
 | **Archived course** | A course the teacher has put away, for example at the end of a semester. Students can still read its lessons. In Hebrew: קורס בארכיון. | proposed |
 | **Public course** | A course that any student can find and enroll in, even without a teacher. Students who learn this way get no teacher feedback. | proposed |
 | **Private course** | An unlisted course: it isn't shown in the course library, and only classes it is assigned to can use it. Its lessons are still open to everyone. | agreed |

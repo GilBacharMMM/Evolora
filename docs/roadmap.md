@@ -15,7 +15,7 @@ When the requirements are finished, Claude will give Gil a list of all features,
 
 Until then, the milestones below are only a draft.
 
-**Not yet prioritized** (new since the draft below): REQ-4.16 and 4.17 hints, full solution and check-again questions; REQ-4.18, 5.18 and 6.10 levels; REQ-4.19 random answer order; REQ-4.20 learning and practice lessons; REQ-4.21 topics with a minimum number of questions; REQ-4.22 type-a-number questions; REQ-4.23 videos inside the lesson, with start and end times; REQ-5.19 clearing a red flag; REQ-5.20 opening lessons early for chosen students; REQ-5.21 archiving courses; REQ-9.6 teacher changes a student's language (low priority); REQ-10.7 alerting the system admin about class-code guessing; solved examples (REQ-4.2); REQ-6.9 help line (with AI, or first by message to the teacher).
+**Not yet prioritized** (new since the draft below): REQ-4.16 and 4.17 hints, full solution and check-again questions; REQ-4.18, 5.18 and 6.10 levels; REQ-4.19 random answer order; REQ-4.20 teaching, practice and exam lessons; REQ-4.26 exams; REQ-4.21 topics with a minimum number of questions; REQ-4.22 type-a-number questions; REQ-4.23 videos inside the lesson, with start and end times; REQ-5.19 clearing a red flag; REQ-5.20 opening lessons early for chosen students; REQ-5.21 archiving courses; REQ-9.6 teacher changes a student's language (low priority); REQ-10.7 alerting the system admin about class-code guessing; solved examples (REQ-4.2); REQ-6.9 help line (with AI, or first by message to the teacher).
 
 ## Version 1: MVP (pilot at Gil's school)
 

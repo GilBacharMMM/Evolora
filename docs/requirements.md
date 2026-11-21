@@ -198,10 +198,10 @@ Teachers can browse and search all lessons by title, subject, grade level, langu
 - [ ] A teacher can filter lessons to show only Hebrew, 7th-grade math lessons.
 
 **REQ-4.10: Courses** (Priority: MVP)
-A course is an ordered list of **learning lessons**. Each learning lesson has **zero or more practice lessons** (for example, none, one, or three), which the course's creator names and pairs with it. In stage 1, courses are written as **course files** by Gil with Claude, or by pilot teachers with Claude Code (sent to Gil, who loads them), like lessons (D-37). In stage 2, a teacher can also bundle lessons from the lesson library into a course inside Evolora. A course is either **public** (listed in the course library) or **private**, which means unlisted: it doesn't appear in the course library and only classes it is assigned to can use it, but its lessons are still open to everyone in the lesson library.
+A course is an ordered list of **teaching lessons**. Each teaching lesson has **zero or more practice lessons** (for example, none, one, or three), which the course's creator names and pairs with it. In stage 1, courses are written as **course files** by Gil with Claude, or by pilot teachers with Claude Code (sent to Gil, who loads them), like lessons (D-37). In stage 2, a teacher can also bundle lessons from the lesson library into a course inside Evolora. A course is either **public** (listed in the course library) or **private**, which means unlisted: it doesn't appear in the course library and only classes it is assigned to can use it, but its lessons are still open to everyone in the lesson library.
 
 *Acceptance criteria:*
-- [ ] A course file with 3 learning lessons, the first with 2 practice lessons and the second with none, loads and shows the lessons in the right order and pairing.
+- [ ] A course file with 3 teaching lessons, the first with 2 practice lessons and the second with none, loads and shows the lessons in the right order and pairing.
 - [ ] (Stage 2) A teacher can create a course from 3 existing lessons and change their order.
 - [ ] A public course appears in the course library; a private one does not.
 - [ ] The lessons inside a private course can still be found in the lesson library.
@@ -264,13 +264,15 @@ In every multiple choice question (including check-again questions), Evolora sho
 - [ ] Closing and reopening the lesson keeps the same order for the same student.
 - [ ] The correct answer is still marked correct, whatever its position.
 
-**REQ-4.20: Learning lessons and practice lessons** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-23)
-When creating a lesson, the creator chooses its type:
-- **Learning lesson** (in Hebrew: שיעור הקניה): teaches new material, with text, media and questions, like the Archimedes lesson.
+**REQ-4.20: Teaching, practice and exam lessons** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-23)
+Every lesson has a type, and students always see it marked on the lesson ("Teaching", "Practice" or "Exam"). When creating a lesson, the creator chooses its type:
+- **Teaching lesson** (in Hebrew: שיעור הקניה): teaches new material, with text, media and questions, like the Archimedes lesson.
 - **Practice lesson** (in Hebrew: שיעור תרגול): only questions, on material the students have already learned. No new material. This matters most in mathematics.
+- **Exam** (in Hebrew: מבחן): questions only, like a practice lesson, but with exam rules (REQ-4.26).
 
 *Acceptance criteria:*
-- [ ] A creator chooses "learning" or "practice" when creating a lesson, and the lesson library shows each lesson's type.
+- [ ] Every lesson shows its type ("Teaching", "Practice" or "Exam") on the course page, the class page and the lesson itself, in the student's language.
+- [ ] The lesson library shows each lesson's type.
 - [ ] A practice lesson contains questions only (the exact rules depend on OPEN Q-23).
 
 **REQ-4.21: Topics, with a minimum number of questions** (Priority: to be set by Gil, see the roadmap)
@@ -340,6 +342,27 @@ When the lesson is ready, the teacher sends the lesson folder (as a zip file) to
 - [ ] The teacher never has to read or write the lesson file format themselves, unless they want to.
 - [ ] When Claude is given an image copied from the internet, it explains why it can't be used and offers an alternative.
 - [ ] When the lesson format changes, the kit is updated in the same change, and Gil is told to send the new version to the teachers.
+
+**REQ-4.26: Exams** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-30)
+An exam is a lesson of type "Exam". It has questions only, and these rules:
+- **One attempt** for every question. No hints, no full solution and no check-again question during the exam.
+- **No extra practice questions**, and the minimum number of questions per topic doesn't apply.
+- **The same questions for every student**, whatever their student level (levels don't apply in exams).
+- Multiple choice answers still appear in random order for each student (REQ-4.19), to reduce copying.
+
+*Proposed (OPEN Q-30):*
+- An exam opens only when the teacher opens it (REQ-5.20), whatever the course order.
+- Students can move between the exam's questions and change answers until they press "Submit exam"; after that, nothing can be changed.
+- Students see their grade and the correct answers only when the teacher releases the results. The creator may write a full solution for each question, shown then.
+- No time limit in stage 1.
+- A wrong answer to a level 1 question in an exam sends a red flag, following the mastery principle (REQ-1.3).
+- A student can retake an exam only if the teacher allows it.
+
+*Acceptance criteria:*
+- [ ] In an exam, a wrong answer shows no hint and no solution, and the question can't be tried again.
+- [ ] A level 1 test student and a level 3 test student get exactly the same exam questions.
+- [ ] Two test students see the choices of the same question in different orders.
+- [ ] An exam inside a course stays locked until the teacher opens it.
 
 **REQ-4.11: Import from Google Docs and Word** (Priority: Later)
 A creator can import a Google Doc or Word document, and Evolora turns it into a lesson: text, images and formulas become blocks.
@@ -422,7 +445,7 @@ A teacher can assign a single lesson, a course, or any selection of lessons, to 
 **REQ-5.8: Course order** (Priority: MVP)
 When assigning a course, the teacher chooses how its lessons open for each student:
 - **One after another**: learning A → practice A → learning B → practice B, and so on. Each lesson opens when the one before it is finished.
-- **Paired** (recommended): learning lessons open in order, each one when the previous learning lesson is finished. The practice lessons of every finished learning lesson are open, and the student does them in any order, whenever they like.
+- **Paired** (recommended): teaching lessons open in order, each one when the previous teaching lesson is finished. The practice lessons of every finished teaching lesson are open, and the student does them in any order, whenever they like.
 - **Any order**: everything is open from the start. The teacher sees it marked "optional, not recommended".
 
 In every order, the student must finish all the lessons for the course to count as done, and the teacher can open any lesson early (REQ-5.20). For a selection of single lessons, the same three choices apply.
@@ -526,7 +549,7 @@ A red flag stays until the teacher clears it. After making sure the student unde
 In any course order, the teacher can open any lesson of the course early: for the whole class, or for one or more students they choose. This lets strong students move ahead (REQ-1.2).
 
 *Acceptance criteria:*
-- [ ] A teacher opens learning lesson D for 2 students only; only they see it as open, and for everyone else it stays locked.
+- [ ] A teacher opens teaching lesson D for 2 students only; only they see it as open, and for everyone else it stays locked.
 
 **REQ-5.21: Archiving courses** (Priority: to be set by Gil, see the roadmap)
 At the end of a semester (or any time), a teacher can archive a course in a class. It moves to "Archived courses" on the students' class page (REQ-6.11). Students can still open its lessons to read them, and grades are kept.
@@ -567,11 +590,11 @@ Inside a class, the student sees, from top to bottom:
 - [ ] A course the teacher archived appears under "Archived courses".
 
 **REQ-6.12: Course page for students** (Priority: MVP)
-Inside a course, the student sees all its lessons in order, each learning lesson with its practice lessons. Every lesson shows its status: **open**, **done**, or **locked**. Locked lessons show their titles, greyed out, so students see what's ahead. Which lessons are open follows the course order the teacher chose (REQ-5.8) and any lessons the teacher opened early (REQ-5.20).
+Inside a course, the student sees all its lessons in order, each teaching lesson with its practice lessons. Every lesson shows its status: **open**, **done**, or **locked**. Locked lessons show their titles, greyed out, so students see what's ahead. Which lessons are open follows the course order the teacher chose (REQ-5.8) and any lessons the teacher opened early (REQ-5.20).
 
 *Acceptance criteria:*
 - [ ] Locked lessons show their titles, greyed out, and can't be opened.
-- [ ] A practice lesson appears under the learning lesson it belongs to.
+- [ ] A practice lesson appears under the teaching lesson it belongs to.
 - [ ] The course page shows the percentage done (REQ-6.4).
 
 **REQ-6.13: Going back to finished lessons** (Priority: MVP)
@@ -889,8 +912,9 @@ The test site can be filled with a standard set of test data with one command, b
 | **Q-19** | **Check-again question details** (REQ-4.17). (a) How many tries? My proposal: one, with no hint. (b) Does it change the grade? My proposal: no; the question already scored 0, and the check-again question only decides whether the teacher gets a red flag. | REQ-4.17 |
 | **Q-20** | **The help line** (REQ-6.9). It needs AI. (a) Until AI is ready, should the help line send the student's question to the teacher as a message (REQ-5.16)? My recommendation: yes. (b) Red flag after how many messages? My proposal: after 5 messages from the student, if they still don't answer correctly. (c) The students are minors chatting with AI: the teacher can read every conversation, and the school must agree before we turn it on. OK? | REQ-6.9 |
 | **Q-21** | **Levels** (REQ-4.18, 5.18, 6.10). (a) Level per class, not one for the whole school? A student may be strong in science and weak in English. My proposal: per class. (b) If the teacher changes a level in the middle of a lesson, it applies from the next question. (c) Students may notice they got fewer questions than a friend. Is that acceptable? (d) Should the teacher see each student's level next to their grade? My proposal: yes. | REQ-4.18, REQ-5.18, REQ-6.10 |
-| **Q-23** | **Practice lessons** (REQ-4.20). You wrote that a practice lesson has "only questions that students saw before". Which do you mean? (a) **Questions on material already learned**: new questions that the creator writes for practice, like a math exercise sheet. (b) **The same questions again**: Evolora collects questions the students already met in learning lessons (for example, their check-again questions). (c) Both. Also: are practice lessons graded like learning lessons, or practice only? | REQ-4.20 |
+| **Q-23** | **Practice lessons** (REQ-4.20). You wrote that a practice lesson has "only questions that students saw before". Which do you mean? (a) **Questions on material already learned**: new questions that the creator writes for practice, like a math exercise sheet. (b) **The same questions again**: Evolora collects questions the students already met in teaching lessons (for example, their check-again questions). (c) Both. Also: are practice lessons graded like teaching lessons, or practice only? | REQ-4.20 |
 | **Q-27** | **More support for individual progress** (REQ-1.2). You asked me to point out other places where this matters. My suggestions: (a) **A progress map** on the class dashboard: where each student is in the course, so the teacher sees at a glance who is ahead and who is behind. (b) **A "not yet mastered" list** per student: the level 1 questions they haven't mastered yet, with their open flags (REQ-1.3). (c) **A nudge to the teacher** when a student finishes everything open to them, suggesting to open more lessons or raise their level. I suggest (a) and (b) in the MVP and (c) later. OK? | REQ-1.2, 1.3, 5.10 |
+| **Q-30** | **Exams** (REQ-4.26). My proposals: (a) an exam opens only when the teacher opens it; (b) students can move between questions and change answers until they press "Submit exam"; (c) students see their grade and the correct answers only when the teacher releases the results; (d) no time limit in stage 1; (e) a wrong answer to a level 1 question sends a red flag; (f) retaking an exam only if the teacher allows it. OK? | REQ-4.26 |
 | **Q-29** | **How should the system admin hear about class-code guessing?** (REQ-10.7) My proposal: on the admin's page, and also by email at most once a day (the email service comes in Milestone B). The weekly comparison starts after 4 weeks of use. OK? | REQ-10.7 |
 
 ### Answered (2026-11-20)
@@ -900,7 +924,7 @@ The test site can be filled with a standard set of test data with one command, b
 | Q-26 | Extra practice questions? | Accepted as proposed: the creator marks extra practice questions, which are asked only until the student reaches the minimum; other questions are always asked; check-again answers count; open and audio answers don't; running out means moving on with a red flag to the teacher. (REQ-4.21) |
 | Q-24 | Minimum questions per topic: who sets it, and what does it mean? | The teacher sets it when assigning; the creator gives a default (3 for the circles lesson, 1 for Archimedes). The student moves on to the next topic once they answer the minimum correctly. (REQ-4.21, 5.9) |
 | Q-25 | A type-a-number question? | Yes. All of Gil's calculation questions in the circles lesson are typed in; one digit after the decimal point is enough. (REQ-4.22) |
-| Student screens (2026-11-22) | Home page, joining, class page, course page, course orders, open courses, language | Class cards with a "To do" list; open courses in stage 2; 7-character class codes with a check character and a 5-minute pause after 10 wrong tries; joining needs no approval, only the teacher removes students; class page sections down to archived courses; locked lessons greyed out with titles; three course orders with "any order" not recommended; any lesson can be opened early for chosen students; 0 or more practice lessons per learning lesson; courses as course files in stage 1; browser language first. (REQ-5.2, 5.8, 6.1, 6.7, 6.11 to 6.14, 9.4, 9.6) |
+| Student screens (2026-11-22) | Home page, joining, class page, course page, course orders, open courses, language | Class cards with a "To do" list; open courses in stage 2; 7-character class codes with a check character and a 5-minute pause after 10 wrong tries; joining needs no approval, only the teacher removes students; class page sections down to archived courses; locked lessons greyed out with titles; three course orders with "any order" not recommended; any lesson can be opened early for chosen students; 0 or more practice lessons per teaching lesson; courses as course files in stage 1; browser language first. (REQ-5.2, 5.8, 6.1, 6.7, 6.11 to 6.14, 9.4, 9.6) |
 | Q-28 | The "16." in Gil's message? | A typing mistake; nothing to add. |
 | Q-22 | When to build each feature? | When the requirements are finished, Claude gives Gil a list of all features with suggested priorities, and Gil sets each one to one of 3 priority levels. (Roadmap, D-26) |
 | Q-18 (part) | Attempts with hints? | 2 attempts for multiple choice. After the 1st wrong attempt, a hint; after the 2nd, the full solution and a check-again question. (REQ-4.16, 6.3) |

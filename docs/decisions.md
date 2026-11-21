@@ -293,7 +293,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Reason:** Makes copying harder at no cost to the creator.
 **Affects:** REQ-4.19
 
-### D-25: Learning lessons and practice lessons
+### D-25: Teaching lessons and practice lessons
 **Date:** 2026-11-20 · **Status:** Decided in principle by Gil; details open (OPEN Q-23) · **Decided by:** Gil
 **Context:** Some subjects, especially mathematics, need lessons that only practise what was already taught.
 **Options considered:**
@@ -413,10 +413,10 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 
 ### D-35: Course orders and opening lessons for individual students
 **Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
-**Context:** Courses pair learning lessons with practice lessons. Teachers need control over how fast students move, and individual progress is a key principle (REQ-1.2).
+**Context:** Courses pair teaching lessons with practice lessons. Teachers need control over how fast students move, and individual progress is a key principle (REQ-1.2).
 **Options considered:**
 1. Fixed order or student's choice only (the earlier REQ-5.8).
-2. Three course orders: one after another; paired (learning lessons in order, practice lessons of finished learning lessons in any order); any order (not recommended). In all of them the teacher can open any lesson early, for the whole class or chosen students.
+2. Three course orders: one after another; paired (teaching lessons in order, practice lessons of finished teaching lessons in any order); any order (not recommended). In all of them the teacher can open any lesson early, for the whole class or chosen students.
 
 **Decision:** Option 2.
 **Reason:** "Paired" lets students choose when to practise without skipping new material; opening lessons for individual students lets strong students go ahead.
@@ -436,7 +436,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 1. Teachers build courses inside Evolora in stage 1.
 2. Gil and Claude (or teachers with Claude Code, sent to Gil) write course files, loaded like lessons.
 
-**Decision:** Option 2. Each learning lesson can have zero or more practice lessons, named and paired by the course's creator.
+**Decision:** Option 2. Each teaching lesson can have zero or more practice lessons, named and paired by the course's creator.
 **Reason:** Keeps stage 1 focused on the teacher's and student's screens (D-33).
 **Affects:** REQ-4.10, lessons/README.md, the teacher kit
 
@@ -451,3 +451,14 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 3.
 **Reason:** Gil can judge the result by using the mockups, without designing.
 **Affects:** REQ-12.7
+
+### D-39: "Teaching lesson", and a third lesson type: exam
+**Date:** 2026-11-22 · **Status:** Decided (exam details open, OPEN Q-30) · **Decided by:** Gil
+**Context:** Students should always see what kind of lesson they are in. Teachers also need exams, where every student is tested the same way.
+**Options considered:**
+1. Two lesson types (teaching, practice), with exams run outside Evolora.
+2. Three lesson types: teaching (הקניה), practice (תרגול) and exam (מבחן). An exam is like a practice lesson, but with one attempt per question, no extra questions and the same questions for every student.
+
+**Decision:** Option 2. Every lesson is marked with its type. "Learning lesson" is renamed "teaching lesson" everywhere.
+**Reason:** Exams give teachers a fair, equal measure of each student, next to the individual paths of teaching and practice.
+**Affects:** REQ-4.20, REQ-4.26, glossary, lesson file format, teacher kit
