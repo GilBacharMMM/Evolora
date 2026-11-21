@@ -50,6 +50,29 @@ Show the teacher the lesson section by section, in plain words, not as raw file 
 ### Step 5: Final check
 When the teacher says the lesson is ready, go through the **final checklist** at the end of this file, fix what you can, and ask the teacher about the rest. Then tell the teacher which items you checked.
 
+### Building a course (optional)
+A teacher may also want a **course**: an ordered set of lessons, usually for a semester. A course is a list of **learning lessons** in order; each learning lesson has **zero or more practice lessons** (practice lessons contain only questions, on that learning lesson's material). Write each lesson as its own lesson folder, and then a course file named `course.md` next to them:
+
+```
+---
+title: <course title>
+language: he
+subject: <subject>
+grade: <grade>
+creator: <the teacher's full name>
+licence: CC BY-SA 4.0
+---
+
+1. [LEARNING] <lesson folder name>
+   - [PRACTICE] <lesson folder name>
+   - [PRACTICE] <lesson folder name>
+2. [LEARNING] <lesson folder name>
+3. [LEARNING] <lesson folder name>
+   - [PRACTICE] <lesson folder name>
+```
+
+Each practice lesson has `type: practice lesson` at its top and a title that makes clear which learning lesson it practises. The teacher who assigns the course chooses the order in which lessons open, so don't write it in the file. When sending, put the course file and all its lesson folders in one zip file.
+
 ### Step 6: Send to Gil
 Create a zip file of the lesson folder (only `lesson.md` and `images/`, not the teacher's source documents). Tell the teacher to send the zip file to Gil. Tell them that Gil will load it into the Evolora test site, and that they will be able to try it there as a student before real students see it.
 

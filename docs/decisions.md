@@ -397,3 +397,56 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Reason:** Puts real lessons in front of students sooner, and puts the effort where the pilot needs it: what teachers and students see.
 **Update (2026-11-21, Gil):** pilot teachers can write their own lessons with Claude Code, using a lesson-writing kit that Claude prepares and keeps up to date (REQ-4.25). They send the finished lesson files to Gil, who loads them. Gil knows all pilot teachers personally, so no approval process inside Evolora is needed.
 **Affects:** REQ-2.1, 2.3, 4.1 to 4.10, 4.21, 4.24, 4.25; roadmap; system design 2.2
+
+### D-34: Class codes
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Context:** Students join classes with a code, as in Google Classroom. The code must be easy to type but impossible to guess.
+**Options considered:**
+1. Short numeric codes (easy to guess).
+2. Codes like Google Classroom's (6 to 8 letters and digits), made at random.
+3. As option 2, plus a check character and a short pause after many wrong tries.
+
+**Decision:** Option 3: 7 characters, letters and digits without look-alike characters, random, with a check character at the end; case doesn't matter; after 10 wrong codes in a row, a 5-minute wait. Joining needs no approval; the teacher can reset the code and turn joining off; only the teacher can remove a student.
+**Reason:** About 700 million possible codes, so guessing is practically impossible; the check character catches typing mistakes; the pause stops automated guessing without bothering real students.
+**Affects:** REQ-5.2, REQ-5.4
+
+### D-35: Course orders and opening lessons for individual students
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Context:** Courses pair learning lessons with practice lessons. Teachers need control over how fast students move, and individual progress is a key principle (REQ-1.2).
+**Options considered:**
+1. Fixed order or student's choice only (the earlier REQ-5.8).
+2. Three course orders: one after another; paired (learning lessons in order, practice lessons of finished learning lessons in any order); any order (not recommended). In all of them the teacher can open any lesson early, for the whole class or chosen students.
+
+**Decision:** Option 2.
+**Reason:** "Paired" lets students choose when to practise without skipping new material; opening lessons for individual students lets strong students go ahead.
+**Affects:** REQ-5.8, REQ-5.20, REQ-6.12
+
+### D-36: Two key principles: individual progress and mastery of level 1
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Context:** Gil stated the two main goals that guide the whole system.
+**Decision:** (1) Each student progresses at their own pace: slower students get more practice, faster students go further and deeper. (2) Every student masters everything marked level 1: they answer it correctly, or they are flagged to the teacher, who makes sure they understand and then clears the flag.
+**Reason:** These are the reasons Evolora exists; every feature is checked against them.
+**Affects:** REQ-1.2, REQ-1.3, REQ-5.19, OPEN Q-27
+
+### D-37: Courses as course files in stage 1
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Context:** In stage 1 lessons are written as lesson files (D-33). Courses need a way in as well.
+**Options considered:**
+1. Teachers build courses inside Evolora in stage 1.
+2. Gil and Claude (or teachers with Claude Code, sent to Gil) write course files, loaded like lessons.
+
+**Decision:** Option 2. Each learning lesson can have zero or more practice lessons, named and paired by the course's creator.
+**Reason:** Keeps stage 1 focused on the teacher's and student's screens (D-33).
+**Affects:** REQ-4.10, lessons/README.md, the teacher kit
+
+### D-38: Claude proposes the design language
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Context:** Evolora needs a consistent look. Gil prefers not to design it.
+**Options considered:**
+1. Gil designs the look.
+2. Use a ready-made look as is.
+3. Claude proposes a design language with clickable mockups; Gil approves or asks for changes.
+
+**Decision:** Option 3.
+**Reason:** Gil can judge the result by using the mockups, without designing.
+**Affects:** REQ-12.7

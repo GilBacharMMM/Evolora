@@ -15,7 +15,7 @@ When the requirements are finished, Claude will give Gil a list of all features,
 
 Until then, the milestones below are only a draft.
 
-**Not yet prioritized** (new since the draft below): REQ-4.16 and 4.17 hints, full solution and check-again questions; REQ-4.18, 5.18 and 6.10 levels; REQ-4.19 random answer order; REQ-4.20 learning and practice lessons; REQ-4.21 topics with a minimum number of questions; REQ-4.22 type-a-number questions; REQ-4.23 videos inside the lesson, with start and end times; solved examples (REQ-4.2); REQ-6.9 help line (with AI, or first by message to the teacher).
+**Not yet prioritized** (new since the draft below): REQ-4.16 and 4.17 hints, full solution and check-again questions; REQ-4.18, 5.18 and 6.10 levels; REQ-4.19 random answer order; REQ-4.20 learning and practice lessons; REQ-4.21 topics with a minimum number of questions; REQ-4.22 type-a-number questions; REQ-4.23 videos inside the lesson, with start and end times; REQ-5.19 clearing a red flag; REQ-5.20 opening lessons early for chosen students; REQ-5.21 archiving courses; REQ-9.6 teacher changes a student's language (low priority); solved examples (REQ-4.2); REQ-6.9 help line (with AI, or first by message to the teacher).
 
 ## Version 1: MVP (pilot at Gil's school)
 
@@ -36,7 +36,9 @@ Until then, the milestones below are only a draft.
 | REQ-5.1, 5.2, 5.4, 5.6 | Classes, class code, class list, many classes per student |
 | REQ-5.7 | Assign lessons to a class or selected students |
 | REQ-5.11 | Grade dashboard (basic) |
-| REQ-6.1 to 6.4, 6.6 | Student home, taking a lesson, attempts and scoring, progress, audio answers |
+| REQ-1.2, 1.3 | Key principles: individual progress, and mastery of every level 1 question |
+| REQ-12.7 | Design language: Claude proposes it with clickable mockups, Gil approves (first step before building screens) |
+| REQ-6.1 to 6.4, 6.6, 6.11 to 6.13 | Student home (class cards, "To do"), class page, course page, taking a lesson, attempts and scoring, progress, audio answers, going back to finished lessons |
 | REQ-9.1 to 9.4 | Hebrew, Arabic, English; right-to-left and left-to-right; each person chooses their language |
 | REQ-10.4, 11.1 to 11.3, 12.1 to 12.3 | Hosting, safety basics, Chromebook web app, speed, no lost work |
 | REQ-12.4 to 12.6 | Test site, user switching, test data (built first, so Gil can test everything else) |
@@ -52,7 +54,7 @@ Until then, the milestones below are only a draft.
 | REQ-4.10 | Courses, public or private (unlisted) |
 | REQ-5.3 | Email invites |
 | REQ-5.5 | Co-teachers |
-| REQ-5.8, 5.9 | Fixed order or choice, due dates, redo setting |
+| REQ-5.8, 5.9 | Course orders (one after another, paired, any order), due dates, redo setting |
 | REQ-5.10 | Class dashboard with status colours |
 | REQ-5.12 to 5.15 | Review screen, comments (text and audio), send back, grade changes |
 | REQ-5.16 | Messages |

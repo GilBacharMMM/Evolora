@@ -39,6 +39,30 @@ Extra lines for questions (REQ-4.16 to 4.18):
 | `- Solution:` | The full worked solution, shown after the 2nd wrong answer (REQ-4.16) |
 | `### Check-again question` | A similar question under the main one, asked right after the solution (REQ-4.17). Several can be added; each student gets one at random. Choices are shown in random order (REQ-4.19), so the order in the file doesn't matter. |
 
+## Course files
+
+A course is written as a **course file** (REQ-4.10), in the `courses` folder, for example `courses/geometry-grade7.md`. It lists the course's learning lessons in order, each with its practice lessons (zero or more), by the names of their lesson folders:
+
+```
+---
+title: גאומטריה לכיתה ז'
+language: he
+subject: מתמטיקה
+grade: 7
+creator: <name>
+licence: CC BY-SA 4.0
+---
+
+1. [LEARNING] circles-pi
+   - [PRACTICE] circles-practice-1
+   - [PRACTICE] circles-practice-2
+2. [LEARNING] triangles-intro
+3. [LEARNING] triangles-area
+   - [PRACTICE] triangles-practice
+```
+
+Each listed lesson must exist as its own lesson folder, with `type: learning lesson` or `type: practice lesson` at the top. The teacher chooses the course order (one after another, paired or any order) when assigning the course (REQ-5.8), so it is not written in the file.
+
 ## Notes and comments
 
 - `> 🟦 Claude:` a question or suggestion from Claude for Gil

@@ -25,7 +25,10 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Material** | The learning content inside a lesson that the student reads, watches or listens to. | proposed |
 | **Simulation** | An interactive element inside a lesson: either a link or embed of an outside website, or one built into Evolora. | proposed |
 | **Question** | Something the student must answer inside a lesson, usually before they can continue. | proposed |
-| **Course** | An ordered bundle of lessons, made by a creator or teacher from their own lessons or anyone's. A course is either *public* or *private*. | proposed |
+| **Course** | An ordered list of learning lessons, each with zero or more practice lessons paired with it. Usually one per semester. A course is either *public* or *private*. In stage 1, written as a course file. | proposed |
+| **Course file** | A plain-text list of a course's lessons, in order, with each learning lesson's practice lessons. In the `courses` folder. In Hebrew: קובץ קורס. | proposed |
+| **Course order** | How a course's lessons open for a student, chosen by the teacher when assigning: **one after another** (each lesson opens when the previous one is finished), **paired** (learning lessons in order; practice lessons of finished learning lessons open in any order; recommended), or **any order** (all open; not recommended). In Hebrew: סדר הקורס. | proposed |
+| **Archived course** | A course the teacher has put away, for example at the end of a semester. Students can still read its lessons. In Hebrew: קורס בארכיון. | proposed |
 | **Public course** | A course that any student can find and enroll in, even without a teacher. Students who learn this way get no teacher feedback. | proposed |
 | **Private course** | An unlisted course: it isn't shown in the course library, and only classes it is assigned to can use it. Its lessons are still open to everyone. | agreed |
 | **Licence** | The terms for reusing content. Lessons use CC BY-SA 4.0 (reuse and change freely, credit the creator, share alike); code uses AGPL-3.0. | agreed |
@@ -50,10 +53,14 @@ These are the terms we use in all documents and in the app. When a term is used,
 |---|---|---|
 | **Class** | A group of students run by a teacher. | proposed |
 | **Class list (roster)** | The list of students who belong to a class. | proposed |
+| **Class card** | A box on the student's home page for one class, with its name, teacher and colour. In Hebrew: כרטיס כיתה. | proposed |
+| **To do list** | The list on the student's home page of lessons waiting in all their classes, nearest due date first, and their pending notes. In Hebrew: רשימת משימות. | proposed |
+| **Open classroom** | (Stage 2) The card on a student's home page that holds all the open courses they joined on their own, without a teacher. In Hebrew: כיתה פתוחה. | proposed |
+| **Design language** | The shared look of all screens: colours, fonts, icons, spacing, buttons and cards. In Hebrew: שפה עיצובית. | proposed |
 | **Class code** | A unique code a teacher shares so students can join a class, as in Google Classroom. | proposed |
 | **Invite** | An email from a teacher that lets a student join a class. | proposed |
 | **Enroll** | To join a class (with a class code or invite) or a public course. | proposed |
-| **Assignment** | A lesson, a course, or a selection of lessons that a teacher gives to a whole class or to specific students. Its settings: fixed order or student's choice (the student must still do all the lessons, but picks the order), optional due date, whether a redo counts (the latest redo's grade replaces the old one), and who checks open answers. | proposed |
+| **Assignment** | A lesson, a course, or a selection of lessons that a teacher gives to a whole class or to specific students. Its settings: the course order (one after another, paired, or any order), optional due date, whether a redo counts (the latest redo's grade replaces the old one), and who checks open answers. | proposed |
 | **Answer** | What a student gives in response to a question. | proposed |
 | **Comment** | Feedback a teacher adds to a student's answer, either written text or an audio recording. | proposed |
 | **Send back for corrections** | A teacher returning a finished lesson, or just some of its questions, to a student to fix. The new answers are graded again. | proposed |
@@ -74,8 +81,9 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Student status** | A colour on the class dashboard for each student: green (on track), orange (behind), red (red flag). The exact rules will be defined after trying the system. | proposed |
 | **Messages** | A simple private conversation between one student and one teacher, for questions and answers. | proposed |
 | **Attempt** | One try at answering a question. In stage 1 a student gets up to 3 attempts: right on the 1st = full marks, 2nd = 2/3, 3rd = 1/3; after 3 wrong tries the system shows the correct answer and the question scores 0. Multiple choice questions have 2 attempts: after the 1st wrong one, a hint; after the 2nd, the full solution and a check-again question (REQ-4.16). | proposed |
-| **Mastery** | The goal that every student fully understands every lesson, not just completes it. | proposed |
-| **Red flag** | An alert the teacher receives when a student keeps failing a question or lesson: for example, a wrong answer to a check-again question, or (later) a help-line conversation that didn't lead to a correct answer. | proposed |
+| **Mastery** | The goal that every student fully understands every lesson, not just completes it. In particular, every student masters every level 1 question: they answer it correctly, or they are flagged to the teacher until the teacher clears the flag (REQ-1.3). | proposed |
+| **Individual progress** | A key principle of Evolora: each student moves at their own pace; slower students get more practice, stronger students go further and deeper (REQ-1.2). | agreed |
+| **Red flag** | An alert the teacher receives when a student keeps failing a question or lesson: for example, a wrong answer to a check-again question, or (later) a help-line conversation that didn't lead to a correct answer. It stays until the teacher clears it (REQ-5.19). | proposed |
 | **Grade dashboard** | The teacher's view of grades per class, course, lesson and question, including who completed and who did not. An uncompleted lesson counts as grade 0. | proposed |
 | **Progress** | How far a student has got and how well they are doing, per lesson and per course. | proposed |
 
