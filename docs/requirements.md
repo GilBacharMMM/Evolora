@@ -254,8 +254,13 @@ When creating a lesson, the creator chooses its type:
 - [ ] A creator chooses "learning" or "practice" when creating a lesson, and the lesson library shows each lesson's type.
 - [ ] A practice lesson contains questions only (the exact rules depend on OPEN Q-23).
 
-**REQ-4.21: Topics, with a minimum number of questions** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-24)
-A creator can divide a lesson into **topics** (for example, in the circles lesson: what a circle is, the circumference, the number π, the area). Every student must answer at least a **minimum number of questions correctly** in each topic before moving on to the next one, whatever their student level (REQ-6.10). A student who reaches the minimum moves on (Gil, Q-24). *Proposed (OPEN Q-26):* the creator marks some questions in a topic as **extra practice**; these are given, in order, only to students who haven't yet reached the minimum, and skipped by students who have.
+**REQ-4.21: Topics, with a minimum number of questions** (Priority: to be set by Gil, see the roadmap)
+A creator can divide a lesson into **topics** (for example, in the circles lesson: what a circle is, the circumference, the number π, the area). Every student must answer at least a **minimum number of questions correctly** in each topic before moving on to the next one, whatever their student level (REQ-6.10). A student who reaches the minimum moves on (Gil, Q-24). The details (Gil, Q-26):
+- The creator marks some questions in a topic as **extra practice**. Extra practice questions are asked, in order, only until the student reaches the minimum; students who have reached it skip them. All other questions, including challenge questions at levels 2 and 3, are always asked.
+- A correct answer to a check-again question counts toward the minimum.
+- Open and audio questions don't count, because the teacher grades them later.
+- If a student runs out of extra practice questions without reaching the minimum, they continue to the next topic, and the teacher gets a red flag.
+- Extra practice questions have a hint and a full solution, but they don't need a check-again question: the next extra practice question plays that part.
 
 - The **creator** sets a default minimum for the lesson: for example, 3 for the circles lesson, and 1 for the Archimedes lesson.
 - The **teacher** can change it when assigning the lesson (REQ-5.9).
@@ -266,7 +271,9 @@ A creator can divide a lesson into **topics** (for example, in the circles lesso
 - [ ] When assigning the circles lesson, the teacher sees 3 as the minimum and can change it.
 - [ ] If a topic has fewer level 1 questions than the minimum, the lesson builder warns the creator, and the assignment screen warns the teacher (because level 1 students would not reach the minimum).
 - [ ] As a test student in the circles lesson, the next topic opens only after you answer 3 questions in the current topic correctly.
-- [ ] A student who answers every question correctly skips the extra practice questions (OPEN Q-26).
+- [ ] A student who answers every question correctly skips the extra practice questions.
+- [ ] A student who gets one question wrong gets extra practice questions until they have 3 correct answers.
+- [ ] A student who runs out of extra practice questions moves on, and the teacher sees a red flag.
 
 **REQ-4.23: Videos inside the lesson** (Priority: to be set by Gil, see the roadmap)
 YouTube videos are shown with YouTube's own player, **embedded in the lesson window**: the student watches without leaving Evolora, and the video stays on YouTube. For each video, the creator:
@@ -745,13 +752,13 @@ The test site can be filled with a standard set of test data with one command, b
 | **Q-19** | **Check-again question details** (REQ-4.17). (a) How many tries? My proposal: one, with no hint. (b) Does it change the grade? My proposal: no; the question already scored 0, and the check-again question only decides whether the teacher gets a red flag. | REQ-4.17 |
 | **Q-20** | **The help line** (REQ-6.9). It needs AI. (a) Until AI is ready, should the help line send the student's question to the teacher as a message (REQ-5.16)? My recommendation: yes. (b) Red flag after how many messages? My proposal: after 5 messages from the student, if they still don't answer correctly. (c) The students are minors chatting with AI: the teacher can read every conversation, and the school must agree before we turn it on. OK? | REQ-6.9 |
 | **Q-21** | **Levels** (REQ-4.18, 5.18, 6.10). (a) Level per class, not one for the whole school? A student may be strong in science and weak in English. My proposal: per class. (b) If the teacher changes a level in the middle of a lesson, it applies from the next question. (c) Students may notice they got fewer questions than a friend. Is that acceptable? (d) Should the teacher see each student's level next to their grade? My proposal: yes. | REQ-4.18, REQ-5.18, REQ-6.10 |
-| **Q-26** | **Extra practice questions** (REQ-4.21). You decided that a student moves on once they answer the minimum correctly. My proposal for the details: (a) The creator marks which questions are **extra practice** (for example, `[EXTRA]` in the lesson file). Other questions (including challenge questions at levels 2 and 3) are always asked; extra practice questions are asked only until the student reaches the minimum. (b) A correct answer to a check-again question counts toward the minimum. (c) Open and audio questions don't count, because the teacher grades them later. (d) If a student runs out of extra practice questions without reaching the minimum, they continue to the next topic and the teacher gets a red flag. OK? Once you agree, I'll add extra practice questions to the circles lesson. | REQ-4.21 |
 | **Q-23** | **Practice lessons** (REQ-4.20). You wrote that a practice lesson has "only questions that students saw before". Which do you mean? (a) **Questions on material already learned**: new questions that the creator writes for practice, like a math exercise sheet. (b) **The same questions again**: Evolora collects questions the students already met in learning lessons (for example, their check-again questions). (c) Both. Also: are practice lessons graded like learning lessons, or practice only? | REQ-4.20 |
 
 ### Answered (2026-11-20)
 
 | # | Question | Answer |
 |---|---|---|
+| Q-26 | Extra practice questions? | Accepted as proposed: the creator marks extra practice questions, which are asked only until the student reaches the minimum; other questions are always asked; check-again answers count; open and audio answers don't; running out means moving on with a red flag to the teacher. (REQ-4.21) |
 | Q-24 | Minimum questions per topic: who sets it, and what does it mean? | The teacher sets it when assigning; the creator gives a default (3 for the circles lesson, 1 for Archimedes). The student moves on to the next topic once they answer the minimum correctly. (REQ-4.21, 5.9) |
 | Q-25 | A type-a-number question? | Yes. All of Gil's calculation questions in the circles lesson are typed in; one digit after the decimal point is enough. (REQ-4.22) |
 | Q-22 | When to build each feature? | When the requirements are finished, Claude gives Gil a list of all features with suggested priorities, and Gil sets each one to one of 3 priority levels. (Roadmap, D-26) |

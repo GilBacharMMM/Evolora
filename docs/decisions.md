@@ -340,14 +340,14 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-4.15, lessons/circles-pi
 
 ### D-29: The teacher sets the minimum questions per topic
-**Date:** 2026-11-21 · **Status:** Decided (what happens beyond the minimum is still open, OPEN Q-24) · **Decided by:** Gil
+**Date:** 2026-11-21 · **Status:** Decided · **Decided by:** Gil
 **Context:** Gil wants every student, even the strongest, to answer several questions on each topic of the circles lesson.
 **Options considered:**
 1. A rule only for how the circles lesson is written.
 2. The creator sets a fixed minimum per topic.
 3. The creator sets a default; the teacher can change it when assigning.
 
-**Decision:** Option 3. Default 3 for the circles lesson, 1 for the Archimedes lesson.
+**Decision:** Option 3. Default 3 for the circles lesson, 1 for the Archimedes lesson. The minimum counts **correct** answers: a student moves on once they reach it (Q-24). Questions marked "extra practice" are asked only until then; a student who runs out of them moves on with a red flag to the teacher (Q-26).
 **Reason:** The creator knows the material; the teacher knows the class.
 **Affects:** REQ-4.21, REQ-5.9
 

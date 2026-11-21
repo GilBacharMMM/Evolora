@@ -24,6 +24,8 @@ status: draft 1 (converted from Gil's Word document on 2026-11-21)
 
 > 🟦 Claude: **7. דוגמאות פתורות.** בכל נושא הוספתי שתי דוגמאות פתורות (מסומנות `SOLVED EXAMPLE`), לפני השאלות. לאשר?
 
+> 🟦 Claude: **9. שאלות תרגול נוספות** (`[EXTRA]`). לפי החלטתך (Q-26), בכל נושא הוספתי שאלות תרגול נוספות. תלמיד שעונה נכון על 3 שאלות בנושא מדלג עליהן; תלמיד שטעה מקבל אותן עד שיגיע ל-3 תשובות נכונות. בנושא 1 סימנתי שתי שאלות קיימות כשאלות נוספות והוספתי אחת; בנושאים 2 עד 4 הוספתי שלוש שאלות חישוב לכל נושא.
+
 > 🟦 Claude: **8. חלקים מסרטונים.** אפשר עכשיו להציג רק חלק מסרטון (`start` ו-`end`, למשל 1:20 עד 3:05). בסרטון הראשון הוספתי את השורות כדוגמה. אם תרצה להציג רק חלק מאחד הסרטונים, כתוב שם את הזמנים.
 
 > 🟦 Claude: **6. תיקונים קטנים בטקסט.** "או **לפעמיים** פאי כפול הרדיוס" תוקן ל"או **פעמיים** פאי כפול הרדיוס" (2πR). "מימדי הברכה" תוקן ל"ממדי הבריכה". לאשר?
@@ -166,7 +168,7 @@ status: draft 1 (converted from Gil's Word document on 2026-11-21)
 - 20 מטר
 - 5 מטר
 
-## [QUESTION: multiple choice] [LEVEL 1] [NEW: suggested by Claude]
+## [QUESTION: multiple choice] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
 
 מהו הקו הישר הארוך ביותר שאפשר למתוח מצד אחד של המעגל לצידו האחר?
 
@@ -187,7 +189,7 @@ status: draft 1 (converted from Gil's Word document on 2026-11-21)
 - היקף
 - שטח
 
-## [QUESTION: multiple choice] [LEVEL 1] [NEW: suggested by Claude]
+## [QUESTION: multiple choice] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
 
 באיזו אות מסמנים בדרך כלל את **שטח** העיגול?
 
@@ -207,6 +209,16 @@ status: draft 1 (converted from Gil's Word document on 2026-11-21)
 - קוטר המעגל
 - רדיוס המעגל
 - שטח העיגול
+
+## [QUESTION: number] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
+
+הרדיוס של מעגל הוא 4.5 ס"מ. מה הקוטר שלו?
+
+- Answer: 9
+- Unit: ס"מ
+
+- Hint: הקוטר גדול פי 2 מהרדיוס.
+- Solution: D = 2 × R = 2 × 4.5 = 9 ס"מ.
 
 ---
 
@@ -367,6 +379,36 @@ status: draft 1 (converted from Gil's Word document on 2026-11-21)
 - Answer: 50
 - Unit: מטר
 
+## [QUESTION: number] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
+
+מה ההיקף, בערך, של מעגל שהקוטר שלו 25 ס"מ?
+
+- Answer: 75
+- Unit: ס"מ
+
+- Hint: בחישוב מהיר: ההיקף בערך פי 3 מהקוטר.
+- Solution: P ≈ 3 × D = 3 × 25 = 75 ס"מ.
+
+## [QUESTION: number] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
+
+מה ההיקף, בערך, של מעגל שהרדיוס שלו 4 מטר?
+
+- Answer: 24
+- Unit: מטר
+
+- Hint: נתון הרדיוס. חשבו קודם את הקוטר (פי 2 מהרדיוס).
+- Solution: D = 2 × 4 = 8 מטר. P ≈ 3 × 8 = 24 מטר.
+
+## [QUESTION: number] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
+
+מה הקוטר, בערך, של מעגל שההיקף שלו 45 מטר?
+
+- Answer: 15
+- Unit: מטר
+
+- Hint: ההיקף בערך פי 3 מהקוטר, אז הקוטר הוא בערך שליש מההיקף.
+- Solution: D ≈ P ÷ 3 = 45 ÷ 3 = 15 מטר.
+
 ## [QUESTION: multiple choice] [LEVEL 2] [NEW: suggested by Claude]
 
 הקוטר של גלגל אופניים הוא 70 ס"מ. בערך כמה מתקדמים האופניים כשהגלגל מסתובב סיבוב אחד שלם?
@@ -484,6 +526,36 @@ P = \pi \cdot D = 2 \cdot \pi \cdot R
 
 - Answer: 20
 - Unit: מטר
+
+## [QUESTION: number] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
+
+מה ההיקף של מעגל שהקוטר שלו 8 ס"מ? (π = 3.14)
+
+- Answer: 25.12
+- Unit: ס"מ
+
+- Hint: P = π × D. כפלו את הקוטר ב-3.14.
+- Solution: P = 3.14 × 8 = 25.12 ס"מ.
+
+## [QUESTION: number] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
+
+מה ההיקף של מעגל שהרדיוס שלו 12 מטר? (π = 3.14)
+
+- Answer: 75.36
+- Unit: מטר
+
+- Hint: נתון הרדיוס: חשבו קודם את הקוטר (2 × R), ואז כפלו ב-3.14.
+- Solution: D = 2 × 12 = 24 מטר. P = 3.14 × 24 = 75.36 מטר.
+
+## [QUESTION: number] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
+
+מה הקוטר של מעגל שההיקף שלו 47.1 ס"מ? (π = 3.14)
+
+- Answer: 15
+- Unit: ס"מ
+
+- Hint: D = P ÷ π. חלקו את ההיקף ב-3.14.
+- Solution: D = 47.1 ÷ 3.14 = 15 ס"מ.
 
 ## [QUESTION: multiple choice] [LEVEL 2] [NEW: suggested by Claude]
 
@@ -716,6 +788,36 @@ S = \pi \cdot R \cdot R = \pi R^2
 
 - Answer: 314
 - Unit: סמ"ר
+
+## [QUESTION: number] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
+
+מה השטח של עיגול שהרדיוס שלו 6 ס"מ? (π = 3.14)
+
+- Answer: 113.04
+- Unit: סמ"ר
+
+- Hint: S = π × R × R. כפלו את הרדיוס בעצמו, ואז ב-3.14.
+- Solution: R × R = 6 × 6 = 36. S = 3.14 × 36 = 113.04 סמ"ר.
+
+## [QUESTION: number] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
+
+מה השטח של עיגול שהרדיוס שלו 20 מטר? (π = 3.14)
+
+- Answer: 1256
+- Unit: מ"ר
+
+- Hint: S = π × R × R. כמה זה 20 × 20?
+- Solution: R × R = 20 × 20 = 400. S = 3.14 × 400 = 1,256 מ"ר.
+
+## [QUESTION: number] [LEVEL 1] [EXTRA] [NEW: suggested by Claude]
+
+מה השטח של עיגול שהקוטר שלו 14 ס"מ? (π = 3.14)
+
+- Answer: 153.86
+- Unit: סמ"ר
+
+- Hint: נתון הקוטר, אבל בנוסחת השטח צריך את הרדיוס (חצי מהקוטר).
+- Solution: R = 14 ÷ 2 = 7 ס"מ. S = 3.14 × 7 × 7 = 3.14 × 49 = 153.86 סמ"ר.
 
 ## [QUESTION: multiple choice] [LEVEL 2] [NEW: suggested by Claude]
 

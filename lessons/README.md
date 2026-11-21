@@ -32,6 +32,7 @@ Extra lines for questions (REQ-4.16 to 4.18):
 | Line | Meaning |
 |---|---|
 | `[LEVEL 1]`, `[LEVEL 2]` or `[LEVEL 3]` after the heading | Question level: 1 is easiest, 3 hardest (REQ-4.18) |
+| `[EXTRA]` after the heading | Extra practice question: asked only until the student has answered the topic's minimum correctly (REQ-4.21) |
 | `- Hint:` | Shown after the 1st wrong answer (REQ-4.16) |
 | `- Solution:` | The full worked solution, shown after the 2nd wrong answer (REQ-4.16) |
 | `### Check-again question` | A similar question under the main one, asked right after the solution (REQ-4.17). Several can be added; each student gets one at random. Choices are shown in random order (REQ-4.19), so the order in the file doesn't matter. |
