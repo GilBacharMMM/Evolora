@@ -5,6 +5,8 @@ subject: מדעים
 grade: 7
 creator: גיל בכר
 licence: CC BY-SA 4.0
+type: learning lesson
+minimum questions per topic: 1 (default; the teacher can change it when assigning)
 status: draft 1 (converted from Gil's Word document on 2026-11-20)
 ---
 

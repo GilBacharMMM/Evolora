@@ -4,7 +4,7 @@ Each folder here holds one lesson in **lesson file** form: a plain-text version 
 
 ## How a lesson file is written
 
-The top of the file has the lesson details (title, language, subject, grade, creator, licence, and type: learning lesson or practice lesson, REQ-4.20).
+The top of the file has the lesson details (title, language, subject, grade, creator, licence, type: learning lesson or practice lesson, REQ-4.20, and the default minimum questions per topic, REQ-4.21).
 
 A heading like `# [TOPIC 2: name]` starts a new topic (REQ-4.21). Every block after it, until the next topic, belongs to that topic.
 
@@ -24,6 +24,8 @@ Each block starts with a heading in square brackets, matching the block types in
 | `[QUESTION: multiple choice]` | Choices marked `(✔)` are correct |
 | `[QUESTION: open]` | Includes `Grading instructions` for the teacher |
 | `[QUESTION: audio]` | Recorded answer, with `Grading instructions` |
+| `[QUESTION: number]` | The student types a number: `Answer` and `Unit` lines; correct to one digit after the decimal point is enough (REQ-4.22) |
+| `[SOLVED EXAMPLE]` | A question with its full answer, written as **שאלה:** and **תשובה:**; nothing for the student to answer |
 
 Extra lines for questions (REQ-4.16 to 4.18):
 

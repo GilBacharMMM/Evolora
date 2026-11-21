@@ -338,3 +338,37 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 3. For the circles lesson, Claude drew the illustrations and diagrams itself; the source of each is recorded as "AI-generated (drawn by Claude)". Option 2 stays possible for future lessons.
 **Reason:** Clear rights, and the diagrams can be drawn exactly to match the mathematics.
 **Affects:** REQ-4.15, lessons/circles-pi
+
+### D-29: The teacher sets the minimum questions per topic
+**Date:** 2026-11-21 · **Status:** Decided (what happens beyond the minimum is still open, OPEN Q-24) · **Decided by:** Gil
+**Context:** Gil wants every student, even the strongest, to answer several questions on each topic of the circles lesson.
+**Options considered:**
+1. A rule only for how the circles lesson is written.
+2. The creator sets a fixed minimum per topic.
+3. The creator sets a default; the teacher can change it when assigning.
+
+**Decision:** Option 3. Default 3 for the circles lesson, 1 for the Archimedes lesson.
+**Reason:** The creator knows the material; the teacher knows the class.
+**Affects:** REQ-4.21, REQ-5.9
+
+### D-30: Type-a-number questions
+**Date:** 2026-11-21 · **Status:** Decided · **Decided by:** Gil
+**Context:** For calculation practice, choosing from four answers lets students guess or work backwards from the choices.
+**Options considered:**
+1. Multiple choice only, with common mistakes as wrong choices.
+2. A question type where the student types the number.
+
+**Decision:** Option 2. An answer correct to one digit after the decimal point is accepted.
+**Reason:** Students must really calculate, and it is closer to how they will work in class and in exams.
+**Affects:** REQ-4.22, REQ-4.16
+
+### D-31: Solved examples in lessons
+**Date:** 2026-11-21 · **Status:** Decided · **Decided by:** Gil
+**Context:** Before practising a calculation, students need to see how it is done.
+**Options considered:**
+1. Explain only in the text.
+2. A block type "solved example": a question with its full answer, nothing to answer.
+
+**Decision:** Option 2, shown as "Question: ..." and "Answer: to calculate ..., you ...". The circles lesson has two in each topic.
+**Reason:** Students learn the method step by step before they try it themselves.
+**Affects:** REQ-4.2

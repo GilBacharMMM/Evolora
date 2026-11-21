@@ -110,6 +110,7 @@ A lesson is a sequence of blocks that the creator can add, edit, reorder and del
 - **Audio**: an uploaded audio file or a link, played inside the lesson (or opened in a new tab if the website doesn't allow playing it inside Evolora, as with some podcast sites)
 - **Simulation**: a link to an outside website, shown inside the lesson where the website allows it
 - **Link list**: a list of further-reading links with a title for each
+- **Solved example**: a question with its full answer, shown to the student as an example, with nothing to answer. It is shown as "Question: ..." followed by "Answer: to calculate ..., you ...". (Added 2026-11-21; see the circles lesson, which has two in each topic.)
 - **Question**: see REQ-4.4
 
 *Acceptance criteria:*
@@ -201,7 +202,7 @@ Students see a small "Source" note under each image. Clicking it shows the full 
 - [ ] In the Archimedes lesson, the Renaissance woodcut shows its Wikimedia Commons source, and the other images show "AI-generated".
 
 **REQ-4.16: Two attempts, a hint and a full solution** (Priority: to be set by Gil, see the roadmap)
-Every multiple choice question gives the student **2 attempts**. For each one, the creator writes in advance:
+Every multiple choice question, and every type-a-number question (REQ-4.22), gives the student **2 attempts**. For each one, the creator writes in advance:
 - a **hint**: short guidance on how to solve the question, without giving the answer
 - a **full solution**: the question solved step by step
 
@@ -254,13 +255,28 @@ When creating a lesson, the creator chooses its type:
 - [ ] A practice lesson contains questions only (the exact rules depend on OPEN Q-23).
 
 **REQ-4.21: Topics, with a minimum number of questions** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-24)
-A creator can divide a lesson into **topics** (for example, in the circles lesson: what a circle is, the circumference, the number π, the area). For each topic, the creator sets a **minimum number of questions** that every student must answer before moving on to the next topic, whatever their student level (REQ-6.10). Gil's rule for the circles lesson: at least 3 questions in each topic, even for the strongest students.
+A creator can divide a lesson into **topics** (for example, in the circles lesson: what a circle is, the circumference, the number π, the area). Every student must answer at least a **minimum number of questions** in each topic before moving on to the next one, whatever their student level (REQ-6.10).
+
+- The **creator** sets a default minimum for the lesson: for example, 3 for the circles lesson, and 1 for the Archimedes lesson.
+- The **teacher** can change it when assigning the lesson (REQ-5.9).
 
 *Acceptance criteria:*
 - [ ] A creator can group blocks into topics and give each topic a name.
-- [ ] A creator can set the minimum number of questions for a topic.
-- [ ] If a topic has fewer level 1 questions than its minimum, the lesson builder warns the creator (because level 1 students would not reach the minimum).
+- [ ] A creator can set the lesson's default minimum number of questions per topic.
+- [ ] When assigning the circles lesson, the teacher sees 3 as the minimum and can change it.
+- [ ] If a topic has fewer level 1 questions than the minimum, the lesson builder warns the creator, and the assignment screen warns the teacher (because level 1 students would not reach the minimum).
 - [ ] As a level 3 test student in the circles lesson, you answer at least 3 questions in each topic before the next topic opens.
+
+**REQ-4.22: Type-a-number questions** (Priority: to be set by Gil, see the roadmap)
+A new question type: the student types a number, and Evolora checks it automatically. The creator enters the correct answer and the unit (for example, "ס\"מ"), which is shown next to the box. An answer is accepted if it is correct to one digit after the decimal point: it may differ from the exact answer by up to 0.1. For example, if the exact answer is 11.46, then 11.5 and 11.4 are accepted, but 11 is not.
+
+Type-a-number questions have the same 2 attempts, hint, full solution and check-again question as multiple choice questions (REQ-4.16, REQ-4.17).
+
+*Acceptance criteria:*
+- [ ] A creator can write a type-a-number question with its answer and unit.
+- [ ] As a student, typing 11.5 or 11.46 for an exact answer of 11.46 is marked correct; typing 12 is marked wrong.
+- [ ] The box accepts a decimal point and numbers like 7,850 or 7850, and rejects letters with a friendly message, without using up an attempt.
+- [ ] In the circles lesson, all of Gil's calculation questions, and their check-again questions, are type-a-number questions.
 
 **REQ-4.11: Import from Google Docs and Word** (Priority: Later)
 A creator can import a Google Doc or Word document, and Evolora turns it into a lesson: text, images and formulas become blocks.
@@ -341,6 +357,7 @@ When assigning, the teacher sets:
 - **Due date** (optional), and what happens after it: the grade is reduced by a set percentage, or the lesson is locked.
 - **Redo counts**: whether redoing a finished lesson replaces its grade (see REQ-6.5).
 - **Who checks open answers**: in the MVP, always the teacher. AI options are in REQ-7.1.
+- **Minimum questions per topic**: starts at the lesson's default, set by the creator (REQ-4.21); the teacher can change it.
 
 *Acceptance criteria:*
 - [ ] With "reduce by 10% after the due date", a lesson finished late gets 10% off its grade.
@@ -713,14 +730,15 @@ The test site can be filled with a standard set of test data with one command, b
 | **Q-19** | **Check-again question details** (REQ-4.17). (a) How many tries? My proposal: one, with no hint. (b) Does it change the grade? My proposal: no; the question already scored 0, and the check-again question only decides whether the teacher gets a red flag. | REQ-4.17 |
 | **Q-20** | **The help line** (REQ-6.9). It needs AI. (a) Until AI is ready, should the help line send the student's question to the teacher as a message (REQ-5.16)? My recommendation: yes. (b) Red flag after how many messages? My proposal: after 5 messages from the student, if they still don't answer correctly. (c) The students are minors chatting with AI: the teacher can read every conversation, and the school must agree before we turn it on. OK? | REQ-6.9 |
 | **Q-21** | **Levels** (REQ-4.18, 5.18, 6.10). (a) Level per class, not one for the whole school? A student may be strong in science and weak in English. My proposal: per class. (b) If the teacher changes a level in the middle of a lesson, it applies from the next question. (c) Students may notice they got fewer questions than a friend. Is that acceptable? (d) Should the teacher see each student's level next to their grade? My proposal: yes. | REQ-4.18, REQ-5.18, REQ-6.10 |
-| **Q-24** | **Minimum questions per topic** (REQ-4.21). (a) Should this be a general Evolora feature (the creator sets a minimum for each topic), or was it a rule for writing the circles lesson only? I wrote the lesson so that it works either way: each topic has at least 3 level 1 questions. (b) Does "answer at least 3 questions" mean answer them (right or wrong), or answer 3 **correctly**? If correctly, Evolora would keep giving extra questions until the student gets 3 right, which is a bigger feature. My proposal: answer them, right or wrong; the check-again questions and red flags already catch students who don't understand. | REQ-4.21 |
-| **Q-25** | **A "type a number" question.** In the circles lesson I wrote the calculation questions as multiple choice, with the common mistakes as wrong choices. For calculation practice, it may be better if the student types the number, and Evolora checks it (allowing small rounding differences, for example 11.46 or 11.5). Should we add this question type? | REQ-4.4, REQ-4.12 |
+| **Q-24** | **What happens with the questions beyond the minimum?** (REQ-4.21) A topic may have more questions than the minimum (in the circles lesson, the circumference topic has 6 level 1 questions and the minimum is 3). Which do you mean? (a) **Everyone answers all the questions** at their level; the minimum only makes sure every topic has enough. (b) **A student who answers the minimum correctly moves on**; the other questions are extra practice, given only to students who got some wrong. (c) Something else. Also: does "answer" mean answered, or answered correctly? | REQ-4.21 |
 | **Q-23** | **Practice lessons** (REQ-4.20). You wrote that a practice lesson has "only questions that students saw before". Which do you mean? (a) **Questions on material already learned**: new questions that the creator writes for practice, like a math exercise sheet. (b) **The same questions again**: Evolora collects questions the students already met in learning lessons (for example, their check-again questions). (c) Both. Also: are practice lessons graded like learning lessons, or practice only? | REQ-4.20 |
 
 ### Answered (2026-11-20)
 
 | # | Question | Answer |
 |---|---|---|
+| Q-24 (part) | Who sets the minimum questions per topic? | The teacher, when assigning; the creator gives a default (3 for the circles lesson, 1 for Archimedes). (REQ-4.21, 5.9) |
+| Q-25 | A type-a-number question? | Yes. All of Gil's calculation questions in the circles lesson are typed in; one digit after the decimal point is enough. (REQ-4.22) |
 | Q-22 | When to build each feature? | When the requirements are finished, Claude gives Gil a list of all features with suggested priorities, and Gil sets each one to one of 3 priority levels. (Roadmap, D-26) |
 | Q-18 (part) | Attempts with hints? | 2 attempts for multiple choice. After the 1st wrong attempt, a hint; after the 2nd, the full solution and a check-again question. (REQ-4.16, 6.3) |
 | Q-19 (part) | When is the check-again question asked? | Right away, after the full solution. (REQ-4.17) |
