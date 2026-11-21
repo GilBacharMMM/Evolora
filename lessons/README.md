@@ -17,7 +17,7 @@ Each block starts with a heading in square brackets, matching the block types in
 | `[IMAGE]` | Image, with `file`, `caption` and `source` lines (REQ-4.15) |
 | `[TABLE]` | Table |
 | `[FORMULA]` | Formula |
-| `[VIDEO]` | Video link |
+| `[VIDEO]` | YouTube video: `link`, `title`, `source` (the channel), and optional `start` and `end` times like `1:20` (REQ-4.23) |
 | `[AUDIO]` | Audio link or file |
 | `[SIMULATION]` | Simulation link, with instructions for the student |
 | `[LINK LIST]` | Further-reading links |

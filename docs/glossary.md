@@ -17,6 +17,7 @@ These are the terms we use in all documents and in the app. When a term is used,
 |---|---|---|
 | **Lesson** | A single unit of learning made by a creator. It contains material (text, images, graphs, math formulas, video, audio, simulations) and questions. A lesson is either a learning lesson or a practice lesson. | proposed |
 | **Topic** | A part of a lesson about one subject (for example, "the area of a circle"), with a minimum number of questions every student must answer before moving on. The creator sets a default minimum; the teacher can change it when assigning. In Hebrew: נושא. | proposed |
+| **Extra practice question** | A question in a topic that is asked only to students who haven't yet answered the topic's minimum number of questions correctly. (Proposed, OPEN Q-26.) In Hebrew: שאלת תרגול נוספת. | proposed |
 | **Solved example** | A question shown with its full answer, for the student to learn from, with nothing to answer. In Hebrew: דוגמה פתורה. | proposed |
 | **Type-a-number question** | A question where the student types a number, checked automatically; correct to one digit after the decimal point is enough. In Hebrew: שאלה עם תשובה מספרית. | proposed |
 | **Learning lesson** | A lesson that teaches new material. In Hebrew: שיעור הקניה. | proposed |

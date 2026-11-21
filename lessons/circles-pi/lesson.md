@@ -24,6 +24,8 @@ status: draft 1 (converted from Gil's Word document on 2026-11-21)
 
 > 🟦 Claude: **7. דוגמאות פתורות.** בכל נושא הוספתי שתי דוגמאות פתורות (מסומנות `SOLVED EXAMPLE`), לפני השאלות. לאשר?
 
+> 🟦 Claude: **8. חלקים מסרטונים.** אפשר עכשיו להציג רק חלק מסרטון (`start` ו-`end`, למשל 1:20 עד 3:05). בסרטון הראשון הוספתי את השורות כדוגמה. אם תרצה להציג רק חלק מאחד הסרטונים, כתוב שם את הזמנים.
+
 > 🟦 Claude: **6. תיקונים קטנים בטקסט.** "או **לפעמיים** פאי כפול הרדיוס" תוקן ל"או **פעמיים** פאי כפול הרדיוס" (2πR). "מימדי הברכה" תוקן ל"ממדי הבריכה". לאשר?
 
 ---
@@ -62,7 +64,10 @@ status: draft 1 (converted from Gil's Word document on 2026-11-21)
 ## [VIDEO]
 
 - link: https://www.youtube.com/watch?v=dJOVTD7Rg6g
-- title: סרטון הסבר: המעגל, מה זה המספר פאי? (ללמוד אחרת)
+- title: סרטון הסבר: המעגל, מה זה המספר פאי?
+- source: ללמוד אחרת (YouTube)
+- start: (the whole video)
+- end: (the whole video)
 
 ## [TEXT]
 
@@ -215,6 +220,7 @@ status: draft 1 (converted from Gil's Word document on 2026-11-21)
 
 - link: https://www.youtube.com/watch?v=1lQfERPjkzk
 - title: אנימציה: פריסת היקף המעגל (ללא דיבור)
+- source: Mathy Matt: Math and the World (YouTube)
 
 ## [IMAGE] [NEW: suggested by Claude]
 
@@ -254,7 +260,8 @@ status: draft 1 (converted from Gil's Word document on 2026-11-21)
 ## [VIDEO]
 
 - link: https://www.youtube.com/watch?v=WPuzpggl9Z4
-- title: סרטון הדגמה באנגלית: מציאת פאי בעזרת חפצים מהבית (Science Buddies)
+- title: סרטון הדגמה באנגלית: מציאת פאי בעזרת חפצים מהבית
+- source: Science Buddies (YouTube)
 
 ## [QUESTION: open] [LEVEL 1] [NEW: suggested by Claude]
 
@@ -532,6 +539,7 @@ P = \pi \cdot D = 2 \cdot \pi \cdot R
 
 - link: https://www.youtube.com/watch?v=-UBLutigNMM
 - title: שטח העיגול: הוכחה חזותית קלאסית (ללא דיבור)
+- source: Mathematical Visual Proofs (YouTube)
 
 ## [TEXT]
 

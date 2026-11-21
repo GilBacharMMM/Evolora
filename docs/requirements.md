@@ -106,7 +106,7 @@ A lesson is a sequence of blocks that the creator can add, edit, reorder and del
 - **Image**: uploaded from the computer, with an optional caption and a required source (see REQ-4.15)
 - **Table**: rows and columns of text and numbers
 - **Formula**: see REQ-4.3
-- **Video**: a YouTube (or other) link, played inside the lesson
+- **Video**: a YouTube video, played inside the lesson window, optionally only a part of it (see REQ-4.23)
 - **Audio**: an uploaded audio file or a link, played inside the lesson (or opened in a new tab if the website doesn't allow playing it inside Evolora, as with some podcast sites)
 - **Simulation**: a link to an outside website, shown inside the lesson where the website allows it
 - **Link list**: a list of further-reading links with a title for each
@@ -255,7 +255,7 @@ When creating a lesson, the creator chooses its type:
 - [ ] A practice lesson contains questions only (the exact rules depend on OPEN Q-23).
 
 **REQ-4.21: Topics, with a minimum number of questions** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-24)
-A creator can divide a lesson into **topics** (for example, in the circles lesson: what a circle is, the circumference, the number π, the area). Every student must answer at least a **minimum number of questions** in each topic before moving on to the next one, whatever their student level (REQ-6.10).
+A creator can divide a lesson into **topics** (for example, in the circles lesson: what a circle is, the circumference, the number π, the area). Every student must answer at least a **minimum number of questions correctly** in each topic before moving on to the next one, whatever their student level (REQ-6.10). A student who reaches the minimum moves on (Gil, Q-24). *Proposed (OPEN Q-26):* the creator marks some questions in a topic as **extra practice**; these are given, in order, only to students who haven't yet reached the minimum, and skipped by students who have.
 
 - The **creator** sets a default minimum for the lesson: for example, 3 for the circles lesson, and 1 for the Archimedes lesson.
 - The **teacher** can change it when assigning the lesson (REQ-5.9).
@@ -265,7 +265,22 @@ A creator can divide a lesson into **topics** (for example, in the circles lesso
 - [ ] A creator can set the lesson's default minimum number of questions per topic.
 - [ ] When assigning the circles lesson, the teacher sees 3 as the minimum and can change it.
 - [ ] If a topic has fewer level 1 questions than the minimum, the lesson builder warns the creator, and the assignment screen warns the teacher (because level 1 students would not reach the minimum).
-- [ ] As a level 3 test student in the circles lesson, you answer at least 3 questions in each topic before the next topic opens.
+- [ ] As a test student in the circles lesson, the next topic opens only after you answer 3 questions in the current topic correctly.
+- [ ] A student who answers every question correctly skips the extra practice questions (OPEN Q-26).
+
+**REQ-4.23: Videos inside the lesson** (Priority: to be set by Gil, see the roadmap)
+YouTube videos are shown with YouTube's own player, **embedded in the lesson window**: the student watches without leaving Evolora, and the video stays on YouTube. For each video, the creator:
+- pastes the YouTube link
+- may set a **start time** and an **end time** (for example, 1:20 to 3:05), when only part of the video is needed; the player then starts and stops there
+- records the **source**: the channel name, filled in automatically from the link
+
+Evolora uses YouTube's **privacy-enhanced mode**, which doesn't store tracking information about the student until they press play. Ads may appear before or during some videos; see decision D-32. If a video's owner doesn't allow it to be embedded, the student sees a button that opens it on YouTube instead.
+
+*Acceptance criteria:*
+- [ ] Each video in the circles lesson plays inside the lesson window.
+- [ ] A creator sets start 0:30 and end 1:00; as a student, the video starts at 0:30 and stops at 1:00.
+- [ ] Under each video, the student sees its source (the channel name), and clicking it opens the video on YouTube.
+- [ ] A video whose owner doesn't allow embedding shows an "Open on YouTube" button instead of an error.
 
 **REQ-4.22: Type-a-number questions** (Priority: to be set by Gil, see the roadmap)
 A new question type: the student types a number, and Evolora checks it automatically. The creator enters the correct answer and the unit (for example, "ס\"מ"), which is shown next to the box. An answer is accepted if it is correct to one digit after the decimal point: it may differ from the exact answer by up to 0.1. For example, if the exact answer is 11.46, then 11.5 and 11.4 are accepted, but 11 is not.
@@ -730,14 +745,14 @@ The test site can be filled with a standard set of test data with one command, b
 | **Q-19** | **Check-again question details** (REQ-4.17). (a) How many tries? My proposal: one, with no hint. (b) Does it change the grade? My proposal: no; the question already scored 0, and the check-again question only decides whether the teacher gets a red flag. | REQ-4.17 |
 | **Q-20** | **The help line** (REQ-6.9). It needs AI. (a) Until AI is ready, should the help line send the student's question to the teacher as a message (REQ-5.16)? My recommendation: yes. (b) Red flag after how many messages? My proposal: after 5 messages from the student, if they still don't answer correctly. (c) The students are minors chatting with AI: the teacher can read every conversation, and the school must agree before we turn it on. OK? | REQ-6.9 |
 | **Q-21** | **Levels** (REQ-4.18, 5.18, 6.10). (a) Level per class, not one for the whole school? A student may be strong in science and weak in English. My proposal: per class. (b) If the teacher changes a level in the middle of a lesson, it applies from the next question. (c) Students may notice they got fewer questions than a friend. Is that acceptable? (d) Should the teacher see each student's level next to their grade? My proposal: yes. | REQ-4.18, REQ-5.18, REQ-6.10 |
-| **Q-24** | **What happens with the questions beyond the minimum?** (REQ-4.21) A topic may have more questions than the minimum (in the circles lesson, the circumference topic has 6 level 1 questions and the minimum is 3). Which do you mean? (a) **Everyone answers all the questions** at their level; the minimum only makes sure every topic has enough. (b) **A student who answers the minimum correctly moves on**; the other questions are extra practice, given only to students who got some wrong. (c) Something else. Also: does "answer" mean answered, or answered correctly? | REQ-4.21 |
+| **Q-26** | **Extra practice questions** (REQ-4.21). You decided that a student moves on once they answer the minimum correctly. My proposal for the details: (a) The creator marks which questions are **extra practice** (for example, `[EXTRA]` in the lesson file). Other questions (including challenge questions at levels 2 and 3) are always asked; extra practice questions are asked only until the student reaches the minimum. (b) A correct answer to a check-again question counts toward the minimum. (c) Open and audio questions don't count, because the teacher grades them later. (d) If a student runs out of extra practice questions without reaching the minimum, they continue to the next topic and the teacher gets a red flag. OK? Once you agree, I'll add extra practice questions to the circles lesson. | REQ-4.21 |
 | **Q-23** | **Practice lessons** (REQ-4.20). You wrote that a practice lesson has "only questions that students saw before". Which do you mean? (a) **Questions on material already learned**: new questions that the creator writes for practice, like a math exercise sheet. (b) **The same questions again**: Evolora collects questions the students already met in learning lessons (for example, their check-again questions). (c) Both. Also: are practice lessons graded like learning lessons, or practice only? | REQ-4.20 |
 
 ### Answered (2026-11-20)
 
 | # | Question | Answer |
 |---|---|---|
-| Q-24 (part) | Who sets the minimum questions per topic? | The teacher, when assigning; the creator gives a default (3 for the circles lesson, 1 for Archimedes). (REQ-4.21, 5.9) |
+| Q-24 | Minimum questions per topic: who sets it, and what does it mean? | The teacher sets it when assigning; the creator gives a default (3 for the circles lesson, 1 for Archimedes). The student moves on to the next topic once they answer the minimum correctly. (REQ-4.21, 5.9) |
 | Q-25 | A type-a-number question? | Yes. All of Gil's calculation questions in the circles lesson are typed in; one digit after the decimal point is enough. (REQ-4.22) |
 | Q-22 | When to build each feature? | When the requirements are finished, Claude gives Gil a list of all features with suggested priorities, and Gil sets each one to one of 3 priority levels. (Roadmap, D-26) |
 | Q-18 (part) | Attempts with hints? | 2 attempts for multiple choice. After the 1st wrong attempt, a hint; after the 2nd, the full solution and a check-again question. (REQ-4.16, 6.3) |

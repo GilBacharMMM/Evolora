@@ -372,3 +372,16 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 2, shown as "Question: ..." and "Answer: to calculate ..., you ...". The circles lesson has two in each topic.
 **Reason:** Students learn the method step by step before they try it themselves.
 **Affects:** REQ-4.2
+
+### D-32: YouTube videos through YouTube's embedded player
+**Date:** 2026-11-21 · **Status:** Decided by Claude, for Gil to confirm · **Decided by:** Claude (recommendation)
+**Context:** Gil wants videos to play inside the lesson window, sometimes only part of a video, and asked about copyright and ads.
+**Options considered:**
+1. Link to YouTube; the student leaves Evolora to watch.
+2. Download videos and host them in Evolora. Not allowed without each owner's permission, and costly.
+3. YouTube's standard embedded player, in privacy-enhanced mode, with start and end times. Allowed by YouTube's terms: the video stays on YouTube, the owner keeps control and can block embedding. Ads may appear if the owner shows ads; Evolora may not block or skip them.
+4. YouTube Player for Education: an ad-free player without recommendations. Only for approved education companies that pay YouTube a licence fee.
+
+**Decision:** Option 3 now. Look at option 4 again before a wider release, if ads turn out to be a problem in class.
+**Reason:** Legal, free, and simple. Educational videos often have few or no ads, and the teacher can choose videos without them.
+**Affects:** REQ-4.2, REQ-4.23
