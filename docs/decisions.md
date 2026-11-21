@@ -374,7 +374,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-4.2
 
 ### D-32: YouTube videos through YouTube's embedded player
-**Date:** 2026-11-21 · **Status:** Decided by Claude, for Gil to confirm · **Decided by:** Claude (recommendation)
+**Date:** 2026-11-21 · **Status:** Decided (approved by Gil on 2026-11-21) · **Decided by:** Gil, on Claude's recommendation
 **Context:** Gil wants videos to play inside the lesson window, sometimes only part of a video, and asked about copyright and ads.
 **Options considered:**
 1. Link to YouTube; the student leaves Evolora to watch.
