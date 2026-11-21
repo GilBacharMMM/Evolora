@@ -1,0 +1,251 @@
+#!/usr/bin/env node
+// Evolora lesson file check (REQ-4.24).
+// Checks that a lesson file follows the format in lessons/README.md before it is loaded.
+// Usage: node tools/check-lesson.mjs <lesson folder or lesson.md> [more ...]
+// Exit code: 0 when there are no errors (warnings are allowed), 1 otherwise.
+
+import fs from 'node:fs'
+import path from 'node:path'
+
+const BLOCK_TYPES = new Set([
+  'TEXT', 'NOTE BOX', 'IMAGE', 'TABLE', 'FORMULA', 'VIDEO', 'AUDIO', 'SIMULATION',
+  'LINK LIST', 'SOLVED EXAMPLE',
+  'QUESTION: multiple choice', 'QUESTION: number', 'QUESTION: open', 'QUESTION: audio',
+])
+const LESSON_TYPES = ['teaching lesson', 'practice lesson', 'exam']
+const LANGUAGES = ['he', 'ar', 'en']
+const FIELD = /^- (Hint|Solution|Answer|Unit|Grading instructions|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
+const NUMBER = /^-?\d+(\.\d+)?$/
+const TIME = /^\d{1,2}:\d{2}(:\d{2})?$/
+
+function readLesson(target) {
+  let file = target
+  if (fs.existsSync(target) && fs.statSync(target).isDirectory()) file = path.join(target, 'lesson.md')
+  if (!fs.existsSync(file)) return { file, error: `No lesson file found at ${file}` }
+  return { file, dir: path.dirname(file), lines: fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n').split('\n') }
+}
+
+function headingTags(line) {
+  return [...line.matchAll(/\[([^\]]+)\]/g)].map((m) => m[1].trim())
+}
+
+function fieldsOf(lines) {
+  const fields = {}
+  const choices = []
+  for (const { text, n } of lines) {
+    if (text.startsWith('>')) continue
+    const f = text.match(FIELD)
+    if (f) {
+      const key = f[1].toLowerCase()
+      fields[key] = { value: f[2].replace(/\[NEW[^\]]*\]\s*/g, '').trim(), n }
+    } else if (/^- /.test(text) && !fields.hint && !fields.solution) {
+      choices.push({ text: text.slice(2).trim(), n, correct: text.startsWith('- (✔)') })
+    }
+  }
+  return { fields, choices }
+}
+
+function checkLesson(target) {
+  const out = { errors: [], warnings: [], notes: [] }
+  const err = (n, msg) => out.errors.push(n ? `line ${n}: ${msg}` : msg)
+  const warn = (n, msg) => out.warnings.push(n ? `line ${n}: ${msg}` : msg)
+
+  const lesson = readLesson(target)
+  if (lesson.error) { err(0, lesson.error); return { file: lesson.file, ...out } }
+  const { file, dir, lines } = lesson
+
+  // Lesson details at the top
+  const meta = {}
+  let i = 0
+  if ((lines[0] || '').trim() !== '---') err(1, 'The file must start with the lesson details between two "---" lines.')
+  else {
+    for (i = 1; i < lines.length && lines[i].trim() !== '---'; i++) {
+      const m = lines[i].match(/^([^:]+):\s*(.*)$/)
+      if (m) meta[m[1].trim().toLowerCase()] = m[2].trim()
+    }
+    i++
+  }
+  for (const key of ['title', 'language', 'subject', 'grade', 'creator', 'licence', 'type']) {
+    if (!meta[key]) err(1, `Lesson details: "${key}" is missing.`)
+  }
+  if (meta.language && !LANGUAGES.includes(meta.language)) err(1, `Lesson details: language must be he, ar or en (found "${meta.language}").`)
+  if (meta.grade && !(Number(meta.grade) >= 7 && Number(meta.grade) <= 12)) err(1, `Lesson details: grade must be 7 to 12 (found "${meta.grade}").`)
+  if (meta.licence && meta.licence !== 'CC BY-SA 4.0') err(1, `Lesson details: licence must be "CC BY-SA 4.0" (found "${meta.licence}").`)
+  if (meta.type && !LESSON_TYPES.includes(meta.type)) err(1, `Lesson details: type must be one of: ${LESSON_TYPES.join(', ')} (found "${meta.type}").`)
+  const isExam = meta.type === 'exam'
+  const minimum = parseInt(meta['minimum questions per topic'] || '', 10)
+  if (!isExam && !(minimum >= 1)) err(1, 'Lesson details: "minimum questions per topic" is missing or not a number.')
+
+  // Split into topics and blocks
+  const topics = []
+  let topic = null
+  let block = null
+  let inNotes = false
+  const blocks = []
+  const startTopic = (name, n) => { topic = { name, n, level1: 0, extra: 0, autoQuestions: 0 }; topics.push(topic) }
+
+  for (; i < lines.length; i++) {
+    const text = lines[i]
+    const n = i + 1
+    if (/^# /.test(text)) {
+      const t = text.match(/^# \[TOPIC\s*(\d+)\s*:\s*(.+)\]\s*$/)
+      if (t) { startTopic(t[2].trim(), n); inNotes = false } else inNotes = true
+      block = null
+      continue
+    }
+    if (/^## /.test(text)) {
+      inNotes = false
+      const tags = headingTags(text)
+      const type = tags[0] || ''
+      if (!BLOCK_TYPES.has(type)) { err(n, `Unknown block "${text.trim()}". Allowed blocks are listed in lessons/README.md.`); block = null; continue }
+      if (!topic) startTopic('(whole lesson, no topics)', n)
+      block = { type, tags, n, lines: [], checkAgain: [], topic }
+      blocks.push(block)
+      continue
+    }
+    if (inNotes || !block) continue
+    if (/^### Check-again question/.test(text)) {
+      block.checkAgain.push({ n, tags: headingTags(text), lines: [] })
+      continue
+    }
+    const target = block.checkAgain.length ? block.checkAgain[block.checkAgain.length - 1].lines : block.lines
+    target.push({ text: text.trim(), n })
+  }
+
+  if (topics.length === 1 && topics[0].name.startsWith('(whole lesson')) {
+    warn(0, 'The lesson has no topics ("# [TOPIC 1: name]"), so it is treated as one topic.')
+  }
+
+  let newTags = 0
+  for (const b of blocks) {
+    const { fields, choices } = fieldsOf(b.lines)
+    const isQuestion = b.type.startsWith('QUESTION')
+    const isAuto = b.type === 'QUESTION: multiple choice' || b.type === 'QUESTION: number'
+    const levelTag = b.tags.find((t) => /^LEVEL\s*\d$/.test(t))
+    const level = levelTag ? Number(levelTag.replace(/\D/g, '')) : null
+    const isExtra = b.tags.includes('EXTRA')
+    if (b.tags.some((t) => t.startsWith('NEW'))) newTags++
+
+    switch (b.type) {
+      case 'IMAGE': {
+        if (!fields.file) err(b.n, 'Image: the "file" line is missing.')
+        else if (!fs.existsSync(path.join(dir, fields.file.value))) err(fields.file.n, `Image: the file "${fields.file.value}" doesn't exist.`)
+        if (!fields.caption || !fields.caption.value) err(b.n, 'Image: the "caption" line is missing.')
+        const src = fields.source ? fields.source.value : ''
+        if (!src) err(b.n, 'Image: the "source" line is missing (REQ-4.15).')
+        else if (!/^own work/i.test(src) && !/^AI-generated/i.test(src) && !(/https?:\/\//.test(src) && /(licen[cs]e|public domain|CC[ -]|creative commons)/i.test(src))) {
+          err(fields.source.n, `Image: the source "${src}" must be "own work", "AI-generated (...)", or an author with a link and a licence (REQ-4.15).`)
+        }
+        break
+      }
+      case 'VIDEO': {
+        if (!fields.link || !/(youtube\.com\/watch\?v=|youtu\.be\/)/.test(fields.link.value)) err(b.n, 'Video: a YouTube "link" is missing or not a YouTube link.')
+        if (!fields.title) err(b.n, 'Video: the "title" line is missing.')
+        if (!fields.source) err(b.n, 'Video: the "source" line (the YouTube channel) is missing (REQ-4.23).')
+        for (const k of ['start', 'end']) {
+          if (fields[k] && fields[k].value && !fields[k].value.startsWith('(') && !TIME.test(fields[k].value)) err(fields[k].n, `Video: "${k}" must be a time like 1:20.`)
+        }
+        break
+      }
+      case 'AUDIO':
+        if (!fields.link && !fields.file) err(b.n, 'Audio: a "link" or "file" line is missing.')
+        if (!fields.title) warn(b.n, 'Audio: the "title" line is missing.')
+        break
+      case 'SIMULATION':
+        if (!fields.link) err(b.n, 'Simulation: the "link" line is missing.')
+        if (!fields.title) warn(b.n, 'Simulation: the "title" line is missing.')
+        if (!fields['instructions for the student']) warn(b.n, 'Simulation: there are no instructions for the student.')
+        break
+      case 'FORMULA': {
+        const content = b.lines.filter((l) => l.text && !l.text.startsWith('>'))
+        if (content.length === 0) err(b.n, 'Formula: the block is empty.')
+        else if (!content.some((l) => /\\[a-zA-Z]+|\^|_\{/.test(l.text))) warn(b.n, 'Formula: no LaTeX line found (needed to display it properly).')
+        break
+      }
+      case 'SOLVED EXAMPLE': {
+        const body = b.lines.map((l) => l.text).join('\n')
+        if (!/\*\*(שאלה|سؤال|Question):\*\*/.test(body) || !/\*\*(תשובה|جواب|Answer):\*\*/.test(body)) err(b.n, 'Solved example: it needs a "Question:" part and an "Answer:" part, in bold.')
+        break
+      }
+      default:
+        break
+    }
+
+    if (!isQuestion) continue
+    const what = `${b.type.replace('QUESTION: ', '')} question`
+    if (!isExam && !level) err(b.n, `The ${what} has no level ([LEVEL 1], [LEVEL 2] or [LEVEL 3]).`)
+    if (level && (level < 1 || level > 3)) err(b.n, `The ${what} has level ${level}; levels are 1 to 3.`)
+
+    checkQuestionBody(b.type, fields, choices, b.n, what, err)
+
+    if (b.type === 'QUESTION: open' || b.type === 'QUESTION: audio') {
+      if (!fields['grading instructions']) err(b.n, `The ${what} has no grading instructions.`)
+    }
+
+    if (isAuto) {
+      if (isExam) {
+        if (fields.hint) err(fields.hint.n, 'Exams have no hints (REQ-4.26).')
+        if (b.checkAgain.length) err(b.checkAgain[0].n, 'Exams have no check-again questions (REQ-4.26).')
+        if (isExtra) err(b.n, 'Exams have no extra practice questions (REQ-4.26).')
+      } else {
+        if (!fields.hint) err(b.n, `The ${what} has no hint (REQ-4.16).`)
+        if (!fields.solution) err(b.n, `The ${what} has no full solution (REQ-4.16).`)
+        if (!isExtra && b.checkAgain.length === 0) err(b.n, `The ${what} has no check-again question (REQ-4.17).`)
+      }
+      for (const ca of b.checkAgain) {
+        const caf = fieldsOf(ca.lines)
+        const caType = caf.fields.answer ? 'QUESTION: number' : 'QUESTION: multiple choice'
+        checkQuestionBody(caType, caf.fields, caf.choices, ca.n, 'check-again question', err)
+        if (ca.tags.some((t) => t.startsWith('NEW'))) newTags++
+      }
+      b.topic.autoQuestions++
+      if (level === 1 || isExam) { if (isExtra) b.topic.extra++; else b.topic.level1++ }
+    }
+  }
+
+  // Topics: enough questions for the minimum (REQ-4.21)
+  if (!isExam && minimum >= 1) {
+    for (const t of topics) {
+      if (t.level1 + t.extra < minimum) err(t.n, `Topic "${t.name}" has ${t.level1 + t.extra} level 1 multiple choice or number questions; the minimum is ${minimum} (REQ-4.21).`)
+      else if (t.extra === 0 && t.level1 <= minimum && minimum > 1) warn(t.n, `Topic "${t.name}" has no extra practice questions ([EXTRA]); a student who makes a mistake may run out of questions.`)
+    }
+  }
+
+  const all = lines.join('\n')
+  const blueNotes = (all.match(/^> 🟦/gm) || []).length
+  newTags = (all.match(/\[NEW[^\]]*\]/g) || []).length
+  if (newTags) out.notes.push(`${newTags} part(s) are still marked [NEW] (suggested by Claude, not yet approved).`)
+  if (blueNotes) out.notes.push(`${blueNotes} comment(s) from Claude (🟦) are still in the file.`)
+  out.notes.push(`${topics.length} topic(s), ${blocks.length} blocks, ${blocks.filter((b) => b.type.startsWith('QUESTION')).length} questions.`)
+  return { file, ...out }
+
+  function checkQuestionBody(type, fields, choices, n, what, error) {
+    if (type === 'QUESTION: multiple choice') {
+      if (choices.length < 2) error(n, `The ${what} needs at least 2 choices.`)
+      if (!choices.some((c) => c.correct)) error(n, `The ${what} has no choice marked (✔).`)
+      if (choices.some((c) => /(all of the above|כל התשובות|جميع ما سبق|both a and b)/i.test(c.text))) error(n, `The ${what} has a choice that depends on the order of the choices; choices are shown in random order (REQ-4.19).`)
+    }
+    if (type === 'QUESTION: number') {
+      if (!fields.answer) error(n, `The ${what} has no "Answer" line.`)
+      else if (!NUMBER.test(fields.answer.value.replace(/,/g, ''))) error(fields.answer.n, `The ${what}'s answer "${fields.answer.value}" is not a number.`)
+      if (!fields.unit) error(n, `The ${what} has no "Unit" line.`)
+    }
+  }
+}
+
+const targets = process.argv.slice(2)
+if (targets.length === 0) {
+  console.log('Usage: node tools/check-lesson.mjs <lesson folder or lesson.md> [more ...]')
+  process.exit(2)
+}
+let failed = false
+for (const t of targets) {
+  const r = checkLesson(t)
+  console.log(`\n${r.file}`)
+  if (r.errors.length === 0) console.log('  OK: no errors. The lesson can be loaded.')
+  for (const e of r.errors) console.log(`  ERROR   ${e}`)
+  for (const w of r.warnings) console.log(`  warning ${w}`)
+  for (const n of r.notes) console.log(`  note    ${n}`)
+  if (r.errors.length) failed = true
+}
+process.exit(failed ? 1 : 0)

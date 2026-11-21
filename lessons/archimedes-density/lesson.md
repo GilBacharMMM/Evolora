@@ -79,6 +79,8 @@ status: draft 1 (converted from Gil's Word document on 2026-11-20)
 
 ρ = m / V
 
+\rho = \frac{m}{V}
+
 > 🟦 Claude: הנוסחה הוספה כבלוק נפרד, כדי שתלמידים יראו אותה בבירור (וזו גם בדיקה טובה לעורך הנוסחאות, REQ-4.3). להשאיר את שתי השורות (במילים ובסימנים), או רק אחת?
 
 ## [TEXT]
@@ -163,24 +165,23 @@ status: draft 1 (converted from Gil's Word document on 2026-11-20)
 
 - file: images/image2.png
 - caption: ארכימדס טובל באמבט, תחריט עץ מהמאה ה-16 לספירה (כ-1,800 שנה לאחר תקופת ארכימדס). מעניין לשים לב כי האמן הציג את ארכימדס כשהוא חובש מצנפת בסגנון הרנסנס, תוך שילוב אלמנטים אדריכליים מתקופתו של האמן ולא מהעת העתיקה שבה חי ארכימדס.
-- source: other source
-  - author: unknown artist, from Walther Ryff's German edition of Vitruvius (1547)
-  - link: (to confirm) Wikimedia Commons
-  - licence: Public domain
+- source: Unknown artist, 16th-century woodcut (often linked to Walther Ryff's German edition of Vitruvius, 1547), https://commons.wikimedia.org/wiki/File:Archimede_bain.jpg, Public domain
 
-> 🟦 Claude: אם הקישור לדף התמונה בוויקישיתוף שמור אצלך, אפשר להדביק אותו כאן. אחרת אמצא אותו ואבקש אישור.
+> 🟦 Claude: מצאתי את התמונה בוויקישיתוף (Wikimedia Commons): https://commons.wikimedia.org/wiki/File:Archimede_bain.jpg, בנחלת הכלל (Public domain), אמן לא ידוע מהמאה ה-16. זו אותה תמונה שבשיעור. לאשר?
 
 ## [VIDEO]
 
 - link: https://youtu.be/ijj58xD5fDI
 - title: תגליתו של ארכימדס באמבטיה
+- source: TED-Ed (YouTube): "How taking a bath led to Archimedes' principle"
 
 ## [VIDEO]
 
 - link: https://youtu.be/0v86Yk14rf8
 - title: תגליתו של ארכימדס באמבטיה (סרטון נוסף)
+- source: TED-Ed (YouTube): "The real story behind Archimedes' Eureka!"
 
-> 🟦 Claude: ראה שאלה 3 למעלה: שניהם, או רק אחד?
+> 🟦 Claude: ראה שאלה 3 למעלה: שניהם, או רק אחד? שימו לב: שני הסרטונים הם של TED-Ed ובאנגלית (ייתכן שיש להם כתוביות בעברית). הראשון מסביר את עקרון ארכימדס, והשני את "הסיפור האמיתי" מאחורי "אאוריקה".
 
 ## [QUESTION: multiple choice] [LEVEL 1]
 

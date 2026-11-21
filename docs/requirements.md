@@ -80,7 +80,7 @@ A system admin can register a person as a creator only, for example someone from
 People sign in with their Google account. There are no separate Evolora passwords.
 
 *Acceptance criteria:*
-- [ ] On a school Chromebook, clicking "Sign in with Google" takes you into Evolora with your school account.
+- [ ] On a school Chromebook, clicking "Sign in with Google" takes you into Evolora with your Google account.
 
 **REQ-3.2: Any Google account during the pilot** (Priority: MVP)
 During the pilot, people sign in with a regular Google account, such as a Gmail address. School accounts (@taded.org.il) can't be used yet, because a website using them must first be approved by the Ministry of Education (decision D-19).
@@ -473,7 +473,7 @@ For each class, the teacher sees every student with a status colour: **green** (
 
 *Acceptance criteria:*
 - [ ] The dashboard shows every student in the class with a colour.
-- [ ] A student who has 3 wrong attempts on a question turns red (under the starting rules).
+- [ ] A student with an open red flag (for example, a wrong check-again answer) shows red, under the starting rules (OPEN Q-4).
 - [ ] Clicking a student shows which lessons they finished, which are in progress, and their grades.
 - [ ] Red flags from check-again questions (REQ-4.17) and, later, from the help line (REQ-6.9) appear here, saying which question caused them.
 
@@ -903,7 +903,7 @@ The test site can be filled with a standard set of test data with one command, b
 
 | # | Question | Affects |
 |---|---|---|
-| **Q-4** | Starting rules for status colours. My proposal: **red** = 3 wrong attempts on any question in the past week; **orange** = an assignment is past its due date and unfinished; **green** = everything else. *(Gil is reading.)* | REQ-5.10 |
+| **Q-4** | Starting rules for status colours. My proposal (updated 2026-11-22, now that red flags are defined): **red** = the student has an open red flag (REQ-5.19); **orange** = an assignment is past its due date and unfinished; **green** = everything else. | REQ-5.10 |
 | **Q-14** | **Lessons on GitHub.** Now that the image sources are known (all AI-generated except one Wikimedia image), I've put the converted Archimedes lesson in the `lessons` folder, which *is* stored on GitHub, so it's backed up and open like the rest of the project. The original Word file stays out of GitHub. Is that OK? | — |
 | **Q-15** | **Who may sign in?** With regular Google accounts (REQ-3.2), anyone in the world could sign in. My proposal: anyone may sign in, but they see nothing until they join a class with a class code (REQ-10.1). Teachers are still only added by the system admin. Also note that Google only allows children under 13 to have a Gmail account under a parent's supervision (Google Family Link). Some 7th graders are 12, so some students may need a parent to set up their account. Is that acceptable for the pilot? | REQ-3.2, REQ-10.1 |
 | **Q-16** | **"Creator" or "builder"?** See the summary in my message. My recommendation: **creator** (in Hebrew: יוצר/ת שיעורים) for the person, and **lesson builder** for the editing screen. | Glossary |

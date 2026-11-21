@@ -95,6 +95,7 @@ Entry format:
 **Decision:** Option 3: full marks, then 2/3, then 1/3, then 0 with the answer shown.
 **Reason:** Encourages getting it right while letting the student move on. AI help is planned for stage 2.
 **Affects:** REQ-6.3
+**Update (2026-11-20):** replaced by D-21: 2 attempts, with a hint after the 1st wrong answer and the full solution and a check-again question after the 2nd. Marks for a correct 2nd attempt are still open (OPEN Q-18).
 
 ### D-8: Visual formula editor
 **Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
@@ -205,7 +206,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Context:** Where multiple-choice answers are checked.
 **Options considered:**
 1. On the Chromebook: simplest and fastest, but the correct answers would be inside the web page, where a curious student could find them.
-2. In the cloud (the checking service): the correct answers stay in a protected area until the 3rd wrong attempt.
+2. In the cloud (the checking service): the correct answers stay in a protected area until the last wrong attempt (now the 2nd, D-21).
 
 **Decision:** Option 2.
 **Reason:** Grades must be trustworthy. The extra delay is a fraction of a second.

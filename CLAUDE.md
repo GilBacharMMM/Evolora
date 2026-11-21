@@ -14,7 +14,7 @@ Evolora is teaching software. It helps teachers create lessons and manage their 
 3. **Acceptance criteria.** Every requirement has acceptance criteria that Gil can check by using the app, not by reading code.
 4. **Decision log.** Log every significant decision in `docs/decisions.md` with the date, the options considered and the reason for the choice.
 5. **Ask, don't guess.** When something is unclear, ask Gil. Never fill a gap silently.
-6. **Keep the lesson-writing rules up to date.** Whenever what a lesson may contain changes (block types, question types, hints, levels, topics, image or video rules, and so on), update in the same change: `lessons/README.md` (the lesson file format), `lessons/teacher-kit/lesson-rules-for-claude.md` (the rules teachers' Claude follows) and, if teachers would notice, `lessons/teacher-kit/מדריך-למורים.md` (the teachers' guide). Tell Gil that the teacher kit changed, so Gil can send the new version to the teachers.
+6. **Keep the lesson-writing rules up to date.** Whenever what a lesson may contain changes (block types, question types, hints, levels, topics, image or video rules, and so on), update in the same change: `lessons/README.md` (the lesson file format), `tools/check-lesson.mjs` (the lesson file check), `lessons/teacher-kit/lesson-rules-for-claude.md` (the rules teachers' Claude follows) and, if teachers would notice, `lessons/teacher-kit/מדריך-למורים.md` (the teachers' guide). Tell Gil that the teacher kit changed, so Gil can send the new version to the teachers.
 
 ## The documents
 

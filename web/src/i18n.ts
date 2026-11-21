@@ -15,14 +15,26 @@ export type Language = keyof typeof LANGUAGES
 
 const STORAGE_KEY = 'evolora.language'
 
+// A new person starts in their browser's language if Evolora has it,
+// and in English otherwise (REQ-9.4).
+function browserLanguage(): Language {
+  const preferred = typeof navigator !== 'undefined' ? navigator.languages ?? [navigator.language] : []
+  for (const tag of preferred) {
+    const code = String(tag || '').slice(0, 2).toLowerCase()
+    if (code === 'iw') return 'he' // older name for Hebrew
+    if (code in LANGUAGES) return code as Language
+  }
+  return 'en'
+}
+
 function savedLanguage(): Language {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved && saved in LANGUAGES) return saved as Language
   } catch {
-    // Storage can be blocked; fall back to Hebrew.
+    // Storage can be blocked; use the browser's language instead.
   }
-  return 'he'
+  return browserLanguage()
 }
 
 // Keeps the page's language and direction in step with the interface language.

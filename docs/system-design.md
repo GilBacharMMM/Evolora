@@ -60,6 +60,7 @@ Videos, simulations and podcasts from other websites are shown inside the lesson
 
 ### 2.4 Languages and direction
 - All menu and button text is kept in three translation files: Hebrew, Arabic and English (REQ-9.1). Adding a language later means adding one more file.
+- A new person's interface starts in their browser's language if it is Hebrew, Arabic or English, and in English otherwise. The choice is saved in their record, so it follows them to any computer (REQ-9.4).
 - The screen layout mirrors itself automatically: right-to-left for Hebrew and Arabic, left-to-right for English (REQ-9.2).
 - Each lesson stores its own language, and its content is always shown in that language's direction, whatever the menu language (REQ-9.3).
 - Formulas are always shown left-to-right, even inside Hebrew text (REQ-4.3).

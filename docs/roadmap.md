@@ -21,7 +21,7 @@ Until then, the milestones below are only a draft.
 
 **Goal:** Prove that students can learn on their own with Evolora lessons, and that teachers can follow and guide them, in real classes.
 
-**Who it is for:** 5 teachers and about 120 seventh-grade students, on school Chromebooks with @taded.org.il Google accounts.
+**Who it is for:** 5 teachers and about 120 seventh-grade students, on school Chromebooks, signing in with regular Google accounts (D-19).
 
 **Target:** real students using it within 2 to 4 weeks. Because that is tight, the MVP is split into two milestones. Milestone A puts a real lesson in front of real students as early as possible. Milestone B completes the teacher tools.
 
