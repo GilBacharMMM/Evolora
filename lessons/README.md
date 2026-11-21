@@ -1,6 +1,8 @@
 # Lesson files
 
-Each folder here holds one lesson in **lesson file** form: a plain-text version of the lesson, block by block, that Gil and Claude edit together before the lesson goes into Evolora. Later, Claude loads these files into the test site (REQ-12.6) and the real site.
+Each folder here holds one lesson in **lesson file** form: a plain-text version of the lesson, block by block, written with Claude before the lesson goes into Evolora. Claude loads these files into the test site and, after Gil checks them, the real site (REQ-4.24).
+
+Pilot teachers write lessons with the **lesson-writing kit** in [teacher-kit](teacher-kit) (REQ-4.25). Whenever this format changes, the kit is updated too.
 
 ## How a lesson file is written
 
@@ -40,7 +42,7 @@ Extra lines for questions (REQ-4.16 to 4.18):
 ## Notes and comments
 
 - `> 🟦 Claude:` a question or suggestion from Claude for Gil
-- `> 🟨 Gil:` Gil's notes or answers. Write them anywhere; Claude reads them all.
+- `> 🟨 Gil:` (or the teacher's name) notes or answers from Gil or the teacher who wrote the lesson. Write them anywhere; Claude reads them all.
 - `[NEW: suggested by Claude]` on a block means Claude added it and Gil hasn't approved it yet. Delete the tag to approve, or delete the block to reject.
 
 Gil can edit the file directly in any text editor, or ask Claude to make changes.

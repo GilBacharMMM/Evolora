@@ -93,7 +93,7 @@ Each person sees only what their role and classes allow.
 
 ## 4. Lessons: content and creation
 
-**Stage 1 (decision D-33):** lessons are not created inside Evolora. Gil writes each lesson with Claude as a **lesson file** (in the `lessons` folder), and Claude loads it into Evolora (REQ-4.24). Stage 1 concentrates on what teachers and students see and do.
+**Stage 1 (decision D-33):** lessons are not created inside Evolora. Gil, and pilot teachers who want to write lessons, write each lesson with Claude Code as a **lesson file** (REQ-4.25). Teachers send their finished lesson files to Gil, and Claude loads them into Evolora (REQ-4.24). Stage 1 concentrates on what teachers and students see and do.
 
 So in this section, wherever a requirement says that "the creator writes" or "the creator sets" something (hints, levels, topics, video times and so on), in stage 1 this means it is written in the lesson file. The screens for creating and editing lessons inside Evolora (REQ-2.3, 4.1, the editing part of 4.2, the formula editor in 4.3, 4.6, 4.8) come in stage 2. Acceptance criteria that mention the lesson builder are checked in stage 2; in stage 1, the same check is done by Claude when loading the lesson file.
 
@@ -313,6 +313,19 @@ Claude loads a lesson file, with its images, into Evolora with one command: firs
 - [ ] A lesson file with a missing image source is refused, with a clear message saying which image.
 - [ ] After Gil approves a lesson on the test site, the same lesson appears on the real site.
 - [ ] Changing a lesson file and loading it again creates a new version (REQ-4.7); students in the middle of the old version are not affected.
+
+**REQ-4.25: Lesson-writing kit for teachers** (Priority: MVP)
+Pilot teachers can write lessons themselves with Claude Code, using the **lesson-writing kit** in `lessons/teacher-kit`:
+- **Rules for Claude** (`lesson-rules-for-claude.md`): the teacher saves it as `CLAUDE.md` in an empty folder, and Claude Code then follows the lesson file format and the lesson rules (image rights, levels, hints, check-again questions, topics, privacy). Claude interviews the teacher, writes the lesson, suggests improvements and runs a final check.
+- **A guide for teachers in Hebrew** (`מדריך-למורים.md`): the steps, in plain language, and the important rules.
+
+When the lesson is ready, the teacher sends the lesson folder (as a zip file) to Gil, who has Claude load it (REQ-4.24). The kit is kept up to date whenever what a lesson may contain changes.
+
+*Acceptance criteria:*
+- [ ] A pilot teacher who has never seen a lesson file follows the guide and, with Claude Code, produces a lesson that passes the loading check (REQ-4.24), at most after one round of fixes.
+- [ ] The teacher never has to read or write the lesson file format themselves, unless they want to.
+- [ ] When Claude is given an image copied from the internet, it explains why it can't be used and offers an alternative.
+- [ ] When the lesson format changes, the kit is updated in the same change, and Gil is told to send the new version to the teachers.
 
 **REQ-4.11: Import from Google Docs and Word** (Priority: Later)
 A creator can import a Google Doc or Word document, and Evolora turns it into a lesson: text, images and formulas become blocks.

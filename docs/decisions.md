@@ -394,5 +394,6 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 2. In stage 1, Gil writes all lessons with Claude as lesson files, and Claude loads them into Evolora. Stage 1 concentrates on the teacher's and the student's screens. Lesson creation inside Evolora comes in stage 2.
 
 **Decision:** Option 2.
-**Reason:** Puts real lessons in front of students sooner, and puts the effort where the pilot needs it: what teachers and students see. Other pilot teachers who want a lesson send their material to Gil.
-**Affects:** REQ-2.1, 2.3, 4.1 to 4.10, 4.21, 4.24; roadmap; system design 2.2
+**Reason:** Puts real lessons in front of students sooner, and puts the effort where the pilot needs it: what teachers and students see.
+**Update (2026-11-21, Gil):** pilot teachers can write their own lessons with Claude Code, using a lesson-writing kit that Claude prepares and keeps up to date (REQ-4.25). They send the finished lesson files to Gil, who loads them. Gil knows all pilot teachers personally, so no approval process inside Evolora is needed.
+**Affects:** REQ-2.1, 2.3, 4.1 to 4.10, 4.21, 4.24, 4.25; roadmap; system design 2.2

@@ -40,6 +40,7 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Lesson builder** | The screen where a creator builds and edits a lesson, block by block. Stage 2. | proposed |
 | **Image source** | Where an image comes from: own work, AI-generated, or another source (with author, link and licence). Shown to students under each image. | agreed |
 | **Lesson file** | A plain-text version of a lesson, block by block, that Gil and Claude edit together before the lesson goes into Evolora. Stored in the `lessons` folder. In stage 1 this is the only way to make a lesson. | agreed |
+| **Lesson-writing kit** | What pilot teachers use to write lessons with Claude Code: rules for Claude and a guide for teachers in Hebrew. In `lessons/teacher-kit`. In Hebrew: ערכת כתיבת שיעורים. | proposed |
 | **Loading (a lesson)** | Claude checking a lesson file and putting it into Evolora: first the test site, then the real site after Gil approves. In Hebrew: טעינת שיעור. | proposed |
 | **Import** | Bringing an existing lesson into Evolora from a Google Doc or Word document. | proposed |
 

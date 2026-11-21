@@ -31,7 +31,7 @@ Until then, the milestones below are only a draft.
 |---|---|
 | REQ-2.1, 2.2 | Roles, admin registers teachers |
 | REQ-3.1, 3.2, 3.4, 10.1 | Google sign-in with regular Google accounts, access rules, strangers see nothing |
-| REQ-4.24 | Loading lesson files written by Gil and Claude (no lesson creation inside Evolora in stage 1, D-33) |
+| REQ-4.24, 4.25 | Loading lesson files; the lesson-writing kit for teachers (no lesson creation inside Evolora in stage 1, D-33). The kit is ready now. |
 | REQ-4.2 to 4.5, 4.15 | Lessons for students: all content blocks, formulas, 3 question types, questions block progress, image sources |
 | REQ-5.1, 5.2, 5.4, 5.6 | Classes, class code, class list, many classes per student |
 | REQ-5.7 | Assign lessons to a class or selected students |
