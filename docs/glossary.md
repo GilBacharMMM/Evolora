@@ -34,12 +34,13 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Copy (of a lesson)** | A new lesson made from an existing one, edited by a new creator. It credits both the new and the original creator. | proposed |
 | **Attribution** | Showing the creator's name on their lessons, including on copies. | proposed |
 | **Subject / grade level** | Tags on each lesson, such as "Science" and "Grade 7". Grades 7 to 12 are supported. | proposed |
-| **Edit mode** | A mode any teacher (or creator) can switch on to create and edit lessons and courses. | proposed |
+| **Edit mode** | A mode any teacher (or creator) can switch on to create and edit lessons and courses. Stage 2. | proposed |
 | **Lesson version** | A saved state of a lesson. When a creator changes a lesson, students who already started it finish the version they started; new students get the new version. | proposed |
 | **Drag-and-drop question** | A question where the student drags items from a bank of snippets onto an image, like a puzzle. | proposed |
-| **Lesson builder** | The screen where a creator builds and edits a lesson, block by block. | proposed |
+| **Lesson builder** | The screen where a creator builds and edits a lesson, block by block. Stage 2. | proposed |
 | **Image source** | Where an image comes from: own work, AI-generated, or another source (with author, link and licence). Shown to students under each image. | agreed |
-| **Lesson file** | A plain-text version of a lesson, block by block, that Gil and Claude edit together before the lesson goes into Evolora. Stored in the `lessons` folder. | proposed |
+| **Lesson file** | A plain-text version of a lesson, block by block, that Gil and Claude edit together before the lesson goes into Evolora. Stored in the `lessons` folder. In stage 1 this is the only way to make a lesson. | agreed |
+| **Loading (a lesson)** | Claude checking a lesson file and putting it into Evolora: first the test site, then the real site after Gil approves. In Hebrew: טעינת שיעור. | proposed |
 | **Import** | Bringing an existing lesson into Evolora from a Google Doc or Word document. | proposed |
 
 ## Classes and work

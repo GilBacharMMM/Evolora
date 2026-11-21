@@ -1,6 +1,6 @@
 # Evolora: Requirements
 
-**Status:** Draft 4: adds hints, check-again questions, levels, the help line, random answer order and lesson types (Gil's ideas, 2026-11-20); still in review
+**Status:** Draft 5: no lesson creation inside Evolora in stage 1 (D-33); still in review
 **Last updated:** 2026-11-20
 
 ## How to read this document
@@ -32,7 +32,7 @@ Every lesson in Evolora can be used by any teacher and copied and edited by any 
 ## 2. Users and roles
 
 **REQ-2.1: Four roles** (Priority: MVP)
-Evolora has four roles: **system admin**, **teacher**, **creator** and **student**. One person can hold several roles; for example, a teacher who switches on edit mode is also a creator.
+Evolora has four roles: **system admin**, **teacher**, **creator** and **student**. One person can hold several roles; for example, a teacher who switches on edit mode is also a creator. In stage 1 there is no lesson creation inside Evolora (D-33): Gil writes lessons with Claude as lesson files, so the creator role starts being used in Evolora only in stage 2.
 
 *Acceptance criteria:*
 - [ ] A system admin can see which role each person has.
@@ -46,7 +46,7 @@ Only a system admin can make someone a teacher. Anyone else who signs in is a st
 - [ ] A person not registered as a teacher signs in and sees only student features.
 - [ ] The admin can remove the teacher role from someone.
 
-**REQ-2.3: Edit mode for teachers** (Priority: MVP)
+**REQ-2.3: Edit mode for teachers** (Priority: Later, stage 2; see D-33)
 Any teacher can switch on edit mode to create and edit lessons and courses.
 
 *Acceptance criteria:*
@@ -91,16 +91,20 @@ Each person sees only what their role and classes allow.
 
 ---
 
-## 4. Lesson creation (creators)
+## 4. Lessons: content and creation
 
-**REQ-4.1: Create a lesson** (Priority: MVP)
+**Stage 1 (decision D-33):** lessons are not created inside Evolora. Gil writes each lesson with Claude as a **lesson file** (in the `lessons` folder), and Claude loads it into Evolora (REQ-4.24). Stage 1 concentrates on what teachers and students see and do.
+
+So in this section, wherever a requirement says that "the creator writes" or "the creator sets" something (hints, levels, topics, video times and so on), in stage 1 this means it is written in the lesson file. The screens for creating and editing lessons inside Evolora (REQ-2.3, 4.1, the editing part of 4.2, the formula editor in 4.3, 4.6, 4.8) come in stage 2. Acceptance criteria that mention the lesson builder are checked in stage 2; in stage 1, the same check is done by Claude when loading the lesson file.
+
+**REQ-4.1: Create a lesson** (Priority: Later, stage 2; see D-33)
 In edit mode, a creator creates a lesson with a title, a short description, a lesson language (Hebrew, Arabic or English), a subject and a grade level.
 
 *Acceptance criteria:*
 - [ ] A creator can create a lesson, fill in these details, save it and find it again later.
 
 **REQ-4.2: Lesson content blocks** (Priority: MVP)
-A lesson is a sequence of blocks that the creator can add, edit, reorder and delete. Block types:
+A lesson is a sequence of blocks, shown to the student in order. In stage 1 the blocks come from the lesson file; in stage 2 the creator can also add, edit, reorder and delete them in the lesson builder. Block types:
 - **Text**: with headings, bold, italics, lists and links
 - **Note box**: a highlighted text box, for example "Historical note"
 - **Image**: uploaded from the computer, with an optional caption and a required source (see REQ-4.15)
@@ -114,19 +118,20 @@ A lesson is a sequence of blocks that the creator can add, edit, reorder and del
 - **Question**: see REQ-4.4
 
 *Acceptance criteria:*
-- [ ] A creator can add one block of each type and see it correctly in the lesson.
+- [ ] A test lesson with one block of each type shows every block correctly to a student.
 - [ ] Gil's first lesson (Archimedes and density) can be fully rebuilt in Evolora: story text, 6 images with captions, the metals density table, note boxes, podcast link, videos, the density simulation and the questions.
-- [ ] A creator can move a block up or down and delete it.
+- [ ] (Stage 2) A creator can move a block up or down and delete it.
 - [ ] A YouTube video plays inside the lesson without leaving Evolora.
 - [ ] In the circles lesson, each of the four videos plays inside the lesson, and the questions about it come right after it.
 - [ ] If a simulation website refuses to be shown inside Evolora, the student sees a button that opens it in a new tab.
 
-**REQ-4.3: Visual formula editor** (Priority: MVP)
-Creators write math formulas with a visual editor (buttons and typing, no code), and formulas display properly inside Hebrew, Arabic and English text.
+**REQ-4.3: Formulas** (Priority: MVP for showing formulas; Later, stage 2, for the visual editor)
+Formulas display properly inside Hebrew, Arabic and English text. In stage 1 formulas are written in the lesson file. In stage 2, creators write them with a visual editor (buttons and typing, no code).
 
 *Acceptance criteria:*
-- [ ] A creator can write a fraction, a power, a square root and a Greek letter without typing any code.
-- [ ] The formula looks the same to the student as it did in the editor.
+- [ ] The formulas in the circles lesson (for example P = π × D and S = πR²) display correctly to the student.
+- [ ] (Stage 2) A creator can write a fraction, a power, a square root and a Greek letter without typing any code.
+- [ ] (Stage 2) The formula looks the same to the student as it did in the editor.
 - [ ] A formula inside a Hebrew sentence displays left-to-right as math should, without breaking the sentence.
 
 **REQ-4.4: Question types for the first version** (Priority: MVP)
@@ -134,16 +139,16 @@ Creators write math formulas with a visual editor (buttons and typing, no code),
 - **Open written answer**: checked by the teacher.
 - **Recorded audio answer**: the student records on the Chromebook; checked by the teacher.
 
-For each question, the creator can set:
+For each question, the lesson file (in stage 2, the creator) sets:
 - the correct answer(s) (multiple choice)
 - **grading instructions** describing a good answer (open and audio questions)
 - the **grade weight** (by default, every question counts equally)
 
 *Acceptance criteria:*
-- [ ] A creator can create each of the three question types.
-- [ ] A creator can mark one or several choices as correct.
-- [ ] A creator can write grading instructions for an open or audio question.
-- [ ] A creator can give one question double weight, and the lesson grade reflects it.
+- [ ] A loaded lesson can contain each of the three question types, and each works for the student.
+- [ ] A multiple choice question with two correct choices accepts only the right combination.
+- [ ] The teacher sees the grading instructions of an open or audio question on the review screen.
+- [ ] A question given double weight in the lesson file counts double in the lesson grade.
 
 **REQ-4.5: Questions block progress** (Priority: MVP)
 When a student reaches a question, they must answer it before they can see the rest of the lesson. Attempts and scoring are in REQ-6.3.
@@ -151,21 +156,21 @@ When a student reaches a question, they must answer it before they can see the r
 *Acceptance criteria:*
 - [ ] As a student, you cannot scroll or click past an unanswered question.
 
-**REQ-4.6: Preview as a student** (Priority: MVP)
-A creator can go through the lesson exactly as a student would, without the answers being recorded as a real student's.
+**REQ-4.6: Preview as a student** (Priority: Later, stage 2; see D-33)
+A creator can go through the lesson exactly as a student would, without the answers being recorded as a real student's. In stage 1, Gil checks each new lesson on the test site as a test student instead (REQ-12.4, 12.5).
 
 *Acceptance criteria:*
 - [ ] A creator can preview a lesson, answer its questions, and no grade appears on any dashboard.
 
 **REQ-4.7: Lesson versions** (Priority: MVP)
-When a creator changes a lesson that students have already started, students who started it finish the version they started. Students who start it afterwards get the new version. Existing answers and grades are kept.
+When a lesson that students have already started is changed (in stage 1: when Claude loads a new version of its lesson file), students who started it finish the version they started. Students who start it afterwards get the new version. Existing answers and grades are kept.
 
 *Acceptance criteria:*
-- [ ] Student A starts a lesson. The creator changes a question. Student A still sees the old question.
+- [ ] Student A starts a lesson. A question is changed and the lesson loaded again. Student A still sees the old question.
 - [ ] Student B starts the lesson after the change and sees the new question.
 - [ ] Student A's earlier answers and grades are unchanged.
 
-**REQ-4.8: Copy any lesson** (Priority: MVP)
+**REQ-4.8: Copy any lesson** (Priority: Later, stage 2; see D-33)
 Any creator can copy any lesson and edit the copy as their own. The copy shows both the new creator and the original creator. The original lesson does not change.
 
 *Acceptance criteria:*
@@ -173,14 +178,14 @@ Any creator can copy any lesson and edit the copy as their own. The copy shows b
 - [ ] The copy shows "Based on a lesson by [original creator]".
 
 **REQ-4.9: Lesson library** (Priority: MVP)
-Teachers and creators can browse and search all lessons by title, subject, grade level, language and creator.
+Teachers can browse and search all lessons by title, subject, grade level, language and creator, to choose lessons to assign.
 
 *Acceptance criteria:*
-- [ ] A teacher can find a lesson made by another teacher by searching its title.
+- [ ] A teacher can find a lesson by searching its title.
 - [ ] A teacher can filter lessons to show only Hebrew, 7th-grade math lessons.
 
 **REQ-4.10: Courses** (Priority: MVP)
-A creator or teacher can bundle lessons, their own or anyone's, into an ordered course. A course is either **public** (listed in the course library) or **private**, which means unlisted: it doesn't appear in the course library and only classes it is assigned to can use it, but its lessons are still open to everyone in the lesson library.
+A teacher can bundle lessons from the lesson library into an ordered course. A course is either **public** (listed in the course library) or **private**, which means unlisted: it doesn't appear in the course library and only classes it is assigned to can use it, but its lessons are still open to everyone in the lesson library.
 
 *Acceptance criteria:*
 - [ ] A teacher can create a course from 3 existing lessons and change their order.
@@ -235,7 +240,7 @@ For example, in the Archimedes lesson most questions are level 1, the tungsten q
 
 *Acceptance criteria:*
 - [ ] A creator can set each question to level 1, 2 or 3.
-- [ ] In the lesson builder, each question shows its level.
+- [ ] (Stage 2) In the lesson builder, each question shows its level.
 
 **REQ-4.19: Answers in random order** (Priority: to be set by Gil, see the roadmap)
 In every multiple choice question (including check-again questions), Evolora shows the choices in a random order, different for each student, so that students sitting next to each other can't simply copy "the second answer". A student who leaves and comes back sees the same order as before.
@@ -269,7 +274,7 @@ A creator can divide a lesson into **topics** (for example, in the circles lesso
 - [ ] A creator can group blocks into topics and give each topic a name.
 - [ ] A creator can set the lesson's default minimum number of questions per topic.
 - [ ] When assigning the circles lesson, the teacher sees 3 as the minimum and can change it.
-- [ ] If a topic has fewer level 1 questions than the minimum, the lesson builder warns the creator, and the assignment screen warns the teacher (because level 1 students would not reach the minimum).
+- [ ] If a topic has fewer level 1 questions than the minimum, Claude's loading check warns about it (in stage 2, the lesson builder warns the creator), and the assignment screen warns the teacher (because level 1 students would not reach the minimum).
 - [ ] As a test student in the circles lesson, the next topic opens only after you answer 3 questions in the current topic correctly.
 - [ ] A student who answers every question correctly skips the extra practice questions.
 - [ ] A student who gets one question wrong gets extra practice questions until they have 3 correct answers.
@@ -299,6 +304,15 @@ Type-a-number questions have the same 2 attempts, hint, full solution and check-
 - [ ] As a student, typing 11.5 or 11.46 for an exact answer of 11.46 is marked correct; typing 12 is marked wrong.
 - [ ] The box accepts a decimal point and numbers like 7,850 or 7850, and rejects letters with a friendly message, without using up an attempt.
 - [ ] In the circles lesson, all of Gil's calculation questions, and their check-again questions, are type-a-number questions.
+
+**REQ-4.24: Loading lesson files** (Priority: MVP)
+Claude loads a lesson file, with its images, into Evolora with one command: first into the test site, and after Gil has checked it there, into the real site. Before loading, Claude's loading check makes sure the file is complete: every block is a known type, every image has its file and source, every question has its answer, and every topic has enough questions. If anything is wrong, nothing is loaded and Claude reports what to fix. Loading a changed lesson again follows the lesson versions rule (REQ-4.7).
+
+*Acceptance criteria:*
+- [ ] The Archimedes lesson and the circles lesson are loaded into the test site, and look and work as described in their lesson files.
+- [ ] A lesson file with a missing image source is refused, with a clear message saying which image.
+- [ ] After Gil approves a lesson on the test site, the same lesson appears on the real site.
+- [ ] Changing a lesson file and loading it again creates a new version (REQ-4.7); students in the middle of the old version are not affected.
 
 **REQ-4.11: Import from Google Docs and Word** (Priority: Later)
 A creator can import a Google Doc or Word document, and Evolora turns it into a lesson: text, images and formulas become blocks.

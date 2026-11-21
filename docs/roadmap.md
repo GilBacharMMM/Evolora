@@ -29,9 +29,10 @@ Until then, the milestones below are only a draft.
 
 | Requirement | Short description |
 |---|---|
-| REQ-2.1, 2.2, 2.3 | Roles, admin registers teachers, edit mode |
+| REQ-2.1, 2.2 | Roles, admin registers teachers |
 | REQ-3.1, 3.2, 3.4, 10.1 | Google sign-in with regular Google accounts, access rules, strangers see nothing |
-| REQ-4.1 to 4.6, 4.15 | Create lessons: content blocks, formula editor, 3 question types, preview, image sources |
+| REQ-4.24 | Loading lesson files written by Gil and Claude (no lesson creation inside Evolora in stage 1, D-33) |
+| REQ-4.2 to 4.5, 4.15 | Lessons for students: all content blocks, formulas, 3 question types, questions block progress, image sources |
 | REQ-5.1, 5.2, 5.4, 5.6 | Classes, class code, class list, many classes per student |
 | REQ-5.7 | Assign lessons to a class or selected students |
 | REQ-5.11 | Grade dashboard (basic) |
@@ -40,13 +41,13 @@ Until then, the milestones below are only a draft.
 | REQ-10.4, 11.1 to 11.3, 12.1 to 12.3 | Hosting, safety basics, Chromebook web app, speed, no lost work |
 | REQ-12.4 to 12.6 | Test site, user switching, test data (built first, so Gil can test everything else) |
 
-**Done when:** the Archimedes and density lesson is in Evolora, Gil assigns it to a real class, the students complete it, and Gil sees their grades.
+**Done when:** the Archimedes and density lesson is loaded into Evolora, Gil assigns it to a real class, the students complete it, and Gil sees their grades.
 
 ### Milestone B: Full teacher tools (aim: about 2 more weeks)
 
 | Requirement | Short description |
 |---|---|
-| REQ-1.1, 4.8, 4.9 | Attribution and licence shown, copy any lesson, lesson library |
+| REQ-1.1, 4.9 | Attribution and licence shown, lesson library |
 | REQ-4.7 | Lesson versions |
 | REQ-4.10 | Courses, public or private (unlisted) |
 | REQ-5.3 | Email invites |
@@ -59,12 +60,13 @@ Until then, the milestones below are only a draft.
 
 **Done when:** every MVP acceptance criterion in requirements.md passes when Gil checks it in the app.
 
-## Version 2: Stage 2 (AI and richer content)
+## Version 2: Stage 2 (lesson creation, AI and richer content)
 
 Each AI item first gets a cost estimate for Gil's approval.
 
 | Requirement | Short description |
 |---|---|
+| REQ-2.3, 4.1, 4.2 (editing), 4.3 (editor), 4.6, 4.8 | Creating lessons inside Evolora: edit mode, lesson builder, formula editor, preview, copy any lesson (D-33) |
 | REQ-4.11 | Import from Google Docs and Word |
 | REQ-4.12 | More question types, including drag-and-drop |
 | REQ-7.1 | AI grading options |

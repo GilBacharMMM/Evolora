@@ -385,3 +385,14 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 3 now. Look at option 4 again before a wider release, if ads turn out to be a problem in class.
 **Reason:** Legal, free, and simple. Educational videos often have few or no ads, and the teacher can choose videos without them.
 **Affects:** REQ-4.2, REQ-4.23
+
+### D-33: No lesson creation inside Evolora in stage 1
+**Date:** 2026-11-21 · **Status:** Decided · **Decided by:** Gil
+**Context:** Building screens for creating lessons (the lesson builder, a formula editor, preview, copying) is a large part of the MVP. Meanwhile Gil already writes lessons with Claude as lesson files, which works well.
+**Options considered:**
+1. Build lesson creation inside Evolora in stage 1, as planned.
+2. In stage 1, Gil writes all lessons with Claude as lesson files, and Claude loads them into Evolora. Stage 1 concentrates on the teacher's and the student's screens. Lesson creation inside Evolora comes in stage 2.
+
+**Decision:** Option 2.
+**Reason:** Puts real lessons in front of students sooner, and puts the effort where the pilot needs it: what teachers and students see. Other pilot teachers who want a lesson send their material to Gil.
+**Affects:** REQ-2.1, 2.3, 4.1 to 4.10, 4.21, 4.24; roadmap; system design 2.2

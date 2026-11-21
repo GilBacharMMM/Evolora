@@ -43,11 +43,13 @@ There is one website at **evoloraedu.org**. After signing in, each person sees t
 |---|---|
 | Student | Home (what to do next), lesson player, my progress, messages |
 | Teacher | My classes, class dashboard, grade dashboard, review screen, messages, lesson library |
-| Teacher with edit mode on | Everything above, plus the lesson editor and course editor |
+| Teacher with edit mode on | Everything above, plus the lesson editor (stage 2, D-33) |
 | System admin | Manage teachers |
 
-### 2.2 The lesson editor
-The editor works like a simple word processor made of **blocks** (REQ-4.2). This screen is called the **lesson builder**. The creator clicks "+" to add a block (text, note box, image, table, formula, video, audio, simulation, link list or question) and drags blocks to reorder them. Every image needs its source filled in: own work, AI-generated, or another source with author, link and licence (REQ-4.15). A **Preview** button shows the lesson exactly as a student sees it (REQ-4.6).
+### 2.2 Getting lessons into Evolora
+**Stage 1 (D-33):** there is no lesson editor. Gil and Claude write each lesson as a lesson file in the `lessons` folder (plain text, described in `lessons/README.md`). A small **loading program**, run by Claude on this computer, checks the file, uploads its images to file storage and saves the lesson in the database, as a new version (section 3.2). It loads into the test site first, and into the real site only after Gil has checked the lesson there (REQ-4.24).
+
+**Stage 2: the lesson editor.** The editor works like a simple word processor made of **blocks** (REQ-4.2). This screen is called the **lesson builder**. The creator clicks "+" to add a block (text, note box, image, table, formula, video, audio, simulation, link list or question) and drags blocks to reorder them. Every image needs its source filled in: own work, AI-generated, or another source with author, link and licence (REQ-4.15). A **Preview** button shows the lesson exactly as a student sees it (REQ-4.6).
 
 Formulas use a visual formula editor, so creators click and type, without writing code (REQ-4.3, D-8). Behind the scenes, formulas are saved in the standard math format used by most science software (called LaTeX), so they can be imported from documents later.
 
@@ -85,7 +87,7 @@ Screens are designed for a Chromebook screen (typically 11 to 14 inches) and wor
 | Audio | Lesson audio, students' recorded answers, teachers' audio comments | File storage |
 
 ### 3.2 Lesson versions
-When a creator publishes a lesson, Evolora saves that version and never changes it. Editing creates a new draft. Publishing the draft saves a new version. A student's work always records which version they started, so students in the middle keep their version (REQ-4.7, D-6).
+When a lesson is published (in stage 1: loaded by Claude), Evolora saves that version and never changes it. Editing creates a new draft. Publishing the draft saves a new version. A student's work always records which version they started, so students in the middle keep their version (REQ-4.7, D-6).
 
 Copying a lesson (REQ-4.8) creates a new lesson that remembers which lesson it came from. That is how the "Based on a lesson by…" credit works.
 
@@ -102,7 +104,7 @@ People sign in with "Sign in with Google" (REQ-3.1). People use a regular Google
 ### 4.2 Roles
 - A person's **role** is stored in their record. Everyone starts as a student. Only a system admin can make someone a teacher (REQ-2.2).
 - The first system admin is set up by Claude directly, using a Google account Gil chooses.
-- Edit mode is a switch on the teacher's own screen (REQ-2.3).
+- Edit mode is a switch on the teacher's own screen (REQ-2.3, stage 2).
 
 ### 4.3 Who can see what
 Rules inside the database decide what each person can read and change. They apply even if someone tries to get around the website, for example by typing addresses (REQ-3.4). The main rules:
@@ -112,7 +114,7 @@ Rules inside the database decide what each person can read and change. They appl
 - Only the **checking service** can write grades for automatically checked questions. Students can't write grades at all.
 - Teachers can read and change everything in **their own classes**, and nothing in other teachers' classes.
 - Messages can be read only by the student and the teachers of that class (REQ-5.16).
-- Lessons in the lesson library can be read by all teachers. Only the lesson's own creator can change it (others make a copy).
+- Lessons in the lesson library can be read by all teachers. In stage 1, only Claude's loading program can add or change lessons. In stage 2, only the lesson's own creator can change it (others make a copy).
 
 These rules are tested automatically before every release (section 8).
 
@@ -223,8 +225,9 @@ Gil checks each requirement's acceptance criteria on the test site. For each fea
 | Part | Technology |
 |---|---|
 | Website | React with TypeScript, built with Vite |
-| Lesson editor | Tiptap (a block-based editor that supports right-to-left text) |
-| Formula editor and display | MathLive, with formulas stored as LaTeX |
+| Lesson editor (stage 2) | Tiptap (a block-based editor that supports right-to-left text) |
+| Formula display (and editor in stage 2) | MathLive, with formulas stored as LaTeX |
+| Lesson loading program (stage 1) | A small Node.js program in this project that reads lesson files |
 | Translations | i18next |
 | Sign-in | Firebase Authentication (Google) |
 | Database | Cloud Firestore, region me-west1 (Tel Aviv) |
@@ -253,7 +256,7 @@ Which part of the system delivers each group of requirements:
 | REQ-1.1 (open, attribution, licence) | Database: lesson creator and "based on" fields (3.2); licence shown in the lesson player (2.3) |
 | REQ-2.1 to 2.3 (roles, edit mode) | Accounts and permissions (4.2) |
 | REQ-3.1 to 3.4 (sign-in, access) | Accounts and permissions (4.1, 4.3) |
-| REQ-4.1 to 4.10 (lessons, courses) | Lesson editor (2.2), lesson versions (3.2), permissions (4.3) |
+| REQ-4.1 to 4.10, 4.24 (lessons, courses, loading) | Getting lessons into Evolora (2.2), lesson versions (3.2), permissions (4.3) |
 | REQ-5.1 to 5.16 (classes, dashboards, review, messages) | Website screens (2.1), checking service (5), permissions (4.3), email (7.4) |
 | REQ-6.1 to 6.6 (student learning) | Lesson player (2.3), checking service (5), audio (6) |
 | REQ-8.1 (subjects, grades) | Lesson details in the database (3.1) |
