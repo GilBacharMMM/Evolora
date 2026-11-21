@@ -10,7 +10,7 @@ Evolora is teaching software. It helps teachers create lessons and manage their 
 ## Rules (follow in every session)
 
 1. **The documents in `/docs` are the single source of truth.** Code always follows the docs. Never change how the software behaves without first updating the requirements and telling Gil what changed.
-2. **Plain language.** Write every document in plain, non-technical language that Gil can read and edit. Number every requirement (for example, REQ-3.2) so it can be referred to.
+2. **Plain language, in English.** Write every project document in English, in plain, non-technical language that Gil can read and edit. Number every requirement (for example, REQ-3.2) so it can be referred to. Exceptions: lessons are written in their own language (often Hebrew), and the teachers' guide is in Hebrew for now (English and Arabic versions will come later).
 3. **Acceptance criteria.** Every requirement has acceptance criteria that Gil can check by using the app, not by reading code.
 4. **Decision log.** Log every significant decision in `docs/decisions.md` with the date, the options considered and the reason for the choice.
 5. **Ask, don't guess.** When something is unclear, ask Gil. Never fill a gap silently.

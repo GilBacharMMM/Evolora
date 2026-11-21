@@ -317,7 +317,7 @@ Claude loads a lesson file, with its images, into Evolora with one command: firs
 **REQ-4.25: Lesson-writing kit for teachers** (Priority: MVP)
 Pilot teachers can write lessons themselves with Claude Code, using the **lesson-writing kit** in `lessons/teacher-kit`:
 - **Rules for Claude** (`lesson-rules-for-claude.md`): the teacher saves it as `CLAUDE.md` in an empty folder, and Claude Code then follows the lesson file format and the lesson rules (image rights, levels, hints, check-again questions, topics, privacy). Claude interviews the teacher, writes the lesson, suggests improvements and runs a final check.
-- **A guide for teachers in Hebrew** (`מדריך-למורים.md`): the steps, in plain language, and the important rules.
+- **A guide for teachers in Hebrew** (`מדריך-למורים.md`): the steps, in plain language, and the important rules. English and Arabic versions will be added later.
 
 When the lesson is ready, the teacher sends the lesson folder (as a zip file) to Gil, who has Claude load it (REQ-4.24). The kit is kept up to date whenever what a lesson may contain changes.
 
