@@ -37,11 +37,12 @@ Extra lines for questions (REQ-4.16 to 4.18):
 | `[EXTRA]` after the heading | Extra practice question: asked only until the student has answered the topic's minimum correctly (REQ-4.21) |
 | `- Hint:` | Shown after the 1st wrong answer (REQ-4.16) |
 | `- Solution:` | The full worked solution, shown after the 2nd wrong answer (REQ-4.16) |
-| `### Check-again question` | A similar question under the main one, asked right after the solution (REQ-4.17). Several can be added; each student gets one at random. Choices are shown in random order (REQ-4.19), so the order in the file doesn't matter. |
+| `### Check-again question` | A similar question under the main one, asked right after the solution (REQ-4.17). Several can be added; each student gets one at random. It has 2 attempts, like the original; it may have its own `- Hint:` line (otherwise the original's hint is shown). Choices are shown in random order (REQ-4.19), so the order in the file doesn't matter. |
+| `- Tip: title \| text` | A help tip for the question, shown from the "I didn't understand…" line (REQ-6.15). Several per question; write them after the solution. A tip explains an idea or a method, and never gives the answer. Not allowed in exams. |
 
 ## Course files
 
-A course is written as a **course file** (REQ-4.10), in the `courses` folder, for example `courses/geometry-grade7.md`. It lists the course's teaching lessons in order, each with its practice lessons (zero or more), by the names of their lesson folders:
+A course is written as a **course file** (REQ-4.10), in the `courses` folder, for example `courses/circles-demo.md`. It lists the course's teaching lessons in order, each with its practice lessons (zero or more), by the names of their lesson folders:
 
 ```
 ---
@@ -65,7 +66,7 @@ An exam is listed as its own numbered line, for example `4. [EXAM] geometry-exam
 
 ## Exams
 
-A lesson with `type: exam` follows the exam rules (REQ-4.26): one attempt per question, the same questions for every student, no `[EXTRA]` questions, no `Hint` and no `### Check-again question`. A `- Solution:` line may be written; students see it only after the teacher releases the results. Levels don't apply in exams, so `[LEVEL]` tags may be left out.
+A lesson with `type: exam` follows the exam rules (REQ-4.26): one attempt per question, the same questions for every student, no `[EXTRA]` questions, no `Hint`, no `Tip` and no `### Check-again question`. A `- Solution:` line may be written; students see it only after the teacher releases the results. Levels don't apply in exams, so `[LEVEL]` tags may be left out.
 
 ## Notes and comments
 

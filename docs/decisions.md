@@ -282,6 +282,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 3 (Gil's idea).
 **Reason:** One lesson serves the whole class; the teacher keeps full control; students aren't labelled in front of others.
 **Affects:** REQ-4.18, REQ-5.18, REQ-6.10, REQ-12.6
+**Update (2026-11-22, Gil):** levels are per class; a teacher's change stays until the teacher changes it again; Evolora keeps suggesting changes for the weakest and strongest 10%; teachers see levels on the dashboard.
 
 ### D-24: Multiple choice answers in random order
 **Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
@@ -325,6 +326,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 3. Keep Evolora as a working name for now, and choose a new, unused name later.
 
 **Decision:** Option 3. Claude may suggest names.
+**Update (2026-11-22):** Gil's current favourite is **Evoluni** (evolution + university); a decision is expected within 1 to 2 days.
 **Reason:** Neither name is distinctive. Renaming later costs about an hour of Claude's work, as long as it happens before students see the name.
 **Affects:** D-14, REQ-11.2, OPEN Q-17
 
@@ -463,3 +465,43 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 2. Every lesson is marked with its type. "Learning lesson" is renamed "teaching lesson" everywhere.
 **Reason:** Exams give teachers a fair, equal measure of each student, next to the individual paths of teaching and practice.
 **Affects:** REQ-4.20, REQ-4.26, glossary, lesson file format, teacher kit
+
+### D-40: Learning without grade stress: the teacher decides whether students see grades
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Context:** Gil wants students to learn without the stress of grades, while teachers still need grades to understand each student's level and see who needs support.
+**Options considered:**
+1. Students always see their grades.
+2. Students never see grades.
+3. The teacher chooses per assignment whether students see grades, with defaults by lesson type: teaching lessons hidden, practice lessons and exams shown.
+
+**Decision:** Option 3. Correct-or-wrong feedback, hints and solutions are always shown; only marks and grades are hidden.
+**Reason:** Students can make mistakes while learning something new without worrying, and still get clear grades where they matter.
+**Affects:** REQ-5.22, REQ-6.3, REQ-5.9
+
+### D-41: Exam time windows and locking
+**Date:** 2026-11-22 · **Status:** Decided (details open, OPEN Q-31) · **Decided by:** Gil
+**Context:** Exams should be taken by the whole class at the same time, without access to other material.
+**Options considered:**
+1. A countdown timer per student.
+2. A time window set by the teacher, during which only the exam can be opened: in the class, or in all of Evolora.
+
+**Decision:** Option 2. Locking the Chromebook itself to Evolora needs a separate device tool; Google Classroom's locked mode works only with Google Forms quizzes.
+**Reason:** Matches how exams are held in class, and works together with the school's device tools.
+**Affects:** REQ-4.26, REQ-5.23
+
+### D-42: Help tips written in the lessons, before AI
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Context:** The "I didn't understand" help line needs AI, which comes in stage 2. The demo will use 2 to 3 lessons.
+**Options considered:**
+1. No help line until AI is ready.
+2. The help line sends the student's question to the teacher as a message.
+3. Help tips written in advance in each lesson, shown from the help line.
+
+**Decision:** Option 3.
+**Reason:** Students get immediate help in the demo, at no cost and with no AI safety questions.
+**Affects:** REQ-6.15, REQ-6.9, lesson file format, teacher kit
+
+### D-43: Check-again questions get 2 attempts
+**Date:** 2026-11-22 · **Status:** Decided (effect on the grade open, OPEN Q-31) · **Decided by:** Gil
+**Decision:** A check-again question has 2 attempts, like the original question. After two wrong answers, its answer is shown and the teacher gets a red flag.
+**Affects:** REQ-4.17

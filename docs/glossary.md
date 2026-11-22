@@ -6,7 +6,7 @@ These are the terms we use in all documents and in the app. When a term is used,
 
 | Term | Meaning | Status |
 |---|---|---|
-| **Creator** | A person who creates and edits lessons and courses. A teacher can also be a creator. In Hebrew: יוצר/ת שיעורים. (Name under discussion, see OPEN Q-16.) | proposed |
+| **Creator** | A person who creates and edits lessons and courses. A teacher can also be a creator. In Hebrew: יוצר/ת שיעורים. | agreed |
 | **Teacher** | A person who runs one or more classes: decides which lessons each student gets, follows progress, and checks and comments on students' work. | proposed |
 | **Student** | A person who learns: reads the material, watches and listens to media, and answers questions. Gets lessons from a teacher, or enrolls in a public course alone. | proposed |
 | **System admin** | A person who manages Evolora itself, including registering teachers. | proposed |
@@ -18,6 +18,9 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Lesson** | A single unit of learning made by a creator. It contains material (text, images, graphs, math formulas, video, audio, simulations) and questions. A lesson is either a teaching lesson or a practice lesson. | proposed |
 | **Topic** | A part of a lesson about one subject (for example, "the area of a circle"), with a minimum number of questions every student must answer before moving on. The creator sets a default minimum; the teacher can change it when assigning. In Hebrew: נושא. | proposed |
 | **Extra practice question** | A question in a topic that is asked only to students who haven't yet answered the topic's minimum number of questions correctly. In Hebrew: שאלת תרגול נוספת. | agreed |
+| **Help tip** | A short explanation written in the lesson file for a question, with a title the student can choose ("What is a radius?"). Shown from the help line before AI is ready. It never gives the answer. In Hebrew: טיפ עזרה. | proposed |
+| **Exam time window** | The date and times when an exam can be taken. In Hebrew: חלון זמן למבחן. | proposed |
+| **Exam lock** | During an exam's time window, only the exam can be opened: in the class, or in all of Evolora. In Hebrew: נעילה בזמן מבחן. | proposed |
 | **Solved example** | A question shown with its full answer, for the student to learn from, with nothing to answer. In Hebrew: דוגמה פתורה. | proposed |
 | **Type-a-number question** | A question where the student types a number, checked automatically; correct to one digit after the decimal point is enough. In Hebrew: שאלה עם תשובה מספרית. | proposed |
 | **Teaching lesson** | A lesson that teaches new material. In Hebrew: שיעור הקניה. (Earlier called "learning lesson".) | agreed |
@@ -69,13 +72,14 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Pending notes** | Comments the student has not yet gone over. While a student has pending notes, they cannot start a new lesson. | proposed |
 | **Hint** | Short guidance, written in advance by the creator, that Evolora shows after the 1st wrong answer to a multiple choice question. It helps without giving the answer. In Hebrew: רמז. | agreed |
 | **Full solution** | The question solved step by step, written by the creator. Shown after the 2nd wrong answer. In Hebrew: פתרון מלא. | agreed |
-| **Check-again question** | A similar question (different numbers or materials) from a bank under a multiple choice question. Asked right after the full solution, to check the student now understands. For a calculation, a similar calculation; for an understanding question, the same question in other words with different answers. In Hebrew: שאלת בדיקה חוזרת. | agreed |
+| **Check-again question** | A similar question (different numbers or materials) from a bank under a multiple choice question. Asked right after the full solution, to check the student now understands. For a calculation, a similar calculation; for an understanding question, the same question in other words with different answers. In Hebrew: שאלת בדיקה חוזרת. It has 2 attempts, like the original question. | agreed |
 | **Question level** | How hard a question is: 1 (easiest) to 3 (hardest). Set by the creator. In Hebrew: רמת שאלה. | proposed |
 | **Student level** | A secret level from 1 to 3 that a teacher gives each student in a class. Only the class's teachers see it. A student sees only questions at or below their level. Everyone starts at 2. In Hebrew: רמת תלמיד. | proposed |
 | **Help line** | The line under every question: "I didn't understand ___, please explain." Later, AI answers it without revealing the answer, staying on the question's subject. In Hebrew: שורת עזרה. | proposed |
 | **Grading instructions** | Guidance a creator writes for an open question, describing a good answer. Teachers, and later AI grading, use it. | proposed |
 | **Pending grade** | The lesson grade shown while open answers are still waiting for the teacher to grade them. | proposed |
 | **Review screen** | The teacher's screen for grading one question: every student's answer appears one below the other, and the teacher moves between students with the keyboard (Tab). | proposed |
+| **Students see grades** | An assignment setting: whether students see their grades for it. By default no for teaching lessons, yes for practice lessons and exams. The teacher always sees grades. In Hebrew: הצגת ציונים לתלמידים. | proposed |
 | **Grade weight** | How much a question counts toward the lesson grade. By default all questions count equally; the creator may change this. | proposed |
 | **Due date** | An optional deadline a teacher sets on an assignment. After it, the teacher's choice applies: the grade drops by a set percentage, or the lesson is locked. The teacher can extend it. | proposed |
 | **Co-teacher** | A second (or further) teacher added to a class, with exactly the same permissions. When teachers change the same thing, the last change wins. | proposed |

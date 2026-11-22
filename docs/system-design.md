@@ -123,18 +123,25 @@ These rules are tested automatically before every release (section 8).
 
 ## 5. Checking answers and grades
 
-### 5.1 Automatically checked questions (multiple choice)
+### 5.1 Automatically checked questions (multiple choice and type-a-number)
 1. The student submits an answer.
 2. The checking service compares it with the correct answer in the protected area.
 3. It records the attempt. After the 1st wrong attempt it replies "try again" with the hint (REQ-4.16).
-4. After a correct answer, or after the 2nd wrong attempt, it records the question's score (REQ-6.3). After the 2nd wrong attempt, it sends the full solution (which contains the answer), then picks one check-again question at random and sends it without its answer (REQ-4.17). A wrong answer to that creates a red flag for the class's teachers.
+4. After a correct answer, or after the 2nd wrong attempt, it records the question's score (full or half marks, or 0; REQ-6.3). After the 2nd wrong attempt, it sends the full solution (which contains the answer), then picks one check-again question at random and sends it without its answer (REQ-4.17). The check-again question also has 2 attempts; two wrong answers create a red flag for the class's teachers.
+5. Type-a-number answers are accepted when they are within 0.1 of the correct answer (REQ-4.22).
+6. In an exam, each question has one attempt, and the checking service sends nothing back but "saved" until the teacher releases the results (REQ-4.26).
 
 The correct answer, the hint and the solution are kept in the protected area. The correct answer reaches the student's Chromebook only after the 2nd wrong attempt. Before that, it isn't there to find, even by a student who knows how to look inside web pages (decision D-17).
 
 **Random answer order (REQ-4.19):** the first time a student opens a question, the checking service shuffles its choices and saves that order for the student, so it stays the same when they return.
 
-*Details still waiting for Gil's answers (Q-18, Q-21):*
-- **Levels (REQ-6.10):** the student's level is stored where only teachers and the checking service can read it. When the student opens a lesson, they receive only the questions up to their level, so the skipped questions never reach their Chromebook.
+**Levels (REQ-6.10):** the student's level is stored, per class, where only teachers and the checking service can read it. When the student opens a lesson, they receive only the questions up to their level, so the skipped questions never reach their Chromebook.
+
+**Help tips (REQ-6.15):** tips are not secret, so they are sent with the question. Each time a student opens a tip, it is noted, so the teacher can see it. Tips are not sent during exams.
+
+**Hidden grades (REQ-5.22):** when an assignment's grades are hidden from students, the grades are stored where only teachers can read them. The student's Chromebook receives only "right" or "wrong" for each answer, so a hidden grade can't be found even by looking inside the web page.
+
+**Exam window and lock (REQ-5.23):** the time window is checked by the checking service, using the server's clock, not the Chromebook's. While a lock is on, the database rules refuse to open anything other than the exam for the class's students: in the class, or in all of Evolora.
 
 ### 5.2 Open and audio questions
 The answer is saved and the question is marked **pending**. The student continues. When the teacher grades it on the review screen (REQ-5.12), the checking service recalculates the lesson grade.
@@ -258,11 +265,12 @@ Which part of the system delivers each group of requirements:
 | REQ-2.1 to 2.3 (roles, edit mode) | Accounts and permissions (4.2) |
 | REQ-3.1 to 3.4 (sign-in, access) | Accounts and permissions (4.1, 4.3) |
 | REQ-4.1 to 4.10, 4.24 (lessons, courses, loading) | Getting lessons into Evolora (2.2), lesson versions (3.2), permissions (4.3) |
-| REQ-5.1 to 5.16 (classes, dashboards, review, messages) | Website screens (2.1), checking service (5), permissions (4.3), email (7.4) |
-| REQ-6.1 to 6.6 (student learning) | Lesson player (2.3), checking service (5), audio (6) |
+| REQ-5.1 to 5.26 (classes, dashboards, review, messages, levels, grades shown or hidden, exam windows) | Website screens (2.1), checking service (5), permissions (4.3), email (7.4) |
+| REQ-6.1 to 6.15 (student learning, help tips) | Lesson player (2.3), checking service (5), audio (6) |
+| REQ-4.11 to 4.26 (question features, topics, exams) | Lesson player (2.3), checking service (5.1) |
 | REQ-8.1 (subjects, grades) | Lesson details in the database (3.1) |
 | REQ-9.1 to 9.4 (languages, direction) | Languages and direction (2.4) |
-| REQ-10.1 to 10.4 (privacy) | Permissions (4.3), Israel region and backups (3.3, 7.1) |
+| REQ-10.1 to 10.4, 10.7 (privacy, class-code alerts) | Permissions (4.3), Israel region and backups (3.3, 7.1) |
 | REQ-11.1 to 11.3 (platform, hosting, size) | Screen size (2.5), hosting (7) |
 | REQ-12.4 to 12.6 (test site, user switching, test data) | Test site (7.3) |
 | REQ-12.1 to 12.3 (speed, no lost work, accessibility) | Lesson player saves after every answer (2.3); tested in screen tests (8.1) |

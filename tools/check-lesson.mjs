@@ -14,7 +14,7 @@ const BLOCK_TYPES = new Set([
 ])
 const LESSON_TYPES = ['teaching lesson', 'practice lesson', 'exam']
 const LANGUAGES = ['he', 'ar', 'en']
-const FIELD = /^- (Hint|Solution|Answer|Unit|Grading instructions|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
+const FIELD = /^- (Hint|Solution|Answer|Unit|Grading instructions|Tip|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
 const NUMBER = /^-?\d+(\.\d+)?$/
 const TIME = /^\d{1,2}:\d{2}(:\d{2})?$/
 
@@ -32,17 +32,20 @@ function headingTags(line) {
 function fieldsOf(lines) {
   const fields = {}
   const choices = []
+  const tips = []
   for (const { text, n } of lines) {
     if (text.startsWith('>')) continue
     const f = text.match(FIELD)
     if (f) {
       const key = f[1].toLowerCase()
-      fields[key] = { value: f[2].replace(/\[NEW[^\]]*\]\s*/g, '').trim(), n }
-    } else if (/^- /.test(text) && !fields.hint && !fields.solution) {
+      const value = f[2].replace(/\[NEW[^\]]*\]\s*/g, '').trim()
+      if (key === 'tip') tips.push({ value, n })
+      else fields[key] = { value, n }
+    } else if (/^- /.test(text) && !fields.hint && !fields.solution && tips.length === 0) {
       choices.push({ text: text.slice(2).trim(), n, correct: text.startsWith('- (✔)') })
     }
   }
-  return { fields, choices }
+  return { fields, choices, tips }
 }
 
 function checkLesson(target) {
@@ -117,8 +120,10 @@ function checkLesson(target) {
   }
 
   let newTags = 0
+  let tipCount = 0
+  let noTips = 0
   for (const b of blocks) {
-    const { fields, choices } = fieldsOf(b.lines)
+    const { fields, choices, tips } = fieldsOf(b.lines)
     const isQuestion = b.type.startsWith('QUESTION')
     const isAuto = b.type === 'QUESTION: multiple choice' || b.type === 'QUESTION: number'
     const levelTag = b.tags.find((t) => /^LEVEL\s*\d$/.test(t))
@@ -178,6 +183,21 @@ function checkLesson(target) {
 
     checkQuestionBody(b.type, fields, choices, b.n, what, err)
 
+    // Help tips (REQ-6.15): "- Tip: title | text", never in exams, never the answer
+    if (tips.length) {
+      if (isExam) err(tips[0].n, 'Exams have no help tips (REQ-6.15).')
+      for (const tip of tips) {
+        const parts = tip.value.split('|')
+        if (parts.length < 2 || !parts[0].trim() || !parts.slice(1).join('|').trim()) err(tip.n, 'Help tip: write it as "- Tip: title | text".')
+        if (fields.answer) {
+          const ans = fields.answer.value.replace(/,/g, '')
+          const tipText = tip.value.replace(/,/g, '')
+          if (ans.length > 1 && new RegExp('(^|[^0-9.])' + ans.replace('.', '\\.') + '([^0-9]|$)').test(tipText)) err(tip.n, `Help tip: it contains the answer (${fields.answer.value}). Tips must never give the answer.`)
+        }
+      }
+      tipCount += tips.length
+    } else if (!isExam) noTips++
+
     if (b.type === 'QUESTION: open' || b.type === 'QUESTION: audio') {
       if (!fields['grading instructions']) err(b.n, `The ${what} has no grading instructions.`)
     }
@@ -216,6 +236,7 @@ function checkLesson(target) {
   newTags = (all.match(/\[NEW[^\]]*\]/g) || []).length
   if (newTags) out.notes.push(`${newTags} part(s) are still marked [NEW] (suggested by Claude, not yet approved).`)
   if (blueNotes) out.notes.push(`${blueNotes} comment(s) from Claude (🟦) are still in the file.`)
+  out.notes.push(`${tipCount} help tip(s); ${noTips} question(s) without tips.`)
   out.notes.push(`${topics.length} topic(s), ${blocks.length} blocks, ${blocks.filter((b) => b.type.startsWith('QUESTION')).length} questions.`)
   return { file, ...out }
 
@@ -233,16 +254,67 @@ function checkLesson(target) {
   }
 }
 
+// Course files (REQ-4.10): numbered [TEACHING] or [EXAM] lines, each teaching lesson
+// followed by zero or more "- [PRACTICE]" lines. Every name must be a lesson folder in
+// lessons/, with the matching type, and the lesson itself must pass the lesson check.
+function checkCourse(file) {
+  const out = { errors: [], warnings: [], notes: [] }
+  const err = (n, msg) => out.errors.push(n ? `line ${n}: ${msg}` : msg)
+  if (!fs.existsSync(file)) { err(0, `No course file found at ${file}`); return { file, ...out } }
+  const lines = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n').split('\n')
+  const meta = {}
+  let i = 0
+  if ((lines[0] || '').trim() !== '---') err(1, 'The course file must start with its details between two "---" lines.')
+  else {
+    for (i = 1; i < lines.length && lines[i].trim() !== '---'; i++) {
+      const m = lines[i].match(/^([^:]+):\s*(.*)$/)
+      if (m) meta[m[1].trim().toLowerCase()] = m[2].trim()
+    }
+    i++
+  }
+  for (const key of ['title', 'language', 'subject', 'grade', 'creator', 'licence']) {
+    if (!meta[key]) err(1, `Course details: "${key}" is missing.`)
+  }
+  const lessonsDir = path.join(path.dirname(path.dirname(path.resolve(file))), 'lessons')
+  const wanted = { TEACHING: 'teaching lesson', PRACTICE: 'practice lesson', EXAM: 'exam' }
+  let count = 0
+  let lastTeaching = false
+  for (; i < lines.length; i++) {
+    const text = lines[i]
+    const n = i + 1
+    if (!text.trim() || text.trim().startsWith('>')) continue
+    const top = text.match(/^\d+\.\s*\[(TEACHING|EXAM)\]\s*(\S+)\s*$/)
+    const sub = text.match(/^\s+-\s*\[PRACTICE\]\s*(\S+)\s*$/)
+    let kind, name
+    if (top) { kind = top[1]; name = top[2]; lastTeaching = kind === 'TEACHING' }
+    else if (sub) {
+      kind = 'PRACTICE'; name = sub[1]
+      if (!lastTeaching) err(n, 'A practice lesson must come under a teaching lesson.')
+    } else { err(n, `This line isn't a course entry: "${text.trim()}".`); continue }
+    count++
+    const lessonFile = path.join(lessonsDir, name, 'lesson.md')
+    if (!fs.existsSync(lessonFile)) { err(n, `There is no lesson folder "lessons/${name}".`); continue }
+    const type = (fs.readFileSync(lessonFile, 'utf8').match(/^type:\s*(.+)$/m) || [])[1]
+    if ((type || '').trim() !== wanted[kind]) err(n, `"${name}" is listed as ${kind}, but its type is "${(type || '').trim()}".`)
+    const r = checkLesson(lessonFile)
+    if (r.errors.length) err(n, `The lesson "${name}" has ${r.errors.length} error(s); run the check on it.`)
+  }
+  if (count === 0) err(0, 'The course lists no lessons.')
+  out.notes.push(`${count} lesson(s) in the course.`)
+  return { file, ...out }
+}
+
 const targets = process.argv.slice(2)
 if (targets.length === 0) {
-  console.log('Usage: node tools/check-lesson.mjs <lesson folder or lesson.md> [more ...]')
+  console.log('Usage: node tools/check-lesson.mjs <lesson folder, lesson.md or courses/<name>.md> [more ...]')
   process.exit(2)
 }
 let failed = false
 for (const t of targets) {
-  const r = checkLesson(t)
+  const isCourse = t.endsWith('.md') && path.basename(path.dirname(path.resolve(t))) === 'courses'
+  const r = isCourse ? checkCourse(t) : checkLesson(t)
   console.log(`\n${r.file}`)
-  if (r.errors.length === 0) console.log('  OK: no errors. The lesson can be loaded.')
+  if (r.errors.length === 0) console.log(isCourse ? '  OK: no errors. The course can be loaded.' : '  OK: no errors. The lesson can be loaded.')
   for (const e of r.errors) console.log(`  ERROR   ${e}`)
   for (const w of r.warnings) console.log(`  warning ${w}`)
   for (const n of r.notes) console.log(`  note    ${n}`)

@@ -1,6 +1,6 @@
 # Evolora: Requirements
 
-**Status:** Draft 6: student screens and the two key principles added (2026-11-22); still in review
+**Status:** Draft 7: Gil's answers of 2026-11-22 (grades, exams, tips, levels) added; still in review
 **Last updated:** 2026-11-20
 
 ## How to read this document
@@ -235,17 +235,18 @@ After the 1st wrong attempt, Evolora shows the hint and the student tries again.
 - [ ] In the Archimedes lesson, each multiple choice question shows the hint and solution written for it.
 
 **REQ-4.17: Check-again questions** (Priority: to be set by Gil, see the roadmap)
-The creator adds a bank of one or more **check-again questions** to each multiple choice question, to check that the student understands after seeing the full solution:
+The creator adds a bank of one or more **check-again questions** to each multiple choice and type-a-number question, to check that the student understands after seeing the full solution:
 - If the question is a **calculation** (for example, "what is the density of this block?"), the check-again question is a similar calculation with different numbers or materials.
 - If the question is about **understanding** (for example, "why did the king have a doubt?"), the check-again question asks the same thing in different words, mostly with different answers.
 
-Right after the full solution (REQ-4.16), Evolora picks one check-again question from the bank at random and asks it. If the student answers it wrongly too, the teacher gets a **red flag** for that student and question, and the student continues.
+Right after the full solution (REQ-4.16), Evolora picks one check-again question from the bank at random and asks it. The check-again question has **2 attempts**, like the original question (Gil, Q-19): after a wrong 1st attempt the student tries again (the creator may write a hint for the check-again question; otherwise the original question's hint is shown again). If the 2nd attempt is wrong too, Evolora shows the correct answer, the teacher gets a **red flag** for that student and question, and the student continues. *Still open (OPEN Q-31):* whether the check-again question changes the grade.
 
 *Acceptance criteria:*
 - [ ] A creator can add several check-again questions under a multiple choice question.
 - [ ] As a student, right after the full solution you get one check-again question; different students may get different ones.
-- [ ] Answering the check-again question wrongly sends a red flag; the teacher sees it on the class dashboard (REQ-5.10) with the student's name and the question.
-- [ ] Answering it correctly sends no flag.
+- [ ] A wrong 1st answer to the check-again question lets the student try once more.
+- [ ] Two wrong answers to the check-again question show its correct answer and send a red flag; the teacher sees it on the class dashboard (REQ-5.10) with the student's name and the question.
+- [ ] Answering it correctly, on the 1st or 2nd attempt, sends no flag.
 
 **REQ-4.18: Question levels** (Priority: to be set by Gil, see the roadmap)
 Every question has a **level** from 1 to 3: 1 is the easiest, 3 the hardest. The creator sets it, and a new question starts at level 1. Who sees which questions is in REQ-6.10.
@@ -264,7 +265,7 @@ In every multiple choice question (including check-again questions), Evolora sho
 - [ ] Closing and reopening the lesson keeps the same order for the same student.
 - [ ] The correct answer is still marked correct, whatever its position.
 
-**REQ-4.20: Teaching, practice and exam lessons** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-23)
+**REQ-4.20: Teaching, practice and exam lessons** (Priority: to be set by Gil, see the roadmap)
 Every lesson has a type, and students always see it marked on the lesson ("Teaching", "Practice" or "Exam"). When creating a lesson, the creator chooses its type:
 - **Teaching lesson** (in Hebrew: שיעור הקניה): teaches new material, with text, media and questions, like the Archimedes lesson.
 - **Practice lesson** (in Hebrew: שיעור תרגול): only questions, on material the students have already learned. No new material. This matters most in mathematics.
@@ -273,7 +274,7 @@ Every lesson has a type, and students always see it marked on the lesson ("Teach
 *Acceptance criteria:*
 - [ ] Every lesson shows its type ("Teaching", "Practice" or "Exam") on the course page, the class page and the lesson itself, in the student's language.
 - [ ] The lesson library shows each lesson's type.
-- [ ] A practice lesson contains questions only (the exact rules depend on OPEN Q-23).
+- [ ] A practice lesson contains questions only: new questions on material already taught, never new material (Gil, Q-23). Like other lessons, it can have hints, solutions, check-again questions, extra practice questions, levels and help tips.
 
 **REQ-4.21: Topics, with a minimum number of questions** (Priority: to be set by Gil, see the roadmap)
 A creator can divide a lesson into **topics** (for example, in the circles lesson: what a circle is, the circumference, the number π, the area). Every student must answer at least a **minimum number of questions correctly** in each topic before moving on to the next one, whatever their student level (REQ-6.10). A student who reaches the minimum moves on (Gil, Q-24). The details (Gil, Q-26):
@@ -350,19 +351,21 @@ An exam is a lesson of type "Exam". It has questions only, and these rules:
 - **The same questions for every student**, whatever their student level (levels don't apply in exams).
 - Multiple choice answers still appear in random order for each student (REQ-4.19), to reduce copying.
 
-*Proposed (OPEN Q-30):*
-- An exam opens only when the teacher opens it (REQ-5.20), whatever the course order.
+Decided with Gil (Q-30):
+- An exam opens only when the teacher opens it (REQ-5.20), or at the start of its **exam time window** (REQ-5.23), whatever the course order.
 - Students can move between the exam's questions and change answers until they press "Submit exam"; after that, nothing can be changed.
 - Students see their grade and the correct answers only when the teacher releases the results. The creator may write a full solution for each question, shown then.
-- No time limit in stage 1.
+- There is no countdown timer; instead, the teacher can set a time window, and can lock everything else during it (REQ-5.23).
 - A wrong answer to a level 1 question in an exam sends a red flag, following the mastery principle (REQ-1.3).
 - A student can retake an exam only if the teacher allows it.
+- There are no help tips during an exam (REQ-6.15).
 
 *Acceptance criteria:*
 - [ ] In an exam, a wrong answer shows no hint and no solution, and the question can't be tried again.
 - [ ] A level 1 test student and a level 3 test student get exactly the same exam questions.
 - [ ] Two test students see the choices of the same question in different orders.
-- [ ] An exam inside a course stays locked until the teacher opens it.
+- [ ] An exam inside a course stays locked until the teacher opens it or its time window starts.
+- [ ] During an exam, the help line and tips don't appear.
 
 **REQ-4.11: Import from Google Docs and Word** (Priority: Later)
 A creator can import a Google Doc or Word document, and Evolora turns it into a lesson: text, images and formulas become blocks.
@@ -462,6 +465,8 @@ When assigning, the teacher sets:
 - **Redo counts**: whether redoing a finished lesson replaces its grade (see REQ-6.5).
 - **Who checks open answers**: in the MVP, always the teacher. AI options are in REQ-7.1.
 - **Minimum questions per topic**: starts at the lesson's default, set by the creator (REQ-4.21); the teacher can change it.
+- **Students see grades**: yes or no (REQ-5.22).
+- For exams: an optional **time window** and **lock** (REQ-5.23).
 
 *Acceptance criteria:*
 - [ ] With "reduce by 10% after the due date", a lesson finished late gets 10% off its grade.
@@ -528,14 +533,16 @@ Each student has one private conversation with the teachers of each class they a
 - [ ] There is no way for a student to message another student.
 
 **REQ-5.18: Student levels (secret)** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-21)
-Each student has a **student level** from 1 to 3 in each class. Only the class's teachers can see it; the student and other students never do. Every student starts at level 2. Only a teacher can raise or lower a student's level.
+Each student has a **student level** from 1 to 3 **in each class** (Gil, Q-21): a student can be at level 3 in science and level 2 in English. Only the class's teachers can see it; the student and other students never do. Every student starts at level 2. Only a teacher can raise or lower a student's level, and the change stays until the teacher changes it again. A change made while a student is in the middle of a lesson applies from the next question.
 
-To help the teacher, Evolora can **suggest** levels based on average grades: the weakest 10% of the class at level 1, the strongest 10% at level 3, and everyone else at level 2. The teacher sees the suggestions and approves or changes each one; nothing changes without the teacher.
+To help the teacher, Evolora **keeps suggesting** levels, based on average grades in the class: it suggests lowering the weakest 10% of the class to level 1, and raising the strongest 10% to level 3. The suggestions appear on the class dashboard all the time, and the teacher accepts or ignores each one; nothing changes without the teacher. The teacher sees every student's level on the class dashboard (REQ-5.10).
 
 *Acceptance criteria:*
 - [ ] On the class list, a teacher sees each student's level and can change it.
 - [ ] A new student in the class is at level 2.
-- [ ] Clicking "Suggest levels" in a class of 20 students suggests level 1 for the 2 lowest averages and level 3 for the 2 highest, and changes nothing until the teacher approves.
+- [ ] In a class of 20 test students, the dashboard suggests level 1 for the 2 lowest averages and level 3 for the 2 highest, and nothing changes until the teacher accepts.
+- [ ] A student moved to level 3 in one class is still at level 2 in another class.
+- [ ] The class dashboard shows each student's level.
 - [ ] Signed in as a student, you cannot see your level anywhere.
 
 **REQ-5.19: Clearing a red flag** (Priority: to be set by Gil, see the roadmap)
@@ -556,6 +563,50 @@ At the end of a semester (or any time), a teacher can archive a course in a clas
 
 *Acceptance criteria:*
 - [ ] After archiving, the course appears under "Archived courses" for every student in the class.
+
+**REQ-5.22: Whether students see their grades** (Priority: to be set by Gil, see the roadmap)
+Students should learn without the stress of grades. So when assigning, the teacher chooses whether students see the grades of that assignment. The defaults (Gil, 2026-11-22):
+- **teaching lessons**: students don't see grades
+- **practice lessons**: students see grades
+- **exams**: students see grades (after the teacher releases the results, REQ-4.26)
+
+When grades are hidden, the student still sees whether each answer is right, the hints, the solutions and their progress (lessons done), but no marks or grades anywhere for that assignment. The teacher always sees all grades, to understand each student's level and see who needs support.
+
+*Acceptance criteria:*
+- [ ] Assigning a teaching lesson, the "students see grades" setting starts as "no"; for a practice lesson or an exam it starts as "yes".
+- [ ] With grades hidden, a student finishes the lesson and sees no grade or marks on the lesson, course page, class page or home page, but still sees which answers were right.
+- [ ] The teacher sees the grades of the same lesson on the grade dashboard.
+
+**REQ-5.23: Exam time window and lock** (Priority: to be set by Gil, see the roadmap)
+When assigning an exam, the teacher can set a **time window** (a date, a start time and an end time). The exam opens at the start and closes at the end. *Proposed (OPEN Q-31):* a student who hasn't pressed "Submit exam" by the end has their answers submitted automatically.
+
+During the window, the teacher can **lock** Evolora for the class's students, so that only the exam can be opened:
+- **in this class**: the class's other lessons can't be opened, or
+- **in all of Evolora**: nothing else can be opened, including other classes and messages.
+
+Evolora's lock works inside Evolora only. To stop students from leaving Evolora for other websites, the school needs a device tool on the Chromebooks. Note: Google Classroom's "locked mode" works only with Google Forms quizzes, not with other websites (see OPEN Q-31).
+
+*Acceptance criteria:*
+- [ ] An exam with a window of 10:00 to 10:45 can't be opened at 9:55, opens at 10:00 and closes at 10:45.
+- [ ] With "lock in this class", during the window a student can open the exam but not the class's other lessons; other classes still work.
+- [ ] With "lock in all of Evolora", during the window the student can open only the exam.
+- [ ] After the window ends, everything opens again.
+
+**REQ-5.24: Progress map** (Priority: to be set by Gil, see the roadmap)
+On the class dashboard, the teacher sees where each student is in each course: which lessons each student has finished, and which they are working on, so it is clear at a glance who is ahead and who is behind (REQ-1.2; Gil, Q-27).
+
+*Acceptance criteria:*
+- [ ] In a class where students are at different points of the same course, the progress map shows each student's current lesson.
+
+**REQ-5.25: "Not yet mastered" list** (Priority: to be set by Gil, see the roadmap)
+For each student, the teacher sees a list of the level 1 questions the student hasn't mastered yet: questions they didn't answer correctly, with any open red flags (REQ-1.3; Gil, Q-27).
+
+*Acceptance criteria:*
+- [ ] A test student who answered one level 1 question wrongly twice, and its check-again question wrongly twice, has that question on their "not yet mastered" list, with its red flag.
+- [ ] After the teacher clears the flag (REQ-5.19), the question leaves the list.
+
+**REQ-5.26: Nudge when a student runs out of work** (Priority: Later)
+When a student finishes everything open to them, the teacher gets a nudge suggesting to open more lessons or raise the student's level (Gil, Q-27).
 
 **REQ-5.17: Google Classroom connection** (Priority: Later)
 Import class lists from Google Classroom, and possibly post assignments and grades back to it. See the advice in the open questions summary.
@@ -616,17 +667,17 @@ The student moves through the lesson block by block: reads, watches, listens and
 **REQ-6.3: Attempts and scoring** (Priority: MVP)
 For multiple choice questions, a student has **2 attempts** (REQ-4.16):
 - correct on the 1st attempt: full marks
-- correct on the 2nd attempt, after the hint: *proposed (OPEN Q-18):* half the marks
+- correct on the 2nd attempt, after the hint: half the marks (Gil, Q-18)
 - 2 wrong attempts: the full solution is shown, the question scores 0, and a check-again question follows (REQ-4.17)
 
 For open and audio questions, the student submits once and continues. The lesson grade stays **pending** until the teacher grades them.
 
-The lesson grade is based only on the questions the student received (see REQ-6.10). Using the help line (REQ-6.9) never lowers the grade.
+The lesson grade is based only on the questions the student received (see REQ-6.10). Using the help line or help tips (REQ-6.9, 6.15) never lowers the grade. Whether the student sees the grade is set per assignment (REQ-5.22).
 
 *Acceptance criteria:*
 - [ ] A wrong answer says it is wrong, shows the hint and lets you try once more.
 - [ ] After 2 wrong attempts, the full solution is shown and you can continue.
-- [ ] A question answered correctly on the 2nd attempt scores the agreed part of its marks (OPEN Q-18).
+- [ ] A question answered correctly on the 2nd attempt scores half its marks.
 - [ ] A lesson with an open question shows "grade pending" until the teacher grades it.
 
 **REQ-6.4: Student progress view** (Priority: MVP)
@@ -662,12 +713,12 @@ On their home page, a student has an **"Open courses"** tab, where they can brow
 **REQ-6.8: Game-like progress** (Priority: Later)
 A more playful progress display (for example, a figure advancing along a path, like in a building-block instruction booklet) and possibly points or coins.
 
-**REQ-6.9: "I didn't understand" help line** (Priority: to be set by Gil, see the roadmap; uses AI; details in OPEN Q-20)
+**REQ-6.9: "I didn't understand" help line with AI** (Priority: Later, stage 2; uses AI)
 Under every question there is a help line: **"I didn't understand ______, please explain."** The student fills in the gap and sends it. AI answers in writing and tries to help **without revealing the answer**. It may go on for a few messages back and forth.
 
 The help must stay on the subject of the question. If the student asks about anything else (for example, a chocolate cake recipe), the AI politely refuses and brings them back to the question.
 
-Asking for help never lowers the student's grade (Gil, Q-20). If, after a few messages back and forth, the student still can't answer the question, the teacher gets a **red flag**. The class's teachers can read every help conversation.
+Asking for help never lowers the student's grade (Gil, Q-20). If, after a few messages back and forth, the student still can't answer the question, the teacher gets a **red flag**. The class's teachers can read every help conversation. The school must agree before students chat with AI. Until AI is ready, the help line shows the lesson's written help tips instead (REQ-6.15).
 
 *Acceptance criteria:*
 - [ ] Every question shows the help line.
@@ -677,13 +728,22 @@ Asking for help never lowers the student's grade (Gil, Q-20). If, after a few me
 - [ ] After the set number of messages without a correct answer, the teacher sees a red flag.
 - [ ] A teacher can open and read a student's help conversation.
 
+**REQ-6.15: Help tips (the help line before AI)** (Priority: to be set by Gil, see the roadmap)
+Until AI help is ready (REQ-6.9), every question shows the line **"I didn't understand… show me a tip"**. It opens the question's **help tips**: short explanations written in advance in the lesson file, each with a title the student can choose (for example, "What is a radius?" or "How do I multiply by 3.14?"). Tips explain the ideas and methods needed for the question, but **never give its answer**. Opening tips never lowers the grade, and there are no tips in exams (REQ-4.26). *Proposed:* the teacher can see how many tips each student opened on each question, as another sign of who needs support.
+
+*Acceptance criteria:*
+- [ ] Under a question with tips, a student clicks "I didn't understand…" and sees the list of tip titles; clicking a title shows the tip.
+- [ ] No tip contains the answer to its question.
+- [ ] Opening tips doesn't change the grade.
+- [ ] In an exam, no tips appear.
+
 **REQ-6.10: Each student sees questions up to their level** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-21)
 A student sees only questions at or below their student level (REQ-5.18), and the lesson simply skips the others:
 - level 1 student: level 1 questions only
 - level 2 student: levels 1 and 2
 - level 3 student: all questions
 
-The lesson grade is calculated only from the questions the student received (Gil, Q-21). *Proposed (OPEN Q-21):* the grade dashboard shows each student's level next to their grade.
+The lesson grade is calculated only from the questions the student received (Gil, Q-21). The teacher sees each student's level next to their grade. *Still open (OPEN Q-31):* students may notice that a friend got more questions; is that acceptable?
 
 *Acceptance criteria:*
 - [ ] Signed in as a level 1 test student, the Archimedes lesson has no tungsten question and no ships question.
@@ -783,12 +843,12 @@ Anyone with a Google account can sign in (REQ-3.2), so a person who hasn't joine
 *Acceptance criteria:*
 - [ ] A Google account that has never joined a class sees only the "enter class code" box.
 
-**REQ-10.7: Alerting the system admin about attempts to guess class codes** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-29)
+**REQ-10.7: Alerting the system admin about attempts to guess class codes** (Priority: to be set by Gil, see the roadmap)
 Evolora tells the system admin when someone may be trying to guess class codes:
 - when one person enters **more than 10 wrong class codes** (the point where they must wait 5 minutes, REQ-5.2), and
 - when the number of wrong class codes in a week, across all of Evolora, is **more than twice the average of past weeks**.
 
-The alert says who tried (their Google account), how many times and when. *Proposed (OPEN Q-29):* alerts appear on the system admin's page and are also sent by email, at most once a day; the weekly comparison starts after 4 weeks of use, so there is a fair average to compare with.
+The alert says who tried (their Google account), how many times and when. Alerts appear on the system admin's page and are also sent by email, at most once a day; the weekly comparison starts after 4 weeks of use, so there is a fair average to compare with (Gil, Q-29).
 
 *Acceptance criteria:*
 - [ ] On the test site, a test student enters 11 wrong codes; the system admin sees an alert naming that student.
@@ -882,7 +942,7 @@ On the test site only, Gil can switch between made-up test users (for example, "
 - [ ] The "Switch user" menu doesn't exist on the real site.
 
 **REQ-12.6: Ready-made test data** (Priority: MVP)
-The test site can be filled with a standard set of test data with one command, by Claude: test teachers, test students, a test class, the Archimedes lesson and the circles lesson. It can be reset to that state at any time.
+The test site can be filled with a standard set of test data with one command, by Claude: test teachers, test students, a test class, the Archimedes lesson, the circles lesson and the circles practice lesson, with their two demo courses (`courses/circles-demo.md`, `courses/density-demo.md`). It can be reset to that state at any time.
 
 *Acceptance criteria:*
 - [ ] After a reset, the test site has the same test users, class and lesson as before, and no leftover answers.
@@ -904,23 +964,24 @@ The test site can be filled with a standard set of test data with one command, b
 | # | Question | Affects |
 |---|---|---|
 | **Q-4** | Starting rules for status colours. My proposal (updated 2026-11-22, now that red flags are defined): **red** = the student has an open red flag (REQ-5.19); **orange** = an assignment is past its due date and unfinished; **green** = everything else. | REQ-5.10 |
-| **Q-14** | **Lessons on GitHub.** Now that the image sources are known (all AI-generated except one Wikimedia image), I've put the converted Archimedes lesson in the `lessons` folder, which *is* stored on GitHub, so it's backed up and open like the rest of the project. The original Word file stays out of GitHub. Is that OK? | — |
-| **Q-15** | **Who may sign in?** With regular Google accounts (REQ-3.2), anyone in the world could sign in. My proposal: anyone may sign in, but they see nothing until they join a class with a class code (REQ-10.1). Teachers are still only added by the system admin. Also note that Google only allows children under 13 to have a Gmail account under a parent's supervision (Google Family Link). Some 7th graders are 12, so some students may need a parent to set up their account. Is that acceptable for the pilot? | REQ-3.2, REQ-10.1 |
-| **Q-16** | **"Creator" or "builder"?** See the summary in my message. My recommendation: **creator** (in Hebrew: יוצר/ת שיעורים) for the person, and **lesson builder** for the editing screen. | Glossary |
-| **Q-17** | **The name in Hebrew and Arabic.** On the test site I wrote Evolora as **אבולורה** in Hebrew and **إيفولورا** in Arabic. Are these the spellings you want? Also, the Arabic texts on the site were written by Claude; a native Arabic speaker (for example, an Arabic teacher) should check them before students see them. | REQ-9.1 |
-| **Q-18** | **Marks on the 2nd attempt.** You decided: 2 attempts, a hint after the 1st wrong answer, the full solution and a check-again question after the 2nd. How many marks for a correct 2nd attempt? My proposal: half. | REQ-6.3 |
-| **Q-19** | **Check-again question details** (REQ-4.17). (a) How many tries? My proposal: one, with no hint. (b) Does it change the grade? My proposal: no; the question already scored 0, and the check-again question only decides whether the teacher gets a red flag. | REQ-4.17 |
-| **Q-20** | **The help line** (REQ-6.9). It needs AI. (a) Until AI is ready, should the help line send the student's question to the teacher as a message (REQ-5.16)? My recommendation: yes. (b) Red flag after how many messages? My proposal: after 5 messages from the student, if they still don't answer correctly. (c) The students are minors chatting with AI: the teacher can read every conversation, and the school must agree before we turn it on. OK? | REQ-6.9 |
-| **Q-21** | **Levels** (REQ-4.18, 5.18, 6.10). (a) Level per class, not one for the whole school? A student may be strong in science and weak in English. My proposal: per class. (b) If the teacher changes a level in the middle of a lesson, it applies from the next question. (c) Students may notice they got fewer questions than a friend. Is that acceptable? (d) Should the teacher see each student's level next to their grade? My proposal: yes. | REQ-4.18, REQ-5.18, REQ-6.10 |
-| **Q-23** | **Practice lessons** (REQ-4.20). You wrote that a practice lesson has "only questions that students saw before". Which do you mean? (a) **Questions on material already learned**: new questions that the creator writes for practice, like a math exercise sheet. (b) **The same questions again**: Evolora collects questions the students already met in teaching lessons (for example, their check-again questions). (c) Both. Also: are practice lessons graded like teaching lessons, or practice only? | REQ-4.20 |
-| **Q-27** | **More support for individual progress** (REQ-1.2). You asked me to point out other places where this matters. My suggestions: (a) **A progress map** on the class dashboard: where each student is in the course, so the teacher sees at a glance who is ahead and who is behind. (b) **A "not yet mastered" list** per student: the level 1 questions they haven't mastered yet, with their open flags (REQ-1.3). (c) **A nudge to the teacher** when a student finishes everything open to them, suggesting to open more lessons or raise their level. I suggest (a) and (b) in the MVP and (c) later. OK? | REQ-1.2, 1.3, 5.10 |
-| **Q-30** | **Exams** (REQ-4.26). My proposals: (a) an exam opens only when the teacher opens it; (b) students can move between questions and change answers until they press "Submit exam"; (c) students see their grade and the correct answers only when the teacher releases the results; (d) no time limit in stage 1; (e) a wrong answer to a level 1 question sends a red flag; (f) retaking an exam only if the teacher allows it. OK? | REQ-4.26 |
-| **Q-29** | **How should the system admin hear about class-code guessing?** (REQ-10.7) My proposal: on the admin's page, and also by email at most once a day (the email service comes in Milestone B). The weekly comparison starts after 4 weeks of use. OK? | REQ-10.7 |
+| **Q-31** | **Follow-ups to your answers of 2026-11-22.** (a) **Check-again questions and the grade** (REQ-4.17): does answering the check-again question change the grade? My proposal: no; the question already scored 0, and the check-again question decides only whether the teacher gets a red flag. (b) **Fewer questions than a friend** (REQ-6.10): students at level 1 get fewer questions, and may notice. Acceptable? (c) **Exam ends while a student is still working** (REQ-5.23): their answers are submitted automatically at the end of the window. OK? (d) **Locking the Chromebook to Evolora**: Google Classroom's locked mode works only with Google Forms quizzes, so it can't lock Chromebooks to Evolora. Which tool did you have in mind? Options: the school's Google Admin can allow only Evolora's address during exams (an IT task), or a classroom-management tool the school may already use (for example GoGuardian or Securly). | REQ-4.17, 6.10, 5.23 |
 
 ### Answered (2026-11-20)
 
 | # | Question | Answer |
 |---|---|---|
+| Q-14 | Lessons on GitHub? | Yes. The original Word files stay out of GitHub once converted (they also contain images without permission). |
+| Q-15 | Who may sign in? | As proposed: anyone with a Google account may sign in, but sees nothing until joining a class; under-13 Gmail accounts through Family Link are acceptable. (REQ-3.2, 10.1) |
+| Q-16 | "Creator" or "builder"? | Creator for the person, lesson builder for the editing screen (stage 2). |
+| Q-17 | Hebrew and Arabic spelling of the name | OK for now; the name itself may change soon (D-27). |
+| Q-18 | Marks for a correct 2nd attempt? | Half. Also: the teacher chooses whether students see grades; by default hidden for teaching lessons, shown for practice lessons and exams. (REQ-6.3, 5.22) |
+| Q-19 | Check-again question tries? | Two attempts, like the original question. (REQ-4.17) |
+| Q-20 | The help line before AI? | In the demo, written help tips in the lessons instead of AI. (REQ-6.15) |
+| Q-21 | Levels | Per class; a teacher's change stays until the teacher changes it again; Evolora keeps suggesting (weakest 10% lower, strongest 10% to level 3); the teacher sees levels on the dashboard. (REQ-5.18, 6.10) |
+| Q-23 | Practice lessons | New questions on material already taught; no new material. (REQ-4.20) |
+| Q-27 | More support for individual progress | Agreed: progress map and "not yet mastered" list in the MVP, the nudge later. (REQ-5.24 to 5.26) |
+| Q-29 | Class-code guessing alerts | On the admin's page and by email at most once a day; weekly comparison after 4 weeks. (REQ-10.7) |
+| Q-30 | Exams | As proposed, but instead of "no time limit": the teacher can set a time window and lock everything else during it. (REQ-4.26, 5.23) |
 | Q-26 | Extra practice questions? | Accepted as proposed: the creator marks extra practice questions, which are asked only until the student reaches the minimum; other questions are always asked; check-again answers count; open and audio answers don't; running out means moving on with a red flag to the teacher. (REQ-4.21) |
 | Q-24 | Minimum questions per topic: who sets it, and what does it mean? | The teacher sets it when assigning; the creator gives a default (3 for the circles lesson, 1 for Archimedes). The student moves on to the next topic once they answer the minimum correctly. (REQ-4.21, 5.9) |
 | Q-25 | A type-a-number question? | Yes. All of Gil's calculation questions in the circles lesson are typed in; one digit after the decimal point is enough. (REQ-4.22) |

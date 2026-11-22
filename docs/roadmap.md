@@ -15,7 +15,7 @@ When the requirements are finished, Claude will give Gil a list of all features,
 
 Until then, the milestones below are only a draft.
 
-**Not yet prioritized** (new since the draft below): REQ-4.16 and 4.17 hints, full solution and check-again questions; REQ-4.18, 5.18 and 6.10 levels; REQ-4.19 random answer order; REQ-4.20 teaching, practice and exam lessons; REQ-4.26 exams; REQ-4.21 topics with a minimum number of questions; REQ-4.22 type-a-number questions; REQ-4.23 videos inside the lesson, with start and end times; REQ-5.19 clearing a red flag; REQ-5.20 opening lessons early for chosen students; REQ-5.21 archiving courses; REQ-9.6 teacher changes a student's language (low priority); REQ-10.7 alerting the system admin about class-code guessing; solved examples (REQ-4.2); REQ-6.9 help line (with AI, or first by message to the teacher).
+**Not yet prioritized** (new since the draft below): REQ-4.16 and 4.17 hints, full solution and check-again questions; REQ-4.18, 5.18 and 6.10 levels; REQ-4.19 random answer order; REQ-4.20 teaching, practice and exam lessons; REQ-4.26 exams; REQ-4.21 topics with a minimum number of questions; REQ-4.22 type-a-number questions; REQ-4.23 videos inside the lesson, with start and end times; REQ-5.19 clearing a red flag; REQ-5.20 opening lessons early for chosen students; REQ-5.21 archiving courses; REQ-9.6 teacher changes a student's language (low priority); REQ-10.7 alerting the system admin about class-code guessing; REQ-5.22 whether students see grades; REQ-5.23 exam time window and lock; REQ-5.24 progress map; REQ-5.25 "not yet mastered" list; REQ-6.15 help tips (the help line before AI); solved examples (REQ-4.2); REQ-6.9 help line (with AI, or first by message to the teacher).
 
 ## Version 1: MVP (pilot at Gil's school)
 
@@ -72,7 +72,8 @@ Each AI item first gets a cost estimate for Gil's approval.
 | REQ-4.11 | Import from Google Docs and Word |
 | REQ-4.12 | More question types, including drag-and-drop |
 | REQ-7.1 | AI grading options |
-| REQ-7.2 | AI-suggested check-again questions |
+| REQ-6.9, 7.2 | AI help line under every question (replacing the written help tips); AI-suggested check-again questions |
+| REQ-5.26 | Nudge to the teacher when a student runs out of work |
 | REQ-7.3 | AI lesson suggestion from a document |
 | REQ-7.4, 10.5 | Audio transcription and recording retention |
 | REQ-5.17 | Google Classroom connection |

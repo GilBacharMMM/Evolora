@@ -151,7 +151,16 @@ After the type, add the question's **level**, and `[EXTRA]` for extra practice q
 - At least one **check-again question**, written under the main question as `### Check-again question [LEVEL 1]`, followed by its own question and choices (or answer and unit). It is asked right after the solution, to check that the student now understands:
   - For a **calculation**, the check-again question is a similar calculation with different numbers.
   - For an **understanding** question, it asks the same thing in different words, mostly with different answer choices.
+- A check-again question has 2 attempts, like the original question. It may have its own `- Hint:` line; otherwise the original question's hint is shown again.
 - Extra practice questions (`[EXTRA]`) need a hint and a solution, but no check-again question.
+
+**Help tips.** Under every question (except in exams), students can click "I didn't understand…" and choose a **help tip**. Write 1 to 3 tips for each question, after its solution, one per line:
+
+```
+- Tip: מה ההבדל בין רדיוס לקוטר? | הרדיוס הולך מהמרכז עד המעגל. הקוטר עובר דרך המרכז מצד לצד, ולכן הוא ארוך פי 2 מהרדיוס.
+```
+
+The part before `|` is the title the student chooses (phrase it as the student's question); the part after it is the explanation. A tip explains an idea or a method the question needs (a definition, a formula, how to multiply decimals, how to read the table), and **never gives the question's answer**: don't repeat the question's own numbers worked out. The same tip can appear under several questions.
 
 Example:
 
@@ -184,7 +193,7 @@ Example:
 
 ## Exams
 An exam (`type: exam`) has questions only, and every student gets the same questions. During the exam each question has **one attempt**, with no hints, no solutions and no check-again questions. So in an exam:
-- don't write `[EXTRA]` questions, `- Hint:` lines or `### Check-again question` blocks
+- don't write `[EXTRA]` questions, `- Hint:` lines, `- Tip:` lines or `### Check-again question` blocks
 - `[LEVEL]` tags may be left out (levels don't apply)
 - you may write a `- Solution:` line for each question; students see it only after the teacher releases the results
 - still use number questions for calculations, and plausible wrong choices for multiple choice
@@ -229,4 +238,5 @@ Before the lesson is sent to Gil, check every item:
 9. Every video has a link, title and source; the questions about it come right after it.
 10. No `[NEW: suggested by Claude]` tags are left, and no 🟦 questions to the teacher are left unanswered. (Notes addressed to Gil may stay.)
 11. No real students' personal details anywhere.
-12. Change `status:` at the top to `ready for Gil`.
+12. Every question (except in exams) has 1 to 3 help tips, and no tip gives away its question's answer.
+13. Change `status:` at the top to `ready for Gil`.
