@@ -525,3 +525,10 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 3 (Gil, 2026-11-22). Phones much later, if at all.
 **Reason:** One browser to build and test for, the same as on the Chromebooks. Other browsers show a "please open in Chrome" message.
 **Affects:** REQ-11.1
+
+### D-46: Grading page, one answer at a time
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Context:** The earlier plan showed all answers to a question on one page (REQ-5.12). Gil wants to grade one answer at a time, mark up the answer, and move both between students and between questions.
+**Decision:** A grading page per answer: question and grading instructions on top, the student's answer, the AI suggestion (stage 2) and the teacher's grade and comment. Highlights and "track changes" edits in the teacher's colour, which the student sees. Sideways between students (following the reading direction), up and down between questions, Alt + arrows as shortcuts. Full, half and zero buttons or any number. A counter, "next not graded", and "send back for corrections" on the same page.
+**Reason:** Lets the teacher give precise feedback on each answer, and grade either by question (fair comparison across students) or by student (seeing their whole work).
+**Affects:** REQ-5.12, REQ-5.13, REQ-5.14

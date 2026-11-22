@@ -56,7 +56,7 @@ Until then, the milestones below are only a draft.
 | REQ-5.5 | Co-teachers |
 | REQ-5.8, 5.9 | Course orders (one after another, paired, any order), due dates, redo setting |
 | REQ-5.10 | Class dashboard with status colours |
-| REQ-5.12 to 5.15 | Review screen, comments (text and audio), send back, grade changes |
+| REQ-5.12 to 5.15 | Grading page (with marking up answers), comments (text and audio), send back, grade changes |
 | REQ-5.16 | Messages |
 | REQ-6.5 | Redo a lesson |
 

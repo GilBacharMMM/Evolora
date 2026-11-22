@@ -42,7 +42,7 @@ There is one website at **evoloraedu.org**. After signing in, each person sees t
 | Role | Main screens |
 |---|---|
 | Student | Home (what to do next), lesson player, my progress, messages |
-| Teacher | My classes, class dashboard, grade dashboard, review screen, messages, lesson library |
+| Teacher | My classes, class dashboard, grade dashboard, grading page, student page, messages, lesson library |
 | Teacher with edit mode on | Everything above, plus the lesson editor (stage 2, D-33) |
 | System admin | Manage teachers |
 
@@ -116,6 +116,7 @@ Rules inside the database decide what each person can read and change. They appl
 - Teachers can read and change everything in **their own classes**, and nothing in other teachers' classes.
 - Messages can be read only by the student and the teachers of that class (REQ-5.16).
 - Teacher notes about a student can be read only by the class's teachers, never by the student (REQ-5.28).
+- A teacher's markings on an answer (highlights and coloured edits, REQ-5.12) are saved next to the answer, without changing the student's original text, and the student can read them once the work is returned.
 - Lessons in the lesson library can be read by all teachers. In stage 1, only Claude's loading program can add or change lessons. In stage 2, only the lesson's own creator can change it (others make a copy).
 
 These rules are tested automatically before every release (section 8).
@@ -145,7 +146,7 @@ The correct answer, the hint and the solution are kept in the protected area. Th
 **Exam window and lock (REQ-5.23):** the time window is checked by the checking service, using the server's clock, not the Chromebook's. While a lock is on, the database rules refuse to open anything other than the exam for the class's students: in the class, or in all of Evolora.
 
 ### 5.2 Open and audio questions
-The answer is saved and the question is marked **pending**. The student continues. When the teacher grades it on the review screen (REQ-5.12), the checking service recalculates the lesson grade.
+The answer is saved and the question is marked **pending**. The student continues. When the teacher grades it on the grading page (REQ-5.12), the checking service recalculates the lesson grade.
 
 ### 5.3 Lesson grade
 The lesson grade is the weighted average of its questions (REQ-4.4). It's recalculated whenever something changes:

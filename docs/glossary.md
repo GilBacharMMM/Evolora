@@ -79,7 +79,8 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Help line** | The line under every question: "I didn't understand ___, please explain." Later, AI answers it without revealing the answer, staying on the question's subject. In Hebrew: שורת עזרה. | proposed |
 | **Grading instructions** | Guidance a creator writes for an open question, describing a good answer. Teachers, and later AI grading, use it. | proposed |
 | **Pending grade** | The lesson grade shown while open answers are still waiting for the teacher to grade them. | proposed |
-| **Review screen** | The teacher's screen for grading one question: every student's answer appears one below the other, and the teacher moves between students with the keyboard (Tab). | proposed |
+| **Grading page** | The teacher's page for grading open and audio answers, one answer at a time: the question and grading instructions on top, the student's answer, the AI suggestion (stage 2) and the teacher's grade and comment. Sideways moves between students, up and down between questions. Earlier called "review screen". In Hebrew: דף בדיקה. | agreed |
+| **Marking up an answer** | Highlighting parts of a student's written answer, and editing it in the teacher's colour (crossed-out student words, teacher words in colour). The student sees it. In Hebrew: סימון בתשובה. | agreed |
 | **Students see grades** | An assignment setting: whether students see their grades for it. By default no for teaching lessons, yes for practice lessons and exams. The teacher always sees grades. In Hebrew: הצגת ציונים לתלמידים. | proposed |
 | **Grade weight** | How much a question counts toward the lesson grade. By default all questions count equally; the creator may change this. | proposed |
 | **Due date** | An optional deadline a teacher sets on an assignment. After it, the teacher's choice applies: the grade drops by a set percentage, or the lesson is locked. The teacher can extend it. | proposed |

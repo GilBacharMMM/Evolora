@@ -160,7 +160,7 @@ For each question, the lesson file (in stage 2, the creator) sets:
 *Acceptance criteria:*
 - [ ] A loaded lesson can contain each of the three question types, and each works for the student.
 - [ ] A multiple choice question with two correct choices accepts only the right combination.
-- [ ] The teacher sees the grading instructions of an open or audio question on the review screen.
+- [ ] The teacher sees the grading instructions of an open or audio question on the grading page (REQ-5.12).
 - [ ] A question given double weight in the lesson file counts double in the lesson grade.
 
 **REQ-4.5: Questions block progress** (Priority: MVP)
@@ -507,17 +507,36 @@ A teacher sees grades per class, per course, per lesson and per question. An unf
 - [ ] Pending grades (waiting for the teacher) are shown as pending, not as 0.
 - [ ] Clicking "Download as CSV" saves a file that opens in a spreadsheet program, with a row per student and a column per lesson.
 
-**REQ-5.12: Review screen** (Priority: MVP)
-For an open or audio question, the teacher sees all submitted answers, one below the other, with the question's grading instructions at the top. The teacher grades and comments on each one, and moves to the next student with the Tab key.
+**REQ-5.12: Grading page** (Priority: MVP)
+In a class, when the teacher opens a lesson that has open or audio answers, a button **"Grade open answers"** opens the grading page. It shows one answer at a time (Gil, 2026-11-22):
+- **at the top**: the question and its grading instructions
+- **below it**: the student's answer
+- **below that**: in stage 2, the AI's suggested grade and comment (REQ-7.1); and the teacher's own grade and comment, which the teacher can change at any time
+
+**Grade:** a score for the question out of its full marks, with quick buttons for full, half and zero marks, or any number.
+
+**Marking up the answer:** the teacher can **highlight** parts of a written answer, and **edit** it in another colour, like "track changes": the student's words stay visible, crossed out where the teacher changed them, with the teacher's words in the teacher's colour. The student sees the highlights, the edits and the comment when the work comes back to them.
+
+**Audio answers** have a player for the recording instead; the teacher comments in writing or by recording audio (REQ-5.13).
+
+**Moving around:**
+- sideways: the same question for the next or previous student in the class. The arrows follow the reading direction, so in Hebrew and Arabic the left arrow goes to the next student.
+- up and down: the next or previous question for the same student.
+- keyboard shortcuts: Alt + arrow keys, so the plain arrow keys still move inside the comment box.
+
+The page shows how many answers are graded ("graded 7 of 24"), has a button to jump to the next answer not yet graded, and lets the teacher **send the answer back for corrections** (REQ-5.14) from the same page.
 
 *Acceptance criteria:*
-- [ ] A teacher opens a question and sees every submitted answer on one page.
-- [ ] Pressing Tab moves to the next student's grade box.
+- [ ] Clicking "Grade open answers" on a lesson opens the first answer not yet graded, with the question and grading instructions above it.
+- [ ] In Hebrew, the left arrow (or Alt + left) shows the same question for the next student; the down arrow (or Alt + down) shows the next question for the same student.
+- [ ] Pressing "half" sets half of the question's full marks; typing a number also works.
+- [ ] A teacher highlights two words and replaces one word in their colour; signed in as that student after the work is returned, the student sees the highlight, the crossed-out word and the teacher's word in colour.
 - [ ] Audio answers can be played on the page.
+- [ ] The counter shows how many answers are graded, and "next not graded" skips graded ones.
 - [ ] After grading, the student's lesson grade is no longer pending.
 
 **REQ-5.13: Teacher comments** (Priority: MVP)
-A teacher can add a comment to any answer, either written or as an audio recording.
+A teacher can add a comment to any answer, either written or as an audio recording, on the grading page (REQ-5.12).
 
 *Acceptance criteria:*
 - [ ] A teacher records a short audio comment on a student's answer; the student can play it.
