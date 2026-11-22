@@ -481,7 +481,7 @@ For each class, the teacher sees one table with a row per student (Gil, Q-33). T
   - **soft yellow**: an assignment is past its due date and unfinished
   - **green**: everything else
 
-  When more than one applies, the most serious shows, in this order: red, orange, yellow (proposed; the rules are kept in one place so they can be changed after trying them). A small **star** marks students who are ahead of the class, so strong students are noticed too (REQ-1.2).
+  When more than one applies, the most serious shows, in this order: red, orange, yellow (Gil, Q-41). The rules are kept in one place so they can be changed after trying them. A small **star** marks students who are ahead of the class, so strong students are noticed too (REQ-1.2).
 - **level**, with **− and +** buttons to change it, and a **suggested change** when the student's average is well above or below their current level (REQ-5.18)
 - **where they are** in each course (the progress map, REQ-5.24)
 - **average grade**, **open flags**, and **when they last worked**
@@ -1024,7 +1024,6 @@ The test site can be filled with a standard set of test data with one command, b
 
 | # | Question | Affects |
 |---|---|---|
-| **Q-41** | **Status colour order.** When several apply, I show the most serious: red (flag), then orange (behind), then soft yellow (past due). Or should past due come before behind? | REQ-5.10 |
 
 ### Answered (2026-11-20)
 
@@ -1042,6 +1041,7 @@ The test site can be filled with a standard set of test data with one command, b
 | Q-27 | More support for individual progress | Agreed: progress map and "not yet mastered" list in the MVP, the nudge later. (REQ-5.24 to 5.26) |
 | Q-29 | Class-code guessing alerts | On the admin's page and by email at most once a day; weekly comparison after 4 weeks. (REQ-10.7) |
 | Q-30 | Exams | As proposed, but instead of "no time limit": the teacher can set a time window and lock everything else during it. (REQ-4.26, 5.23) |
+| Q-41 | Status colour order | Red, then orange (behind), then soft yellow (past due). (REQ-5.10) |
 | Q-4 | Status colours | Red = open red flag; orange = behind the class; **soft yellow = past due date**; green = everything else; a star for students ahead. (REQ-5.10) |
 | Q-32 | Teacher's home page | Class cards with what needs attention, and a teacher "To do" list. (REQ-5.27) |
 | Q-33 | Class dashboard | One table per class, with − and + to change levels and a suggested change when the average is well above or below the level. (REQ-5.10) |
