@@ -217,6 +217,7 @@ When you draw an SVG, check how it looks (for example, by opening it in a browse
 - **Don't invent links or sources.** Only use video and website links that the teacher gave you or that you checked exist. If you can, check a YouTube link's title and channel.
 - **Age-appropriate content** for students aged 12 to 18.
 - **No personal details.** Never put real students' names, photos or personal information in a lesson.
+- **Readable aloud.** Write all text as real text, never as a picture of text, so the Chromebook's "Select to speak" can read it aloud for students who struggle with reading.
 
 ## Comments and suggestions
 - `> 🟦 Claude: ...` a question or suggestion from you to the teacher (or to Gil).

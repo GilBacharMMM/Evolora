@@ -20,7 +20,8 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Extra practice question** | A question in a topic that is asked only to students who haven't yet answered the topic's minimum number of questions correctly. In Hebrew: שאלת תרגול נוספת. | agreed |
 | **Help tip** | A short explanation written in the lesson file for a question, with a title the student can choose ("What is a radius?"). Shown from the help line before AI is ready. It never gives the answer. In Hebrew: טיפ עזרה. | proposed |
 | **Exam time window** | The date and times when an exam can be taken. In Hebrew: חלון זמן למבחן. | proposed |
-| **Exam lock** | During an exam's time window, only the exam can be opened: in the class, or in all of Evolora. In Hebrew: נעילה בזמן מבחן. | proposed |
+| **Exam lock** | During an exam's time window, only the exam can be opened: in the class, or in all of Evolora. Together with the school's Google Admin, which allows only Evolora's address on the Chromebooks. In Hebrew: נעילה בזמן מבחן. | proposed |
+| **Exam timer** | A clock in the exam showing the time left until its window ends, with a notice 5 minutes before the end. The teacher can turn it on or off. In Hebrew: שעון מבחן. | proposed |
 | **Solved example** | A question shown with its full answer, for the student to learn from, with nothing to answer. In Hebrew: דוגמה פתורה. | proposed |
 | **Type-a-number question** | A question where the student types a number, checked automatically; correct to one digit after the decimal point is enough. In Hebrew: שאלה עם תשובה מספרית. | proposed |
 | **Teaching lesson** | A lesson that teaches new material. In Hebrew: שיעור הקניה. (Earlier called "learning lesson".) | agreed |

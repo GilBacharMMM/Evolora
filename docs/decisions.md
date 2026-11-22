@@ -479,13 +479,14 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-5.22, REQ-6.3, REQ-5.9
 
 ### D-41: Exam time windows and locking
-**Date:** 2026-11-22 · **Status:** Decided (details open, OPEN Q-31) · **Decided by:** Gil
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
 **Context:** Exams should be taken by the whole class at the same time, without access to other material.
 **Options considered:**
 1. A countdown timer per student.
 2. A time window set by the teacher, during which only the exam can be opened: in the class, or in all of Evolora.
 
 **Decision:** Option 2. Locking the Chromebook itself to Evolora needs a separate device tool; Google Classroom's locked mode works only with Google Forms quizzes.
+**Update (2026-11-22, Gil, Q-31):** answers are submitted automatically when the window ends; an exam timer with a notice before the end, which the teacher can turn on or off; during exams the school's Google Admin allows only Evolora's address on the Chromebooks, and Evolora locks itself to show only the exam.
 **Reason:** Matches how exams are held in class, and works together with the school's device tools.
 **Affects:** REQ-4.26, REQ-5.23
 
@@ -502,6 +503,6 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-6.15, REQ-6.9, lesson file format, teacher kit
 
 ### D-43: Check-again questions get 2 attempts
-**Date:** 2026-11-22 · **Status:** Decided (effect on the grade open, OPEN Q-31) · **Decided by:** Gil
-**Decision:** A check-again question has 2 attempts, like the original question. After two wrong answers, its answer is shown and the teacher gets a red flag.
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Decision:** A check-again question has 2 attempts, like the original question. After two wrong answers, its answer is shown and the teacher gets a red flag. It doesn't change the grade (Q-31).
 **Affects:** REQ-4.17

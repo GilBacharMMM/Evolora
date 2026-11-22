@@ -239,7 +239,7 @@ The creator adds a bank of one or more **check-again questions** to each multipl
 - If the question is a **calculation** (for example, "what is the density of this block?"), the check-again question is a similar calculation with different numbers or materials.
 - If the question is about **understanding** (for example, "why did the king have a doubt?"), the check-again question asks the same thing in different words, mostly with different answers.
 
-Right after the full solution (REQ-4.16), Evolora picks one check-again question from the bank at random and asks it. The check-again question has **2 attempts**, like the original question (Gil, Q-19): after a wrong 1st attempt the student tries again (the creator may write a hint for the check-again question; otherwise the original question's hint is shown again). If the 2nd attempt is wrong too, Evolora shows the correct answer, the teacher gets a **red flag** for that student and question, and the student continues. *Still open (OPEN Q-31):* whether the check-again question changes the grade.
+Right after the full solution (REQ-4.16), Evolora picks one check-again question from the bank at random and asks it. The check-again question has **2 attempts**, like the original question (Gil, Q-19): after a wrong 1st attempt the student tries again (the creator may write a hint for the check-again question; otherwise the original question's hint is shown again). If the 2nd attempt is wrong too, Evolora shows the correct answer, the teacher gets a **red flag** for that student and question, and the student continues. The check-again question doesn't change the grade: the original question already scored 0, and the check-again question decides only whether the teacher gets a red flag (Gil, Q-31).
 
 *Acceptance criteria:*
 - [ ] A creator can add several check-again questions under a multiple choice question.
@@ -532,7 +532,7 @@ Each student has one private conversation with the teachers of each class they a
 - [ ] The student sees a notice when a teacher replies.
 - [ ] There is no way for a student to message another student.
 
-**REQ-5.18: Student levels (secret)** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-21)
+**REQ-5.18: Student levels (secret)** (Priority: to be set by Gil, see the roadmap)
 Each student has a **student level** from 1 to 3 **in each class** (Gil, Q-21): a student can be at level 3 in science and level 2 in English. Only the class's teachers can see it; the student and other students never do. Every student starts at level 2. Only a teacher can raise or lower a student's level, and the change stays until the teacher changes it again. A change made while a student is in the middle of a lesson applies from the next question.
 
 To help the teacher, Evolora **keeps suggesting** levels, based on average grades in the class: it suggests lowering the weakest 10% of the class to level 1, and raising the strongest 10% to level 3. The suggestions appear on the class dashboard all the time, and the teacher accepts or ignores each one; nothing changes without the teacher. The teacher sees every student's level on the class dashboard (REQ-5.10).
@@ -578,19 +578,25 @@ When grades are hidden, the student still sees whether each answer is right, the
 - [ ] The teacher sees the grades of the same lesson on the grade dashboard.
 
 **REQ-5.23: Exam time window and lock** (Priority: to be set by Gil, see the roadmap)
-When assigning an exam, the teacher can set a **time window** (a date, a start time and an end time). The exam opens at the start and closes at the end. *Proposed (OPEN Q-31):* a student who hasn't pressed "Submit exam" by the end has their answers submitted automatically.
+When assigning an exam, the teacher can set a **time window** (a date, a start time and an end time). The exam opens at the start and closes at the end. A student who hasn't pressed "Submit exam" by the end has their answers submitted automatically (Gil, Q-31).
+
+The teacher can turn on an **exam timer** (on by default when there is a time window). The timer shows the student how much time is left until the window ends, and a notice appears 5 minutes before the end, saying the exam will be submitted automatically.
 
 During the window, the teacher can **lock** Evolora for the class's students, so that only the exam can be opened:
 - **in this class**: the class's other lessons can't be opened, or
 - **in all of Evolora**: nothing else can be opened, including other classes and messages.
 
-Evolora's lock works inside Evolora only. To stop students from leaving Evolora for other websites, the school needs a device tool on the Chromebooks. Note: Google Classroom's "locked mode" works only with Google Forms quizzes, not with other websites (see OPEN Q-31).
+Locking works in two layers (Gil, Q-31):
+- **The Chromebook**: during exams, the school's Google Admin allows only Evolora's web address on the students' Chromebooks, so students can't open other websites. This is set up by the school's IT person, not inside Evolora. (Google Classroom's "locked mode" can't do this: it works only with Google Forms quizzes.)
+- **Inside Evolora**: Evolora's own lock shows only the exam, because the school's tool can't tell Evolora's exam apart from Evolora's lessons.
 
 *Acceptance criteria:*
 - [ ] An exam with a window of 10:00 to 10:45 can't be opened at 9:55, opens at 10:00 and closes at 10:45.
 - [ ] With "lock in this class", during the window a student can open the exam but not the class's other lessons; other classes still work.
 - [ ] With "lock in all of Evolora", during the window the student can open only the exam.
 - [ ] After the window ends, everything opens again.
+- [ ] With the timer on, the student sees the time left, and a notice 5 minutes before the end; with the timer off, neither appears.
+- [ ] A student still working when the window ends finds their answers submitted, and the teacher sees them.
 
 **REQ-5.24: Progress map** (Priority: to be set by Gil, see the roadmap)
 On the class dashboard, the teacher sees where each student is in each course: which lessons each student has finished, and which they are working on, so it is clear at a glance who is ahead and who is behind (REQ-1.2; Gil, Q-27).
@@ -743,7 +749,7 @@ A student sees only questions at or below their student level (REQ-5.18), and th
 - level 2 student: levels 1 and 2
 - level 3 student: all questions
 
-The lesson grade is calculated only from the questions the student received (Gil, Q-21). The teacher sees each student's level next to their grade. *Still open (OPEN Q-31):* students may notice that a friend got more questions; is that acceptable?
+The lesson grade is calculated only from the questions the student received (Gil, Q-21). The teacher sees each student's level next to their grade. Students may notice that a friend got more questions; that is acceptable (Gil, Q-31).
 
 *Acceptance criteria:*
 - [ ] Signed in as a level 1 test student, the Archimedes lesson has no tungsten question and no ships question.
@@ -912,10 +918,12 @@ An answer is saved as soon as the student submits it. If the internet connection
 - [ ] Turning off Wi-Fi in the middle of a lesson shows a message; after turning it back on, the student continues without losing answers.
 
 **REQ-12.3: Basic accessibility** (Priority: MVP)
-Text is readable, colours are not the only way information is shown (status colours also have a label or icon), and main actions work with the keyboard.
+Text is readable, colours are not the only way information is shown (status colours also have a label or icon), and main actions work with the keyboard. Lesson text is real text (not pictures of text), so the Chromebook's built-in **"Select to speak"** can read it aloud for students who struggle with reading. Teachers are told about this in their guide.
 
 *Acceptance criteria:*
 - [ ] Each status colour on the dashboard also shows a word or icon.
+- [ ] With "Select to speak" turned on, a student selects a paragraph of a Hebrew lesson on a Chromebook and hears it read aloud; the same works in Arabic and English.
+- [ ] The teachers' guide explains how to turn on "Select to speak".
 
 **REQ-12.7: One design language** (Priority: MVP)
 All screens share one **design language** (in Hebrew: שפה עיצובית): colours, fonts, icons, spacing and the look of buttons and cards. Claude proposes it, with mockups Gil can click through, and Gil approves it before the screens are built (D-38).
@@ -963,8 +971,16 @@ The test site can be filled with a standard set of test data with one command, b
 
 | # | Question | Affects |
 |---|---|---|
-| **Q-4** | Starting rules for status colours. My proposal (updated 2026-11-22, now that red flags are defined): **red** = the student has an open red flag (REQ-5.19); **orange** = an assignment is past its due date and unfinished; **green** = everything else. | REQ-5.10 |
-| **Q-31** | **Follow-ups to your answers of 2026-11-22.** (a) **Check-again questions and the grade** (REQ-4.17): does answering the check-again question change the grade? My proposal: no; the question already scored 0, and the check-again question decides only whether the teacher gets a red flag. (b) **Fewer questions than a friend** (REQ-6.10): students at level 1 get fewer questions, and may notice. Acceptable? (c) **Exam ends while a student is still working** (REQ-5.23): their answers are submitted automatically at the end of the window. OK? (d) **Locking the Chromebook to Evolora**: Google Classroom's locked mode works only with Google Forms quizzes, so it can't lock Chromebooks to Evolora. Which tool did you have in mind? Options: the school's Google Admin can allow only Evolora's address during exams (an IT task), or a classroom-management tool the school may already use (for example GoGuardian or Securly). | REQ-4.17, 6.10, 5.23 |
+| **Q-4** | **Status colours** (REQ-5.10). My proposal: **red** = the student has an open red flag; **orange** = an assignment is past its due date and unfinished, or the student is more than 1 lesson behind the middle of the class in a course; **green** = everything else. In addition, a small star (not a colour) for students who are ahead of the class, so strong students are noticed too (REQ-1.2). | REQ-5.10 |
+| **Q-32** | **Teacher's home page.** My proposal: like the student's, a card for each class, each showing what needs attention: red flags, answers waiting to be graded, unread messages, level suggestions. Beside the cards, a teacher "To do" list with the same items for all classes. | REQ-5.10 |
+| **Q-33** | **Class dashboard layout.** My proposal: one table, a row per student, with columns: status colour, level, where they are in the course (the progress map), average grade, open flags, and when they last worked. Sorting by any column. Clicking a student opens their page. | REQ-5.10, 5.18, 5.24 |
+| **Q-34** | **Student page** (one student in one class). My proposal: their progress in each course, grades, the "not yet mastered" list with flags to clear, how many tips they opened, their level (with the suggestion, if any), and the messages with them. | REQ-5.18, 5.19, 5.25, 6.15 |
+| **Q-35** | **Which questions are hard for the class?** My proposal: for every lesson, the grade dashboard shows each question's success rate (for example, "only 40% got it right on the 1st attempt"), so the teacher sees what to teach again. Also for exams, after the results are released. | REQ-5.11 |
+| **Q-36** | **Live view during class.** A screen for when the class works in the lesson together: who is working right now, on which question, and who is stuck (a red flag or several wrong answers in the last minutes). MVP or later? | REQ-5.10 |
+| **Q-37** | **How the teacher hears about things.** Inside Evolora only, or also a daily email summary (new red flags, answers to grade, messages)? My proposal: inside Evolora, plus an optional daily email that each teacher can turn off. | REQ-5.10, 5.16 |
+| **Q-38** | **Level suggestions: based on what?** My proposal: the average grade of lessons finished in the class in the last 4 weeks (including hidden grades), and only after a student has at least 5 graded lessons, so a single bad day doesn't move them. | REQ-5.18 |
+| **Q-39** | **Exporting grades.** Does the school need grades in another system (for example Mashov/משוב or a spreadsheet)? My proposal: in the MVP, a button that downloads the grade table as a spreadsheet file. | REQ-5.11 |
+| **Q-40** | **Teacher devices.** Teachers on laptops and Chromebooks in the MVP, and phones later (only reading the dashboard and messages)? | REQ-11.1 |
 
 ### Answered (2026-11-20)
 
@@ -982,6 +998,7 @@ The test site can be filled with a standard set of test data with one command, b
 | Q-27 | More support for individual progress | Agreed: progress map and "not yet mastered" list in the MVP, the nudge later. (REQ-5.24 to 5.26) |
 | Q-29 | Class-code guessing alerts | On the admin's page and by email at most once a day; weekly comparison after 4 weeks. (REQ-10.7) |
 | Q-30 | Exams | As proposed, but instead of "no time limit": the teacher can set a time window and lock everything else during it. (REQ-4.26, 5.23) |
+| Q-31 | Follow-ups: check-again and grade; fewer questions; exam end; Chromebook lock | Check-again questions don't change the grade; fewer questions than a friend is OK; answers are submitted automatically at the end of the exam window, with a timer the teacher can turn on or off and a notice before the end; the school's Google Admin allows only Evolora's address during exams, and Evolora locks itself to show only the exam. (REQ-4.17, 6.10, 5.23) |
 | Q-26 | Extra practice questions? | Accepted as proposed: the creator marks extra practice questions, which are asked only until the student reaches the minimum; other questions are always asked; check-again answers count; open and audio answers don't; running out means moving on with a red flag to the teacher. (REQ-4.21) |
 | Q-24 | Minimum questions per topic: who sets it, and what does it mean? | The teacher sets it when assigning; the creator gives a default (3 for the circles lesson, 1 for Archimedes). The student moves on to the next topic once they answer the minimum correctly. (REQ-4.21, 5.9) |
 | Q-25 | A type-a-number question? | Yes. All of Gil's calculation questions in the circles lesson are typed in; one digit after the decimal point is enough. (REQ-4.22) |
