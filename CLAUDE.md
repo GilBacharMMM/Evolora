@@ -32,5 +32,6 @@ Evolora is teaching software. It helps teachers create lessons and manage their 
 ## Practical notes
 
 - Use the terms exactly as defined in `docs/glossary.md`. If a new term is needed, add it there first.
+- Always answer Gil in English, even when Gil writes in Hebrew.
 - When reporting work to Gil, describe what changed in terms of what Gil will see in the app and which requirement numbers it covers.
 - Git commits use the project-local identity Gil Bachar <bachargil@gmail.com>.

@@ -11,7 +11,7 @@ It also checks course files (`courses/<name>.md`): every listed lesson must exis
 Run it on a lesson folder or a course file:
 
 ```
-node tools/check-lesson.mjs lessons/circles-pi
+node tools/check-lesson.mjs lessons/circles-teaching
 node tools/check-lesson.mjs courses/circles-demo.md
 ```
 

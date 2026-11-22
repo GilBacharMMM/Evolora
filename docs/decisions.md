@@ -341,7 +341,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 
 **Decision:** Option 3. For the circles lesson, Claude drew the illustrations and diagrams itself; the source of each is recorded as "AI-generated (drawn by Claude)". Option 2 stays possible for future lessons.
 **Reason:** Clear rights, and the diagrams can be drawn exactly to match the mathematics.
-**Affects:** REQ-4.15, lessons/circles-pi
+**Affects:** REQ-4.15, lessons/circles-teaching
 
 ### D-29: The teacher sets the minimum questions per topic
 **Date:** 2026-11-21 · **Status:** Decided · **Decided by:** Gil
