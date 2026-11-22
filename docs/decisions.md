@@ -506,3 +506,21 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
 **Decision:** A check-again question has 2 attempts, like the original question. After two wrong answers, its answer is shown and the teacher gets a red flag. It doesn't change the grade (Q-31).
 **Affects:** REQ-4.17
+
+### D-44: Teacher screens
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Context:** The teacher's screens decide whether teachers can act on the two key principles: individual progress and mastery (D-36).
+**Decision:** A home page with class cards and a "To do" list; a class dashboard as one table with status colours (red flag, orange behind, soft yellow past due, green, and a star for students ahead), levels with − and + and suggested changes; a student page with progress, flags, tips opened, level, messages and private teacher notes; a success rate for every question; an optional daily email; grades downloadable as CSV for Smart School. A live view during class comes later.
+**Reason:** Everything a teacher needs to act on is visible from the home page in one or two clicks.
+**Affects:** REQ-5.10, 5.11, 5.18, 5.27 to 5.31
+
+### D-45: Laptops as well as Chromebooks
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Options considered:**
+1. Chromebooks only.
+2. Chromebooks and Windows and Mac laptops, in the browser (Chrome, Edge, Safari).
+3. Also phones.
+
+**Decision:** Option 2. Phones much later, if at all.
+**Reason:** Evolora is a website, so other laptops add little work: mainly testing in more browsers, and checking audio recording in Safari.
+**Affects:** REQ-11.1

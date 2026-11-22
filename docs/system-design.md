@@ -66,7 +66,7 @@ Videos, simulations and podcasts from other websites are shown inside the lesson
 - Formulas are always shown left-to-right, even inside Hebrew text (REQ-4.3).
 
 ### 2.5 Screen size
-Screens are designed for a Chromebook screen (typically 11 to 14 inches) and work on larger screens too. Phones aren't supported (REQ-11.1).
+Screens are designed for a Chromebook screen (typically 11 to 14 inches) and work on larger screens too. They are tested in Chrome on a Chromebook, Chrome and Edge on Windows, and Safari on a Mac; audio recording uses the browser's standard recording feature, which all three support (REQ-11.1). Phones aren't supported.
 
 ---
 
@@ -115,6 +115,7 @@ Rules inside the database decide what each person can read and change. They appl
 - Only the **checking service** can write grades for automatically checked questions. Students can't write grades at all.
 - Teachers can read and change everything in **their own classes**, and nothing in other teachers' classes.
 - Messages can be read only by the student and the teachers of that class (REQ-5.16).
+- Teacher notes about a student can be read only by the class's teachers, never by the student (REQ-5.28).
 - Lessons in the lesson library can be read by all teachers. In stage 1, only Claude's loading program can add or change lessons. In stage 2, only the lesson's own creator can change it (others make a copy).
 
 These rules are tested automatically before every release (section 8).

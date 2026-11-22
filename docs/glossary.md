@@ -84,7 +84,10 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Grade weight** | How much a question counts toward the lesson grade. By default all questions count equally; the creator may change this. | proposed |
 | **Due date** | An optional deadline a teacher sets on an assignment. After it, the teacher's choice applies: the grade drops by a set percentage, or the lesson is locked. The teacher can extend it. | proposed |
 | **Co-teacher** | A second (or further) teacher added to a class, with exactly the same permissions. When teachers change the same thing, the last change wins. | proposed |
-| **Student status** | A colour, with a word or icon, on the class dashboard for each student: green (on track), orange (behind), red (has an open red flag). The exact rules will be set after trying the system (OPEN Q-4). | proposed |
+| **Student status** | A colour, with a word, on the class dashboard for each student: red (open red flag), orange (behind the class), soft yellow (past a due date), green (on track); plus a star for students ahead. | agreed |
+| **Teacher notes** | Private notes a teacher writes about a student, seen only by the class's teachers. In Hebrew: הערות צוות. | proposed |
+| **Student page** | The teacher's page about one student in one class: progress, grades, flags, level, messages and teacher notes. In Hebrew: דף תלמיד. | proposed |
+| **Success rate** | For one question: how many students got it right on the 1st attempt, on the 2nd, or not at all. In Hebrew: אחוז הצלחה. | proposed |
 | **Messages** | A simple private conversation between one student and one teacher, for questions and answers. | proposed |
 | **Attempt** | One try at answering a question. Multiple choice and type-a-number questions have 2 attempts: after the 1st wrong one, a hint; after the 2nd, the full solution and a check-again question (REQ-4.16, REQ-6.3). In an exam, every question has 1 attempt (REQ-4.26). | agreed |
 | **Mastery** | The goal that every student fully understands every lesson, not just completes it. In particular, every student masters every level 1 question: they answer it correctly, or they are flagged to the teacher until the teacher clears the flag (REQ-1.3). | proposed |

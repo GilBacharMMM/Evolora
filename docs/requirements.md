@@ -1,6 +1,6 @@
 # Evolora: Requirements
 
-**Status:** Draft 7: Gil's answers of 2026-11-22 (grades, exams, tips, levels) added; still in review
+**Status:** Draft 8: teacher screens added (2026-11-22); still in review
 **Last updated:** 2026-11-20
 
 ## How to read this document
@@ -473,23 +473,39 @@ When assigning, the teacher sets:
 - [ ] With "lock after the due date", a student cannot open an unfinished lesson after the due date.
 - [ ] A teacher can extend the due date for the whole class or for one student, and the lesson opens again for them.
 
-**REQ-5.10: Class dashboard with status colours** (Priority: MVP)
-For each class, the teacher sees every student with a status colour: **green** (on track), **orange** (behind), **red** (red flag). Clicking a student shows their progress in each assignment. The exact rules will be refined after trying the system; starting rules are in OPEN Q-4.
+**REQ-5.10: Class dashboard** (Priority: MVP)
+For each class, the teacher sees one table with a row per student (Gil, Q-33). The columns:
+- **status**: a colour with a word (REQ-12.3):
+  - **red**: the student has an open red flag (REQ-5.19)
+  - **orange**: the student is behind: more than 1 lesson behind the middle of the class in a course
+  - **soft yellow**: an assignment is past its due date and unfinished
+  - **green**: everything else
+
+  When more than one applies, the most serious shows, in this order: red, orange, yellow (proposed; the rules are kept in one place so they can be changed after trying them). A small **star** marks students who are ahead of the class, so strong students are noticed too (REQ-1.2).
+- **level**, with **− and +** buttons to change it, and a **suggested change** when the student's average is well above or below their current level (REQ-5.18)
+- **where they are** in each course (the progress map, REQ-5.24)
+- **average grade**, **open flags**, and **when they last worked**
+
+The table can be sorted by any column. Clicking a student opens their student page (REQ-5.28).
 
 *Acceptance criteria:*
-- [ ] The dashboard shows every student in the class with a colour.
-- [ ] A student with an open red flag (for example, a wrong check-again answer) shows red, under the starting rules (OPEN Q-4).
-- [ ] Clicking a student shows which lessons they finished, which are in progress, and their grades.
+- [ ] The dashboard shows every student in the class with a status colour and a word.
+- [ ] A student with an open red flag shows red; one with an unfinished assignment past its due date, and no flag, shows soft yellow; one more than 1 lesson behind the middle of the class shows orange.
+- [ ] A student ahead of the class has a star.
+- [ ] Pressing + next to a student's level raises it by one; the change is saved at once.
+- [ ] A student whose average is well above their level shows a suggested change, which the teacher can accept with one click or ignore.
+- [ ] Clicking a column header sorts the table by it.
 - [ ] Red flags from check-again questions (REQ-4.17) and, later, from the help line (REQ-6.9) appear here, saying which question caused them.
 
 **REQ-5.11: Grade dashboard** (Priority: MVP)
-A teacher sees grades per class, per course, per lesson and per question. An unfinished lesson counts as grade 0 and is clearly marked as not done.
+A teacher sees grades per class, per course, per lesson and per question. An unfinished lesson counts as grade 0 and is clearly marked as not done. The grade table can be downloaded as a **CSV file** (a spreadsheet file), for example to copy grades into the school's system, Smart School (Gil, Q-39).
 
 *Acceptance criteria:*
 - [ ] A teacher sees a table of students and lessons with a grade in each cell.
 - [ ] A teacher can open one lesson and see each student's result per question.
 - [ ] Lessons not finished show "not done" and count as 0 in averages.
 - [ ] Pending grades (waiting for the teacher) are shown as pending, not as 0.
+- [ ] Clicking "Download as CSV" saves a file that opens in a spreadsheet program, with a row per student and a column per lesson.
 
 **REQ-5.12: Review screen** (Priority: MVP)
 For an open or audio question, the teacher sees all submitted answers, one below the other, with the question's grading instructions at the top. The teacher grades and comments on each one, and moves to the next student with the Tab key.
@@ -535,7 +551,7 @@ Each student has one private conversation with the teachers of each class they a
 **REQ-5.18: Student levels (secret)** (Priority: to be set by Gil, see the roadmap)
 Each student has a **student level** from 1 to 3 **in each class** (Gil, Q-21): a student can be at level 3 in science and level 2 in English. Only the class's teachers can see it; the student and other students never do. Every student starts at level 2. Only a teacher can raise or lower a student's level, and the change stays until the teacher changes it again. A change made while a student is in the middle of a lesson applies from the next question.
 
-To help the teacher, Evolora **keeps suggesting** levels, based on average grades in the class: it suggests lowering the weakest 10% of the class to level 1, and raising the strongest 10% to level 3. The suggestions appear on the class dashboard all the time, and the teacher accepts or ignores each one; nothing changes without the teacher. The teacher sees every student's level on the class dashboard (REQ-5.10).
+To help the teacher, Evolora **keeps suggesting** levels, based on average grades in the class: it suggests lowering the weakest 10% of the class to level 1, and raising the strongest 10% to level 3. It also suggests a change when a student's average is well above or below what fits their current level, for example a level 1 student who now does better than half the class (Gil, Q-33). The average is taken from the lessons finished in the class in the last 4 weeks, including lessons whose grades are hidden from students, and only after the student has at least 5 graded lessons, so one bad day doesn't move anyone (Gil, Q-38). The suggestions appear on the class dashboard all the time, and the teacher accepts or ignores each one; nothing changes without the teacher. The teacher sees every student's level on the class dashboard (REQ-5.10).
 
 *Acceptance criteria:*
 - [ ] On the class list, a teacher sees each student's level and can change it.
@@ -613,6 +629,42 @@ For each student, the teacher sees a list of the level 1 questions the student h
 
 **REQ-5.26: Nudge when a student runs out of work** (Priority: Later)
 When a student finishes everything open to them, the teacher gets a nudge suggesting to open more lessons or raise the student's level (Gil, Q-27).
+
+**REQ-5.27: Teacher's home page** (Priority: to be set by Gil, see the roadmap)
+After signing in, a teacher sees a card for each of their classes, like the student's home page. Each card shows what needs attention in that class: open red flags, answers waiting to be graded, unread messages and level suggestions. Beside the cards, a teacher **"To do" list** shows the same items for all classes together (Gil, Q-32).
+
+*Acceptance criteria:*
+- [ ] A teacher with 2 classes sees 2 cards, each with its own counts.
+- [ ] The "To do" list shows an open red flag, an answer to grade and an unread message, and clicking each opens the right screen.
+
+**REQ-5.28: Student page** (Priority: to be set by Gil, see the roadmap)
+For one student in one class, the teacher sees (Gil, Q-34):
+- their progress in each course, and their grades
+- the "not yet mastered" list, with red flags to clear (REQ-5.25, 5.19)
+- how many help tips they opened (REQ-6.15)
+- their level, with − and + buttons, and the suggested change, if any (REQ-5.18)
+- a box to **message the student** (REQ-5.16)
+- **teacher notes**: private notes about the student, seen only by the class's teachers, never by the student (for example, "talked with the parents; needs more time on fractions")
+
+*Acceptance criteria:*
+- [ ] A teacher writes a teacher note; a co-teacher of the class sees it; the student can't see it anywhere.
+- [ ] A teacher changes the student's level with − or + on this page, and the class dashboard shows the new level.
+- [ ] A teacher sends a message from this page, and the student sees it in their messages.
+
+**REQ-5.29: Which questions are hard for the class** (Priority: to be set by Gil, see the roadmap)
+For every lesson, and for every exam after its results are released, the teacher sees each question's **success rate**: how many students got it right on the 1st attempt, on the 2nd, and not at all. This shows what to teach again (Gil, Q-35).
+
+*Acceptance criteria:*
+- [ ] In a lesson where 4 of 10 test students got question 3 right on the 1st attempt, the teacher sees "40% right on the 1st attempt" for that question.
+
+**REQ-5.30: Live view during class** (Priority: Later)
+A screen for when the class works on a lesson together: who is working right now, on which question, and who is stuck (Gil, Q-36: later).
+
+**REQ-5.31: Daily email summary for teachers** (Priority: to be set by Gil, see the roadmap)
+Besides seeing everything inside Evolora, each teacher can get one email a day with what is new: red flags, answers to grade and messages. Each teacher can turn it off (Gil, Q-37).
+
+*Acceptance criteria:*
+- [ ] A teacher with the email on gets one email a day listing the new items; with it off, no email arrives.
 
 **REQ-5.17: Google Classroom connection** (Priority: Later)
 Import class lists from Google Classroom, and possibly post assignments and grades back to it. See the advice in the open questions summary.
@@ -882,11 +934,12 @@ Before Evolora is used beyond the pilot, it must meet Israeli privacy law and Mi
 
 ## 11. Platform, hosting and scale
 
-**REQ-11.1: Web app for Chromebooks** (Priority: MVP)
-Evolora is a website used in the Chrome browser on school Chromebooks. Phones are not supported.
+**REQ-11.1: Web app for Chromebooks and laptops** (Priority: MVP)
+Evolora is a website. It works in the browser on school Chromebooks and on Windows and Mac laptops and computers, in an up-to-date Chrome, Edge or Safari (Gil, Q-40). Phones are not supported; they may come much later, if needed.
 
 *Acceptance criteria:*
 - [ ] Every screen works on a school Chromebook, at its normal screen size, without zooming.
+- [ ] The same screens work in Chrome and Edge on a Windows laptop and in Safari on a Mac, including recording an audio answer.
 
 **REQ-11.2: Cloud hosting and own web address** (Priority: MVP)
 Evolora runs on Google Cloud (Firebase) and is reached at **evoloraedu.org**.
@@ -971,16 +1024,7 @@ The test site can be filled with a standard set of test data with one command, b
 
 | # | Question | Affects |
 |---|---|---|
-| **Q-4** | **Status colours** (REQ-5.10). My proposal: **red** = the student has an open red flag; **orange** = an assignment is past its due date and unfinished, or the student is more than 1 lesson behind the middle of the class in a course; **green** = everything else. In addition, a small star (not a colour) for students who are ahead of the class, so strong students are noticed too (REQ-1.2). | REQ-5.10 |
-| **Q-32** | **Teacher's home page.** My proposal: like the student's, a card for each class, each showing what needs attention: red flags, answers waiting to be graded, unread messages, level suggestions. Beside the cards, a teacher "To do" list with the same items for all classes. | REQ-5.10 |
-| **Q-33** | **Class dashboard layout.** My proposal: one table, a row per student, with columns: status colour, level, where they are in the course (the progress map), average grade, open flags, and when they last worked. Sorting by any column. Clicking a student opens their page. | REQ-5.10, 5.18, 5.24 |
-| **Q-34** | **Student page** (one student in one class). My proposal: their progress in each course, grades, the "not yet mastered" list with flags to clear, how many tips they opened, their level (with the suggestion, if any), and the messages with them. | REQ-5.18, 5.19, 5.25, 6.15 |
-| **Q-35** | **Which questions are hard for the class?** My proposal: for every lesson, the grade dashboard shows each question's success rate (for example, "only 40% got it right on the 1st attempt"), so the teacher sees what to teach again. Also for exams, after the results are released. | REQ-5.11 |
-| **Q-36** | **Live view during class.** A screen for when the class works in the lesson together: who is working right now, on which question, and who is stuck (a red flag or several wrong answers in the last minutes). MVP or later? | REQ-5.10 |
-| **Q-37** | **How the teacher hears about things.** Inside Evolora only, or also a daily email summary (new red flags, answers to grade, messages)? My proposal: inside Evolora, plus an optional daily email that each teacher can turn off. | REQ-5.10, 5.16 |
-| **Q-38** | **Level suggestions: based on what?** My proposal: the average grade of lessons finished in the class in the last 4 weeks (including hidden grades), and only after a student has at least 5 graded lessons, so a single bad day doesn't move them. | REQ-5.18 |
-| **Q-39** | **Exporting grades.** Does the school need grades in another system (for example Mashov/משוב or a spreadsheet)? My proposal: in the MVP, a button that downloads the grade table as a spreadsheet file. | REQ-5.11 |
-| **Q-40** | **Teacher devices.** Teachers on laptops and Chromebooks in the MVP, and phones later (only reading the dashboard and messages)? | REQ-11.1 |
+| **Q-41** | **Status colour order.** When several apply, I show the most serious: red (flag), then orange (behind), then soft yellow (past due). Or should past due come before behind? | REQ-5.10 |
 
 ### Answered (2026-11-20)
 
@@ -998,6 +1042,16 @@ The test site can be filled with a standard set of test data with one command, b
 | Q-27 | More support for individual progress | Agreed: progress map and "not yet mastered" list in the MVP, the nudge later. (REQ-5.24 to 5.26) |
 | Q-29 | Class-code guessing alerts | On the admin's page and by email at most once a day; weekly comparison after 4 weeks. (REQ-10.7) |
 | Q-30 | Exams | As proposed, but instead of "no time limit": the teacher can set a time window and lock everything else during it. (REQ-4.26, 5.23) |
+| Q-4 | Status colours | Red = open red flag; orange = behind the class; **soft yellow = past due date**; green = everything else; a star for students ahead. (REQ-5.10) |
+| Q-32 | Teacher's home page | Class cards with what needs attention, and a teacher "To do" list. (REQ-5.27) |
+| Q-33 | Class dashboard | One table per class, with − and + to change levels and a suggested change when the average is well above or below the level. (REQ-5.10) |
+| Q-34 | Student page | As proposed, plus − and + for the level, messaging the student, and private teacher notes the student can't see. (REQ-5.28) |
+| Q-35 | Hard questions | Success rate for every question. (REQ-5.29) |
+| Q-36 | Live view | Later. (REQ-5.30) |
+| Q-37 | Notifications | Inside Evolora, plus an optional daily email. (REQ-5.31) |
+| Q-38 | Level suggestions | Average of the last 4 weeks, after at least 5 graded lessons. (REQ-5.18) |
+| Q-39 | Exporting grades | The school uses Smart School; a CSV download is enough. (REQ-5.11) |
+| Q-40 | Devices | Chromebooks and Windows and Mac laptops, in the browser; phones much later, maybe never. (REQ-11.1) |
 | Q-31 | Follow-ups: check-again and grade; fewer questions; exam end; Chromebook lock | Check-again questions don't change the grade; fewer questions than a friend is OK; answers are submitted automatically at the end of the exam window, with a timer the teacher can turn on or off and a notice before the end; the school's Google Admin allows only Evolora's address during exams, and Evolora locks itself to show only the exam. (REQ-4.17, 6.10, 5.23) |
 | Q-26 | Extra practice questions? | Accepted as proposed: the creator marks extra practice questions, which are asked only until the student reaches the minimum; other questions are always asked; check-again answers count; open and audio answers don't; running out means moving on with a red flag to the teacher. (REQ-4.21) |
 | Q-24 | Minimum questions per topic: who sets it, and what does it mean? | The teacher sets it when assigning; the creator gives a default (3 for the circles lesson, 1 for Archimedes). The student moves on to the next topic once they answer the minimum correctly. (REQ-4.21, 5.9) |
