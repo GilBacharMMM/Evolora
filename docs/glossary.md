@@ -105,6 +105,8 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Stage 1 / Stage 2** | Stage 1 is the first working product (the MVP), with no AI. Stage 2 adds import from documents and AI features. | proposed |
 | **Pilot** | The first real use of Evolora at Gil's school: 5 teachers, about 120 seventh-grade students. | proposed |
 | **Test site** | A separate copy of Evolora with made-up data, where Gil checks new features before they go to the real site. | agreed |
+| **Loading program** | The program Claude runs to put lesson files and course files into Evolora, after the lesson check (REQ-4.24). | proposed |
+| **Staff list** | The list of email addresses that have the teacher or system admin role. Everyone else who signs in is a student (REQ-2.2). | proposed |
 | **Test user** | A made-up person (for example, "Test Student 3") that exists only on the test site. | agreed |
 | **Milestone A / B** | The two parts of the MVP: A puts a first lesson in front of real students; B completes the teacher tools. | proposed |
 | **Class language** | The interface language a teacher sets for a class, either required for students or just a default they can change. | proposed |

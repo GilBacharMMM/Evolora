@@ -549,3 +549,15 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
 **Decision:** Gil set every feature to priority 1, 2 or 3 on the priorities page. The result is in the roadmap and on every requirement. Notable choices: exams, audio answers, messages and lesson versions moved to priority 3; opening lessons early for chosen students moved to priority 1; levels, random answer order and hiding grades are priority 2.
 **Affects:** roadmap; all requirements
+
+### D-49: How test users and Claude's programs sign in (test site)
+**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building part 1
+**Context:** The "Switch user" menu (REQ-12.5) needs made-up test users who can be signed in with one click, and Claude's programs (loading lessons, adding teachers, resetting the test site; D-33, D-47) need a way to write to the database that no teacher or student has.
+**Options considered:**
+1. Test users with a shared, known password, kept in the project; the menu signs in with it. Claude's programs sign in with their own "loading program" account, whose password is kept only on Gil's computer (in the user folder, never on GitHub). The database rules let only that account change lessons, courses, classes and roles.
+2. A small server program (in the checking service) that signs people in as test users, and a Google "service account" key for Claude's programs. Safer in theory, but needs the pay-as-you-go plan first and a secret key file to look after.
+
+**Decision:** Option 1, for the test site.
+**Reason:** Works on the free plan, nothing secret goes to GitHub except the test users' password, and the test users only ever see made-up data. Anyone who finds that password can only sign in as a made-up test user on the test site. The real site has no test users and no "Switch user" menu: the real site is built without them (checked automatically: the built real-site files contain no test-user names or password).
+**Also:** On the test site only, opening the site once with `?any-browser` at the end of the address lets a non-Chrome browser through (REQ-11.1). This is for Claude's automatic screen tests, whose test browser is not branded "Google Chrome". The real site has no such exception.
+**Affects:** REQ-12.5, REQ-12.6, REQ-11.1, system-design 4.2, 7.3

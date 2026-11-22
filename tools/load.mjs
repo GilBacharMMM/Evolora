@@ -2,7 +2,7 @@
 // Evolora loading program (REQ-4.24, REQ-4.10, system-design 2.2).
 // Loads lesson files and course files into a site, after the lesson check passes.
 //
-//   node tools/load.mjs lessons/circles-pi
+//   node tools/load.mjs lessons/circles-teaching
 //   node tools/load.mjs courses/circles-demo.md          (also loads the course's lessons)
 //   node tools/load.mjs --site test lessons/archimedes-density courses/density-demo.md
 //

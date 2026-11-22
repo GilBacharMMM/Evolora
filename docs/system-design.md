@@ -1,7 +1,7 @@
 # Evolora: System Design
 
 **Status:** Approved by Gil on 2026-11-20 (D-16 to D-18), updated with the answers to D-Q1 to D-Q4
-**Last updated:** 2026-11-20
+**Last updated:** 2026-11-23 (part 1 built: sections 2.2, 4.2, 7.3)
 
 This document explains, in plain language, how Evolora is built. It always follows [requirements.md](requirements.md). Significant choices link to their entry in [decisions.md](decisions.md), which explains why they were made.
 
@@ -47,7 +47,7 @@ There is one website at **evoloraedu.org**. After signing in, each person sees t
 | System admin | Manage teachers |
 
 ### 2.2 Getting lessons into Evolora
-**Stage 1 (D-33):** there is no lesson editor. Gil and Claude write each lesson as a lesson file in the `lessons` folder (plain text, described in `lessons/README.md`). A small **loading program**, run by Claude on this computer, checks the file, uploads its images to file storage and saves the lesson in the database, as a new version (section 3.2). It loads into the test site first, and into the real site only after Gil has checked the lesson there (REQ-4.24).
+**Stage 1 (D-33):** there is no lesson editor. Gil and Claude write each lesson as a lesson file in the `lessons` folder (plain text, described in `lessons/README.md`). A small **loading program** (`node tools/load.mjs`), run by Claude on this computer, first runs the lesson check (`tools/check-lesson.mjs`; if there is any error, nothing is loaded), then uploads the images to file storage and saves the lesson in the database as a new version (section 3.2). Loading a course file also loads its lessons. The correct answers, hints, solutions, check-again questions and grading instructions are saved apart from the rest of the lesson, in the protected area students can never read (section 5.1). Notes for Gil (`> 🟦 Claude:` lines) and `[NEW]` tags are never shown to students. The loading program signs in with its own account, the only one allowed to change lessons (D-49). It loads into the test site first, and into the real site only after Gil has checked the lesson there (REQ-4.24).
 
 **Stage 2: the lesson editor.** The editor works like a simple word processor made of **blocks** (REQ-4.2). This screen is called the **lesson builder**. The creator clicks "+" to add a block (text, note box, image, table, formula, video, audio, simulation, link list or question) and drags blocks to reorder them. Every image needs its source filled in: own work, AI-generated, or another source with author, link and licence (REQ-4.15). A **Preview** button shows the lesson exactly as a student sees it (REQ-4.6).
 
@@ -103,7 +103,7 @@ The database is backed up automatically every day, and backups are kept for 7 da
 People sign in with "Sign in with Google" (REQ-3.1). People use a regular Google account such as Gmail (REQ-3.2, D-19). A newly signed-in person is a student with no classes and can see nothing until they enter a class code (REQ-10.1). Which accounts may sign in is decided in one place, so switching to school accounts later (REQ-3.3) is a small change.
 
 ### 4.2 Roles
-- A person's **role** is stored in their record. Everyone starts as a student. Only a system admin can make someone a teacher (REQ-2.2).
+- A person's **role** comes from the **staff list**: a list of email addresses with their role (teacher or system admin). Anyone not on it is a student. Only a system admin can change the staff list (REQ-2.2); in stage 1 Claude does this with a command (`node tools/admin.mjs`, D-47), and the person sees the teacher screens the next time they open Evolora.
 - The first system admin is set up by Claude directly, using a Google account Gil chooses.
 - Edit mode is a switch on the teacher's own screen (REQ-2.3, stage 2).
 
@@ -195,9 +195,9 @@ There is a **second, separate Firebase project**, **evolora-test**, used only fo
 
 This way, real students never see a half-finished feature, and testing never mixes made-up data with real grades.
 
-**Switching users (REQ-12.5).** On the test site, a "Switch user" menu lets Gil become any test user (for example, Test Teacher 1 or Test Student 3) with one click. The test users are simple made-up accounts that exist only in the test project. The menu is built so that it can't appear on the real site. Every test-site screen shows a "TEST SITE" banner.
+**Switching users (REQ-12.5).** On the test site, a "Switch user" menu lets Gil become any test user (for example, Test Teacher 1 or Test Student 3) with one click. The test users are simple made-up accounts that exist only in the test project. The menu is built so that it can't appear on the real site: the real site is built without it. Every test-site screen shows a "TEST SITE" banner.
 
-**Test data (REQ-12.6).** Claude can fill or reset the test site with a standard set: 2 test teachers, 6 test students, a test class, and the Archimedes lesson.
+**Test data (REQ-12.6).** Claude can fill or reset the test site with one command (`node tools/reset-test-site.mjs`) with a standard set: 2 test teachers, 7 test students (two each at levels 1, 2 and 3, and Test Student 7, who hasn't joined any class), a test class ("Test Class 7A", taught by Test Teacher 1, with test students 1 to 6), the three demo lessons and the two demo courses, open to the test class. The test users and how they sign in are described in decision D-49.
 
 ### 7.4 Email
 Email invites to classes (REQ-5.3) are sent through a free email service from **noreply@evoloraedu.org**. This needs a few extra settings in Cloudflare and is set up in Milestone B.

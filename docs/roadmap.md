@@ -34,6 +34,8 @@ REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-3.
 | 3 | REQ-5.1, 5.2, 5.4, 5.6, 5.7, 4.10, 6.1, 6.4, 6.11, 6.12 | Classes and class codes, assigning lessons and courses, the student's home, class and course pages (lessons open one after another until REQ-5.8) |
 | 4 | REQ-5.27, 5.10, 5.24, 5.19, 5.20, 5.12, 5.13, 5.11 | Teacher home and class dashboard, red flags and clearing them, opening lessons early for chosen students, the grading page with written comments, the grade table with CSV download |
 
+**Progress:** part 1 is on the test site (2026-11-23), waiting for Gil's checks.
+
 **Done when:** the demo lessons (Archimedes, circles, circles practice) are loaded, Gil assigns them to a real class, the students complete them, and Gil follows them on the dashboard and grades their open answers.
 
 ### Priority 2: should have (right after)
