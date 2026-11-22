@@ -1022,8 +1022,7 @@ The test site can be filled with a standard set of test data with one command, b
 
 ### Still open
 
-| # | Question | Affects |
-|---|---|---|
+No open questions right now (2026-11-22).
 
 ### Answered (2026-11-20)
 
