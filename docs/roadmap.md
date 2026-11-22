@@ -1,66 +1,71 @@
 # Evolora: Roadmap
 
-**Status:** Draft 2, in review
-**Last updated:** 2026-11-20
+**Status:** Draft 3: priorities set by Gil (2026-11-22, decision D-26)
+**Last updated:** 2026-11-22
 
-This document says what goes into each version. Each item refers to requirement numbers in [requirements.md](requirements.md).
+This document says what goes into each version. Each item refers to requirement numbers in [requirements.md](requirements.md). Every requirement in requirements.md is marked with its priority.
 
-## How priorities will be set (decision D-26)
+## Priorities (decision D-26)
 
-When the requirements are finished, Claude will give Gil a list of all features, with a suggested priority for each. Gil then sets each feature to one of 3 levels. Claude's suggestion for the names:
+Gil set every feature to one of 3 levels, on the priorities page:
 
 1. **Must have** for the pilot
-2. **Should have**: important, right after the must-haves
+2. **Should have**: right after the must-haves
 3. **Later**
 
-Until then, the milestones below are only a draft.
-
-**Not yet prioritized** (new since the draft below): REQ-4.16 and 4.17 hints, full solution and check-again questions; REQ-4.18, 5.18 and 6.10 levels; REQ-4.19 random answer order; REQ-4.20 teaching, practice and exam lessons; REQ-4.26 exams; REQ-4.21 topics with a minimum number of questions; REQ-4.22 type-a-number questions; REQ-4.23 videos inside the lesson, with start and end times; REQ-5.19 clearing a red flag; REQ-5.20 opening lessons early for chosen students; REQ-5.21 archiving courses; REQ-9.6 teacher changes a student's language (low priority); REQ-10.7 alerting the system admin about class-code guessing; REQ-5.22 whether students see grades; REQ-5.23 exam time window and lock; REQ-5.24 progress map; REQ-5.25 "not yet mastered" list; REQ-6.15 help tips (the help line before AI); REQ-5.27 teacher's home page; REQ-5.28 student page with teacher notes; REQ-5.29 success rate per question; REQ-5.31 daily email for teachers; solved examples (REQ-4.2); REQ-6.9 help line (with AI, or first by message to the teacher).
-
-## Version 1: MVP (pilot at Gil's school)
+## Version 1: Stage 1 (pilot at Gil's school)
 
 **Goal:** Prove that students can learn on their own with Evolora lessons, and that teachers can follow and guide them, in real classes.
 
-**Who it is for:** 5 teachers and about 120 seventh-grade students, on school Chromebooks, signing in with regular Google accounts (D-19).
+**Who it is for:** 5 teachers and about 120 seventh-grade students, on school Chromebooks and laptops, in Google Chrome, signing in with regular Google accounts (D-19).
 
-**Target:** real students using it within 2 to 4 weeks. Because that is tight, the MVP is split into two milestones. Milestone A puts a real lesson in front of real students as early as possible. Milestone B completes the teacher tools.
+**How it is built:** in parts. Each part goes onto the test site with a list of checks for Gil, taken from the acceptance criteria; the next part starts when Gil is happy. Admin tasks are done through Claude (D-47). Lessons and courses come from lesson and course files (D-33).
 
-### Milestone A: First lesson in class (aim: about 2 weeks)
+### Foundation (always in)
 
-| Requirement | Short description |
+REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-3.1, 3.2, 3.4, 10.1 to 10.4 sign-in, access and privacy; REQ-4.2, 4.4, 4.5, 6.2, 6.3 the lesson player and scoring; REQ-4.24, 4.25 loading lesson and course files, and the teacher kit; REQ-8.1, 9.1 to 9.4 subjects, languages and direction; REQ-11.1 to 11.3 Chrome on Chromebooks and laptops, hosting, pilot size; REQ-12.1 to 12.7 speed, no lost work, accessibility, test site, test users and data, design language.
+
+### Priority 1: must have (the first release for the pilot)
+
+| Part | Requirements | What Gil can try on the test site |
+|---|---|---|
+| 1 | Foundation, REQ-12.4 to 12.6, 4.24 | Sign in, switch between test users, see the three demo lessons loaded |
+| 2 | REQ-4.3, 4.16, 4.17, 4.20, 4.21, 4.22, 4.23, 6.15 | Take the demo lessons as a student: formulas, two attempts with hint and solution, check-again questions, number questions, help tips, videos with start and end times, topics with extra practice, lesson types shown |
+| 3 | REQ-5.1, 5.2, 5.4, 5.6, 5.7, 4.10, 6.1, 6.4, 6.11, 6.12 | Classes and class codes, assigning lessons and courses, the student's home, class and course pages (lessons open one after another until REQ-5.8) |
+| 4 | REQ-5.27, 5.10, 5.24, 5.19, 5.20, 5.12, 5.13, 5.11 | Teacher home and class dashboard, red flags and clearing them, opening lessons early for chosen students, the grading page with written comments, the grade table with CSV download |
+
+**Done when:** the demo lessons (Archimedes, circles, circles practice) are loaded, Gil assigns them to a real class, the students complete them, and Gil follows them on the dashboard and grades their open answers.
+
+### Priority 2: should have (right after)
+
+| Requirements | Short description |
 |---|---|
-| REQ-2.1, 2.2 | Roles, admin registers teachers |
-| REQ-3.1, 3.2, 3.4, 10.1 | Google sign-in with regular Google accounts, access rules, strangers see nothing |
-| REQ-4.24, 4.25 | Loading lesson files; the lesson-writing kit for teachers (no lesson creation inside Evolora in stage 1, D-33). The kit is ready now. |
-| REQ-4.2 to 4.5, 4.15 | Lessons for students: all content blocks, formulas, 3 question types, questions block progress, image sources |
-| REQ-5.1, 5.2, 5.4, 5.6 | Classes, class code, class list, many classes per student |
-| REQ-5.7 | Assign lessons to a class or selected students |
-| REQ-5.11 | Grade dashboard (basic) |
-| REQ-1.2, 1.3 | Key principles: individual progress, and mastery of every level 1 question |
-| REQ-12.7 | Design language: Claude proposes it with clickable mockups, Gil approves (first step before building screens) |
-| REQ-6.1 to 6.4, 6.6, 6.11 to 6.13 | Student home (class cards, "To do"), class page, course page, taking a lesson, attempts and scoring, progress, audio answers, going back to finished lessons |
-| REQ-9.1 to 9.4 | Hebrew, Arabic, English; right-to-left and left-to-right; each person chooses their language |
-| REQ-10.4, 11.1 to 11.3, 12.1 to 12.3 | Hosting, safety basics, Chromebook web app, speed, no lost work |
-| REQ-12.4 to 12.6 | Test site, user switching, test data (built first, so Gil can test everything else) |
+| REQ-4.18, 5.18, 6.10 | Question levels and secret student levels |
+| REQ-4.19 | Answers in random order |
+| REQ-4.15, 1.1 | Image sources and licence shown |
+| REQ-5.8 | Course orders (one after another, paired, any order) |
+| REQ-5.9 | Due dates and assignment settings |
+| REQ-5.22 | Hiding grades from students |
+| REQ-5.14, 5.15 | Send back for corrections; teacher changes grades |
+| REQ-5.25, 5.28 | "Not yet mastered" list; student page with teacher notes |
+| REQ-6.13 | Going back to finished lessons |
 
-**Done when:** the Archimedes and density lesson is loaded into Evolora, Gil assigns it to a real class, the students complete it, and Gil sees their grades.
+### Priority 3: later
 
-### Milestone B: Full teacher tools (aim: about 2 more weeks)
-
-| Requirement | Short description |
+| Requirements | Short description |
 |---|---|
-| REQ-1.1, 4.9 | Attribution and licence shown, lesson library |
-| REQ-4.7 | Lesson versions |
-| REQ-4.10 | Courses, public or private (unlisted) |
-| REQ-5.3 | Email invites |
-| REQ-5.5 | Co-teachers |
-| REQ-5.8, 5.9 | Course orders (one after another, paired, any order), due dates, redo setting |
-| REQ-5.10 | Class dashboard with status colours |
-| REQ-5.12 to 5.15 | Grading page (with marking up answers), comments (text and audio), send back, grade changes |
-| REQ-5.16 | Messages |
-| REQ-6.5 | Redo a lesson |
-
-**Done when:** every MVP acceptance criterion in requirements.md passes when Gil checks it in the app.
+| REQ-4.26, 5.23 | Exams; exam time window, lock and timer |
+| REQ-4.7 | Lesson versions (until then, Claude reloads a changed lesson only when no student is in the middle of it, or after checking with Gil) |
+| REQ-4.9 | Lesson library search |
+| REQ-5.3, 5.5 | Email invites; co-teachers |
+| REQ-5.12 (marking up), 5.13 (audio comments) | Marking up answers; audio comments |
+| REQ-5.16, 10.2 | Messages |
+| REQ-5.21 | Archiving courses |
+| REQ-5.29 | Success rate per question |
+| REQ-5.31 | Daily email for teachers |
+| REQ-6.5, 6.6 | Redo a lesson; recorded audio answers |
+| REQ-9.6 | Teacher changes a student's language |
+| REQ-10.7 | Class-code guessing alerts |
 
 ## Version 2: Stage 2 (lesson creation, AI and richer content)
 

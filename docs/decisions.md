@@ -318,7 +318,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** Roadmap; all requirements marked "to be set by Gil"
 
 ### D-27: Evolora is a working name; a new name will be chosen
-**Date:** 2026-11-20 · **Status:** Open: Gil will choose a new name · **Decided by:** Gil
+**Date:** 2026-11-20 · **Status:** Decided: the name stays Evolora (2026-11-22) · **Decided by:** Gil
 **Context:** Gil bought evolura.org and considered renaming to Evolura (from "evolution"). A check showed that both "Evolora" and "Evolura" are already used a lot by others.
 **Options considered:**
 1. Rename to Evolura and use evolura.org.
@@ -327,6 +327,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 
 **Decision:** Option 3. Claude may suggest names.
 **Update (2026-11-22):** Gil's current favourite is **Evoluni** (evolution + university); a decision is expected within 1 to 2 days.
+**Final (2026-11-22, Gil):** the name stays **Evolora**, and the web address stays **evoloraedu.org**, owned by Gil.
 **Reason:** Neither name is distinctive. Renaming later costs about an hour of Claude's work, as long as it happens before students see the name.
 **Affects:** D-14, REQ-11.2, OPEN Q-17
 
@@ -532,3 +533,19 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** A grading page per answer: question and grading instructions on top, the student's answer, the AI suggestion (stage 2) and the teacher's grade and comment. Highlights and "track changes" edits in the teacher's colour, which the student sees. Sideways between students (following the reading direction), up and down between questions, Alt + arrows as shortcuts. Full, half and zero buttons or any number. A counter, "next not graded", and "send back for corrections" on the same page.
 **Reason:** Lets the teacher give precise feedback on each answer, and grade either by question (fair comparison across students) or by student (seeing their whole work).
 **Affects:** REQ-5.12, REQ-5.13, REQ-5.14
+
+### D-47: Admin tasks through Claude in stage 1
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Context:** With 5 pilot teachers, admin tasks are few: adding teachers, loading lessons and courses, resetting the test site.
+**Options considered:**
+1. Build admin screens in stage 1.
+2. No admin screens in stage 1: Gil asks Claude, who does the task with a command. Admin screens in stage 2.
+
+**Decision:** Option 2. Alerts meant for the admin (REQ-10.7) go by email.
+**Reason:** Saves building screens that would rarely be used, so stage 1 can focus on teachers and students.
+**Affects:** REQ-2.2, REQ-10.7
+
+### D-48: Priorities set (stage 1)
+**Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
+**Decision:** Gil set every feature to priority 1, 2 or 3 on the priorities page. The result is in the roadmap and on every requirement. Notable choices: exams, audio answers, messages and lesson versions moved to priority 3; opening lessons early for chosen students moved to priority 1; levels, random answer order and hiding grades are priority 2.
+**Affects:** roadmap; all requirements

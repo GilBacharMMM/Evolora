@@ -19,7 +19,7 @@ Evolora helps students learn on their own, guided by teachers. Creators build le
 
 The first users are 5 teachers and about 120 seventh-grade students at Gil's school, using Chromebooks and the school's Google accounts.
 
-**REQ-1.1: Open and shared** (Priority: MVP)
+**REQ-1.1: Open and shared** (Priority 2: should have)
 Every lesson in Evolora can be used by any teacher and copied and edited by any creator. The creator's name always stays attached to their work. Lessons are shared under the **CC BY-SA 4.0** licence (the Wikipedia licence). The software code is open source under the **AGPL-3.0** licence (a GNU licence for websites).
 
 *Acceptance criteria:*
@@ -27,13 +27,13 @@ Every lesson in Evolora can be used by any teacher and copied and edited by any 
 - [ ] Every lesson shows that it is shared under CC BY-SA 4.0.
 - [ ] Before publishing a lesson for the first time, the creator is told that it will be shared under this licence.
 
-**REQ-1.2: Key principle: each student progresses at their own pace** (Priority: MVP)
+**REQ-1.2: Key principle: each student progresses at their own pace** (Priority 1: foundation)
 A major goal of Evolora is individual progress. Slower students get more practice; fast and strong students go further and deeper. Many requirements serve this principle: student levels (REQ-5.18, 6.10), extra practice questions (REQ-4.21), opening lessons early for individual students (REQ-5.20), and course orders that let students choose their practice (REQ-5.8). Every new feature is checked against it.
 
 *Acceptance criteria:*
 - [ ] In one class, two students can be at different points of the same course: one has opened lessons ahead of the class, the other is still practising an earlier topic.
 
-**REQ-1.3: Key principle: every student masters every level 1 question** (Priority: MVP)
+**REQ-1.3: Key principle: every student masters every level 1 question** (Priority 1: foundation)
 Everything marked level 1 is the core that every student must know well. For every level 1 question, each student either answers it correctly (directly, after the hint, or through a check-again or extra practice question) or is **flagged** to the teacher. The teacher then makes sure the student understands, and clears the flag (REQ-5.19).
 
 *Acceptance criteria:*
@@ -44,15 +44,15 @@ Everything marked level 1 is the core that every student must know well. For eve
 
 ## 2. Users and roles
 
-**REQ-2.1: Four roles** (Priority: MVP)
+**REQ-2.1: Four roles** (Priority 1: foundation)
 Evolora has four roles: **system admin**, **teacher**, **creator** and **student**. One person can hold several roles; for example, a teacher who switches on edit mode is also a creator. In stage 1 there is no lesson creation inside Evolora (D-33): Gil writes lessons with Claude as lesson files, so the creator role starts being used in Evolora only in stage 2.
 
 *Acceptance criteria:*
 - [ ] A system admin can see which role each person has.
 - [ ] A person with several roles can reach the features of all of them without signing in again.
 
-**REQ-2.2: System admin registers teachers** (Priority: MVP)
-Only a system admin can make someone a teacher. Anyone else who signs in is a student.
+**REQ-2.2: System admin registers teachers** (Priority 1: foundation)
+Only a system admin can make someone a teacher. Anyone else who signs in is a student. In stage 1 there are no admin screens: the system admin's tasks (adding teachers, loading lessons and courses, resetting the test site) are done by asking Claude (D-47). Admin screens come in stage 2.
 
 *Acceptance criteria:*
 - [ ] The admin enters a teacher's email address; when that person signs in, they see the teacher features.
@@ -76,13 +76,13 @@ A system admin can register a person as a creator only, for example someone from
 
 ## 3. Accounts, sign-in and access
 
-**REQ-3.1: Sign in with Google** (Priority: MVP)
+**REQ-3.1: Sign in with Google** (Priority 1: foundation)
 People sign in with their Google account. There are no separate Evolora passwords.
 
 *Acceptance criteria:*
 - [ ] On a school Chromebook, clicking "Sign in with Google" takes you into Evolora with your Google account.
 
-**REQ-3.2: Any Google account during the pilot** (Priority: MVP)
+**REQ-3.2: Any Google account during the pilot** (Priority 1: foundation)
 During the pilot, people sign in with a regular Google account, such as a Gmail address. School accounts (@taded.org.il) can't be used yet, because a website using them must first be approved by the Ministry of Education (decision D-19).
 
 A new person who signs in is a student with no classes. They see nothing except an empty home page with a box to enter a class code. They can only see lessons once they join a class (OPEN Q-15).
@@ -94,7 +94,7 @@ A new person who signs in is a student with no classes. They see nothing except 
 **REQ-3.3: Other sign-in methods** (Priority: Later)
 Allow school accounts (@taded.org.il) after Ministry of Education approval, and the Ministry of Education sign-in.
 
-**REQ-3.4: People only see what they are allowed to** (Priority: MVP)
+**REQ-3.4: People only see what they are allowed to** (Priority 1: foundation)
 Each person sees only what their role and classes allow.
 
 *Acceptance criteria:*
@@ -116,7 +116,7 @@ In edit mode, a creator creates a lesson with a title, a short description, a le
 *Acceptance criteria:*
 - [ ] A creator can create a lesson, fill in these details, save it and find it again later.
 
-**REQ-4.2: Lesson content blocks** (Priority: MVP)
+**REQ-4.2: Lesson content blocks** (Priority 1: foundation)
 A lesson is a sequence of blocks, shown to the student in order. In stage 1 the blocks come from the lesson file; in stage 2 the creator can also add, edit, reorder and delete them in the lesson builder. Block types:
 - **Text**: with headings, bold, italics, lists and links
 - **Note box**: a highlighted text box, for example "Historical note"
@@ -138,7 +138,7 @@ A lesson is a sequence of blocks, shown to the student in order. In stage 1 the 
 - [ ] In the circles lesson, each of the four videos plays inside the lesson, and the questions about it come right after it.
 - [ ] If a simulation website refuses to be shown inside Evolora, the student sees a button that opens it in a new tab.
 
-**REQ-4.3: Formulas** (Priority: MVP for showing formulas; Later, stage 2, for the visual editor)
+**REQ-4.3: Formulas** (Priority 1: must have)
 Formulas display properly inside Hebrew, Arabic and English text. In stage 1 formulas are written in the lesson file. In stage 2, creators write them with a visual editor (buttons and typing, no code).
 
 *Acceptance criteria:*
@@ -147,7 +147,7 @@ Formulas display properly inside Hebrew, Arabic and English text. In stage 1 for
 - [ ] (Stage 2) The formula looks the same to the student as it did in the editor.
 - [ ] A formula inside a Hebrew sentence displays left-to-right as math should, without breaking the sentence.
 
-**REQ-4.4: Question types for the first version** (Priority: MVP)
+**REQ-4.4: Question types for the first version** (Priority 1: foundation)
 - **Multiple choice**: one correct answer, or several. Checked automatically.
 - **Open written answer**: checked by the teacher.
 - **Recorded audio answer**: the student records on the Chromebook; checked by the teacher.
@@ -163,7 +163,7 @@ For each question, the lesson file (in stage 2, the creator) sets:
 - [ ] The teacher sees the grading instructions of an open or audio question on the grading page (REQ-5.12).
 - [ ] A question given double weight in the lesson file counts double in the lesson grade.
 
-**REQ-4.5: Questions block progress** (Priority: MVP)
+**REQ-4.5: Questions block progress** (Priority 1: foundation)
 When a student reaches a question, they must answer it before they can see the rest of the lesson. Attempts and scoring are in REQ-6.3.
 
 *Acceptance criteria:*
@@ -175,7 +175,7 @@ A creator can go through the lesson exactly as a student would, without the answ
 *Acceptance criteria:*
 - [ ] A creator can preview a lesson, answer its questions, and no grade appears on any dashboard.
 
-**REQ-4.7: Lesson versions** (Priority: MVP)
+**REQ-4.7: Lesson versions** (Priority 3: later)
 When a lesson that students have already started is changed (in stage 1: when Claude loads a new version of its lesson file), students who started it finish the version they started. Students who start it afterwards get the new version. Existing answers and grades are kept.
 
 *Acceptance criteria:*
@@ -190,14 +190,14 @@ Any creator can copy any lesson and edit the copy as their own. The copy shows b
 - [ ] A creator copies another creator's lesson, edits it, and the original is unchanged.
 - [ ] The copy shows "Based on a lesson by [original creator]".
 
-**REQ-4.9: Lesson library** (Priority: MVP)
+**REQ-4.9: Lesson library** (Priority 3: later)
 Teachers can browse and search all lessons by title, subject, grade level, language and creator, to choose lessons to assign.
 
 *Acceptance criteria:*
 - [ ] A teacher can find a lesson by searching its title.
 - [ ] A teacher can filter lessons to show only Hebrew, 7th-grade math lessons.
 
-**REQ-4.10: Courses** (Priority: MVP)
+**REQ-4.10: Courses** (Priority 1: must have)
 A course is an ordered list of **teaching lessons**. Each teaching lesson has **zero or more practice lessons** (for example, none, one, or three), which the course's creator names and pairs with it. In stage 1, courses are written as **course files** by Gil with Claude, or by pilot teachers with Claude Code (sent to Gil, who loads them), like lessons (D-37). In stage 2, a teacher can also bundle lessons from the lesson library into a course inside Evolora. A course is either **public** (listed in the course library) or **private**, which means unlisted: it doesn't appear in the course library and only classes it is assigned to can use it, but its lessons are still open to everyone in the lesson library.
 
 *Acceptance criteria:*
@@ -206,7 +206,7 @@ A course is an ordered list of **teaching lessons**. Each teaching lesson has **
 - [ ] A public course appears in the course library; a private one does not.
 - [ ] The lessons inside a private course can still be found in the lesson library.
 
-**REQ-4.15: Image sources** (Priority: MVP)
+**REQ-4.15: Image sources** (Priority 2: should have)
 For every image, the creator must say where it comes from, as on Wikipedia. Lessons are shared under CC BY-SA, so every image must be allowed to be shared that way. The choices are:
 - **My own work** (photo or drawing by the creator)
 - **AI-generated** (with the name of the AI tool, if known)
@@ -220,7 +220,7 @@ Students see a small "Source" note under each image. Clicking it shows the full 
 - [ ] A student can click "Source" under an image and see where it comes from.
 - [ ] In the Archimedes lesson, the Renaissance woodcut shows its Wikimedia Commons source, and the other images show "AI-generated".
 
-**REQ-4.16: Two attempts, a hint and a full solution** (Priority: to be set by Gil, see the roadmap)
+**REQ-4.16: Two attempts, a hint and a full solution** (Priority 1: must have)
 Every multiple choice question, and every type-a-number question (REQ-4.22), gives the student **2 attempts**. For each one, the creator writes in advance:
 - a **hint**: short guidance on how to solve the question, without giving the answer
 - a **full solution**: the question solved step by step
@@ -234,7 +234,7 @@ After the 1st wrong attempt, Evolora shows the hint and the student tries again.
 - [ ] There is no 3rd attempt.
 - [ ] In the Archimedes lesson, each multiple choice question shows the hint and solution written for it.
 
-**REQ-4.17: Check-again questions** (Priority: to be set by Gil, see the roadmap)
+**REQ-4.17: Check-again questions** (Priority 1: must have)
 The creator adds a bank of one or more **check-again questions** to each multiple choice and type-a-number question, to check that the student understands after seeing the full solution:
 - If the question is a **calculation** (for example, "what is the density of this block?"), the check-again question is a similar calculation with different numbers or materials.
 - If the question is about **understanding** (for example, "why did the king have a doubt?"), the check-again question asks the same thing in different words, mostly with different answers.
@@ -248,7 +248,7 @@ Right after the full solution (REQ-4.16), Evolora picks one check-again question
 - [ ] Two wrong answers to the check-again question show its correct answer and send a red flag; the teacher sees it on the class dashboard (REQ-5.10) with the student's name and the question.
 - [ ] Answering it correctly, on the 1st or 2nd attempt, sends no flag.
 
-**REQ-4.18: Question levels** (Priority: to be set by Gil, see the roadmap)
+**REQ-4.18: Question levels** (Priority 2: should have)
 Every question has a **level** from 1 to 3: 1 is the easiest, 3 the hardest. The creator sets it, and a new question starts at level 1. Who sees which questions is in REQ-6.10.
 
 For example, in the Archimedes lesson most questions are level 1, the tungsten question is level 2, and the challenge question about ships is level 3.
@@ -257,7 +257,7 @@ For example, in the Archimedes lesson most questions are level 1, the tungsten q
 - [ ] A creator can set each question to level 1, 2 or 3.
 - [ ] (Stage 2) In the lesson builder, each question shows its level.
 
-**REQ-4.19: Answers in random order** (Priority: to be set by Gil, see the roadmap)
+**REQ-4.19: Answers in random order** (Priority 2: should have)
 In every multiple choice question (including check-again questions), Evolora shows the choices in a random order, different for each student, so that students sitting next to each other can't simply copy "the second answer". A student who leaves and comes back sees the same order as before.
 
 *Acceptance criteria:*
@@ -265,7 +265,7 @@ In every multiple choice question (including check-again questions), Evolora sho
 - [ ] Closing and reopening the lesson keeps the same order for the same student.
 - [ ] The correct answer is still marked correct, whatever its position.
 
-**REQ-4.20: Teaching, practice and exam lessons** (Priority: to be set by Gil, see the roadmap)
+**REQ-4.20: Teaching, practice and exam lessons** (Priority 1: must have)
 Every lesson has a type, and students always see it marked on the lesson ("Teaching", "Practice" or "Exam"). When creating a lesson, the creator chooses its type:
 - **Teaching lesson** (in Hebrew: שיעור הקניה): teaches new material, with text, media and questions, like the Archimedes lesson.
 - **Practice lesson** (in Hebrew: שיעור תרגול): only questions, on material the students have already learned. No new material. This matters most in mathematics.
@@ -276,7 +276,7 @@ Every lesson has a type, and students always see it marked on the lesson ("Teach
 - [ ] The lesson library shows each lesson's type.
 - [ ] A practice lesson contains questions only: new questions on material already taught, never new material (Gil, Q-23). Like other lessons, it can have hints, solutions, check-again questions, extra practice questions, levels and help tips.
 
-**REQ-4.21: Topics, with a minimum number of questions** (Priority: to be set by Gil, see the roadmap)
+**REQ-4.21: Topics, with a minimum number of questions** (Priority 1: must have)
 A creator can divide a lesson into **topics** (for example, in the circles lesson: what a circle is, the circumference, the number π, the area). Every student must answer at least a **minimum number of questions correctly** in each topic before moving on to the next one, whatever their student level (REQ-6.10). A student who reaches the minimum moves on (Gil, Q-24). The details (Gil, Q-26):
 - The creator marks some questions in a topic as **extra practice**. Extra practice questions are asked, in order, only until the student reaches the minimum; students who have reached it skip them. All other questions, including challenge questions at levels 2 and 3, are always asked.
 - A correct answer to a check-again question counts toward the minimum.
@@ -297,7 +297,7 @@ A creator can divide a lesson into **topics** (for example, in the circles lesso
 - [ ] A student who gets one question wrong gets extra practice questions until they have 3 correct answers.
 - [ ] A student who runs out of extra practice questions moves on, and the teacher sees a red flag.
 
-**REQ-4.23: Videos inside the lesson** (Priority: to be set by Gil, see the roadmap)
+**REQ-4.23: Videos inside the lesson** (Priority 1: must have)
 YouTube videos are shown with YouTube's own player, **embedded in the lesson window**: the student watches without leaving Evolora, and the video stays on YouTube. For each video, the creator:
 - pastes the YouTube link
 - may set a **start time** and an **end time** (for example, 1:20 to 3:05), when only part of the video is needed; the player then starts and stops there
@@ -311,7 +311,7 @@ Evolora uses YouTube's **privacy-enhanced mode**, which doesn't store tracking i
 - [ ] Under each video, the student sees its source (the channel name), and clicking it opens the video on YouTube.
 - [ ] A video whose owner doesn't allow embedding shows an "Open on YouTube" button instead of an error.
 
-**REQ-4.22: Type-a-number questions** (Priority: to be set by Gil, see the roadmap)
+**REQ-4.22: Type-a-number questions** (Priority 1: must have)
 A new question type: the student types a number, and Evolora checks it automatically. The creator enters the correct answer and the unit (for example, "ס\"מ"), which is shown next to the box. An answer is accepted if it is correct to one digit after the decimal point: it may differ from the exact answer by up to 0.1. For example, if the exact answer is 11.46, then 11.5 and 11.4 are accepted, but 11 is not.
 
 Type-a-number questions have the same 2 attempts, hint, full solution and check-again question as multiple choice questions (REQ-4.16, REQ-4.17).
@@ -322,7 +322,7 @@ Type-a-number questions have the same 2 attempts, hint, full solution and check-
 - [ ] The box accepts a decimal point and numbers like 7,850 or 7850, and rejects letters with a friendly message, without using up an attempt.
 - [ ] In the circles lesson, all of Gil's calculation questions, and their check-again questions, are type-a-number questions.
 
-**REQ-4.24: Loading lesson files** (Priority: MVP)
+**REQ-4.24: Loading lesson files** (Priority 1: foundation)
 Claude loads a lesson file, with its images, into Evolora with one command (course files are loaded the same way, REQ-4.10): first into the test site, and after Gil has checked it there, into the real site. Before loading, Claude's loading check makes sure the file is complete: every block is a known type, every image has its file and source, every question has its answer, and every topic has enough questions. If anything is wrong, nothing is loaded and Claude reports what to fix. Loading a changed lesson again follows the lesson versions rule (REQ-4.7).
 
 *Acceptance criteria:*
@@ -331,7 +331,7 @@ Claude loads a lesson file, with its images, into Evolora with one command (cour
 - [ ] After Gil approves a lesson on the test site, the same lesson appears on the real site.
 - [ ] Changing a lesson file and loading it again creates a new version (REQ-4.7); students in the middle of the old version are not affected.
 
-**REQ-4.25: Lesson-writing kit for teachers** (Priority: MVP)
+**REQ-4.25: Lesson-writing kit for teachers** (Priority 1: foundation)
 Pilot teachers can write lessons themselves with Claude Code, using the **lesson-writing kit** in `lessons/teacher-kit`:
 - **Rules for Claude** (`lesson-rules-for-claude.md`): the teacher saves it as `CLAUDE.md` in an empty folder, and Claude Code then follows the lesson file format and the lesson rules (image rights, levels, hints, check-again questions, topics, privacy). Claude interviews the teacher, writes the lesson, suggests improvements and runs a final check.
 - **A guide for teachers in Hebrew** (`מדריך-למורים.md`): the steps, in plain language, and the important rules. English and Arabic versions will be added later.
@@ -344,7 +344,7 @@ When the lesson is ready, the teacher sends the lesson folder (as a zip file) to
 - [ ] When Claude is given an image copied from the internet, it explains why it can't be used and offers an alternative.
 - [ ] When the lesson format changes, the kit is updated in the same change, and Gil is told to send the new version to the teachers.
 
-**REQ-4.26: Exams** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-30)
+**REQ-4.26: Exams** (Priority 3: later)
 An exam is a lesson of type "Exam". It has questions only, and these rules:
 - **One attempt** for every question. No hints, no full solution and no check-again question during the exam.
 - **No extra practice questions**, and the minimum number of questions per topic doesn't apply.
@@ -383,13 +383,13 @@ A place to discover, rate and share lessons widely, beyond the school.
 
 ## 5. Class management (teachers)
 
-**REQ-5.1: Create a class** (Priority: MVP)
+**REQ-5.1: Create a class** (Priority 1: must have)
 A teacher creates a class with a name, such as "Grade 7B Science".
 
 *Acceptance criteria:*
 - [ ] A teacher creates a class and sees it in their list of classes.
 
-**REQ-5.2: Join with a class code** (Priority: MVP)
+**REQ-5.2: Join with a class code** (Priority 1: must have)
 Each class has a unique **class code**, made by Evolora. On their home page, a student clicks **"Join a class"** and types the code. They join at once, with no approval needed.
 
 The code, similar to Google Classroom's:
@@ -411,33 +411,33 @@ The teacher can **reset** the code (the old one stops working) and **turn joinin
 - [ ] After 10 wrong codes in a row, the student sees a message asking them to wait 5 minutes.
 - [ ] A student can't leave a class on their own; only the teacher can remove a student (REQ-5.4).
 
-**REQ-5.3: Join by email invite** (Priority: MVP)
+**REQ-5.3: Join by email invite** (Priority 3: later)
 A teacher enters students' email addresses. Each student gets an email with a link that adds them to the class.
 
 *Acceptance criteria:*
 - [ ] A teacher invites a student by email; the student receives the email, clicks the link, and joins the class.
 - [ ] The teacher can paste a list of many email addresses at once.
 
-**REQ-5.4: Class list** (Priority: MVP)
+**REQ-5.4: Class list** (Priority 1: must have)
 A teacher sees the list of students in a class and can remove a student.
 
 *Acceptance criteria:*
 - [ ] A removed student no longer sees the class, but their past work is kept for the teacher.
 
-**REQ-5.5: Co-teachers** (Priority: MVP)
+**REQ-5.5: Co-teachers** (Priority 3: later)
 A teacher can add other teachers to a class. All teachers of a class have the same permissions. When two teachers change the same thing (for example, a grade or a due date), the last change counts.
 
 *Acceptance criteria:*
 - [ ] Teacher A adds Teacher B to a class; Teacher B sees the class and can do everything Teacher A can.
 - [ ] Teacher A sets a grade to 80, Teacher B then sets it to 90; the grade is 90.
 
-**REQ-5.6: Many classes per student** (Priority: MVP)
+**REQ-5.6: Many classes per student** (Priority 1: must have)
 A student can belong to any number of classes, with different teachers.
 
 *Acceptance criteria:*
 - [ ] A student in two classes sees both, with each class's own assignments.
 
-**REQ-5.7: Assign lessons** (Priority: MVP)
+**REQ-5.7: Assign lessons** (Priority 1: must have)
 A teacher can assign a single lesson, a course, or any selection of lessons, to the whole class or to selected students.
 
 *Acceptance criteria:*
@@ -445,7 +445,7 @@ A teacher can assign a single lesson, a course, or any selection of lessons, to 
 - [ ] A teacher assigns a lesson to 3 students only; only those 3 see it.
 - [ ] A student who joins the class later also receives assignments given to the whole class.
 
-**REQ-5.8: Course order** (Priority: MVP)
+**REQ-5.8: Course order** (Priority 2: should have; until then, lessons open one after another)
 When assigning a course, the teacher chooses how its lessons open for each student:
 - **One after another**: learning A → practice A → learning B → practice B, and so on. Each lesson opens when the one before it is finished.
 - **Paired** (recommended): teaching lessons open in order, each one when the previous teaching lesson is finished. The practice lessons of every finished teaching lesson are open, and the student does them in any order, whenever they like.
@@ -459,7 +459,7 @@ In every order, the student must finish all the lessons for the course to count 
 - [ ] In "any order", all lessons are open, and the assignment screen shows "optional, not recommended" next to this choice.
 - [ ] The course counts as done only when all its lessons are finished.
 
-**REQ-5.9: Assignment settings** (Priority: MVP)
+**REQ-5.9: Assignment settings** (Priority 2: should have)
 When assigning, the teacher sets:
 - **Due date** (optional), and what happens after it: the grade is reduced by a set percentage, or the lesson is locked.
 - **Redo counts**: whether redoing a finished lesson replaces its grade (see REQ-6.5).
@@ -473,7 +473,7 @@ When assigning, the teacher sets:
 - [ ] With "lock after the due date", a student cannot open an unfinished lesson after the due date.
 - [ ] A teacher can extend the due date for the whole class or for one student, and the lesson opens again for them.
 
-**REQ-5.10: Class dashboard** (Priority: MVP)
+**REQ-5.10: Class dashboard** (Priority 1: must have)
 For each class, the teacher sees one table with a row per student (Gil, Q-33). The columns:
 - **status**: a colour with a word (REQ-12.3):
   - **red**: the student has an open red flag (REQ-5.19)
@@ -497,7 +497,7 @@ The table can be sorted by any column. Clicking a student opens their student pa
 - [ ] Clicking a column header sorts the table by it.
 - [ ] Red flags from check-again questions (REQ-4.17) and, later, from the help line (REQ-6.9) appear here, saying which question caused them.
 
-**REQ-5.11: Grade dashboard** (Priority: MVP)
+**REQ-5.11: Grade dashboard** (Priority 1: must have)
 A teacher sees grades per class, per course, per lesson and per question. An unfinished lesson counts as grade 0 and is clearly marked as not done. The grade table can be downloaded as a **CSV file** (a spreadsheet file), for example to copy grades into the school's system, Smart School (Gil, Q-39).
 
 *Acceptance criteria:*
@@ -507,7 +507,7 @@ A teacher sees grades per class, per course, per lesson and per question. An unf
 - [ ] Pending grades (waiting for the teacher) are shown as pending, not as 0.
 - [ ] Clicking "Download as CSV" saves a file that opens in a spreadsheet program, with a row per student and a column per lesson.
 
-**REQ-5.12: Grading page** (Priority: MVP)
+**REQ-5.12: Grading page** (Priority 1: must have; marking up answers: priority 3)
 In a class, when the teacher opens a lesson that has open or audio answers, a button **"Grade open answers"** opens the grading page. It shows one answer at a time (Gil, 2026-11-22):
 - **at the top**: the question and its grading instructions
 - **below it**: the student's answer
@@ -535,13 +535,13 @@ The page shows how many answers are graded ("graded 7 of 24"), has a button to j
 - [ ] The counter shows how many answers are graded, and "next not graded" skips graded ones.
 - [ ] After grading, the student's lesson grade is no longer pending.
 
-**REQ-5.13: Teacher comments** (Priority: MVP)
+**REQ-5.13: Teacher comments** (Priority 1: must have; audio comments: priority 3)
 A teacher can add a comment to any answer, either written or as an audio recording, on the grading page (REQ-5.12).
 
 *Acceptance criteria:*
 - [ ] A teacher records a short audio comment on a student's answer; the student can play it.
 
-**REQ-5.14: Send back for review or corrections** (Priority: MVP)
+**REQ-5.14: Send back for review or corrections** (Priority 2: should have)
 A teacher can send a finished lesson, or selected questions from it, back to a student:
 - **For review**: the student must read or listen to the comments.
 - **For corrections**: the student must also answer those questions again; the new answers are graded again.
@@ -552,13 +552,13 @@ In both cases, a student with pending notes cannot start any new lesson until th
 - [ ] After a lesson is sent back for review, the student sees the comments, and new lessons are locked until they open them.
 - [ ] After questions are sent back for corrections, the student can answer those questions again, and the teacher sees the new answers to grade.
 
-**REQ-5.15: Teacher controls grades** (Priority: MVP)
+**REQ-5.15: Teacher controls grades** (Priority 2: should have)
 A teacher can change any grade, up or down, at any time.
 
 *Acceptance criteria:*
 - [ ] A teacher changes an automatic grade from 67 to 100; the student and dashboard show 100.
 
-**REQ-5.16: Messages** (Priority: MVP)
+**REQ-5.16: Messages** (Priority 3: later)
 Each student has one private conversation with the teachers of each class they are in. All teachers of the class share it. No one else can see it. Students cannot message each other.
 
 *Acceptance criteria:*
@@ -567,7 +567,7 @@ Each student has one private conversation with the teachers of each class they a
 - [ ] The student sees a notice when a teacher replies.
 - [ ] There is no way for a student to message another student.
 
-**REQ-5.18: Student levels (secret)** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.18: Student levels (secret)** (Priority 2: should have)
 Each student has a **student level** from 1 to 3 **in each class** (Gil, Q-21): a student can be at level 3 in science and level 2 in English. Only the class's teachers can see it; the student and other students never do. Every student starts at level 2. Only a teacher can raise or lower a student's level, and the change stays until the teacher changes it again. A change made while a student is in the middle of a lesson applies from the next question.
 
 To help the teacher, Evolora **keeps suggesting** levels, based on average grades in the class: it suggests lowering the weakest 10% of the class to level 1, and raising the strongest 10% to level 3. It also suggests a change when a student's average is well above or below what fits their current level, for example a level 1 student who now does better than half the class (Gil, Q-33). The average is taken from the lessons finished in the class in the last 4 weeks, including lessons whose grades are hidden from students, and only after the student has at least 5 graded lessons, so one bad day doesn't move anyone (Gil, Q-38). The suggestions appear on the class dashboard all the time, and the teacher accepts or ignores each one; nothing changes without the teacher. The teacher sees every student's level on the class dashboard (REQ-5.10).
@@ -580,26 +580,26 @@ To help the teacher, Evolora **keeps suggesting** levels, based on average grade
 - [ ] The class dashboard shows each student's level.
 - [ ] Signed in as a student, you cannot see your level anywhere.
 
-**REQ-5.19: Clearing a red flag** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.19: Clearing a red flag** (Priority 1: must have)
 A red flag stays until the teacher clears it. After making sure the student understands (for example, by talking with them), the teacher clears the flag, optionally with a short note. Cleared flags stay in the student's history.
 
 *Acceptance criteria:*
 - [ ] A teacher clears a student's red flag; the student's status on the dashboard updates.
 - [ ] The teacher can still see the cleared flag, with the date and note, in the student's history.
 
-**REQ-5.20: Opening lessons early for individual students** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.20: Opening lessons early for individual students** (Priority 1: must have)
 In any course order, the teacher can open any lesson of the course early: for the whole class, or for one or more students they choose. This lets strong students move ahead (REQ-1.2).
 
 *Acceptance criteria:*
 - [ ] A teacher opens teaching lesson D for 2 students only; only they see it as open, and for everyone else it stays locked.
 
-**REQ-5.21: Archiving courses** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.21: Archiving courses** (Priority 3: later)
 At the end of a semester (or any time), a teacher can archive a course in a class. It moves to "Archived courses" on the students' class page (REQ-6.11). Students can still open its lessons to read them, and grades are kept.
 
 *Acceptance criteria:*
 - [ ] After archiving, the course appears under "Archived courses" for every student in the class.
 
-**REQ-5.22: Whether students see their grades** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.22: Whether students see their grades** (Priority 2: should have)
 Students should learn without the stress of grades. So when assigning, the teacher chooses whether students see the grades of that assignment. The defaults (Gil, 2026-11-22):
 - **teaching lessons**: students don't see grades
 - **practice lessons**: students see grades
@@ -612,7 +612,7 @@ When grades are hidden, the student still sees whether each answer is right, the
 - [ ] With grades hidden, a student finishes the lesson and sees no grade or marks on the lesson, course page, class page or home page, but still sees which answers were right.
 - [ ] The teacher sees the grades of the same lesson on the grade dashboard.
 
-**REQ-5.23: Exam time window and lock** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.23: Exam time window and lock** (Priority 3: later)
 When assigning an exam, the teacher can set a **time window** (a date, a start time and an end time). The exam opens at the start and closes at the end. A student who hasn't pressed "Submit exam" by the end has their answers submitted automatically (Gil, Q-31).
 
 The teacher can turn on an **exam timer** (on by default when there is a time window). The timer shows the student how much time is left until the window ends, and a notice appears 5 minutes before the end, saying the exam will be submitted automatically.
@@ -633,13 +633,13 @@ Locking works in two layers (Gil, Q-31):
 - [ ] With the timer on, the student sees the time left, and a notice 5 minutes before the end; with the timer off, neither appears.
 - [ ] A student still working when the window ends finds their answers submitted, and the teacher sees them.
 
-**REQ-5.24: Progress map** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.24: Progress map** (Priority 1: must have)
 On the class dashboard, the teacher sees where each student is in each course: which lessons each student has finished, and which they are working on, so it is clear at a glance who is ahead and who is behind (REQ-1.2; Gil, Q-27).
 
 *Acceptance criteria:*
 - [ ] In a class where students are at different points of the same course, the progress map shows each student's current lesson.
 
-**REQ-5.25: "Not yet mastered" list** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.25: "Not yet mastered" list** (Priority 2: should have)
 For each student, the teacher sees a list of the level 1 questions the student hasn't mastered yet: questions they didn't answer correctly, with any open red flags (REQ-1.3; Gil, Q-27).
 
 *Acceptance criteria:*
@@ -649,14 +649,14 @@ For each student, the teacher sees a list of the level 1 questions the student h
 **REQ-5.26: Nudge when a student runs out of work** (Priority: Later)
 When a student finishes everything open to them, the teacher gets a nudge suggesting to open more lessons or raise the student's level (Gil, Q-27).
 
-**REQ-5.27: Teacher's home page** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.27: Teacher's home page** (Priority 1: must have)
 After signing in, a teacher sees a card for each of their classes, like the student's home page. Each card shows what needs attention in that class: open red flags, answers waiting to be graded, unread messages and level suggestions. Beside the cards, a teacher **"To do" list** shows the same items for all classes together (Gil, Q-32).
 
 *Acceptance criteria:*
 - [ ] A teacher with 2 classes sees 2 cards, each with its own counts.
 - [ ] The "To do" list shows an open red flag, an answer to grade and an unread message, and clicking each opens the right screen.
 
-**REQ-5.28: Student page** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.28: Student page** (Priority 2: should have)
 For one student in one class, the teacher sees (Gil, Q-34):
 - their progress in each course, and their grades
 - the "not yet mastered" list, with red flags to clear (REQ-5.25, 5.19)
@@ -670,7 +670,7 @@ For one student in one class, the teacher sees (Gil, Q-34):
 - [ ] A teacher changes the student's level with − or + on this page, and the class dashboard shows the new level.
 - [ ] A teacher sends a message from this page, and the student sees it in their messages.
 
-**REQ-5.29: Which questions are hard for the class** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.29: Which questions are hard for the class** (Priority 3: later)
 For every lesson, and for every exam after its results are released, the teacher sees each question's **success rate**: how many students got it right on the 1st attempt, on the 2nd, and not at all. This shows what to teach again (Gil, Q-35).
 
 *Acceptance criteria:*
@@ -679,7 +679,7 @@ For every lesson, and for every exam after its results are released, the teacher
 **REQ-5.30: Live view during class** (Priority: Later)
 A screen for when the class works on a lesson together: who is working right now, on which question, and who is stuck (Gil, Q-36: later).
 
-**REQ-5.31: Daily email summary for teachers** (Priority: to be set by Gil, see the roadmap)
+**REQ-5.31: Daily email summary for teachers** (Priority 3: later)
 Besides seeing everything inside Evolora, each teacher can get one email a day with what is new: red flags, answers to grade and messages. Each teacher can turn it off (Gil, Q-37).
 
 *Acceptance criteria:*
@@ -692,7 +692,7 @@ Import class lists from Google Classroom, and possibly post assignments and grad
 
 ## 6. Student learning
 
-**REQ-6.1: Student home page** (Priority: MVP)
+**REQ-6.1: Student home page** (Priority 1: must have)
 After signing in, a student sees a page similar to Google Classroom:
 - a **card for each class** they belong to, with the class name, the teacher's name and a colour
 - a **"Join a class"** button (REQ-5.2)
@@ -705,7 +705,7 @@ After signing in, a student sees a page similar to Google Classroom:
 - [ ] The "To do" list shows the lesson with the nearest due date at the top.
 - [ ] Pending notes are clearly highlighted.
 
-**REQ-6.11: Class page for students** (Priority: MVP)
+**REQ-6.11: Class page for students** (Priority 1: must have)
 Inside a class, the student sees, from top to bottom:
 1. **Active courses**: usually one per semester, sometimes more.
 2. **Waiting lessons**: single lessons the teacher assigned outside a course, for example extra work for this student or the class.
@@ -717,7 +717,7 @@ Inside a class, the student sees, from top to bottom:
 - [ ] After finishing the single lesson, it moves to "Finished this semester".
 - [ ] A course the teacher archived appears under "Archived courses".
 
-**REQ-6.12: Course page for students** (Priority: MVP)
+**REQ-6.12: Course page for students** (Priority 1: must have)
 Inside a course, the student sees all its lessons in order, each teaching lesson with its practice lessons. Every lesson shows its status: **open**, **done**, or **locked**. Locked lessons show their titles, greyed out, so students see what's ahead. Which lessons are open follows the course order the teacher chose (REQ-5.8) and any lessons the teacher opened early (REQ-5.20).
 
 *Acceptance criteria:*
@@ -725,7 +725,7 @@ Inside a course, the student sees all its lessons in order, each teaching lesson
 - [ ] A practice lesson appears under the teaching lesson it belongs to.
 - [ ] The course page shows the percentage done (REQ-6.4).
 
-**REQ-6.13: Going back to finished lessons** (Priority: MVP)
+**REQ-6.13: Going back to finished lessons** (Priority 2: should have)
 A student can open any finished lesson again, to read it and see their own answers. This is not a redo: answers can't be changed and the grade stays (redo is REQ-6.5).
 
 *Acceptance criteria:*
@@ -734,14 +734,14 @@ A student can open any finished lesson again, to read it and see their own answe
 **REQ-6.14: Asking for more practice** (Priority: Later, stage 2)
 On a finished lesson, a student can ask for more practice, and gets more questions on the same topics.
 
-**REQ-6.2: Taking a lesson** (Priority: MVP)
+**REQ-6.2: Taking a lesson** (Priority 1: foundation)
 The student moves through the lesson block by block: reads, watches, listens and answers questions. If they leave, they continue from the same point next time.
 
 *Acceptance criteria:*
 - [ ] A student closes the lesson in the middle and later returns to exactly where they stopped.
 - [ ] Answers already given are kept.
 
-**REQ-6.3: Attempts and scoring** (Priority: MVP)
+**REQ-6.3: Attempts and scoring** (Priority 1: foundation)
 For multiple choice questions, a student has **2 attempts** (REQ-4.16):
 - correct on the 1st attempt: full marks
 - correct on the 2nd attempt, after the hint: half the marks (Gil, Q-18)
@@ -757,13 +757,13 @@ The lesson grade is based only on the questions the student received (see REQ-6.
 - [ ] A question answered correctly on the 2nd attempt scores half its marks.
 - [ ] A lesson with an open question shows "grade pending" until the teacher grades it.
 
-**REQ-6.4: Student progress view** (Priority: MVP)
+**REQ-6.4: Student progress view** (Priority 1: must have)
 For each course or set of assigned lessons, the student sees the titles of the lessons ahead, which are done, and the percentage complete, with a progress bar.
 
 *Acceptance criteria:*
 - [ ] A student who finished 2 of 5 lessons sees 40% and the titles of the remaining 3.
 
-**REQ-6.5: Redo a lesson** (Priority: MVP)
+**REQ-6.5: Redo a lesson** (Priority 3: later)
 A student can redo a finished lesson. If the teacher allowed it when assigning (REQ-5.9), the grade of the latest redo replaces the old one, even if it is lower. Otherwise the redo is for practice only.
 
 *Acceptance criteria:*
@@ -771,7 +771,7 @@ A student can redo a finished lesson. If the teacher allowed it when assigning (
 - [ ] With "redo counts" on, redoing a lesson with a worse result lowers the grade.
 - [ ] With it off, the grade stays the same after a redo.
 
-**REQ-6.6: Recording audio answers** (Priority: MVP)
+**REQ-6.6: Recording audio answers** (Priority 3: later)
 A student can record, listen back to, re-record and submit an audio answer on a Chromebook.
 
 *Acceptance criteria:*
@@ -805,7 +805,7 @@ Asking for help never lowers the student's grade (Gil, Q-20). If, after a few me
 - [ ] After the set number of messages without a correct answer, the teacher sees a red flag.
 - [ ] A teacher can open and read a student's help conversation.
 
-**REQ-6.15: Help tips (the help line before AI)** (Priority: to be set by Gil, see the roadmap)
+**REQ-6.15: Help tips (the help line before AI)** (Priority 1: must have)
 Until AI help is ready (REQ-6.9), every question shows the line **"I didn't understand… show me a tip"**. It opens the question's **help tips**: short explanations written in advance in the lesson file, each with a title the student can choose (for example, "What is a radius?" or "How do I multiply by 3.14?"). Tips explain the ideas and methods needed for the question, but **never give its answer**. Opening tips never lowers the grade, and there are no tips in exams (REQ-4.26). *Proposed:* the teacher can see how many tips each student opened on each question, as another sign of who needs support.
 
 *Acceptance criteria:*
@@ -814,7 +814,7 @@ Until AI help is ready (REQ-6.9), every question shows the line **"I didn't unde
 - [ ] Opening tips doesn't change the grade.
 - [ ] In an exam, no tips appear.
 
-**REQ-6.10: Each student sees questions up to their level** (Priority: to be set by Gil, see the roadmap; details in OPEN Q-21)
+**REQ-6.10: Each student sees questions up to their level** (Priority 2: should have)
 A student sees only questions at or below their student level (REQ-5.18), and the lesson simply skips the others:
 - level 1 student: level 1 questions only
 - level 2 student: levels 1 and 2
@@ -857,7 +857,7 @@ A lesson can be translated into another language, and the translation reviewed b
 
 ## 8. Subjects and age groups
 
-**REQ-8.1: Any subject, grades 7 to 12** (Priority: MVP)
+**REQ-8.1: Any subject, grades 7 to 12** (Priority 1: foundation)
 Evolora is not tied to any subject. Lessons are tagged with a subject and a grade level (7 to 12). The pilot is 7th grade.
 
 *Acceptance criteria:*
@@ -867,35 +867,35 @@ Evolora is not tied to any subject. Lessons are tagged with a subject and a grad
 
 ## 9. Language and right-to-left support
 
-**REQ-9.1: Interface in Hebrew, Arabic and English** (Priority: MVP)
+**REQ-9.1: Interface in Hebrew, Arabic and English** (Priority 1: foundation)
 All menus, buttons and messages are available in Hebrew, Arabic and English.
 
 *Acceptance criteria:*
 - [ ] Switching the interface language changes every menu and button to that language.
 - [ ] No untranslated text appears in any screen.
 
-**REQ-9.2: Right-to-left and left-to-right layout** (Priority: MVP)
+**REQ-9.2: Right-to-left and left-to-right layout** (Priority 1: foundation)
 In Hebrew and Arabic, the whole layout is right-to-left; in English, left-to-right.
 
 *Acceptance criteria:*
 - [ ] In Hebrew, menus, text alignment, progress bars and arrows run right-to-left.
 - [ ] In English, they run left-to-right.
 
-**REQ-9.3: Lesson content in its own direction** (Priority: MVP)
+**REQ-9.3: Lesson content in its own direction** (Priority 1: foundation)
 A lesson is displayed in its own language direction, whatever the interface language. Mixed text, such as English words or numbers inside a Hebrew sentence, displays correctly.
 
 *Acceptance criteria:*
 - [ ] A Hebrew lesson shown in the English interface is still right-to-left.
 - [ ] A Hebrew sentence containing an English term and a number reads correctly.
 
-**REQ-9.4: Choose interface language** (Priority: MVP)
+**REQ-9.4: Choose interface language** (Priority 1: foundation)
 A new person's interface starts in their browser's language, if it is Hebrew, Arabic or English, and in English otherwise. Each person can change their interface language at any time, without anyone's approval, and Evolora remembers it.
 
 *Acceptance criteria:*
 - [ ] A student switches to Arabic, signs out and in again, and still sees Arabic.
 - [ ] On a computer whose browser is set to Arabic, a new student sees Arabic at first sign-in; with a browser set to French, they see English.
 
-**REQ-9.6: Teacher changes a student's interface language** (Priority: low; to be set by Gil, see the roadmap)
+**REQ-9.6: Teacher changes a student's interface language** (Priority 3: later)
 A teacher can change a student's interface language remotely, for example when a student is stuck in a language they don't read.
 
 *Acceptance criteria:*
@@ -914,30 +914,30 @@ A teacher sets a class language and chooses whether students must use it or may 
 
 Most students are minors (12 to 18). During the pilot, not every privacy rule will be fully met, and no formal school approval is needed (decision D-13). The requirements below are the minimum. Full compliance comes before any wider release (REQ-10.6).
 
-**REQ-10.1: Strangers see nothing** (Priority: MVP)
+**REQ-10.1: Strangers see nothing** (Priority 1: foundation)
 Anyone with a Google account can sign in (REQ-3.2), so a person who hasn't joined a class must see no lessons, classes, names or student work.
 
 *Acceptance criteria:*
 - [ ] A Google account that has never joined a class sees only the "enter class code" box.
 
-**REQ-10.7: Alerting the system admin about attempts to guess class codes** (Priority: to be set by Gil, see the roadmap)
+**REQ-10.7: Alerting the system admin about attempts to guess class codes** (Priority 3: later)
 Evolora tells the system admin when someone may be trying to guess class codes:
 - when one person enters **more than 10 wrong class codes** (the point where they must wait 5 minutes, REQ-5.2), and
 - when the number of wrong class codes in a week, across all of Evolora, is **more than twice the average of past weeks**.
 
-The alert says who tried (their Google account), how many times and when. Alerts appear on the system admin's page and are also sent by email, at most once a day; the weekly comparison starts after 4 weeks of use, so there is a fair average to compare with (Gil, Q-29).
+The alert says who tried (their Google account), how many times and when. In stage 1 there is no admin page (D-47), so alerts are sent by email only, at most once a day; the weekly comparison starts after 4 weeks of use, so there is a fair average to compare with (Gil, Q-29).
 
 *Acceptance criteria:*
 - [ ] On the test site, a test student enters 11 wrong codes; the system admin sees an alert naming that student.
 - [ ] With made-up numbers on the test site (an average of 20 wrong codes a week, then 45 in one week), the system admin gets the weekly alert.
 
-**REQ-10.2: Private messages** (Priority: MVP)
+**REQ-10.2: Private messages** (Priority 3: later)
 See REQ-5.16. Messages are visible only to the student and that class's teachers.
 
-**REQ-10.3: Students cannot see each other's work** (Priority: MVP)
+**REQ-10.3: Students cannot see each other's work** (Priority 1: foundation)
 See REQ-3.4.
 
-**REQ-10.4: Data stored in a safe place** (Priority: MVP)
+**REQ-10.4: Data stored in a safe place** (Priority 1: foundation)
 Student data is stored on Google Cloud in its Israel (Tel Aviv) region, and is backed up daily.
 
 *Acceptance criteria:*
@@ -953,7 +953,7 @@ Before Evolora is used beyond the pilot, it must meet Israeli privacy law and Mi
 
 ## 11. Platform, hosting and scale
 
-**REQ-11.1: Web app for Chromebooks and laptops** (Priority: MVP)
+**REQ-11.1: Web app for Chromebooks and laptops** (Priority 1: foundation)
 Evolora is a website. It works in **Google Chrome only**: on school Chromebooks, and in Chrome on Windows and Mac laptops and computers (Gil, Q-40). In any other browser (for example Edge, Safari or Firefox), Evolora shows only a short message, in the person's language, asking them to open it in Chrome, with a link to download Chrome. Phones are not supported; they may come much later, if needed.
 
 *Acceptance criteria:*
@@ -961,14 +961,14 @@ Evolora is a website. It works in **Google Chrome only**: on school Chromebooks,
 - [ ] The same screens work in Chrome on a Windows laptop and on a Mac, including recording an audio answer.
 - [ ] Opening Evolora in Edge or Safari shows only the "please open in Chrome" message, with a link to download Chrome.
 
-**REQ-11.2: Cloud hosting and own web address** (Priority: MVP)
+**REQ-11.2: Cloud hosting and own web address** (Priority 1: foundation)
 Evolora runs on Google Cloud (Firebase) and is reached at **evoloraedu.org**.
 
 *Acceptance criteria:*
 - [ ] Typing evoloraedu.org in Chrome opens the Evolora sign-in page.
 - [ ] The browser shows the address as secure (padlock icon).
 
-**REQ-11.3: Pilot size** (Priority: MVP)
+**REQ-11.3: Pilot size** (Priority 1: foundation)
 Evolora supports 5 teachers and 120 students, with at least one full class of 30 students working at the same time. It can grow later.
 
 *Acceptance criteria:*
@@ -978,19 +978,19 @@ Evolora supports 5 teachers and 120 students, with at least one full class of 30
 
 ## 12. Quality: speed, reliability, accessibility
 
-**REQ-12.1: Speed** (Priority: MVP)
+**REQ-12.1: Speed** (Priority 1: foundation)
 On the school network, pages open within 3 seconds and answers are checked within 1 second.
 
 *Acceptance criteria:*
 - [ ] During a class session, no page takes noticeably longer than 3 seconds to open.
 
-**REQ-12.2: No lost work** (Priority: MVP)
+**REQ-12.2: No lost work** (Priority 1: foundation)
 An answer is saved as soon as the student submits it. If the internet connection drops, the student sees a clear message, and nothing already submitted is lost.
 
 *Acceptance criteria:*
 - [ ] Turning off Wi-Fi in the middle of a lesson shows a message; after turning it back on, the student continues without losing answers.
 
-**REQ-12.3: Basic accessibility** (Priority: MVP)
+**REQ-12.3: Basic accessibility** (Priority 1: foundation)
 Text is readable, colours are not the only way information is shown (status colours also have a label or icon), and main actions work with the keyboard. Lesson text is real text (not pictures of text), so the Chromebook's built-in **"Select to speak"** can read it aloud for students who struggle with reading. Teachers are told about this in their guide.
 
 *Acceptance criteria:*
@@ -998,7 +998,7 @@ Text is readable, colours are not the only way information is shown (status colo
 - [ ] With "Select to speak" turned on, a student selects a paragraph of a Hebrew lesson on a Chromebook and hears it read aloud; the same works in Arabic and English.
 - [ ] The teachers' guide explains how to turn on "Select to speak".
 
-**REQ-12.7: One design language** (Priority: MVP)
+**REQ-12.7: One design language** (Priority 1: foundation)
 All screens share one **design language** (in Hebrew: שפה עיצובית): colours, fonts, icons, spacing and the look of buttons and cards. Claude proposes it, with mockups Gil can click through, and Gil approves it before the screens are built (D-38).
 
 *Acceptance criteria:*
@@ -1007,14 +1007,14 @@ All screens share one **design language** (in Hebrew: שפה עיצובית): co
 
 ---
 
-**REQ-12.4: Test site** (Priority: MVP)
+**REQ-12.4: Test site** (Priority 1: foundation)
 There is a separate test site, with made-up data only, where Gil checks every new feature before it goes to the real site (decision D-18).
 
 *Acceptance criteria:*
 - [ ] The test site has its own address and clearly shows a "TEST SITE" banner on every screen.
 - [ ] Nothing done on the test site appears on the real site, and the other way round.
 
-**REQ-12.5: Switching users on the test site** (Priority: MVP)
+**REQ-12.5: Switching users on the test site** (Priority 1: foundation)
 On the test site only, Gil can switch between made-up test users (for example, "Test Teacher 1" or "Test Student 3") with one click, without signing out. This lets Gil see each screen as each role. Gil's own Google accounts can also be used.
 
 *Acceptance criteria:*
@@ -1022,7 +1022,7 @@ On the test site only, Gil can switch between made-up test users (for example, "
 - [ ] Choosing a test user shows Evolora exactly as that person would see it.
 - [ ] The "Switch user" menu doesn't exist on the real site.
 
-**REQ-12.6: Ready-made test data** (Priority: MVP)
+**REQ-12.6: Ready-made test data** (Priority 1: foundation)
 The test site can be filled with a standard set of test data with one command, by Claude: test teachers, test students, a test class, the Archimedes lesson, the circles lesson and the circles practice lesson, with their two demo courses (`courses/circles-demo.md`, `courses/density-demo.md`). It can be reset to that state at any time.
 
 *Acceptance criteria:*
@@ -1051,7 +1051,7 @@ No open questions right now (2026-11-22).
 | Q-14 | Lessons on GitHub? | Yes. The original Word files stay out of GitHub once converted (they also contain images without permission). |
 | Q-15 | Who may sign in? | As proposed: anyone with a Google account may sign in, but sees nothing until joining a class; under-13 Gmail accounts through Family Link are acceptable. (REQ-3.2, 10.1) |
 | Q-16 | "Creator" or "builder"? | Creator for the person, lesson builder for the editing screen (stage 2). |
-| Q-17 | Hebrew and Arabic spelling of the name | OK for now; the name itself may change soon (D-27). |
+| Q-17 | Hebrew and Arabic spelling of the name | OK. The name stays Evolora (D-27). |
 | Q-18 | Marks for a correct 2nd attempt? | Half. Also: the teacher chooses whether students see grades; by default hidden for teaching lessons, shown for practice lessons and exams. (REQ-6.3, 5.22) |
 | Q-19 | Check-again question tries? | Two attempts, like the original question. (REQ-4.17) |
 | Q-20 | The help line before AI? | In the demo, written help tips in the lessons instead of AI. (REQ-6.15) |
