@@ -519,8 +519,9 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Options considered:**
 1. Chromebooks only.
 2. Chromebooks and Windows and Mac laptops, in the browser (Chrome, Edge, Safari).
-3. Also phones.
+3. Chromebooks and Windows and Mac laptops, in Google Chrome only; other browsers blocked for now.
+4. Also phones.
 
-**Decision:** Option 2. Phones much later, if at all.
-**Reason:** Evolora is a website, so other laptops add little work: mainly testing in more browsers, and checking audio recording in Safari.
+**Decision:** Option 3 (Gil, 2026-11-22). Phones much later, if at all.
+**Reason:** One browser to build and test for, the same as on the Chromebooks. Other browsers show a "please open in Chrome" message.
 **Affects:** REQ-11.1

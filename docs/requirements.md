@@ -935,11 +935,12 @@ Before Evolora is used beyond the pilot, it must meet Israeli privacy law and Mi
 ## 11. Platform, hosting and scale
 
 **REQ-11.1: Web app for Chromebooks and laptops** (Priority: MVP)
-Evolora is a website. It works in the browser on school Chromebooks and on Windows and Mac laptops and computers, in an up-to-date Chrome, Edge or Safari (Gil, Q-40). Phones are not supported; they may come much later, if needed.
+Evolora is a website. It works in **Google Chrome only**: on school Chromebooks, and in Chrome on Windows and Mac laptops and computers (Gil, Q-40). In any other browser (for example Edge, Safari or Firefox), Evolora shows only a short message, in the person's language, asking them to open it in Chrome, with a link to download Chrome. Phones are not supported; they may come much later, if needed.
 
 *Acceptance criteria:*
 - [ ] Every screen works on a school Chromebook, at its normal screen size, without zooming.
-- [ ] The same screens work in Chrome and Edge on a Windows laptop and in Safari on a Mac, including recording an audio answer.
+- [ ] The same screens work in Chrome on a Windows laptop and on a Mac, including recording an audio answer.
+- [ ] Opening Evolora in Edge or Safari shows only the "please open in Chrome" message, with a link to download Chrome.
 
 **REQ-11.2: Cloud hosting and own web address** (Priority: MVP)
 Evolora runs on Google Cloud (Firebase) and is reached at **evoloraedu.org**.
@@ -1050,7 +1051,7 @@ No open questions right now (2026-11-22).
 | Q-37 | Notifications | Inside Evolora, plus an optional daily email. (REQ-5.31) |
 | Q-38 | Level suggestions | Average of the last 4 weeks, after at least 5 graded lessons. (REQ-5.18) |
 | Q-39 | Exporting grades | The school uses Smart School; a CSV download is enough. (REQ-5.11) |
-| Q-40 | Devices | Chromebooks and Windows and Mac laptops, in the browser; phones much later, maybe never. (REQ-11.1) |
+| Q-40 | Devices | Chromebooks and Windows and Mac laptops, in Google Chrome only; other browsers (Edge, Safari) are blocked for now with a "please use Chrome" message; phones much later, maybe never. Level suggestions confirmed. (REQ-11.1, 5.18) |
 | Q-31 | Follow-ups: check-again and grade; fewer questions; exam end; Chromebook lock | Check-again questions don't change the grade; fewer questions than a friend is OK; answers are submitted automatically at the end of the exam window, with a timer the teacher can turn on or off and a notice before the end; the school's Google Admin allows only Evolora's address during exams, and Evolora locks itself to show only the exam. (REQ-4.17, 6.10, 5.23) |
 | Q-26 | Extra practice questions? | Accepted as proposed: the creator marks extra practice questions, which are asked only until the student reaches the minimum; other questions are always asked; check-again answers count; open and audio answers don't; running out means moving on with a red flag to the teacher. (REQ-4.21) |
 | Q-24 | Minimum questions per topic: who sets it, and what does it mean? | The teacher sets it when assigning; the creator gives a default (3 for the circles lesson, 1 for Archimedes). The student moves on to the next topic once they answer the minimum correctly. (REQ-4.21, 5.9) |

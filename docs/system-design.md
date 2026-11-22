@@ -66,7 +66,7 @@ Videos, simulations and podcasts from other websites are shown inside the lesson
 - Formulas are always shown left-to-right, even inside Hebrew text (REQ-4.3).
 
 ### 2.5 Screen size
-Screens are designed for a Chromebook screen (typically 11 to 14 inches) and work on larger screens too. They are tested in Chrome on a Chromebook, Chrome and Edge on Windows, and Safari on a Mac; audio recording uses the browser's standard recording feature, which all three support (REQ-11.1). Phones aren't supported.
+Screens are designed for a Chromebook screen (typically 11 to 14 inches) and work on larger screens too. They are tested in Chrome on a Chromebook, on Windows and on a Mac. Other browsers get only a "please open in Chrome" message (REQ-11.1). Phones aren't supported.
 
 ---
 
