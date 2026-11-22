@@ -37,12 +37,13 @@ Propose an outline: the lesson's **topics**, in order, and what each one teaches
 Create the folder structure:
 
 ```
-<lesson-name>/            short English name, lowercase with dashes, for example fractions-intro
+<topic>-<type>/          lowercase English with dashes: <topic>-teaching, <topic>-practice or <topic>-exam,
+                          for example fractions-teaching, fractions-practice, fractions-practice-2
   lesson.md               the lesson file
   images/                 every image used in the lesson
 ```
 
-Write `lesson.md` following the format below exactly.
+Write `lesson.md` following the format below exactly. The folder name must end with the lesson's type (`-teaching`, `-practice` or `-exam`, plus `-2`, `-3` for a second or third lesson of the same type on the topic), and lessons on the same topic share the same first part, so they sit together.
 
 ### Step 4: Review together
 Show the teacher the lesson section by section, in plain words, not as raw file text unless they ask. Ask about anything you flagged. The teacher can also open `lesson.md` in any text editor and write notes in it (see "Comments and suggestions"); read all of them each time. Improve the lesson until the teacher is happy. Actively suggest improvements: missing questions, unclear explanations, a better order, a helpful diagram.

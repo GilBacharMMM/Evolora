@@ -7,5 +7,5 @@ creator: גיל בכר
 licence: CC BY-SA 4.0
 ---
 
-1. [TEACHING] circles-pi
+1. [TEACHING] circles-teaching
    - [PRACTICE] circles-practice
