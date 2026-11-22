@@ -1,0 +1,133 @@
+rules_version = '2';
+
+// Evolora database rules (system-design section 4.3, REQ-3.4, REQ-10.1, REQ-10.3).
+// They apply even if someone tries to get around the website.
+//
+// Stage 1, part 1:
+// - Only the loading program (the "loader" account, run by Claude) adds or changes
+//   lessons, courses, classes, memberships and staff (D-33, D-47).
+// - A person's role comes from the staff list (staff/{email}); everyone else is a student (REQ-2.2).
+// - Students read only their own record, their own classes, and lessons and courses
+//   opened to one of their classes. Never the correct answers (D-17).
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // The loading program's own account (test project). Fixed account ID, set by Claude.
+    function isLoader() {
+      return signedIn() && request.auth.uid == 'evolora-loader';
+    }
+
+    function verifiedEmail() {
+      return signedIn() && request.auth.token.email != null
+        && request.auth.token.email_verified == true;
+    }
+
+    function staffDoc() {
+      return /databases/$(database)/documents/staff/$(request.auth.token.email.lower());
+    }
+
+    function isStaff() {
+      return verifiedEmail() && exists(staffDoc());
+    }
+
+    function isTeacher() {
+      return isStaff() && get(staffDoc()).data.role in ['teacher', 'admin'];
+    }
+
+    function isAdmin() {
+      return isStaff() && get(staffDoc()).data.role == 'admin';
+    }
+
+    function myClassIds() {
+      let m = /databases/$(database)/documents/memberships/$(request.auth.uid);
+      return exists(m) ? get(m).data.classIds : [];
+    }
+
+    function inAnyOf(classIds) {
+      return signedIn() && myClassIds().hasAny(classIds);
+    }
+
+    // People
+    match /staff/{email} {
+      allow read: if isLoader() || isAdmin()
+        || (verifiedEmail() && email == request.auth.token.email.lower());
+      allow write: if isLoader();
+    }
+
+    match /users/{uid} {
+      allow read: if isLoader() || isAdmin() || (signedIn() && request.auth.uid == uid);
+      allow create, update: if isLoader() || (signedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['name', 'email', 'language', 'createdAt', 'lastSignIn']));
+      allow delete: if isLoader();
+    }
+
+    match /memberships/{uid} {
+      allow read: if isLoader() || (signedIn() && request.auth.uid == uid);
+      allow write: if isLoader();
+    }
+
+    // Classes
+    match /classes/{classId} {
+      allow read: if isLoader()
+        || (isTeacher() && request.auth.uid in resource.data.teacherIds)
+        || (signedIn() && classId in myClassIds());
+      allow write: if isLoader();
+
+      function teachesThisClass() {
+        return isTeacher() && request.auth.uid in
+          get(/databases/$(database)/documents/classes/$(classId)).data.teacherIds;
+      }
+
+      // The class list: only the class's teachers (REQ-5.4)
+      match /students/{uid} {
+        allow read: if isLoader() || teachesThisClass();
+        allow write: if isLoader();
+      }
+
+      // Secret student levels: never the student (REQ-5.18)
+      match /levels/{uid} {
+        allow read: if isLoader() || teachesThisClass();
+        allow write: if isLoader();
+      }
+    }
+
+    // Lessons: details, versions, and the protected answers
+    match /lessons/{lessonId} {
+      function lessonOpenToMe() {
+        return isTeacher() || isLoader()
+          || inAnyOf(get(/databases/$(database)/documents/lessons/$(lessonId)).data.classIds);
+      }
+
+      allow read: if isTeacher() || isLoader() || inAnyOf(resource.data.classIds);
+      allow write: if isLoader();
+
+      match /versions/{version} {
+        allow read: if lessonOpenToMe();
+        allow write: if isLoader();
+
+        // Correct answers, hints, solutions, check-again questions and grading
+        // instructions. Never readable by students (D-17).
+        match /secret/{doc} {
+          allow read: if isLoader() || isTeacher();
+          allow write: if isLoader();
+        }
+      }
+    }
+
+    // Courses
+    match /courses/{courseId} {
+      allow read: if isTeacher() || isLoader() || inAnyOf(resource.data.classIds);
+      allow write: if isLoader();
+    }
+
+    // Anything not listed above is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

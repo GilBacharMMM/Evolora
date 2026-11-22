@@ -3,6 +3,87 @@
   "tagline": "לומדים בקצב שלך, עם המורה לצידך",
   "testBanner": "אתר בדיקות: כל המידע כאן לדוגמה בלבד",
   "language": "שפה",
-  "comingSoon": "האתר בבנייה. בקרוב: כניסה עם חשבון Google.",
-  "status": "שלב: שלד ראשון של האתר (גרסה לבדיקה)"
+  "common": {
+    "loading": "טוען…",
+    "back": "חזרה",
+    "toHome": "חזרה לדף הבית",
+    "notFound": "הדף הזה לא קיים.",
+    "teachersOnly": "הדף הזה מיועד למורים בלבד.",
+    "notReady": "אבולורה עדיין לא פתוחה כאן."
+  },
+  "roles": {
+    "student": "תלמיד/ה",
+    "teacher": "מורה",
+    "admin": "מנהל/ת מערכת"
+  },
+  "auth": {
+    "signInWithGoogle": "כניסה עם Google",
+    "signInFailed": "הכניסה לא הצליחה. נסו שוב.",
+    "signOut": "יציאה"
+  },
+  "chrome": {
+    "message": "אבולורה עובדת בדפדפן Google Chrome. פתחו את הדף הזה ב-Chrome.",
+    "download": "הורדת Google Chrome"
+  },
+  "home": {
+    "hello": "שלום, {{name}}",
+    "nothingYet": "עדיין אין משימות בכיתה הזו.",
+    "joinTitle": "הצטרפות לכיתה",
+    "joinExplain": "הקלידו את קוד הכיתה שקיבלתם מהמורה.",
+    "classCode": "קוד כיתה",
+    "join": "הצטרפות",
+    "joinComingSoon": "הצטרפות לכיתה עם קוד עדיין לא פתוחה באתר הבדיקות. היא תגיע בחלק הבא."
+  },
+  "teacher": {
+    "lessons": "השיעורים באבולורה",
+    "myClasses": "הכיתות שלי",
+    "noClasses": "עדיין אין לך כיתות.",
+    "studentCount": "תלמידים: {{count}}",
+    "lessonTitle": "שיעור",
+    "type": "סוג",
+    "subject": "מקצוע",
+    "questions": "שאלות",
+    "version": "גרסה",
+    "courses": "קורסים"
+  },
+  "lessonType": {
+    "teaching": "הקניה",
+    "practice": "תרגול",
+    "exam": "מבחן"
+  },
+  "lesson": {
+    "partOneBanner": "אתר בדיקות, חלק 1: אפשר לקרוא את השיעור. בדיקת התשובות תגיע בחלק 2.",
+    "grade": "כיתה {{grade}}",
+    "by": "מאת {{creator}}",
+    "questionsCount": "שאלות: {{count}}",
+    "imagesNotYet": "התמונות בשיעור הזה יופיעו אחרי שאחסון הקבצים יופעל.",
+    "topic": "נושא {{number}}:",
+    "solvedExample": "דוגמה פתורה",
+    "imageLoading": "טוען את התמונה…",
+    "imageNotYet": "התמונה עדיין לא זמינה",
+    "source": "מקור",
+    "openOnYouTube": "לפתוח ב-YouTube",
+    "audio": "האזנה",
+    "listenNewTab": "האזנה (נפתח בלשונית חדשה)",
+    "simulation": "סימולציה",
+    "openNewTab": "לפתוח בלשונית חדשה",
+    "question": "שאלה",
+    "chooseAnswer": "בחרו תשובה",
+    "chooseAll": "בחרו את כל התשובות הנכונות.",
+    "yourAnswer": "התשובה שלך",
+    "audioLater": "תשובות מוקלטות יגיעו בהמשך.",
+    "tipsLink": "לא הבנתי…",
+    "checkingLater": "בחלק 1 התשובות עדיין לא נבדקות.",
+    "continue": "להמשיך",
+    "notFound": "השיעור הזה לא קיים.",
+    "notAllowed": "השיעור הזה לא פתוח בשבילך.",
+    "end": "הגעת לסוף השיעור."
+  },
+  "test": {
+    "switchUser": "החלפת משתמש",
+    "switchExplain": "באתר הבדיקות בלבד: כניסה בלחיצה אחת כמשתמש בדיקה מומצא.",
+    "switchFailed": "ההחלפה לא הצליחה. ייתכן שצריך להקים מחדש את משתמשי הבדיקה.",
+    "level": "רמה {{level}}",
+    "noClass": "עדיין בלי כיתה"
+  }
 }

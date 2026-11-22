@@ -12,7 +12,11 @@
     "build:prod": "tsc -b && vite build --mode production"
   },
   "dependencies": {
+    "dompurify": "^3.5.0",
+    "firebase": "^12.19.0",
     "i18next": "^23.16.8",
+    "marked": "^15.0.12",
+    "mathlive": "^0.105.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-i18next": "^15.7.4"

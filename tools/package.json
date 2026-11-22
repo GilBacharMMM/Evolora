@@ -1,0 +1,9 @@
+{
+  "name": "evolora-tools",
+  "private": true,
+  "type": "module",
+  "description": "Programs Claude runs: lesson check, lesson loading, admin tasks and test data (REQ-4.24, REQ-12.6, D-47)",
+  "dependencies": {
+    "firebase": "^12.19.0"
+  }
+}

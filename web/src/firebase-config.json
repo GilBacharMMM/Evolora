@@ -1,0 +1,11 @@
+{
+  "_about": "Public Firebase web app settings for each site (these are not secrets). The real site (project evolora) gets its own entry when it is set up.",
+  "test": {
+    "projectId": "evolora-test",
+    "appId": "1:1011198575874:web:ff36e8c1c022f3846f6e1b",
+    "storageBucket": "evolora-test.firebasestorage.app",
+    "apiKey": "AIzaSyB6Spo_cWI6zrKJRTkBP2YPFmiQhN05kt8",
+    "authDomain": "evolora-test.firebaseapp.com",
+    "messagingSenderId": "1011198575874"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "_about": "Made-up test users for the test site only (REQ-12.5, 12.6). They exist only in the evolora-test project. The shared password is not secret: these accounts hold made-up data only (D-49).",
+  "password": "evolora-test-site-c2b2db35c7",
+  "users": [
+    {
+      "uid": "test-teacher-1",
+      "email": "teacher1@evolora.test",
+      "name": "Test Teacher 1",
+      "role": "teacher"
+    },
+    {
+      "uid": "test-teacher-2",
+      "email": "teacher2@evolora.test",
+      "name": "Test Teacher 2",
+      "role": "teacher"
+    },
+    {
+      "uid": "test-student-1",
+      "email": "student1@evolora.test",
+      "name": "Test Student 1",
+      "role": "student",
+      "level": 1
+    },
+    {
+      "uid": "test-student-2",
+      "email": "student2@evolora.test",
+      "name": "Test Student 2",
+      "role": "student",
+      "level": 1
+    },
+    {
+      "uid": "test-student-3",
+      "email": "student3@evolora.test",
+      "name": "Test Student 3",
+      "role": "student",
+      "level": 2
+    },
+    {
+      "uid": "test-student-4",
+      "email": "student4@evolora.test",
+      "name": "Test Student 4",
+      "role": "student",
+      "level": 2
+    },
+    {
+      "uid": "test-student-5",
+      "email": "student5@evolora.test",
+      "name": "Test Student 5",
+      "role": "student",
+      "level": 3
+    },
+    {
+      "uid": "test-student-6",
+      "email": "student6@evolora.test",
+      "name": "Test Student 6",
+      "role": "student",
+      "level": 3
+    },
+    {
+      "uid": "test-student-7",
+      "email": "student7@evolora.test",
+      "name": "Test Student 7",
+      "role": "student",
+      "noClass": true
+    }
+  ]
+}

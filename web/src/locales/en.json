@@ -3,6 +3,87 @@
   "tagline": "Learn at your own pace, with your teacher beside you",
   "testBanner": "TEST SITE: all data here is made up",
   "language": "Language",
-  "comingSoon": "Under construction. Coming soon: sign in with Google.",
-  "status": "Stage: first skeleton of the site (test version)"
+  "common": {
+    "loading": "Loading…",
+    "back": "Back",
+    "toHome": "Back to the home page",
+    "notFound": "This page doesn't exist.",
+    "teachersOnly": "This page is for teachers only.",
+    "notReady": "Evolora isn't open here yet."
+  },
+  "roles": {
+    "student": "Student",
+    "teacher": "Teacher",
+    "admin": "System admin"
+  },
+  "auth": {
+    "signInWithGoogle": "Sign in with Google",
+    "signInFailed": "Signing in didn't work. Please try again.",
+    "signOut": "Sign out"
+  },
+  "chrome": {
+    "message": "Evolora works in Google Chrome. Please open this page in Chrome.",
+    "download": "Download Google Chrome"
+  },
+  "home": {
+    "hello": "Hello, {{name}}",
+    "nothingYet": "Nothing to do in this class yet.",
+    "joinTitle": "Join a class",
+    "joinExplain": "Type the class code your teacher gave you.",
+    "classCode": "Class code",
+    "join": "Join",
+    "joinComingSoon": "Joining a class with a code isn't open on the test site yet. It comes in a later part."
+  },
+  "teacher": {
+    "lessons": "Lessons in Evolora",
+    "myClasses": "My classes",
+    "noClasses": "You don't have any classes yet.",
+    "studentCount": "Students: {{count}}",
+    "lessonTitle": "Lesson",
+    "type": "Type",
+    "subject": "Subject",
+    "questions": "Questions",
+    "version": "Version",
+    "courses": "Courses"
+  },
+  "lessonType": {
+    "teaching": "Teaching",
+    "practice": "Practice",
+    "exam": "Exam"
+  },
+  "lesson": {
+    "partOneBanner": "Test site, part 1: you can read the lesson. Checking answers comes in part 2.",
+    "grade": "Grade {{grade}}",
+    "by": "By {{creator}}",
+    "questionsCount": "Questions: {{count}}",
+    "imagesNotYet": "The images in this lesson will appear once file storage is switched on.",
+    "topic": "Topic {{number}}:",
+    "solvedExample": "Solved example",
+    "imageLoading": "Loading the image…",
+    "imageNotYet": "Image not available yet",
+    "source": "Source",
+    "openOnYouTube": "open on YouTube",
+    "audio": "Listen",
+    "listenNewTab": "Listen (opens in a new tab)",
+    "simulation": "Simulation",
+    "openNewTab": "Open in a new tab",
+    "question": "Question",
+    "chooseAnswer": "Choose an answer",
+    "chooseAll": "Choose all the correct answers.",
+    "yourAnswer": "Your answer",
+    "audioLater": "Recorded answers come later.",
+    "tipsLink": "I didn't understand…",
+    "checkingLater": "Answers aren't checked yet in part 1.",
+    "continue": "Continue",
+    "notFound": "This lesson doesn't exist.",
+    "notAllowed": "This lesson isn't open to you.",
+    "end": "You've reached the end of the lesson."
+  },
+  "test": {
+    "switchUser": "Switch user",
+    "switchExplain": "Test site only: sign in as a made-up test user with one click.",
+    "switchFailed": "Switching didn't work. The test users may need to be set up again.",
+    "level": "level {{level}}",
+    "noClass": "no class yet"
+  }
 }
