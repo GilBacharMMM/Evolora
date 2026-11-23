@@ -1,27 +1,19 @@
 rules_version = '2';
 
 // Evolora file storage rules (system-design 4.3).
-// Lesson images are uploaded only by the loading program (D-33).
-// They can be seen by teachers and by students who belong to at least one class
-// (strangers see nothing, REQ-10.1).
+// Lesson images are uploaded only by the loading program (D-33, D-49).
+// Anyone signed in can see them, if they know the exact file address: lesson images
+// are shared openly (CC BY-SA, REQ-1.1) and hold no student data. The lessons
+// themselves, which list these addresses, are visible only to the classes they
+// are open to (database rules), so strangers have no way to find them (REQ-10.1).
 service firebase.storage {
   match /b/{bucket}/o {
     function isLoader() {
       return request.auth != null && request.auth.uid == 'evolora-loader';
     }
-    function isStaff() {
-      return request.auth != null && request.auth.token.email != null
-        && request.auth.token.email_verified == true
-        && firestore.exists(/databases/(default)/documents/staff/$(request.auth.token.email.lower()));
-    }
-    function inAClass() {
-      return request.auth != null
-        && firestore.exists(/databases/(default)/documents/memberships/$(request.auth.uid))
-        && firestore.get(/databases/(default)/documents/memberships/$(request.auth.uid)).data.classIds.size() > 0;
-    }
 
     match /lessons/{allPaths=**} {
-      allow read: if isLoader() || isStaff() || inAClass();
+      allow read: if request.auth != null;
       allow write: if isLoader();
     }
 

@@ -118,6 +118,7 @@ Rules inside the database decide what each person can read and change. They appl
 - Teacher notes about a student can be read only by the class's teachers, never by the student (REQ-5.28).
 - A teacher's markings on an answer (highlights and coloured edits, REQ-5.12) are saved next to the answer, without changing the student's original text, and the student can read them once the work is returned.
 - Lessons in the lesson library can be read by all teachers. In stage 1, only Claude's loading program can add or change lessons. In stage 2, only the lesson's own creator can change it (others make a copy).
+- Lesson images in file storage can be seen by anyone signed in who has their exact address. They are shared openly (REQ-1.1) and hold no student data, and only the lessons, which are hidden from strangers, list those addresses (REQ-10.1).
 
 These rules are tested automatically before every release (section 8).
 

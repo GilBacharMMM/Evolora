@@ -10,6 +10,7 @@ import path from 'node:path'
 import { initializeApp, deleteApp, setLogLevel } from 'firebase/app'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { collection, deleteDoc, deleteField, doc, getDoc, getDocs, initializeFirestore, setDoc } from 'firebase/firestore'
+import { getBytes, getStorage, ref } from 'firebase/storage'
 import { ROOT, finish, siteConfig } from './lib/connect.mjs'
 
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
@@ -23,6 +24,7 @@ async function as(uid, fn) {
   const app = initializeApp(config, uid)
   await signInWithEmailAndPassword(getAuth(app), user.email, TEST.password)
   const db = initializeFirestore(app, {})
+  db.storage = getStorage(app)
   try { await fn(db) } finally { await deleteApp(app) }
 }
 
@@ -45,6 +47,7 @@ await as('test-student-1', async (db) => {
   await expect('reads a lesson open to the class', true, read(db, 'lessons', 'circles-teaching'))
   await expect('reads the lesson content', true, read(db, 'lessons', 'circles-teaching', 'versions', '1'))
   await expect('reads the correct answers', false, read(db, 'lessons', 'circles-teaching', 'versions', '1', 'secret', 'answers'))
+  await expect('sees a lesson image', true, () => getBytes(ref(db.storage, 'lessons/circles-teaching/v1/images/circle-parts.svg')))
   await expect("reads another student's class list", false, read(db, 'memberships', 'test-student-2'))
   await expect("reads another student's record", false, read(db, 'users', 'test-student-2'))
   await expect('reads the class student list', false, () => getDocs(collection(db, 'classes', 'test-class', 'students')))
