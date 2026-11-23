@@ -685,6 +685,25 @@ Besides seeing everything inside Evolora, each teacher can get one email a day w
 *Acceptance criteria:*
 - [ ] A teacher with the email on gets one email a day listing the new items; with it off, no email arrives.
 
+**REQ-5.32: Teacher tries a lesson** (Priority 2: should have)
+A teacher can try any lesson or exam they can see, straight from the teacher screens: from the lesson list, from a course, and from a class's assigned lessons. This works both before the lesson is given to students and after. The teacher goes through the lesson exactly as a student would: questions block progress, wrong answers show the hint, then the solution and a check-again question, and help tips work. A clear banner says "Trying the lesson: answers are not saved".
+
+- What the teacher does while trying is never recorded as a student's: it does not appear on any dashboard, grade table, grading page or CSV, and it does not change any student's level or the question success rates.
+- The teacher can leave at any moment and start again from the beginning.
+- After the lesson is given to students, trying it shows the same version the students get (REQ-4.7).
+- Each question also has two buttons only the teacher sees: **Skip** (move on without answering) and **Show answer** (show the correct answer and the full solution), so checking a long lesson is quick (Gil, Q-43).
+
+This is different from REQ-4.6, which is about a lesson's creator previewing it while writing it inside Evolora (stage 2).
+
+*Acceptance criteria:*
+- [ ] As a teacher, open a lesson that is not yet given to any class and press "Try the lesson": it opens like the student's lesson, with the "Trying the lesson" banner.
+- [ ] Answer a question wrongly: the hint appears and you get a second attempt, as a student would.
+- [ ] Give the same lesson to a class, then try it again from that class's page: it still works, and it is the same version the students see.
+- [ ] After trying, the class dashboard, grade table, grading page and CSV show nothing from your attempt.
+- [ ] Leave in the middle and press "Try the lesson" again: it starts from the beginning.
+- [ ] On any question, press **Skip**: the lesson moves on. Press **Show answer**: the correct answer and the full solution appear.
+- [ ] Signed in as a student, the lesson has no Skip or Show answer buttons.
+
 **REQ-5.17: Google Classroom connection** (Priority: Later)
 Import class lists from Google Classroom, and possibly post assignments and grades back to it. See the advice in the open questions summary.
 
@@ -1042,7 +1061,7 @@ The test site can be filled with a standard set of test data with one command, b
 
 ### Still open
 
-No open questions right now (2026-11-22).
+No open questions right now (2026-11-23).
 
 ### Answered (2026-11-20)
 
@@ -1068,6 +1087,8 @@ No open questions right now (2026-11-22).
 | Q-35 | Hard questions | Success rate for every question. (REQ-5.29) |
 | Q-36 | Live view | Later. (REQ-5.30) |
 | Q-37 | Notifications | Inside Evolora, plus an optional daily email. (REQ-5.31) |
+| Q-42 | Priority of teacher tries a lesson | Priority 2: should have (Gil, 2026-11-23). (REQ-5.32) |
+| Q-43 | Shortcuts while trying | Like a student, plus Skip and Show answer buttons. (REQ-5.32) |
 | Q-38 | Level suggestions | Average of the last 4 weeks, after at least 5 graded lessons. (REQ-5.18) |
 | Q-39 | Exporting grades | The school uses Smart School; a CSV download is enough. (REQ-5.11) |
 | Q-40 | Devices | Chromebooks and Windows and Mac laptops, in Google Chrome only; other browsers (Edge, Safari) are blocked for now with a "please use Chrome" message; phones much later, maybe never. Level suggestions confirmed. (REQ-11.1, 5.18) |

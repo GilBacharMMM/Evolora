@@ -549,3 +549,15 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
 **Decision:** Gil set every feature to priority 1, 2 or 3 on the priorities page. The result is in the roadmap and on every requirement. Notable choices: exams, audio answers, messages and lesson versions moved to priority 3; opening lessons early for chosen students moved to priority 1; levels, random answer order and hiding grades are priority 2.
 **Affects:** roadmap; all requirements
+
+### D-49: Teachers can try a lesson
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** In stage 1 teachers don't write lessons inside Evolora (D-33), so the creator's preview (REQ-4.6) doesn't help them. Teachers need to see a lesson as students will, before giving it and after.
+**Options considered:**
+1. Teachers check lessons on the test site as a test student.
+2. A "Try the lesson" button in the teacher screens, going exactly like a student.
+3. The same, plus Skip and Show answer buttons that only the teacher sees.
+
+**Decision:** Option 3, priority 2 (should have). Nothing the teacher does while trying is recorded as a student's.
+**Reason:** Teachers can check a lesson quickly from where they work, without separate test accounts, and without touching class data.
+**Affects:** REQ-5.32

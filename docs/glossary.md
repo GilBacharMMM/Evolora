@@ -16,6 +16,7 @@ These are the terms we use in all documents and in the app. When a term is used,
 | Term | Meaning | Status |
 |---|---|---|
 | **Lesson** | A single unit of learning made by a creator. It contains material (text, images, graphs, math formulas, video, audio, simulations) and questions. A lesson is either a teaching lesson or a practice lesson. | proposed |
+| **Trying a lesson** | A teacher going through a lesson as a student would, with extra Skip and Show answer buttons, without anything being recorded (REQ-5.32). Not the same as a creator's preview (REQ-4.6). | agreed |
 | **Topic** | A part of a lesson about one subject (for example, "the area of a circle"), with a minimum number of questions every student must answer before moving on. The creator sets a default minimum; the teacher can change it when assigning. In Hebrew: נושא. | proposed |
 | **Extra practice question** | A question in a topic that is asked only to students who haven't yet answered the topic's minimum number of questions correctly. In Hebrew: שאלת תרגול נוספת. | agreed |
 | **Help tip** | A short explanation written in the lesson file for a question, with a title the student can choose ("What is a radius?"). Shown from the help line before AI is ready. It never gives the answer. In Hebrew: טיפ עזרה. | proposed |
