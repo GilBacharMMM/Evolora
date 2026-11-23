@@ -4,6 +4,7 @@ import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import { httpsCallable } from 'firebase/functions'
 import { db, functions } from '../site'
 import { BackButton } from '../components/BackButton'
+import { navigate } from '../router'
 import { ClassTabs } from '../components/ClassTabs'
 import { TypeChip } from '../components/TypeChip'
 import type { Course, LessonSummary } from '../lesson/types'
@@ -36,6 +37,7 @@ interface ClassData {
   name: string
   color: string
   teacherNames: string[]
+  teacherIds: string[]
   code: string
   joiningOpen: boolean
   students: StudentRow[]
@@ -69,6 +71,7 @@ export function TeacherClass({ classId }: { classId: string }) {
         name: d.name,
         color: d.color || '#0E6B73',
         teacherNames: d.teacherNames || [],
+        teacherIds: d.teacherIds || [],
         code: d.code || '',
         joiningOpen: d.joiningOpen !== false,
         students: list.docs
@@ -144,8 +147,13 @@ export function TeacherClass({ classId }: { classId: string }) {
             <p className="muted">{t('teacher.removedExplain')}</p>
             <ul>
               {removed.map((s) => (
-                <li key={s.id} dir="auto">
-                  {s.name} <span className="muted" dir="ltr">{s.email}</span>
+                <li key={s.id}>
+                  <button type="button" className="link-button" dir="auto" onClick={() => navigate(`/teacher/class/${classId}/student/${s.id}`)}>
+                    {s.name}
+                  </button>{' '}
+                  <span className="muted" dir="ltr">
+                    {s.email}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -192,7 +200,7 @@ export function TeacherClass({ classId }: { classId: string }) {
         </ul>
       </section>
 
-      <Teachers classId={classId} names={data.teacherNames} onAdded={load} />
+      <Teachers classId={classId} names={data.teacherNames} ids={data.teacherIds} onAdded={load} />
       <GiveForm classId={classId} students={current} lessons={lessons} courses={courses} onGiven={load} />
       <OpenEarlyForm
         classId={classId}
@@ -740,7 +748,7 @@ function DueLine({ classId, assignment, students, nameOf, onChanged }: { classId
 }
 
 // The class's teachers, and adding a co-teacher by email (REQ-5.5).
-function Teachers({ classId, names, onAdded }: { classId: string; names: string[]; onAdded: () => Promise<void> }) {
+function Teachers({ classId, names, ids, onAdded }: { classId: string; names: string[]; ids: string[]; onAdded: () => Promise<void> }) {
   const { t } = useTranslation()
   const [email, setEmail] = useState('')
   const [busy, setBusy] = useState(false)
@@ -751,9 +759,27 @@ function Teachers({ classId, names, onAdded }: { classId: string; names: string[
         {t('teacher.teachersTitle')}
       </h2>
       <ul className="given-list">
-        {names.map((n) => (
-          <li key={n} dir="auto">
-            {n}
+        {names.map((n, i) => (
+          <li key={ids[i] || n}>
+            <span dir="auto">{n}</span>
+            {ids.length > 1 && ids[i] && (
+              <button
+                type="button"
+                className="link-button small-note given-to"
+                onClick={async () => {
+                  if (!window.confirm(t('teacher.removeTeacherConfirm', { name: n }))) return
+                  try {
+                    const r = await call<{ self: boolean }>('removeTeacher', { classId, teacherId: ids[i] })
+                    if (r.self) navigate('/')
+                    else await onAdded()
+                  } catch {
+                    window.alert(t('teacher.actionFailed'))
+                  }
+                }}
+              >
+                {t('teacher.removeTeacher')}
+              </button>
+            )}
           </li>
         ))}
       </ul>

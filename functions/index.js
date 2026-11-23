@@ -487,9 +487,10 @@ export const classOverview = onCall(async (request) => {
   await submitExpired(classId, work, students)
   const flagSnap = await db.collection('flags').where('classId', '==', classId).get()
   const current = students.filter((s) => !s.removed)
-  const given = Object.fromEntries(current.map((s) => [s.id, work.givenTo(s.id)]))
+  // Removed students too: their page stays open to the teacher, with their work (REQ-5.4).
+  const given = Object.fromEntries(students.map((s) => [s.id, work.givenTo(s.id)]))
   const exams = new Set(Object.keys(work.lessons).filter((l) => work.lessons[l].type === 'exam'))
-  const progress = await progressMap(current.flatMap((s) => given[s.id].lessonIds.map((l) => [s.id, l])), exams)
+  const progress = await progressMap(students.flatMap((s) => given[s.id].lessonIds.map((l) => [s.id, l])), exams)
   const p = (uid, l) => progress[progressId(uid, l)]
   const flags = flagSnap.docs
     .map((d) => {
@@ -527,7 +528,7 @@ export const classOverview = onCall(async (request) => {
     const mine = work.assignments.filter((a) => (a.everyone || (a.studentIds || []).includes(uid)) && (a.lessonIds || []).includes(l)).reverse()
     return mine.find((a) => a.due || Object.keys(a.extensions || {}).length) || mine[0]
   }
-  const rows = current.map((s) => {
+  const allRows = students.map((s) => {
     const mine = given[s.id]
     let pastDue = false
     const cells = Object.fromEntries(
@@ -562,6 +563,9 @@ export const classOverview = onCall(async (request) => {
     }
   })
 
+  const rows = allRows.filter((r) => !r.removed)
+  const removedRows = allRows.filter((r) => r.removed)
+
   // Level suggestions (REQ-5.18), shown on the dashboard until the teacher accepts or ignores them.
   const suggestions = levelSuggestions(
     rows.map((r) => ({ id: r.id, level: r.level, graded: Object.values(r.cells).filter((c) => c.kind === 'grade').map((c) => ({ percent: c.percent, finishedAt: c.finishedAt })) })),
@@ -594,6 +598,7 @@ export const classOverview = onCall(async (request) => {
     columns,
     openings: work.openings,
     students: rows,
+    removedStudents: removedRows,
     flags,
     csv,
   }
@@ -1235,4 +1240,18 @@ export const allowRetake = onCall(async (request) => {
   batch.update(db.doc(`progress/${progressId(studentId, lessonId)}`), { submitted: false, finished: false, examAnswers: FieldValue.delete(), updatedAt: FieldValue.serverTimestamp() })
   await batch.commit()
   return { ok: true }
+})
+
+// Removing a co-teacher from a class (REQ-5.5, D-62). A class always keeps at least one teacher.
+export const removeTeacher = onCall(async (request) => {
+  const { classId, teacherId } = request.data || {}
+  const { ref, data } = await requireClassTeacher(request.auth, classId)
+  const ids = data.teacherIds || []
+  const names = data.teacherNames || []
+  const i = ids.indexOf(teacherId)
+  if (i < 0) throw new HttpsError('not-found', 'Not a teacher of this class.')
+  if (ids.length <= 1) throw new HttpsError('failed-precondition', 'last-teacher')
+  // Ids and names are kept in the same order.
+  await ref.update({ teacherIds: ids.filter((_, k) => k !== i), teacherNames: names.filter((_, k) => k !== i), updatedAt: FieldValue.serverTimestamp() })
+  return { ok: true, self: teacherId === request.auth.uid }
 })

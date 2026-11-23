@@ -70,6 +70,15 @@ try {
   const p = (await getDoc(doc(ldb, 'progress', `test-student-2__${LESSON}`))).data()
   check('Teacher A sets 80, Teacher B then 90: the grade is 90', p.questions[q.id].score === 0.9 && p.grade.percent === 90)
 
+  await as('test-teacher-1', async ({ call }) => {
+    const r = await call('removeTeacher', { classId: CLASS, teacherId: 'test-teacher-2' })
+    check('Test Teacher 1 removes Test Teacher 2 from the class', r.ok === true && r.self === false)
+    let last = false
+    try { await call('removeTeacher', { classId: CLASS, teacherId: 'test-teacher-1' }) } catch (e) { last = e.code === 'functions/failed-precondition' }
+    check('the last teacher of a class cannot be removed', last)
+  })
+  check('after removal, Test Teacher 2 no longer sees the class', await as('test-teacher-2', async ({ call }) => { try { await call('classOverview', { classId: CLASS }); return false } catch (e) { return e.code === 'functions/permission-denied' } }))
+
   console.log('Archiving a course (REQ-5.21)')
   await as('test-teacher-1', ({ call }) => call('archiveCourse', { classId: CLASS, courseId: 'circles-demo', archived: true }))
   await as('test-student-3', async ({ db }) => {

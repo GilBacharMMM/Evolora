@@ -708,7 +708,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 1. **Built first:** REQ-5.29 success rate per question, REQ-4.9 lesson library search and filters, REQ-5.21 archiving courses, REQ-9.6 teacher changes a student's language, REQ-5.5 co-teachers. Left for Gil to choose the order: exams (4.26, 5.23), email invites (5.3), messages (5.16, 10.2), marking up answers and audio comments (5.12, 5.13), daily email (5.31), redo (6.5), audio answers (6.6), class-code guessing alerts (10.7), lesson versions screens (4.7).
 2. **Success rate** counts only the students who answered the question; open answers show the average of graded ones.
 3. **Archiving** is per course in a class; archived courses leave the dashboard's progress map and "behind" status, but stay in the grade table and CSV. Their lessons can still be opened, with the same open, done and locked rules as before.
-4. **Co-teachers** are added by email; the other teacher must already be on the staff list and have signed in once. There is no "remove a co-teacher" yet (Claude can do it on request).
+4. **Co-teachers** are added by email; the other teacher must already be on the staff list and have signed in once. Any teacher of the class can remove another ("Remove from the class", with a confirmation); a class always keeps at least one teacher.
 5. **Changing a student's language** applies the next time the student opens Evolora; the teacher doesn't see the student's current language.
 **Affects:** REQ-5.29, REQ-4.9, REQ-5.21, REQ-9.6, REQ-5.5, roadmap
 

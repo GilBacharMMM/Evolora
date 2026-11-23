@@ -169,6 +169,8 @@ try {
     await call('removeStudent', { classId, studentId: S.seven })
     const s = await getDoc(doc(db, 'classes', classId, 'students', S.seven))
     check('the teacher still has the removed student, marked as removed', s.exists() && s.data().removed === true)
+    const o = await call('classOverview', { classId })
+    check("the removed student's page stays open to the teacher", (o.removedStudents || []).some((r) => r.id === S.seven) && !o.students.some((r) => r.id === S.seven))
     check("the removed student's work is kept for the teacher", (await getDoc(doc(db, 'progress', `${S.seven}__circles-teaching`))).exists())
   })
   await as(S.seven, async ({ db, call }) => {

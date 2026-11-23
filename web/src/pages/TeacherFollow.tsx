@@ -74,6 +74,8 @@ export interface Overview {
   columns: string[]
   openings: { id: string; lessonId: string; everyone: boolean; studentIds: string[] }[]
   students: StudentRow[]
+  // Removed students (REQ-5.4): their page and work stay open to the teacher.
+  removedStudents?: StudentRow[]
   flags: Flag[]
   csv: string
 }
@@ -545,7 +547,8 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
       </main>
     )
   }
-  const s = data.students.find((x) => x.id === studentId)
+  const removed = !data.students.some((x) => x.id === studentId)
+  const s = data.students.find((x) => x.id === studentId) ?? data.removedStudents?.find((x) => x.id === studentId)
   const flags = data.flags.filter((f) => f.uid === studentId)
   if (!s) {
     return (
@@ -580,6 +583,7 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
         <h1 className="page-title" dir="auto">
           {s.name}
         </h1>
+        {removed && <p className="notice">{t('follow.removedStudent')}</p>}
         <div className="student-facts">
           <StatusBadge status={s.status} star={s.star} />
           <span>
@@ -590,7 +594,7 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
           </span>
           <span>{t('follow.tipsOpened', { n: tips })}</span>
         </div>
-        <LanguageChange classId={classId} studentId={s.id} />
+        {!removed && <LanguageChange classId={classId} studentId={s.id} />}
       </section>
 
       <section className="card list-card-padded" aria-labelledby="mastered-title">
@@ -647,7 +651,7 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
         )}
       </section>
 
-      <Messages classId={classId} studentId={studentId} asTeacher />
+      {!removed && <Messages classId={classId} studentId={studentId} asTeacher />}
 
       <TeacherNotes classId={classId} studentId={studentId} notes={details?.notes || []} onAdded={loadDetails} />
 

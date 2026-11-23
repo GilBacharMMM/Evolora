@@ -163,7 +163,9 @@
       "notTeacher": "This email is not on the list of teachers. Ask the system admin to add it first.",
       "notSignedIn": "This teacher hasn't signed in to Evolora yet. Ask them to sign in once, then try again."
     },
-    "redoCounts": "Redo counts: the latest redo's grade replaces the earlier one, even if lower"
+    "redoCounts": "Redo counts: the latest redo's grade replaces the earlier one, even if lower",
+    "removeTeacher": "Remove from the class",
+    "removeTeacherConfirm": "Remove {{name}} as a teacher of this class? They will no longer see it. Nothing else changes."
   },
   "lessonType": {
     "teaching": "Teaching",
@@ -386,7 +388,8 @@
     "studentLanguage": "Student's interface language:",
     "chooseLanguage": "Choose",
     "languageSet": "Saved. It changes the next time the student opens Evolora.",
-    "flagExam": "wrong answer in the exam (question {{question}})"
+    "flagExam": "wrong answer in the exam (question {{question}})",
+    "removedStudent": "This student was removed from the class. Their work, flags and notes are kept here."
   },
   "library": {
     "search": "Search by title",
