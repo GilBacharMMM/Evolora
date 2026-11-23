@@ -7,6 +7,7 @@ import { lessonAccess, loadClasswork } from '../classwork'
 import { useSession } from '../session'
 import { navigate } from '../router'
 import { BlockView, Ui } from '../lesson/Blocks'
+import { Markdown } from '../lesson/Rich'
 import { QuestionCard } from '../lesson/QuestionCard'
 import { isFinished, type QuestionState } from '../lesson/answers'
 import type { Block, LessonVersion, Question } from '../lesson/types'
@@ -62,6 +63,20 @@ interface Progress {
 export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const { t } = useTranslation()
   const { user, role, classIds } = useSession()
+  // Teachers try the lesson (REQ-5.32): checked as for a student, nothing saved.
+  const trying = role !== 'student'
+  // Questions above the student's level are left out, without saying so (REQ-6.10).
+  const [hidden, setHidden] = useState<Set<string>>(new Set())
+  useEffect(() => {
+    if (trying || !user) return
+    let live = true
+    httpsCallable<{ lessonId: string }, { hidden: string[] }>(functions, 'lessonView')({ lessonId })
+      .then((r) => live && setHidden(new Set(r.data.hidden)))
+      .catch(() => {})
+    return () => {
+      live = false
+    }
+  }, [trying, user, lessonId])
   // A student opens only lessons given to them that aren't locked (REQ-5.7, 6.12, D-55, D-57).
   const [gate, setGate] = useState<'checking' | 'open' | 'locked' | 'lockedByNotes' | 'lockedByDue' | 'notGiven'>(role === 'student' ? 'checking' : 'open')
   // Teachers always see grades; students only when the assignment shows them (REQ-5.22).
@@ -100,7 +115,8 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
         setMinimum(s.data().minimumPerTopic || 0)
       })
       .catch(() => live && setProblem('notAllowed'))
-    const unsub = user
+    if (trying) setProgress({})
+    const unsub = user && !trying
       ? onSnapshot(
           doc(db, 'progress', `${user.uid}__${lessonId}`),
           (s) => live && setProgress(s.exists() ? (s.data() as Progress) : {}),
@@ -111,7 +127,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
       live = false
       unsub()
     }
-  }, [lessonId, user])
+  }, [lessonId, user, trying])
 
   // The version the student started stays theirs (REQ-4.7).
   const versionNumber = progress === null || currentVersion === null ? null : progress.version || currentVersion
@@ -131,7 +147,15 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   }, [lessonId, versionNumber])
 
   const states = useMemo(() => ({ ...(progress?.questions || {}), ...local }), [progress, local])
-  const topicCorrect = (n: number) => progress?.topics?.[n]?.correct ?? 0
+  // While trying, right answers per topic are counted here, as the checking service does for students.
+  const tryCorrect = useMemo(() => {
+    const out: Record<number, number> = {}
+    if (!trying || !lesson) return out
+    const right = (r?: string | null) => r === 'correct1' || r === 'correct2'
+    for (const topic of lesson.topics) for (const b of topic.blocks) if (b.type === 'question') out[topic.number] = (out[topic.number] || 0) + (right(states[b.id]?.result) ? 1 : 0) + (right(states[b.id]?.checkAgain?.result) ? 1 : 0)
+    return out
+  }, [trying, lesson, states])
+  const topicCorrect = (n: number) => (trying ? tryCorrect[n] ?? 0 : progress?.topics?.[n]?.correct ?? 0)
 
   const items = useMemo<Item[]>(() => {
     if (!lesson) return []
@@ -145,7 +169,8 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
 
   // Extra practice questions are asked only until the topic's minimum is reached (REQ-4.21).
   const skipped = (it: Item) =>
-    it.kind === 'block' && it.block.type === 'question' && it.block.extra && !states[it.block.id] && minimum > 0 && topicCorrect(it.topic) >= minimum
+    (it.kind === 'block' && it.block.type === 'question' && hidden.has(it.block.id)) ||
+    (it.kind === 'block' && it.block.type === 'question' && it.block.extra && !states[it.block.id] && minimum > 0 && topicCorrect(it.topic) >= minimum)
 
   const shown = items.filter((it) => !skipped(it))
   const stop = shown.findIndex((it) => it.kind === 'block' && it.block.type === 'question' && it.block.kind !== 'audio' && !isFinished(states[(it.block as Question).id]))
@@ -247,6 +272,14 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
           </p>
         </header>
 
+        {trying && (
+          <div className="try-banner" role="note">
+            <Ui>{t('lesson.trying')}</Ui>
+            <button type="button" className="button secondary small" onClick={() => setLocal({})}>
+              <Ui>{t('lesson.tryAgain')}</Ui>
+            </button>
+          </div>
+        )}
         <SentBackBanner lessonId={lessonId} sentBack={progress?.sentBack} isStudent={role === 'student'} />
 
         {visible.map((it) => (
@@ -257,13 +290,25 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
               </h2>
             ) : it.block.type === 'question' ? (
               <>
-              <QuestionCard
-                q={it.block}
-                state={states[it.block.id]}
-                lessonId={lessonId}
-                label={t('q.questionNumber', { number: numbers[it.block.id] })}
-                onState={(s) => setLocal((l) => ({ ...l, [(it.block as Question).id]: s }))}
-              />
+              {(states[it.block.id] as TryState | undefined)?.tryShown ? (
+                <ShownAnswer q={it.block} state={states[it.block.id] as TryState} label={t('q.questionNumber', { number: numbers[it.block.id] })} />
+              ) : (
+                <QuestionCard
+                  q={shuffled(it.block, user?.uid || '')}
+                  state={shuffledState(states[it.block.id], user?.uid || '')}
+                  lessonId={lessonId}
+                  trying={trying}
+                  label={t('q.questionNumber', { number: numbers[it.block.id] })}
+                  onState={(s) => setLocal((l) => ({ ...l, [(it.block as Question).id]: s }))}
+                />
+              )}
+              {trying && !isFinished(states[it.block.id]) && (
+                <TryButtons
+                  lessonId={lessonId}
+                  q={it.block}
+                  onDone={(st) => setLocal((l) => ({ ...l, [(it.block as Question).id]: st }))}
+                />
+              )}
               <TeacherNote state={states[it.block.id] as Graded | undefined} showGrades={showGrades} />
               </>
             ) : (
@@ -324,5 +369,94 @@ function SentBackBanner({ lessonId, sentBack, isStudent }: { lessonId: string; s
         </button>
       )}
     </div>
+  )
+}
+
+// Answers in a random order, the same every time for the same student (REQ-4.19): the order comes
+// from the student's account and the question, so coming back shows the same order.
+function seeded(text: string) {
+  let h = 2166136261
+  for (let i = 0; i < text.length; i++) h = Math.imul(h ^ text.charCodeAt(i), 16777619)
+  return () => {
+    h = Math.imul(h ^ (h >>> 15), 2246822507)
+    h = Math.imul(h ^ (h >>> 13), 3266489909)
+    return ((h ^= h >>> 16) >>> 0) / 4294967296
+  }
+}
+
+function shuffle<T>(items: T[], seed: string): T[] {
+  const out = [...items]
+  const rand = seeded(seed)
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1))
+    ;[out[i], out[j]] = [out[j], out[i]]
+  }
+  return out
+}
+
+function shuffled(q: Question, uid: string): Question {
+  return q.kind === 'choice' ? { ...q, choices: shuffle(q.choices, `${uid}:${q.id}`) } : q
+}
+
+function shuffledState(st: QuestionState | undefined, uid: string): QuestionState | undefined {
+  const ca = st?.checkAgain
+  if (!st || !ca || ca.question.kind !== 'choice') return st
+  return { ...st, checkAgain: { ...ca, question: { ...ca.question, choices: shuffle(ca.question.choices, `${uid}:${ca.id}`) } } }
+}
+
+// Trying a lesson (REQ-5.32): Skip and Show answer, only for the teacher.
+type TryState = QuestionState & { tryShown?: 'skipped' | 'shown'; tryCorrect?: { choices?: string[]; number?: number } | null; trySolution?: string | null }
+
+function TryButtons({ lessonId, q, onDone }: { lessonId: string; q: Question; onDone: (s: TryState) => void }) {
+  const { t } = useTranslation()
+  const [busy, setBusy] = useState(false)
+  return (
+    <div className="try-buttons">
+      <button type="button" className="button secondary small" onClick={() => onDone({ attempts: [], result: 'pending', score: null, tryShown: 'skipped' })}>
+        <Ui>{t('lesson.skip')}</Ui>
+      </button>
+      <button
+        type="button"
+        className="button secondary small"
+        disabled={busy}
+        onClick={async () => {
+          setBusy(true)
+          try {
+            const r = await httpsCallable<unknown, { correct: TryState['tryCorrect']; solution: string | null }>(functions, 'tryAnswer')({ lessonId, questionId: q.id, show: true })
+            onDone({ attempts: [], result: 'pending', score: null, tryShown: 'shown', tryCorrect: r.data.correct, trySolution: r.data.solution })
+          } finally {
+            setBusy(false)
+          }
+        }}
+      >
+        <Ui>{t('lesson.showAnswer')}</Ui>
+      </button>
+    </div>
+  )
+}
+
+function ShownAnswer({ q, state, label }: { q: Question; state: TryState; label: string }) {
+  const { t } = useTranslation()
+  const correct = state.tryCorrect
+  const text = correct?.number !== undefined ? `${correct.number}${q.unit ? ' ' + q.unit : ''}` :(correct?.choices || []).map((id) => q.choices.find((c) => c.id === id)?.text || '').join(' · ')
+  return (
+    <section className="block-question answered">
+      <span className="block-label">{label}</span>
+      <Markdown text={q.prompt} />
+      {state.tryShown === 'skipped' ? (
+        <p className="muted">
+          <Ui>{t('lesson.skipped')}</Ui>
+        </p>
+      ) : (
+        <div className="feedback solution">
+          {text && (
+            <p className="correct-line">
+              <Ui>{t('q.theCorrectAnswer')}</Ui> <bdi>{text}</bdi>
+            </p>
+          )}
+          {state.trySolution && <Markdown text={state.trySolution} />}
+        </div>
+      )}
+    </section>
   )
 }

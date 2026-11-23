@@ -100,3 +100,26 @@ export function lateGrade(percent, rule, due, finishedAt) {
   if (percent == null || rule.afterDue !== 'reduce' || !due || !finishedAt || finishedAt <= due) return percent
   return Math.max(0, percent - (rule.reduceBy || 0))
 }
+
+// Level suggestions (REQ-5.18): from each student's average over lessons finished and graded in the
+// class in the last 4 weeks, once they have at least 5 such lessons. The weakest 10% of those
+// students are suggested level 1, the strongest 10% level 3 (only when it is a change). Nothing
+// changes until the teacher accepts. `students`: [{ id, level, graded: [{ percent, finishedAt }] }].
+export const SUGGEST_MIN_LESSONS = 5
+export const SUGGEST_WINDOW_MS = 28 * 24 * 3600 * 1000
+
+export function levelSuggestions(students, now) {
+  const eligible = students
+    .map((s) => {
+      const recent = s.graded.filter((g) => g.percent != null && g.finishedAt && now - g.finishedAt <= SUGGEST_WINDOW_MS)
+      return { id: s.id, level: s.level, count: recent.length, average: recent.length ? recent.reduce((a, g) => a + g.percent, 0) / recent.length : null }
+    })
+    .filter((s) => s.count >= SUGGEST_MIN_LESSONS)
+    .sort((a, b) => a.average - b.average)
+  const out = {}
+  if (!eligible.length) return out
+  const tenth = Math.max(1, Math.round(eligible.length * 0.1))
+  for (const s of eligible.slice(0, tenth)) if (s.level !== 1) out[s.id] = 1
+  for (const s of eligible.slice(-tenth)) if (s.level !== 3 && !(s.id in out)) out[s.id] = 3
+  return out
+}

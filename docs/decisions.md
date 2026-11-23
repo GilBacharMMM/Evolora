@@ -688,3 +688,15 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 7. **Not built yet from REQ-5.9:** changing the minimum questions per topic per assignment, "redo counts" (redo is REQ-6.5, priority 3), and exam time windows (REQ-5.23, priority 3). Who checks open answers is always the teacher.
 **Reason:** Keeps students' current work unchanged and follows the requirements' own recommendation; each point is easy to change.
 **Affects:** REQ-5.8, REQ-5.9, REQ-5.10, REQ-6.1, D-55, D-57
+
+### D-61: Points the requirements leave open in levels, random order and trying lessons
+**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building REQ-4.18, 5.18, 6.10, 4.19, 4.15 and 5.32
+**Decision:**
+1. **A question without a level counts as level 1**; a student without a level set is at level 2 (REQ-5.18). A student in two classes that both have the lesson gets their higher level.
+2. **Lowering a student's level** doesn't take away questions they already answered; it applies from the next question (REQ-5.18).
+3. **Level suggestions** follow REQ-5.18: only students with at least 5 lessons finished and graded in the class in the last 4 weeks; the weakest 10% (at least one) are suggested level 1 and the strongest 10% level 3. "Well above or below what fits the level" isn't defined well enough yet, so it isn't built.
+4. **Random order** is worked out from the student's account and the question, so it is the same every time for that student and different between students; check-again questions too.
+5. **Teachers always try:** whenever a teacher (or system admin) opens a lesson, from anywhere, it is in "Trying the lesson" mode: answers are checked but never saved. "Start again" clears it. Trying always uses the lesson's current version.
+6. **Image sources:** the "Source" note under each image opens to show the details on click. The loading check already refuses an image without a valid source (REQ-4.15).
+**Reason:** Follows the requirements closely and keeps teachers' tries out of all student data.
+**Affects:** REQ-4.18, REQ-5.18, REQ-6.10, REQ-4.19, REQ-4.15, REQ-5.32

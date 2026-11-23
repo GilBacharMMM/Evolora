@@ -166,3 +166,17 @@ test('lesson finished: every question answered; skipped extras and audio count a
   assert.equal(lessonFinished(version, { a: done, b: pending, c: waitingCheckAgain }, { 1: { correct: 1 } }, 1), false, 'check-again question still open')
   assert.equal(lessonFinished({ topics: [{ number: 1, blocks: [{ type: 'text' }] }] }, {}, {}, 0), true, 'a lesson without questions')
 })
+
+test('levels (REQ-6.10): a student receives questions up to their level; the lesson finishes without the others', async () => {
+  const { lessonFinished, receives } = await import('./check.js')
+  assert.equal(receives({ level: 1 }, 1), true)
+  assert.equal(receives({ level: 2 }, 1), false)
+  assert.equal(receives({ level: null }, 1), true, 'no level means level 1')
+  assert.equal(receives({ level: 3 }, 3), true)
+  const version = { topics: [{ number: 1, blocks: [{ type: 'question', id: 'a', kind: 'choice', level: 1 }, { type: 'question', id: 'b', kind: 'choice', level: 2 }, { type: 'question', id: 'c', kind: 'choice', level: 3 }] }] }
+  const done = { result: 'correct1', score: 1 }
+  assert.equal(lessonFinished(version, { a: done }, {}, 0, 1), true, 'level 1: only a')
+  assert.equal(lessonFinished(version, { a: done }, {}, 0, 2), false, 'level 2: b too')
+  assert.equal(lessonFinished(version, { a: done, b: done }, {}, 0, 2), true)
+  assert.equal(lessonFinished(version, { a: done, b: done }, {}, 0, 3), false, 'level 3: all three')
+})

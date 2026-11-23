@@ -11,8 +11,8 @@ import { initializeApp } from 'firebase-admin/app'
 import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 import { HttpsError, onCall } from 'firebase-functions/v2/https'
 import { setGlobalOptions } from 'firebase-functions/v2'
-import { answerCheckAgain, answerMain, isFinished, lessonFinished, lessonGrade, sendBackForCorrections, teacherScore } from './check.js'
-import { averageGrade, coursePosition, dueFor, lateGrade, lessonCell, median, notMastered, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
+import { answerCheckAgain, answerMain, isFinished, lessonFinished, lessonGrade, receives, sendBackForCorrections, teacherScore } from './check.js'
+import { averageGrade, coursePosition, dueFor, lateGrade, lessonCell, levelSuggestions, median, notMastered, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
 import { CLASS_COLORS, WAIT_MS, afterWrong, makeCode, normalizeCode, validateCode, waitLeft } from './classcode.js'
 
 // "public" lets the website reach the service; every call still checks who is signed in.
@@ -21,6 +21,14 @@ initializeApp()
 const db = getFirestore()
 
 const progressId = (uid, lessonId) => `${uid}__${lessonId}`
+
+// The student's level for a lesson (REQ-5.18, 6.10): their level in the classes the lesson is
+// given to (the highest, if several); level 2 when the teacher hasn't set one. Teachers: all (3).
+async function levelFor(uid, classIds) {
+  if (!classIds.length) return 3
+  const snaps = await db.getAll(...classIds.map((c) => db.doc(`classes/${c}/levels/${uid}`)))
+  return Math.max(...snaps.map((s) => (s.exists && [1, 2, 3].includes(s.data().level) ? s.data().level : 2)))
+}
 
 // May this person take this lesson? Teachers may take any lesson; students only lessons open to
 // one of their classes (REQ-3.4). Returns the class IDs the lesson is open to for this student.
@@ -49,8 +57,8 @@ function findQuestion(version, questionId) {
 
 // The last question that is checked automatically in a topic, used to tell whether a student
 // ran out of extra practice questions without reaching the minimum (REQ-4.21).
-function lastAutoQuestionId(topic) {
-  const auto = topic.blocks.filter((b) => b.type === 'question' && (b.kind === 'choice' || b.kind === 'number'))
+function lastAutoQuestionId(topic, maxLevel = 3) {
+  const auto = topic.blocks.filter((b) => b.type === 'question' && (b.kind === 'choice' || b.kind === 'number') && receives(b, maxLevel))
   return auto.length ? auto[auto.length - 1].id : null
 }
 
@@ -63,6 +71,7 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
   const lesson = lessonSnap.data()
   const classIds = await access(request.auth, lesson)
   const uid = request.auth.uid
+  const maxLevel = await levelFor(uid, classIds)
   const progressRef = db.doc(`progress/${progressId(uid, lessonId)}`)
 
   let flagToRaise = null
@@ -77,6 +86,7 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
     const found = findQuestion(vSnap.data(), questionId)
     if (!found) throw new HttpsError('not-found', 'No such question.')
     const { q, topic } = found
+    if (!receives(q, maxLevel)) throw new HttpsError('failed-precondition', 'Not one of your questions.')
     const secret = sSnap.data().questions[questionId] || {}
     const questions = progress?.questions || {}
     const before = questions[questionId]
@@ -92,7 +102,7 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
 
     const newState = outcome.state
     const minimum = lesson.minimumPerTopic || 0
-    if (minimum && isFinished(newState) && lastAutoQuestionId(topic) === questionId && t.correct < minimum && !t.flagged) {
+    if (minimum && isFinished(newState) && lastAutoQuestionId(topic, maxLevel) === questionId && t.correct < minimum && !t.flagged) {
       t.flagged = true
       flagToRaise = flagToRaise || { kind: 'minimumNotReached', questionId, topicNumber: topic.number, topicName: topic.name }
       if (outcome.flag) flagToRaise.alsoMinimum = true
@@ -113,7 +123,7 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
     if (!progress) update.startedAt = FieldValue.serverTimestamp()
     // Finished when every question the student received is answered (D-55).
     const nextTopics = update.topics
-    if (!progress?.finished && lessonFinished(vSnap.data(), nextQuestions, nextTopics, minimum)) {
+    if (!progress?.finished && lessonFinished(vSnap.data(), nextQuestions, nextTopics, minimum, maxLevel)) {
       update.finished = true
       update.finishedAt = FieldValue.serverTimestamp()
       // Questions sent back for corrections are all answered again (REQ-5.14).
@@ -174,7 +184,7 @@ export const finishLesson = onCall(async (request) => {
   if (progress?.finished) return { finished: true }
   const version = progress?.version || lesson.currentVersion
   const v = await lessonRef.collection('versions').doc(String(version)).get()
-  if (!lessonFinished(v.data(), progress?.questions || {}, progress?.topics || {}, lesson.minimumPerTopic || 0)) return { finished: false }
+  if (!lessonFinished(v.data(), progress?.questions || {}, progress?.topics || {}, lesson.minimumPerTopic || 0, await levelFor(request.auth.uid, classIds))) return { finished: false }
   const update = { uid: request.auth.uid, lessonId, version, classIds, finished: true, finishedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() }
   if (!progress) update.startedAt = FieldValue.serverTimestamp()
   await ref.set(update, { merge: true })
@@ -502,7 +512,7 @@ export const classOverview = onCall(async (request) => {
         if (due && !pr?.finished && now > due) pastDue = true
         const late = !!due && (finishedAt ? finishedAt > due : now > due)
         const cell = base.kind === 'grade' ? { ...base, percent: lateGrade(base.percent, rule, due, finishedAt) } : base
-        return [l, { ...cell, due, late, started: !!pr, sentBack: pr?.sentBack && !pr.sentBack.done ? pr.sentBack.mode : null, waiting: waitingAnswers(pr).length, tips: Object.values(pr?.tipsOpened || {}).reduce((a, b) => a + b, 0) }]
+        return [l, { ...cell, due, late, finishedAt, started: !!pr, sentBack: pr?.sentBack && !pr.sentBack.done ? pr.sentBack.mode : null, waiting: waitingAnswers(pr).length, tips: Object.values(pr?.tipsOpened || {}).reduce((a, b) => a + b, 0) }]
       }),
     )
     const positions = Object.fromEntries(mine.courseIds.map((c) => [c, coursePosition(work.courses.find((k) => k.courseId === c).order, (l) => p(s.id, l))]))
@@ -522,6 +532,13 @@ export const classOverview = onCall(async (request) => {
       star,
     }
   })
+
+  // Level suggestions (REQ-5.18), shown on the dashboard until the teacher accepts or ignores them.
+  const suggestions = levelSuggestions(
+    rows.map((r) => ({ id: r.id, level: r.level, graded: Object.values(r.cells).filter((c) => c.kind === 'grade').map((c) => ({ percent: c.percent, finishedAt: c.finishedAt })) })),
+    now,
+  )
+  for (const r of rows) r.suggestion = suggestions[r.id] ?? null
 
   // The grade table as a CSV file (REQ-5.11): a row per student, a column per lesson.
   const columns = [...work.courses.flatMap((c) => c.order), ...Object.keys(work.lessons)].filter((l, i, all) => all.indexOf(l) === i && work.lessons[l])
@@ -824,4 +841,49 @@ export const setDue = onCall(async (request) => {
     await a.update({ due })
   }
   return { ok: true }
+})
+
+// Which questions this student doesn't receive, because they are above the student's level
+// (REQ-6.10). The lesson player leaves them out without saying so.
+export const lessonView = onCall(async (request) => {
+  const { lessonId } = request.data || {}
+  if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
+  const lessonRef = db.doc(`lessons/${lessonId}`)
+  const lessonSnap = await lessonRef.get()
+  if (!lessonSnap.exists) throw new HttpsError('not-found', 'No such lesson.')
+  const lesson = lessonSnap.data()
+  const classIds = await access(request.auth, lesson)
+  const maxLevel = await levelFor(request.auth.uid, classIds)
+  if (maxLevel >= 3) return { hidden: [] }
+  const p = await db.doc(`progress/${progressId(request.auth.uid, lessonId)}`).get()
+  const version = (p.exists && p.data().version) || lesson.currentVersion
+  const v = (await lessonRef.collection('versions').doc(String(version)).get()).data()
+  const answered = p.exists ? p.data().questions || {} : {}
+  // A question already answered stays (a level lowered later applies from the next question).
+  const hidden = v.topics.flatMap((t) => t.blocks.filter((b) => b.type === 'question' && !receives(b, maxLevel) && !answered[b.id]).map((b) => b.id))
+  return { hidden }
+})
+
+// Trying a lesson as a teacher (REQ-5.32): answers are checked as for a student, but nothing is
+// saved; the website keeps the state. With show: true, the correct answer and full solution.
+export const tryAnswer = onCall(async (request) => {
+  await requireTeacher(request.auth)
+  const { lessonId, questionId, value, checkAgain, before, show } = request.data || {}
+  if (!validId(lessonId) || !validId(questionId)) throw new HttpsError('invalid-argument', 'Missing lesson or question.')
+  const lessonRef = db.doc(`lessons/${lessonId}`)
+  const lesson = (await lessonRef.get()).data()
+  if (!lesson) throw new HttpsError('not-found', 'No such lesson.')
+  const vRef = lessonRef.collection('versions').doc(String(lesson.currentVersion))
+  const [vSnap, sSnap] = await Promise.all([vRef.get(), vRef.collection('secret').doc('answers').get()])
+  const found = findQuestion(vSnap.data(), questionId)
+  if (!found) throw new HttpsError('not-found', 'No such question.')
+  const secret = sSnap.data().questions[questionId] || {}
+  if (show) {
+    const correct = found.q.kind === 'number' ? { number: secret.answer } : found.q.kind === 'choice' ? { choices: secret.correct } : null
+    return { correct, solution: secret.solution || null, gradingInstructions: secret.gradingInstructions || null }
+  }
+  const state = before && typeof before === 'object' ? before : undefined
+  const outcome = checkAgain ? answerCheckAgain(state, secret, value) : answerMain(state, found.q, secret, value, (bank) => bank[Math.floor(Math.random() * bank.length)])
+  if (outcome.invalid) throw new HttpsError('invalid-argument', 'invalid-answer')
+  return { reply: outcome.reply, state: outcome.state }
 })

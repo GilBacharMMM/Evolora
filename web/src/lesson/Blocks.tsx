@@ -107,10 +107,14 @@ function ImageBlock({ block }: { block: Extract<Block, { type: 'image' }> }) {
       )}
       <figcaption>
         <span>{block.caption}</span>
+        {/* A small "Source" note; clicking it shows where the image comes from (REQ-4.15). */}
         {block.source && (
-          <span className="image-source">
-            <Ui>{t('lesson.source')}:</Ui> <bdi>{block.source}</bdi>
-          </span>
+          <details className="image-source">
+            <summary>
+              <Ui>{t('lesson.source')}</Ui>
+            </summary>
+            <bdi>{block.source}</bdi>
+          </details>
         )}
       </figcaption>
     </figure>

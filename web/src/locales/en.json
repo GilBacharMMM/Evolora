@@ -190,7 +190,12 @@
     "sentBackCorrections": "Your teacher sent back questions to answer again: {{n}}.",
     "readComments": "I've read the comments",
     "lockedByNotes": "First go over the lesson your teacher sent back to you. Then you can start new lessons.",
-    "lockedByDue": "The due date for this lesson has passed, so it is locked. Ask your teacher if you need more time."
+    "lockedByDue": "The due date for this lesson has passed, so it is locked. Ask your teacher if you need more time.",
+    "trying": "Trying the lesson: answers are not saved.",
+    "tryAgain": "Start again",
+    "skip": "Skip",
+    "showAnswer": "Show answer",
+    "skipped": "Skipped."
   },
   "test": {
     "switchUser": "Switch user",
@@ -349,6 +354,9 @@
     "sendBackExplain": "Until the student goes over it, they can't start new lessons. Their earlier answers are kept.",
     "sendBackNow": "Send back",
     "sendBackThis": "Send back for corrections",
-    "sendBackThisConfirm": "Send this question back to {{name}} to answer again? Your comment goes with it as a note."
+    "sendBackThisConfirm": "Send this question back to {{name}} to answer again? Your comment goes with it as a note.",
+    "tryLesson": "Try the lesson",
+    "suggested": "Suggested: level {{level}}",
+    "accept": "Accept"
   }
 }

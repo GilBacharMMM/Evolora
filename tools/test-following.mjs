@@ -18,6 +18,8 @@ setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const config = siteConfig('test')
 const CLASS = 'test-class'
+// Questions above a student's level are refused (REQ-6.10); tests that answer a whole lesson skip them.
+const notMine = (e) => { if (e.code !== 'functions/failed-precondition') throw e }
 let failures = 0
 let count = 0
 
@@ -89,7 +91,7 @@ try {
   await as('test-student-4', async ({ call }) => {
     for (const q of circles.questions.filter((x) => x.kind !== 'audio')) {
       const value = q.kind === 'choice' ? circles.secret[q.id].correct : q.kind === 'number' ? String(circles.secret[q.id].answer) : 'My answer.'
-      await call('answer', { lessonId: 'circles-teaching', questionId: q.id, value })
+      await call('answer', { lessonId: 'circles-teaching', questionId: q.id, value }).catch(notMine)
     }
   })
 
@@ -101,7 +103,7 @@ try {
     check('the To do list has the red flag, for the right student', h.todo.some((i) => i.kind === 'flag' && i.studentId === 'test-student-2'))
     check('the To do list has the answers to grade, for the right lesson', h.todo.some((i) => i.kind === 'grade' && i.lessonId === openLesson.lessonId))
   })
-  check('Test Teacher 2 has no classes and nothing to do', await as('test-teacher-2', async ({ call }) => { const h = await call('teacherHome', {}); return h.classes.length === 0 && h.todo.length === 0 }))
+  check("Test Teacher 2 sees nothing from Test Teacher 1's class", await as('test-teacher-2', async ({ call }) => { const h = await call('teacherHome', {}); return h.classes.every((c) => c.id !== CLASS) && h.todo.every((i) => i.classId !== CLASS) }))
 
   console.log('Class dashboard and progress map (REQ-5.10, 5.24)')
   await as('test-teacher-1', async ({ call }) => {

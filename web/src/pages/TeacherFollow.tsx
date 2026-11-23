@@ -41,6 +41,8 @@ interface StudentRow {
   lastWorked: number | null
   status: 'red' | 'orange' | 'yellow' | 'green'
   star: boolean
+  // A suggested level (REQ-5.18), or null.
+  suggestion?: number | null
 }
 
 export interface Flag {
@@ -229,6 +231,7 @@ export function ClassDashboard({ classId }: { classId: string }) {
                   </td>
                   <td>
                     <LevelControl classId={classId} studentId={s.id} level={s.level} name={s.name} onChange={reload} />
+                    {s.suggestion && <Suggestion classId={classId} studentId={s.id} level={s.suggestion} onAccepted={reload} />}
                   </td>
                   {data.courses.map((c) => (
                     <td key={c.courseId}>
@@ -274,6 +277,33 @@ function ProgressMap({ course, student, lessons }: { course: CourseInfo; student
         )}
       </span>
     </div>
+  )
+}
+
+// A suggested level (REQ-5.18): accepted with one click, or simply ignored.
+function Suggestion({ classId, studentId, level, onAccepted }: { classId: string; studentId: string; level: number; onAccepted: () => Promise<void> }) {
+  const { t } = useTranslation()
+  const [busy, setBusy] = useState(false)
+  return (
+    <span className="suggestion">
+      {t('follow.suggested', { level })}{' '}
+      <button
+        type="button"
+        className="link-button"
+        disabled={busy}
+        onClick={async () => {
+          setBusy(true)
+          try {
+            await call('setLevel', { classId, studentId, level })
+            await onAccepted()
+          } finally {
+            setBusy(false)
+          }
+        }}
+      >
+        {t('follow.accept')}
+      </button>
+    </span>
   )
 }
 
@@ -440,6 +470,7 @@ export function GradeTable({ classId }: { classId: string }) {
           <thead>
             <tr>
               <th>{t('follow.student')}</th>
+              <th>{t('follow.level')}</th>
               <th>{t('follow.average')}</th>
               {data.columns.map((l) => (
                 <th key={l}>
@@ -455,6 +486,7 @@ export function GradeTable({ classId }: { classId: string }) {
             {data.students.map((s) => (
               <tr key={s.id}>
                 <td dir="auto">{s.name}</td>
+                <td>{s.level}</td>
                 <td>
                   <strong>{s.average == null ? '—' : `${s.average}%`}</strong>
                 </td>
@@ -811,6 +843,9 @@ export function LessonResultsPage({ classId, lessonId }: { classId: string; less
         <h1 className="page-title" dir="auto">
           {data.title}
         </h1>
+        <button type="button" className="button secondary" onClick={() => navigate(`/lesson/${lessonId}`)}>
+          {t('follow.tryLesson')}
+        </button>
         {hasOpen && (
           <button type="button" className="button primary" onClick={() => navigate(`/teacher/class/${classId}/lesson/${lessonId}/grade`)}>
             {t('follow.gradeOpen')} {waiting ? `(${waiting})` : ''}

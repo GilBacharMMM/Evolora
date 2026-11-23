@@ -156,15 +156,20 @@ export function lessonGrade(questionStates, weights = {}) {
   return { percent: total ? Math.round((got / total) * 100) : null, pending, points: got, outOf: total }
 }
 
+// A student receives only questions at or below their level (REQ-6.10). No level means level 1.
+export function receives(question, maxLevel = 3) {
+  return (question.level ?? 1) <= maxLevel
+}
+
 // Is the lesson finished (D-55)? Every question the student received has been answered:
 // open answers count once sent, audio questions (not recorded yet) are left out, and extra
 // practice questions skipped because the topic's minimum was reached count as done (REQ-4.21).
 // The same rule the lesson player uses to show the end of the lesson.
-export function lessonFinished(version, questionStates, topics = {}, minimum = 0) {
+export function lessonFinished(version, questionStates, topics = {}, minimum = 0, maxLevel = 3) {
   for (const topic of version.topics || []) {
     const correct = topics[topic.number]?.correct || 0
     for (const b of topic.blocks || []) {
-      if (b.type !== 'question' || b.kind === 'audio') continue
+      if (b.type !== 'question' || b.kind === 'audio' || !receives(b, maxLevel)) continue
       const st = questionStates[b.id]
       if (isFinished(st)) continue
       if (b.extra && !st && minimum > 0 && correct >= minimum) continue

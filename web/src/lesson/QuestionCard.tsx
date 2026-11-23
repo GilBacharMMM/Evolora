@@ -161,12 +161,15 @@ export function QuestionCard({
   lessonId,
   onState,
   label,
+  trying = false,
 }: {
   q: Question
   state: QuestionState | undefined
   lessonId: string
   onState: (s: QuestionState) => void
   label: string
+  // A teacher trying the lesson (REQ-5.32): checked the same way, nothing saved.
+  trying?: boolean
 }) {
   const { t } = useTranslation()
   const [tipsOpen, setTipsOpen] = useState(false)
@@ -174,7 +177,10 @@ export function QuestionCard({
   const [openText, setOpenText] = useState('')
   const [busy, setBusy] = useState(false)
   const [problem, setProblem] = useState<Problem>(null)
-  const answer = httpsCallable<{ lessonId: string; questionId: string; value: unknown; checkAgain?: boolean }, { state: QuestionState }>(functions, 'answer')
+  const answer = httpsCallable<{ lessonId: string; questionId: string; value: unknown; checkAgain?: boolean; before?: QuestionState }, { state: QuestionState }>(
+    functions,
+    trying ? 'tryAnswer' : 'answer',
+  )
   const tip = httpsCallable(functions, 'openTip')
 
   const st = state
@@ -184,7 +190,7 @@ export function QuestionCard({
   const ca = st?.checkAgain
 
   async function send(value: unknown, checkAgain = false) {
-    const r = await answer({ lessonId, questionId: q.id, value, checkAgain })
+    const r = await answer({ lessonId, questionId: q.id, value, checkAgain, ...(trying ? { before: state } : {}) })
     if (r.data.state) onState(r.data.state)
   }
 
@@ -300,7 +306,7 @@ export function QuestionCard({
                       const opening = openTip !== i
                       setOpenTip(opening ? i : null)
                       // Noted for the teacher (REQ-6.15); never changes the grade.
-                      if (opening) void tip({ lessonId, questionId: q.id, tip: i }).catch(() => {})
+                      if (opening && !trying) void tip({ lessonId, questionId: q.id, tip: i }).catch(() => {})
                     }}
                   >
                     {tp.title}

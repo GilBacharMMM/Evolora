@@ -127,3 +127,17 @@ test('server due-date rules match the website ones (REQ-5.9)', async () => {
   for (const uid of ['s1', 's2']) assert.equal(server.dueFor(rule, uid), web.dueFor(rule, uid))
   for (const [p, f] of [[80, 900], [80, 1100], [null, 1100], [5, 2000]]) assert.equal(server.lateGrade(p, rule, 1000, f), web.lateGrade(p, rule, 1000, f))
 })
+
+test('level suggestions (REQ-5.18): weakest 10% to level 1, strongest to level 3, after 5 recent graded lessons', async () => {
+  const { levelSuggestions } = await import('./dashboard.js')
+  const now = 100 * 24 * 3600 * 1000
+  const lessons = (p, n = 5, ago = 1) => Array.from({ length: n }, () => ({ percent: p, finishedAt: now - ago * 24 * 3600 * 1000 }))
+  const students = Array.from({ length: 10 }, (_, i) => ({ id: `s${i}`, level: 2, graded: lessons(40 + i * 5) }))
+  assert.deepEqual(levelSuggestions(students, now), { s0: 1, s9: 3 })
+  students[0].level = 1
+  assert.deepEqual(levelSuggestions(students, now), { s9: 3 }, 'no suggestion when already at that level')
+  students[9].graded = lessons(95, 4)
+  assert.deepEqual(levelSuggestions(students, now), { s8: 3 }, 'fewer than 5 graded lessons: not counted')
+  students[8].graded = lessons(90, 5, 40)
+  assert.equal(levelSuggestions(students, now).s8, undefined, 'lessons older than 4 weeks do not count')
+})

@@ -19,6 +19,8 @@ const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-
 const config = siteConfig('test')
 const CLASS = 'test-class'
 const LESSON = 'circles-teaching'
+// Questions above a student's level are refused (REQ-6.10); tests that answer a whole lesson skip them.
+const notMine = (e) => { if (e.code !== 'functions/failed-precondition') throw e }
 let failures = 0
 let count = 0
 
@@ -115,7 +117,7 @@ try {
 
   console.log('Send back for corrections and for review (REQ-5.14)')
   await as('test-student-4', async ({ call }) => {
-    for (const q of questions.filter((x) => x.kind !== 'audio')) await call('answer', { lessonId: LESSON, questionId: q.id, value: right(q) })
+    for (const q of questions.filter((x) => x.kind !== 'audio')) await call('answer', { lessonId: LESSON, questionId: q.id, value: right(q) }).catch(notMine)
   })
   check('a lesson not finished cannot be sent back for review', await as('test-teacher-1', ({ call }) => refused(() => call('sendBack', { classId: CLASS, lessonId: LESSON, studentId: 'test-student-2', mode: 'review' }))))
   await as('test-teacher-1', async ({ call }) => {

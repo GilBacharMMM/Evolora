@@ -18,6 +18,8 @@ import { ALPHABET, checkCharacter, makeCode } from '../functions/classcode.js'
 setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const config = siteConfig('test')
+// Questions above a student's level are refused (REQ-6.10); tests that answer a whole lesson skip them.
+const notMine = (e) => { if (e.code !== 'functions/failed-precondition') throw e }
 let failures = 0
 let count = 0
 
@@ -158,7 +160,7 @@ try {
     check('a lesson with unanswered questions is not marked finished', first.finished === false)
     for (const q of questions) {
       const value = q.kind === 'choice' ? secret[q.id].correct : q.kind === 'number' ? String(secret[q.id].answer) : 'My answer for the test.'
-      await call('answer', { lessonId: 'circles-teaching', questionId: q.id, value })
+      await call('answer', { lessonId: 'circles-teaching', questionId: q.id, value }).catch(notMine)
     }
     const p = (await getDoc(doc(db, 'progress', `${S.seven}__circles-teaching`))).data()
     check('after the last answer the lesson is marked finished', p.finished === true)

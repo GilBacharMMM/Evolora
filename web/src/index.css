@@ -2252,3 +2252,38 @@ figcaption {
   align-items: center;
   gap: 8px;
 }
+
+/* Trying a lesson (REQ-5.32) and image sources (REQ-4.15) */
+.try-banner {
+  margin-block-end: 16px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: var(--test-bg);
+  color: var(--test-text);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.try-buttons {
+  display: flex;
+  gap: 8px;
+  margin-block: -8px 16px;
+  flex-wrap: wrap;
+}
+
+details.image-source summary {
+  cursor: pointer;
+  display: inline;
+  text-decoration: underline;
+}
+
+.suggestion {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sun-text);
+}
