@@ -614,3 +614,14 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 1.
 **Reason:** A separate block is easy to write and to check, it shows clearly where the quote starts and ends, and it gives the source its own place. David Libre is free to use (SIL Open Font License) and loads from Google Fonts, like the lesson's regular font.
 **Affects:** REQ-4.2, lesson player, lessons/README.md, the lesson check, teacher kit
+
+### D-56: Question weights later
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** REQ-4.4 said a lesson file could make a question count more (for example double) in the lesson grade, but the lesson file format has no way to write it.
+**Options considered:**
+1. Add a weight mark to the lesson format (it would change the lesson check, the lesson-writing rules and the teachers' guide).
+2. Leave it for much later: every question counts equally.
+
+**Decision:** Option 2 (Gil, 2026-11-23): leave it for much, much later.
+**Reason:** Not needed for the pilot; keeps the lesson format simple for teachers.
+**Affects:** REQ-4.4, system-design 5.3

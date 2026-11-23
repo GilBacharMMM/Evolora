@@ -158,13 +158,13 @@ Formulas display properly inside Hebrew, Arabic and English text. In stage 1 for
 For each question, the lesson file (in stage 2, the creator) sets:
 - the correct answer(s) (multiple choice)
 - **grading instructions** describing a good answer (open and audio questions)
-- the **grade weight** (by default, every question counts equally)
+- (much later, D-56) a **grade weight**; until then every question counts equally
 
 *Acceptance criteria:*
 - [ ] A loaded lesson can contain each of the three question types, and each works for the student.
 - [ ] A multiple choice question with two correct choices accepts only the right combination.
 - [ ] The teacher sees the grading instructions of an open or audio question on the grading page (REQ-5.12).
-- [ ] A question given double weight in the lesson file counts double in the lesson grade.
+- [ ] (Much later, D-56) A question given double weight in the lesson file counts double in the lesson grade.
 
 **REQ-4.5: Questions block progress** (Priority 1: foundation)
 When a student reaches a question, they must answer it before they can see the rest of the lesson. Attempts and scoring are in REQ-6.3.

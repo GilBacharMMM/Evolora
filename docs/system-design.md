@@ -158,7 +158,7 @@ The correct answer, the hint and the solution are kept in the protected area. Th
 The answer is saved and the question is marked **pending**. The student continues. When the teacher grades it on the grading page (REQ-5.12), the checking service recalculates the lesson grade.
 
 ### 5.3 Lesson grade
-The lesson grade is the weighted average of its questions (REQ-4.4). It's recalculated whenever something changes:
+The lesson grade is the average of its questions; every question counts equally until question weights come, much later (REQ-4.4, D-56). It's recalculated whenever something changes:
 - a question is graded
 - a teacher changes a grade (REQ-5.15)
 - a due-date penalty applies (REQ-5.9)
