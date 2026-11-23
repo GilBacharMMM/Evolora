@@ -257,7 +257,8 @@ export function QuestionCard({
           ) : null}
         </div>
       )}
-      {result === 'pending' && (
+      {/* Once the teacher has graded the answer, "your teacher will check it" goes away (REQ-5.12). */}
+      {result === 'pending' && !(st as { graded?: boolean } | undefined)?.graded && (
         <p className="feedback saved" role="status">
           <Ui>{t('q.savedForTeacher')}</Ui>
         </p>
