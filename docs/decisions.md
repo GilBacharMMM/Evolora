@@ -637,7 +637,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-4.4, system-design 5.3
 
 ### D-57: Points the requirements leave open in part 3 (classes, codes and assignments)
-**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building part 3
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Claude, while building part 3; approved by Gil 2026-11-23
 **Context:** Building part 3 (REQ-5.1, 5.2, 5.4, 5.7, 6.1, 6.11, 6.12) raised small questions the requirements don't answer. Each was given the simplest answer, which is easy to change.
 **Decision:**
 1. **A selection of single lessons** (REQ-5.7) shows each lesson on its own under "Waiting lessons", all of them open at once. Course orders for selections come with REQ-5.8.
@@ -650,7 +650,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-5.2, REQ-5.4, REQ-5.7, REQ-6.1, REQ-6.11, REQ-6.12
 
 ### D-58: Points the requirements leave open in part 4 (following and grading)
-**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building part 4
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Claude, while building part 4; approved by Gil 2026-11-23
 **Context:** Building part 4 (REQ-5.27, 5.10, 5.24, 5.19, 5.20, 5.12, 5.13, 5.11) raised small questions. Some parts of these requirements depend on priority 2 and 3 features that aren't built yet.
 **Decision:**
 1. **Grading an open answer:** the teacher gives a share of the question's marks, from 0 to 100% (quick buttons: full 100%, half 50%, zero 0%). Every question counts the same in the lesson grade (D-56).
