@@ -729,3 +729,16 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 3. The student sees the marked-up answer under their answer, together with the grade and comment, as soon as the teacher saves. "Returning" work comes with REQ-5.14 (sending back).
 4. Every mark is shown by more than colour (crossed out, underlined, or a background), for students who don't see colours well (REQ-12.3).
 **Affects:** REQ-5.12
+
+### D-65: How exams work in stage 1
+**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building REQ-4.26 and 5.23
+**Decision:**
+1. **One page:** an exam shows all its questions on one page. Answers are saved as the student goes and can be changed until "Submit exam" (with a confirmation). Teachers who open an exam try it like any lesson (REQ-5.32).
+2. **Results kept apart:** right and wrong answers and grades are saved where students can't read them until the teacher presses **Release the results** on the exam's results page. Then each student sees their grade, which answers were right, the correct answers and the solutions. This stops anyone from passing on answers while others are still taking the exam.
+3. **Opening:** an exam opens only inside its time window, or when the teacher opens it (Class settings → Open a lesson early), whatever the course order. Without a window and without opening, it stays locked.
+4. **End of the window:** the student's page submits the exam by itself when the time is up; if the page was closed, the exam is submitted the next time the teacher opens the class's dashboard or the exam's results. Questions not answered count as wrong.
+5. **Lock:** "lock this class" or "lock all of Evolora" is done by the website (other lessons show as locked, and messages are hidden for "all of Evolora"). Locking the Chromebook to Evolora's address is done by the school's IT person (REQ-5.23).
+6. **Red flags:** a wrong answer to a level 1 question raises a red flag when the exam is submitted (REQ-1.3).
+7. **Retake:** "Allow a retake" on the results page lets a student take the exam again; the earlier attempt is kept for the teacher.
+8. **A demo exam** (`lessons/circles-exam`, 5 questions, marked [NEW] for Gil's review) is loaded on the test site. It isn't part of the circles course; the teacher gives it with "Give lessons".
+**Affects:** REQ-4.26, REQ-5.23, REQ-1.3, REQ-5.20

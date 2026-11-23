@@ -191,6 +191,15 @@ service cloud.firestore {
       allow write: if isLoader() && request.method == 'delete';
     }
 
+    // Exam results (REQ-4.26): the student reads their own only after the teacher releases them;
+    // the class's teachers always. Written only by the checking service.
+    match /examResults/{id} {
+      allow read: if isLoader()
+        || (signedIn() && id.split('__')[0] == request.auth.uid && resource.data.released == true)
+        || teachesAnyOf(resource.data.get('classIds', []));
+      allow write: if isLoader();
+    }
+
     // Red flags for teachers (REQ-4.17, 4.21, 1.3). Written only by the checking service.
     match /flags/{id} {
       allow read: if isLoader() || (isTeacher() && request.auth.uid in

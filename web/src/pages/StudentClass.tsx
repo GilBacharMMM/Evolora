@@ -119,7 +119,8 @@ export function StudentClass({ classId }: { classId: string }) {
           ))}
         </section>
       )}
-      {user && <Messages classId={classId} studentId={user.uid} asTeacher={false} />}
+      {/* Hidden while an exam locks all of Evolora (REQ-5.23). */}
+      {user && !classes.some((x) => x.lockedAll) && <Messages classId={classId} studentId={user.uid} asTeacher={false} />}
     </main>
   )
 }

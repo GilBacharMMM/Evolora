@@ -48,7 +48,7 @@ export function WorkRow({ lesson, note }: { lesson: WorkLesson; note?: ReactNode
       className={`lesson-row work-row status-row-${lesson.status}${lesson.notes ? ' has-notes' : ''}`}
       disabled={locked}
       aria-disabled={locked}
-      title={locked ? (lesson.lockedByDue ? t('status.lockedByDue') : lesson.lockedByNotes ? t('status.lockedByNotes') : t('status.lockedExplain')) : undefined}
+      title={locked ? (lesson.lockedByExam ? t('exam.lockedByExam') : lesson.exam ? t('exam.waiting') : lesson.lockedByDue ? t('status.lockedByDue') : lesson.lockedByNotes ? t('status.lockedByNotes') : t('status.lockedExplain')) : undefined}
       onClick={() => !locked && navigate(`/lesson/${lesson.lessonId}`)}
     >
       <span className="lesson-row-icon" aria-hidden="true">
@@ -60,6 +60,15 @@ export function WorkRow({ lesson, note }: { lesson: WorkLesson; note?: ReactNode
           {lesson.title}
         </span>
         {lesson.notes && <span className="notes-chip">{lesson.notes === 'review' ? t('status.notesReview') : t('status.notesCorrections')}</span>}
+        {lesson.exam?.start && lesson.exam.end && lesson.status !== 'done' && (
+          <span className="due-chip">
+            {t('exam.window', {
+              date: new Date(lesson.exam.start).toLocaleDateString(i18n.language, { day: 'numeric', month: 'short' }),
+              start: new Date(lesson.exam.start).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }),
+              end: new Date(lesson.exam.end).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' }),
+            })}
+          </span>
+        )}
         {lesson.due && lesson.status !== 'done' && (
           <span className={lesson.late ? 'due-chip late' : 'due-chip'}>
             {lesson.late ? t('status.late') : t('status.due', { date: new Date(lesson.due).toLocaleString(i18n.language, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}

@@ -385,7 +385,8 @@
     "rateOpen": "average {{percent}}% ({{n}} graded)",
     "studentLanguage": "Student's interface language:",
     "chooseLanguage": "Choose",
-    "languageSet": "Saved. It changes the next time the student opens Evolora."
+    "languageSet": "Saved. It changes the next time the student opens Evolora.",
+    "flagExam": "wrong answer in the exam (question {{question}})"
   },
   "library": {
     "search": "Search by title",
@@ -424,5 +425,39 @@
     "removed": "removed by the teacher",
     "added": "added by the teacher",
     "studentTitle": "Your answer, marked up by your teacher:"
+  },
+  "exam": {
+    "title": "Exam",
+    "explain": "Answer every question. You can go back and change your answers until you press \"Submit exam\". There are no hints in an exam.",
+    "submit": "Submit exam",
+    "submitConfirm": "Submit the exam? After this, your answers can't be changed.",
+    "submitted": "Your exam is submitted. You will see your results when your teacher releases them.",
+    "notSubmitted": "The exam wasn't submitted. Check your connection and try again.",
+    "notSaved": "Your last answer wasn't saved. Check your connection.",
+    "closed": "The exam is closed: its time is over.",
+    "timeLeft": "Time left: {{time}}",
+    "fiveMinutes": "5 minutes left. At the end, your exam is submitted by itself.",
+    "yourAnswer": "Your answer:",
+    "wrong": "Not correct",
+    "lockedByExam": "An exam is going on: only the exam can be opened now.",
+    "waiting": "The exam opens when your teacher opens it, or when its time starts.",
+    "window": "Exam: {{date}}, {{start}}–{{end}}",
+    "settings": "Exam settings",
+    "settingsExplain": "Without a time window, the exam opens only when you open it (Class settings → Open a lesson early).",
+    "start": "Starts",
+    "end": "Ends",
+    "timer": "Show students a timer, and a notice 5 minutes before the end",
+    "lock": {
+      "none": "Don't lock anything else",
+      "class": "During the exam, lock this class's other lessons",
+      "all": "During the exam, lock all of Evolora except the exam"
+    },
+    "windowProblem": "The exam must have both a start and an end, and end after it starts.",
+    "release": "Release the results",
+    "released": "Results released",
+    "releaseConfirm": "Release the results? Students who submitted will see their grade, the correct answers and the solutions.",
+    "allowRetake": "Allow a retake",
+    "retakeConfirm": "Let {{name}} take the exam again? Their earlier answers are kept for you.",
+    "notSubmittedYet": "not submitted"
   }
 }

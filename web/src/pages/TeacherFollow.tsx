@@ -57,7 +57,7 @@ export interface Flag {
   lessonTitle: string
   questionId: string
   topicName: string | null
-  kind: 'checkAgainWrong' | 'minimumNotReached'
+  kind: 'checkAgainWrong' | 'minimumNotReached' | 'examWrong'
   alsoMinimum: boolean
   open: boolean
   createdAt: number | null
@@ -344,6 +344,7 @@ export function LevelControl({ classId, studentId, level, name, onChange }: { cl
 }
 
 function flagText(f: Flag, t: (k: string, o?: Record<string, unknown>) => string) {
+  if (f.kind === 'examWrong') return t('follow.flagExam', { question: f.questionId })
   return f.kind === 'checkAgainWrong' ? t('follow.flagCheckAgain', { question: f.questionId }) : t('follow.flagMinimum', { topic: f.topicName || '' })
 }
 
@@ -795,6 +796,7 @@ interface Results {
   title: string
   language: string
   type: LessonType
+  isExam?: boolean
   questions: QuestionInfo[]
   students: {
     id: string
@@ -802,6 +804,8 @@ interface Results {
     cell: Cell
     states: Record<string, AnswerState>
     sentBack: { mode: 'review' | 'corrections'; questionIds: string[]; done: boolean } | null
+    submitted?: boolean
+    released?: boolean
     earlier: Record<string, number>
   }[]
 }
@@ -953,6 +957,20 @@ export function LessonResultsPage({ classId, lessonId }: { classId: string; less
         <button type="button" className="button secondary" onClick={() => navigate(`/lesson/${lessonId}`)}>
           {t('follow.tryLesson')}
         </button>
+        {data.isExam && (
+          <button
+            type="button"
+            className="button primary"
+            disabled={!data.students.some((s) => s.submitted && !s.released)}
+            onClick={async () => {
+              if (!window.confirm(t('exam.releaseConfirm'))) return
+              await call('releaseResults', { classId, lessonId }).catch(() => {})
+              await reload()
+            }}
+          >
+            {data.students.some((s) => s.submitted) && data.students.filter((s) => s.submitted).every((s) => s.released) ? t('exam.released') : t('exam.release')}
+          </button>
+        )}
         {hasOpen && (
           <button type="button" className="button primary" onClick={() => navigate(`/teacher/class/${classId}/lesson/${lessonId}/grade`)}>
             {t('follow.gradeOpen')} {waiting ? `(${waiting})` : ''}
@@ -991,7 +1009,7 @@ export function LessonResultsPage({ classId, lessonId }: { classId: string; less
             <tr>
               <th>{t('follow.student')}</th>
               <th>{t('follow.lessonGrade')}</th>
-              <th>{t('follow.sendBack')}</th>
+              <th>{data.isExam ? t('exam.title') : t('follow.sendBack')}</th>
               {data.questions.map((q, i) => (
                 <th key={q.id} title={q.prompt}>
                   {t('q.questionNumber', { number: i + 1 })}
@@ -1009,7 +1027,23 @@ export function LessonResultsPage({ classId, lessonId }: { classId: string; less
                   <GradeCell cell={{ ...s.cell, started: true, waiting: 0, tips: 0 }} />
                 </td>
                 <td>
-                  {s.sentBack && !s.sentBack.done ? (
+                  {data.isExam ? (
+                    s.submitted ? (
+                      <button
+                        type="button"
+                        className="link-button"
+                        onClick={async () => {
+                          if (!window.confirm(t('exam.retakeConfirm', { name: s.name }))) return
+                          await call('allowRetake', { classId, lessonId, studentId: s.id }).catch(() => {})
+                          await reload()
+                        }}
+                      >
+                        {t('exam.allowRetake')}
+                      </button>
+                    ) : (
+                      <span className="muted small-note">{t('exam.notSubmittedYet')}</span>
+                    )
+                  ) : s.sentBack && !s.sentBack.done ? (
                     <span className="notes-chip">{t(`follow.sentBack.${s.sentBack.mode}`)}</span>
                   ) : (
                     <button type="button" className="link-button" disabled={!Object.keys(s.states).length} onClick={() => setSending(s.id)}>

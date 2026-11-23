@@ -11,7 +11,7 @@ import { initializeApp } from 'firebase-admin/app'
 import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 import { HttpsError, onCall } from 'firebase-functions/v2/https'
 import { setGlobalOptions } from 'firebase-functions/v2'
-import { answerCheckAgain, answerMain, isFinished, lessonFinished, lessonGrade, receives, sendBackForCorrections, teacherScore } from './check.js'
+import { answerCheckAgain, answerMain, isFinished, judge, lessonFinished, lessonGrade, receives, sendBackForCorrections, teacherScore } from './check.js'
 import { averageGrade, coursePosition, dueFor, lateGrade, lessonCell, levelSuggestions, median, notMastered, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
 import { CLASS_COLORS, WAIT_MS, afterWrong, makeCode, normalizeCode, validateCode, waitLeft } from './classcode.js'
 
@@ -72,6 +72,8 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
   const classIds = await access(request.auth, lesson)
   const uid = request.auth.uid
   const maxLevel = await levelFor(uid, classIds)
+  // Exams are answered with examSave and examSubmit (REQ-4.26).
+  if (lesson.type === 'exam') throw new HttpsError('failed-precondition', 'exam')
   const progressRef = db.doc(`progress/${progressId(uid, lessonId)}`)
 
   let flagToRaise = null
@@ -337,11 +339,13 @@ export const removeStudent = onCall(async (request) => {
 // Gives a course, or one or more lessons, to the whole class or to chosen students (REQ-5.7).
 // studentIds: null for the whole class (including students who join later), or a list.
 export const assign = onCall(async (request) => {
-  const { classId, courseId, lessonIds, studentIds, grades = 'usual', order = 'paired', due = null, afterDue = 'reduce', reduceBy = 10, redoCounts = false } = request.data || {}
+  const { classId, courseId, lessonIds, studentIds, grades = 'usual', order = 'paired', due = null, afterDue = 'reduce', reduceBy = 10, redoCounts = false, examStart = null, examEnd = null, examTimer = true, examLock = 'none' } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!['usual', 'show', 'hide'].includes(grades)) throw new HttpsError('invalid-argument', 'Grades: usual, show or hide.')
   if (!['oneByOne', 'paired', 'any'].includes(order)) throw new HttpsError('invalid-argument', 'Order: oneByOne, paired or any.')
   if (due !== null && (!Number.isFinite(due) || due < 0)) throw new HttpsError('invalid-argument', 'Due date.')
+  if ((examStart !== null || examEnd !== null) && !(Number.isFinite(examStart) && Number.isFinite(examEnd) && examEnd > examStart)) throw new HttpsError('invalid-argument', 'Exam window: a start before the end.')
+  if (!['none', 'class', 'all'].includes(examLock)) throw new HttpsError('invalid-argument', 'Exam lock: none, class or all.')
   if (!['reduce', 'lock'].includes(afterDue) || !Number.isInteger(reduceBy) || reduceBy < 0 || reduceBy > 100) throw new HttpsError('invalid-argument', 'After the due date: reduce (0 to 100 points) or lock.')
   const validId = (s) => typeof s === 'string' && s.length > 0 && !s.includes('/')
   let ids
@@ -388,6 +392,11 @@ export const assign = onCall(async (request) => {
     extensions: {},
     // Whether the latest redo's grade replaces the old one (REQ-5.9, 6.5).
     redoCounts: redoCounts === true,
+    // Exams (REQ-5.23): the time window, the timer, and locking the rest during the window.
+    examStart,
+    examEnd,
+    examTimer: examTimer !== false,
+    examLock,
     createdBy: request.auth.uid,
     createdAt: FieldValue.serverTimestamp(),
   })
@@ -456,19 +465,31 @@ async function classStudents(classRef) {
     .sort((a, b) => a.name.localeCompare(b.name))
 }
 
-async function progressMap(pairs) {
+// Students' work, as the teacher sees it. For exams, the graded results (kept apart until they
+// are released, REQ-4.26) are laid over the student's saved answers.
+async function progressMap(pairs, examLessons = new Set()) {
   if (!pairs.length) return {}
   const snaps = await db.getAll(...pairs.map(([uid, l]) => db.doc(`progress/${progressId(uid, l)}`)))
-  return Object.fromEntries(snaps.filter((s) => s.exists).map((s) => [s.id, s.data()]))
+  const out = Object.fromEntries(snaps.filter((s) => s.exists).map((s) => [s.id, s.data()]))
+  const examPairs = pairs.filter(([, l]) => examLessons.has(l))
+  if (examPairs.length) {
+    const results = await db.getAll(...examPairs.map(([uid, l]) => db.doc(`examResults/${progressId(uid, l)}`)))
+    for (const r of results) if (r.exists && r.data().finished && out[r.id]) out[r.id] = { ...out[r.id], ...r.data(), updatedAt: out[r.id].updatedAt }
+  }
+  return out
 }
 
 export const classOverview = onCall(async (request) => {
   const classId = request.data?.classId
   const { ref, data } = await requireClassTeacher(request.auth, classId)
-  const [work, students, flagSnap] = await Promise.all([classWork(ref), classStudents(ref), db.collection('flags').where('classId', '==', classId).get()])
+  const [work, students] = await Promise.all([classWork(ref), classStudents(ref)])
+  // Exams whose time window has ended are submitted for the students still working (REQ-5.23).
+  await submitExpired(classId, work, students)
+  const flagSnap = await db.collection('flags').where('classId', '==', classId).get()
   const current = students.filter((s) => !s.removed)
   const given = Object.fromEntries(current.map((s) => [s.id, work.givenTo(s.id)]))
-  const progress = await progressMap(current.flatMap((s) => given[s.id].lessonIds.map((l) => [s.id, l])))
+  const exams = new Set(Object.keys(work.lessons).filter((l) => work.lessons[l].type === 'exam'))
+  const progress = await progressMap(current.flatMap((s) => given[s.id].lessonIds.map((l) => [s.id, l])), exams)
   const p = (uid, l) => progress[progressId(uid, l)]
   const flags = flagSnap.docs
     .map((d) => {
@@ -586,7 +607,7 @@ export const teacherHome = onCall(async (request) => {
   for (const c of classes.docs) {
     const [flags, work, students] = await Promise.all([
       db.collection('flags').where('classId', '==', c.id).where('open', '==', true).get(),
-      db.collection('progress').where('classIds', 'array-contains', c.id).get(),
+      db.collection('progress').where('classIds', 'array-contains', c.id).get().then(async (p) => ({ docs: [...p.docs, ...(await db.collection('examResults').where('classIds', 'array-contains', c.id).get()).docs] })),
       classStudents(c.ref),
     ])
     const removed = new Set(students.filter((s) => s.removed).map((s) => s.id))
@@ -630,7 +651,9 @@ export const lessonResults = onCall(async (request) => {
   const lesson = lessonSnap.data()
   const [work, students] = await Promise.all([classWork(ref), classStudents(ref)])
   const withLesson = students.filter((s) => !s.removed && work.givenTo(s.id).lessonIds.includes(lessonId))
-  const progress = await progressMap(withLesson.map((s) => [s.id, lessonId]))
+  const isExam = lesson.type === 'exam'
+  if (isExam) await submitExpired(classId, work, students)
+  const progress = await progressMap(withLesson.map((s) => [s.id, lessonId]), new Set(isExam ? [lessonId] : []))
   // The questions of every version the students have, with the grading instructions (REQ-5.12).
   const versions = [...new Set([lesson.currentVersion, ...Object.values(progress).map((p) => p.version).filter(Boolean)])]
   const questions = []
@@ -662,6 +685,7 @@ export const lessonResults = onCall(async (request) => {
     title: lesson.title,
     language: lesson.language,
     type: lesson.type,
+    isExam,
     questions,
     students: withLesson.map((s) => {
       const pr = progress[progressId(s.id, lessonId)]
@@ -671,7 +695,7 @@ export const lessonResults = onCall(async (request) => {
           { attempts: st.attempts || [], result: st.result, score: st.score, graded: !!st.graded, changedByTeacher: !!st.changedByTeacher, teacherComment: st.teacherComment || null, markup: st.markup || null, checkAgain: st.checkAgain ? { result: st.checkAgain.result } : null },
         ]),
       )
-      return { id: s.id, name: s.name, cell: lessonCell(pr), states, sentBack: pr?.sentBack || null, earlier: Object.fromEntries(Object.entries(pr?.history || {}).map(([q, h]) => [q, h.length])) }
+      return { id: s.id, name: s.name, cell: lessonCell(pr), states, submitted: !!pr?.submitted, released: !!pr?.released, sentBack: pr?.sentBack || null, earlier: Object.fromEntries(Object.entries(pr?.history || {}).map(([q, h]) => [q, h.length])) }
     }),
   }
 })
@@ -680,7 +704,9 @@ export const gradeAnswer = onCall(async (request) => {
   const { classId, lessonId, studentId, questionId, score, comment, markup } = request.data || {}
   await requireClassTeacher(request.auth, classId)
   if (![lessonId, studentId, questionId].every(validId)) throw new HttpsError('invalid-argument', 'Missing details.')
-  const ref = db.doc(`progress/${progressId(studentId, lessonId)}`)
+  // Exam answers are graded in the exam results (REQ-4.26).
+  const isExam = (await db.doc(`lessons/${lessonId}`).get()).data()?.type === 'exam'
+  const ref = db.doc(`${isExam ? 'examResults' : 'progress'}/${progressId(studentId, lessonId)}`)
   return db.runTransaction(async (tx) => {
     const snap = await tx.get(ref)
     if (!snap.exists || !(snap.data().classIds || []).includes(classId)) throw new HttpsError('not-found', 'No such answer in this class.')
@@ -715,7 +741,7 @@ export const openEarly = onCall(async (request) => {
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
   const work = await classWork(ref)
-  if (!work.courses.some((c) => c.order.includes(lessonId))) throw new HttpsError('invalid-argument', 'The lesson is not in a course given to the class.')
+  if (!work.courses.some((c) => c.order.includes(lessonId)) && !work.assignments.some((a) => (a.lessonIds || []).includes(lessonId))) throw new HttpsError('invalid-argument', 'The lesson was not given to the class.')
   const everyone = studentIds == null
   let chosen = []
   if (!everyone) {
@@ -865,7 +891,8 @@ export const lessonView = onCall(async (request) => {
   const lesson = lessonSnap.data()
   const classIds = await access(request.auth, lesson)
   const maxLevel = await levelFor(request.auth.uid, classIds)
-  if (maxLevel >= 3) return { hidden: [] }
+  // Levels don't apply in exams: everyone gets the same questions (REQ-4.26).
+  if (maxLevel >= 3 || lesson.type === 'exam') return { hidden: [] }
   const p = await db.doc(`progress/${progressId(request.auth.uid, lessonId)}`).get()
   const version = (p.exists && p.data().version) || lesson.currentVersion
   const v = (await lessonRef.collection('versions').doc(String(version)).get()).data()
@@ -1041,4 +1068,171 @@ export const startRedo = onCall(async (request) => {
     })
     return { counts }
   })
+})
+
+// ---------------------------------------------------------------------------------------------
+// Exams (REQ-4.26, 5.23, D-65). One attempt per question, no hints, solutions or check-again
+// questions; the same questions for everyone; students move between questions and change answers
+// until "Submit exam". The results are kept apart, in examResults/{uid}__{lessonId}, which the
+// student can read only after the teacher releases them, so nobody can pass on right answers
+// while others are still taking the exam.
+//
+//   examSave({ lessonId, questionId, value })       save one answer while the exam is open
+//   examSubmit({ lessonId })                        submit (also done for the student when the window ends)
+//   releaseResults({ classId, lessonId })           the teacher releases the results
+//   allowRetake({ classId, lessonId, studentId })   the teacher lets a student take the exam again
+
+// Is the exam open for this student now? From the assignments that give it to them: opened early
+// by the teacher (REQ-5.20), or inside its time window (REQ-5.23). Returns { open, end }.
+async function examWindow(uid, classIds, lessonId, now = Date.now()) {
+  let open = false
+  let end = null
+  for (const c of classIds) {
+    const [given, openings] = await Promise.all([
+      db.collection(`classes/${c}/assignments`).where('lessonIds', 'array-contains', lessonId).get(),
+      db.collection(`classes/${c}/openings`).where('lessonId', '==', lessonId).get(),
+    ])
+    const mine = (d) => d.data().everyone || (d.data().studentIds || []).includes(uid)
+    if (openings.docs.some(mine)) open = true
+    for (const a of given.docs.filter(mine)) {
+      const { examStart, examEnd } = a.data()
+      if (examStart && examEnd && now >= examStart && now < examEnd) {
+        open = true
+        end = Math.max(end || 0, examEnd)
+      }
+    }
+  }
+  return { open, end }
+}
+
+function examValue(q, value) {
+  if (q.kind === 'choice') return Array.isArray(value) && value.every((v) => typeof v === 'string') ? value.slice(0, 20) : null
+  if (q.kind === 'number' || q.kind === 'open') return typeof value === 'string' ? value.slice(0, 20000) : null
+  return null
+}
+
+export const examSave = onCall(async (request) => {
+  const { lessonId, questionId, value } = request.data || {}
+  if (!validId(lessonId) || !validId(questionId)) throw new HttpsError('invalid-argument', 'Missing details.')
+  const lessonRef = db.doc(`lessons/${lessonId}`)
+  const lesson = (await lessonRef.get()).data()
+  if (!lesson || lesson.type !== 'exam') throw new HttpsError('not-found', 'No such exam.')
+  const classIds = await access(request.auth, lesson)
+  const uid = request.auth.uid
+  const ref = db.doc(`progress/${progressId(uid, lessonId)}`)
+  const p = (await ref.get()).data()
+  if (p?.submitted) throw new HttpsError('failed-precondition', 'submitted')
+  if (!(await examWindow(uid, classIds, lessonId)).open) throw new HttpsError('failed-precondition', 'closed')
+  const version = p?.version || lesson.currentVersion
+  const v = (await lessonRef.collection('versions').doc(String(version)).get()).data()
+  const found = findQuestion(v, questionId)
+  const clean = found && examValue(found.q, value)
+  if (clean === null || !found) throw new HttpsError('invalid-argument', 'invalid-answer')
+  await ref.set(
+    { uid, lessonId, version, classIds, exam: true, examAnswers: { [questionId]: clean }, updatedAt: FieldValue.serverTimestamp(), ...(p ? {} : { startedAt: FieldValue.serverTimestamp() }) },
+    { merge: true },
+  )
+  return { ok: true }
+})
+
+// Grades a submitted exam into examResults and raises red flags for wrong level 1 answers (REQ-1.3).
+async function submitExam(uid, lessonId, lesson, classIds, studentName) {
+  const ref = db.doc(`progress/${progressId(uid, lessonId)}`)
+  const resultRef = db.doc(`examResults/${progressId(uid, lessonId)}`)
+  const p = (await ref.get()).data() || {}
+  if (p.submitted) return false
+  const version = p.version || lesson.currentVersion
+  const vRef = db.doc(`lessons/${lessonId}/versions/${version}`)
+  const [vs, ss] = await Promise.all([vRef.get(), vRef.collection('secret').doc('answers').get()])
+  const secret = ss.data().questions || {}
+  const answers = p.examAnswers || {}
+  const questions = {}
+  const flags = []
+  for (const topic of vs.data().topics) {
+    for (const b of topic.blocks) {
+      if (b.type !== 'question' || b.kind === 'audio') continue
+      const given = answers[b.id]
+      if (b.kind === 'open') {
+        questions[b.id] = given && given.trim() ? { attempts: [given.trim()], result: 'pending', score: null } : { attempts: [], result: 'wrong', score: 0 }
+        continue
+      }
+      const ok = given === undefined ? false : judge(b.kind, secret[b.id] || {}, given)
+      const right = ok === true
+      questions[b.id] = { attempts: given === undefined ? [] : [given], result: right ? 'correct1' : 'wrong', score: right ? 1 : 0, solution: secret[b.id]?.solution || null, correct: b.kind === 'number' ? { number: secret[b.id]?.answer } : { choices: secret[b.id]?.correct || [] } }
+      if (!right && (b.level ?? 1) === 1) flags.push({ questionId: b.id, topicNumber: topic.number, topicName: topic.name || null })
+    }
+  }
+  // Open answers' solutions are shown with the results too.
+  for (const [id, st] of Object.entries(questions)) if (st.result === 'pending' || !st.solution) st.solution = secret[id]?.solution || null
+  const batch = db.batch()
+  batch.set(resultRef, { uid, lessonId, version, classIds, questions, grade: lessonGrade(questions), finished: true, finishedAt: FieldValue.serverTimestamp(), released: false, updatedAt: FieldValue.serverTimestamp() })
+  batch.set(ref, { uid, lessonId, version, classIds, exam: true, submitted: true, finished: true, finishedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() }, { merge: true })
+  for (const f of flags) {
+    for (const classId of classIds) {
+      batch.set(db.collection('flags').doc(), { classId, uid, studentName, lessonId, lessonTitle: lesson.title, kind: 'examWrong', ...f, open: true, createdAt: FieldValue.serverTimestamp() })
+    }
+  }
+  await batch.commit()
+  return true
+}
+
+export const examSubmit = onCall(async (request) => {
+  const { lessonId } = request.data || {}
+  if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
+  const lesson = (await db.doc(`lessons/${lessonId}`).get()).data()
+  if (!lesson || lesson.type !== 'exam') throw new HttpsError('not-found', 'No such exam.')
+  const classIds = await access(request.auth, lesson)
+  const p = (await db.doc(`progress/${progressId(request.auth.uid, lessonId)}`).get()).data()
+  if (!p && !(await examWindow(request.auth.uid, classIds, lessonId)).open) throw new HttpsError('failed-precondition', 'closed')
+  await submitExam(request.auth.uid, lessonId, lesson, classIds, await personName(request.auth))
+  return { submitted: true }
+})
+
+// When an exam's time window has ended, answers not yet submitted are submitted (REQ-5.23).
+async function submitExpired(classId, work, students) {
+  const now = Date.now()
+  for (const a of work.assignments) {
+    if (!a.examEnd || now < a.examEnd) continue
+    for (const l of a.lessonIds || []) {
+      if (work.lessons[l]?.type !== 'exam') continue
+      const lesson = (await db.doc(`lessons/${l}`).get()).data()
+      for (const s of students) {
+        if (s.removed || !(a.everyone || (a.studentIds || []).includes(s.id))) continue
+        const p = (await db.doc(`progress/${progressId(s.id, l)}`).get()).data()
+        if (p && !p.submitted) await submitExam(s.id, l, lesson, p.classIds || [classId], s.name)
+      }
+    }
+  }
+}
+
+export const releaseResults = onCall(async (request) => {
+  const { classId, lessonId } = request.data || {}
+  const { ref } = await requireClassTeacher(request.auth, classId)
+  if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
+  const students = await classStudents(ref)
+  const snaps = await db.getAll(...students.map((s) => db.doc(`examResults/${progressId(s.id, lessonId)}`)))
+  const batch = db.batch()
+  let n = 0
+  for (const s of snaps) {
+    if (!s.exists || !(s.data().classIds || []).includes(classId)) continue
+    batch.update(s.ref, { released: true, releasedAt: FieldValue.serverTimestamp() })
+    n++
+  }
+  if (n) await batch.commit()
+  return { released: n }
+})
+
+export const allowRetake = onCall(async (request) => {
+  const { classId, lessonId, studentId } = request.data || {}
+  await requireClassTeacher(request.auth, classId)
+  if (!validId(lessonId) || !validId(studentId)) throw new HttpsError('invalid-argument', 'Missing details.')
+  const resultRef = db.doc(`examResults/${progressId(studentId, lessonId)}`)
+  const r = await resultRef.get()
+  if (!r.exists || !(r.data().classIds || []).includes(classId)) throw new HttpsError('not-found', 'No submitted exam.')
+  const { previous = [], ...last } = r.data()
+  const batch = db.batch()
+  batch.set(resultRef, { uid: studentId, lessonId, classIds: last.classIds, previous: [...previous, last], finished: false, released: false, questions: {}, grade: lessonGrade({}) })
+  batch.update(db.doc(`progress/${progressId(studentId, lessonId)}`), { submitted: false, finished: false, examAnswers: FieldValue.delete(), updatedAt: FieldValue.serverTimestamp() })
+  await batch.commit()
+  return { ok: true }
 })

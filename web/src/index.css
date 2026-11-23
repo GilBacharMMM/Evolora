@@ -2419,3 +2419,27 @@ details.image-source summary {
   background: var(--sun-light);
   box-shadow: inset 0 -3px 0 var(--sun);
 }
+
+/* Exams (REQ-4.26, 5.23) */
+.exam-timer {
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--teal-light);
+  color: var(--teal-dark);
+}
+
+.exam-timer.ending {
+  background: var(--sun);
+  color: var(--sun-text);
+}
+
+.exam-question .choices {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.exam-answer p {
+  margin: 0 0 8px;
+}

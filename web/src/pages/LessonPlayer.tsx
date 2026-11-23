@@ -9,6 +9,7 @@ import { navigate } from '../router'
 import { BlockView, Ui } from '../lesson/Blocks'
 import { Markdown } from '../lesson/Rich'
 import { MarkedAnswer } from '../components/MarkedAnswer'
+import { ExamPlayer } from './ExamPlayer'
 import { QuestionCard } from '../lesson/QuestionCard'
 import { isFinished, type QuestionState } from '../lesson/answers'
 import type { Block, LessonVersion, Question } from '../lesson/types'
@@ -66,6 +67,9 @@ interface Progress {
   sentBack?: { mode: 'review' | 'corrections'; questionIds: string[]; note: string | null; done: boolean }
   // Redo (REQ-6.5)
   redo?: { active: boolean; counts: boolean; n: number }
+  // Exams (REQ-4.26)
+  examAnswers?: Record<string, unknown>
+  submitted?: boolean
   redos?: { grade: Progress['grade'] }[]
   keptGrade?: Progress['grade'] | null
 }
@@ -91,9 +95,10 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
     }
   }, [trying, user, lessonId])
   // A student opens only lessons given to them that aren't locked (REQ-5.7, 6.12, D-55, D-57).
-  const [gate, setGate] = useState<'checking' | 'open' | 'locked' | 'lockedByNotes' | 'lockedByDue' | 'notGiven'>(role === 'student' ? 'checking' : 'open')
+  const [gate, setGate] = useState<'checking' | 'open' | 'locked' | 'lockedByNotes' | 'lockedByDue' | 'lockedByExam' | 'notGiven'>(role === 'student' ? 'checking' : 'open')
   // Teachers always see grades; students only when the assignment shows them (REQ-5.22).
   const [showGrades, setShowGrades] = useState(role !== 'student')
+  const [examInfo, setExamInfo] = useState<{ end: number | null; timer: boolean } | null>(null)
   useEffect(() => {
     if (role !== 'student' || !user) return
     let live = true
@@ -102,7 +107,8 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
         if (!live) return
         const a = lessonAccess(c, lessonId)
         setShowGrades(a.showGrades)
-        setGate(a.access === 'locked' && a.lockedByDue ? 'lockedByDue' : a.access === 'locked' && a.lockedByNotes ? 'lockedByNotes' : a.access)
+        if (a.exam) setExamInfo({ end: a.exam.end && Date.now() < a.exam.end ? a.exam.end : null, timer: a.exam.timer })
+        setGate(a.access === 'locked' && a.lockedByExam ? 'lockedByExam' : a.access === 'locked' && a.lockedByDue ? 'lockedByDue' : a.access === 'locked' && a.lockedByNotes ? 'lockedByNotes' : a.access)
       })
       .catch(() => live && setGate('open'))
     return () => {
@@ -217,12 +223,12 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
     })
   }, [lesson, progress])
 
-  if (gate === 'locked' || gate === 'lockedByNotes' || gate === 'lockedByDue' || gate === 'notGiven') {
+  if (gate === 'locked' || gate === 'lockedByNotes' || gate === 'lockedByDue' || gate === 'lockedByExam' || gate === 'notGiven') {
     return (
       <main className="page narrow">
         <BackButton />
         <div className="card message-card">
-          <p>{gate === 'locked' ? t('lesson.locked') : gate === 'lockedByNotes' ? t('lesson.lockedByNotes') : gate === 'lockedByDue' ? t('lesson.lockedByDue') : t('lesson.notAllowed')}</p>
+          <p>{gate === 'locked' ? t('lesson.locked') : gate === 'lockedByNotes' ? t('lesson.lockedByNotes') : gate === 'lockedByDue' ? t('lesson.lockedByDue') : gate === 'lockedByExam' ? t('exam.lockedByExam') : t('lesson.notAllowed')}</p>
           <button type="button" className="button primary" onClick={() => navigate('/')}>
             {t('common.toHome')}
           </button>
@@ -252,6 +258,10 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   }
 
   const d = lesson.details
+  // Students take exams on the exam page (REQ-4.26); teachers try them like any lesson.
+  if (d.type === 'exam' && role === 'student' && user) {
+    return <ExamPlayer lessonId={lessonId} lesson={lesson} uid={user.uid} saved={progress?.examAnswers || {}} submitted={!!progress?.submitted} exam={examInfo} />
+  }
   let questionNumber = 0
   const numbers: Record<string, number> = {}
   for (const it of shown) if (it.kind === 'block' && it.block.type === 'question') numbers[it.block.id] = ++questionNumber

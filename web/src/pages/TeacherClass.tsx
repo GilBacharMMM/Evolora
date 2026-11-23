@@ -352,6 +352,10 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
   const [studentIds, setStudentIds] = useState<string[]>([])
   const [grades, setGrades] = useState<'usual' | 'show' | 'hide'>('usual')
   const [redoCounts, setRedoCounts] = useState(false)
+  const [examStart, setExamStart] = useState('')
+  const [examEnd, setExamEnd] = useState('')
+  const [examTimer, setExamTimer] = useState(true)
+  const [examLock, setExamLock] = useState<'none' | 'class' | 'all'>('none')
   const [order, setOrder] = useState<'oneByOne' | 'paired' | 'any'>('paired')
   const [due, setDue] = useState('')
   const [afterDue, setAfterDue] = useState<'reduce' | 'lock'>('reduce')
@@ -360,6 +364,9 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
   const [message, setMessage] = useState<{ good: boolean; text: string } | null>(null)
 
   const toggle = (list: string[], id: string) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id])
+  // Exam settings show when an exam is among what is given (REQ-5.23).
+  const chosenLessons = what === 'course' ? courses.find((c) => c.id === courseId)?.items.flatMap((it) => [it, ...it.practice]).map((l) => l.lessonId) || [] : lessonIds
+  const hasExam = chosenLessons.some((id) => lessons.find((l) => l.id === id)?.type === 'exam')
 
   async function give() {
     setMessage(null)
@@ -368,6 +375,7 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
     if (what === 'course' && !courseId) return setMessage({ good: false, text: t('teacher.needCourse') })
     if (what === 'lessons' && lessonIds.length === 0) return setMessage({ good: false, text: t('teacher.needLessons') })
     if (to === 'some' && studentIds.length === 0) return setMessage({ good: false, text: t('teacher.needStudents') })
+    if ((examStart || examEnd) && !(examStart && examEnd && new Date(examEnd) > new Date(examStart))) return setMessage({ good: false, text: t('exam.windowProblem') })
     setBusy(true)
     try {
       await call('assign', {
@@ -376,6 +384,10 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
         studentIds: to === 'everyone' ? null : studentIds,
         grades,
         redoCounts,
+        examStart: examStart && examEnd ? new Date(examStart).getTime() : null,
+        examEnd: examStart && examEnd ? new Date(examEnd).getTime() : null,
+        examTimer,
+        examLock,
         order,
         due: due ? new Date(due).getTime() : null,
         afterDue,
@@ -490,6 +502,30 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
             </>
           )}
         </fieldset>
+        {hasExam && (
+          <fieldset>
+            <legend>{t('exam.settings')}</legend>
+            <p className="muted small-note">{t('exam.settingsExplain')}</p>
+            <label className="select-line">
+              <span>{t('exam.start')} </span>
+              <input type="datetime-local" className="date-input" value={examStart} onChange={(e) => setExamStart(e.target.value)} />
+            </label>
+            <label className="select-line">
+              <span>{t('exam.end')} </span>
+              <input type="datetime-local" className="date-input" value={examEnd} onChange={(e) => setExamEnd(e.target.value)} />
+            </label>
+            <label className="check-line">
+              <input type="checkbox" checked={examTimer} onChange={(e) => setExamTimer(e.target.checked)} />
+              {t('exam.timer')}
+            </label>
+            {(['none', 'class', 'all'] as const).map((k) => (
+              <label key={k} className="radio-line">
+                <input type="radio" name="exam-lock" checked={examLock === k} onChange={() => setExamLock(k)} />
+                {t(`exam.lock.${k}`)}
+              </label>
+            ))}
+          </fieldset>
+        )}
         <label className="check-line">
           <input type="checkbox" checked={redoCounts} onChange={(e) => setRedoCounts(e.target.checked)} />
           {t('teacher.redoCounts')}

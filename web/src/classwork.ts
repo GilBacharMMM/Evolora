@@ -23,6 +23,10 @@ export interface WorkLesson {
   notes?: 'review' | 'corrections' | null
   // Locked because the student must first go over their teacher's notes (REQ-5.14).
   lockedByNotes?: boolean
+  // An exam's time window, timer and lock while it is going on (REQ-5.23).
+  exam?: { start: number | null; end: number | null; timer: boolean; lock: 'none' | 'class' | 'all' }
+  // Locked because an exam is going on (REQ-5.23).
+  lockedByExam?: boolean
   // Due date (REQ-5.9): when, whether it is late, and locked because it is past it.
   due?: number | null
   late?: boolean
@@ -50,6 +54,8 @@ export interface SingleWork extends WorkLesson {
 }
 
 export interface ClassWork {
+  // An exam locks all of Evolora right now (REQ-5.23): messages are hidden too.
+  lockedAll?: boolean
   // A new message from the class's teachers (REQ-5.16)
   unreadMessage?: boolean
   id: string
@@ -70,6 +76,10 @@ export interface TodoItem extends WorkLesson {
 }
 
 interface Assignment {
+  examStart?: number | null
+  examEnd?: number | null
+  examTimer?: boolean
+  examLock?: 'none' | 'class' | 'all'
   archived?: boolean
   grades?: 'usual' | 'show' | 'hide'
   order?: Order
@@ -162,6 +172,23 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
           const describe = (e: { lessonId: string; title: string; type: LessonType }, p: P, status: Status): WorkLesson => {
             const show = gradesShown(a.grades, e.type)
             const byDue = lockedByDue(rule, due, p.finished, now) && !p.notes
+            // Exams (REQ-4.26, 5.23): open only when the teacher opens them or inside their time window,
+            // whatever the course order; done once submitted.
+            if (e.type === 'exam') {
+              const inWindow = !!a.examStart && !!a.examEnd && now >= a.examStart && now < a.examEnd
+              const examStatus: Status = p.finished ? 'done' : openedEarly.has(e.lessonId) || inWindow ? 'open' : 'locked'
+              return {
+                lessonId: e.lessonId,
+                title: e.title,
+                type: e.type,
+                status: examStatus,
+                started: p.started,
+                showGrades: false,
+                grade: null,
+                notes: null,
+                exam: { start: a.examStart ?? null, end: a.examEnd ?? null, timer: a.examTimer !== false, lock: inWindow && !p.finished ? a.examLock || 'none' : 'none' },
+              }
+            }
             const grade = show && p.finished && p.grade ? { ...p.grade, percent: lateGrade(p.grade.percent, rule, due, p.finishedAt) } : null
             return {
               lessonId: e.lessonId,
@@ -239,6 +266,7 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
   )
   const list = classes.filter((c): c is ClassWork => c !== null)
   lockForNotes(list)
+  lockForExam(list)
   return list
 }
 
@@ -248,6 +276,26 @@ function allLessons(classes: ClassWork[]): WorkLesson[] {
 
 // While a lesson sent back by the teacher waits to be gone over, the student can't start a new
 // lesson (REQ-5.14): open lessons not started yet are locked. Lessons already started stay open.
+// During an exam with a lock (REQ-5.23): only the exam can be opened, in its class or in all of
+// Evolora. Everything opens again when the window ends.
+export function lockForExam(classes: ClassWork[]) {
+  for (const c of classes) {
+    const lessons = [...c.courses.flatMap((k) => k.items.flatMap((it) => [it, ...it.practice])), ...c.singles]
+    for (const ex of lessons.filter((l) => l.exam && l.exam.lock !== 'none' && l.status === 'open')) {
+      const scope = ex.exam!.lock === 'all' ? classes : [c]
+      for (const k of scope) {
+        if (ex.exam!.lock === 'all') k.lockedAll = true
+        for (const l of [...k.courses.flatMap((x) => x.items.flatMap((it) => [it, ...it.practice])), ...k.singles]) {
+          if (l !== ex && !(l.exam && l.status === 'open') && l.status !== 'locked') {
+            l.status = 'locked'
+            l.lockedByExam = true
+          }
+        }
+      }
+    }
+  }
+}
+
 export function lockForNotes(classes: ClassWork[]) {
   const lessons = allLessons(classes)
   if (!lessons.some((l) => l.notes)) return
@@ -286,12 +334,13 @@ export function todoList(classes: ClassWork[]): TodoItem[] {
 export function lessonAccess(
   classes: ClassWork[],
   lessonId: string,
-): { access: 'open' | 'locked' | 'notGiven'; showGrades: boolean; lockedByNotes: boolean; lockedByDue: boolean } {
+): { access: 'open' | 'locked' | 'notGiven'; showGrades: boolean; lockedByNotes: boolean; lockedByDue: boolean; lockedByExam?: boolean; exam?: WorkLesson['exam'] } {
   const mine = allLessons(classes).filter((l) => l.lessonId === lessonId)
   if (!mine.length) return { access: 'notGiven', showGrades: false, lockedByNotes: false, lockedByDue: false }
   const showGrades = mine.some((l) => l.showGrades)
-  if (mine.some((l) => l.status !== 'locked')) return { access: 'open', showGrades, lockedByNotes: false, lockedByDue: false }
-  return { access: 'locked', showGrades, lockedByNotes: mine.every((l) => l.lockedByNotes), lockedByDue: mine.every((l) => l.lockedByDue) }
+  const exam = mine.find((l) => l.exam)?.exam
+  if (mine.some((l) => l.status !== 'locked')) return { access: 'open', showGrades, lockedByNotes: false, lockedByDue: false, exam }
+  return { access: 'locked', showGrades, lockedByNotes: mine.every((l) => l.lockedByNotes), lockedByDue: mine.every((l) => l.lockedByDue), lockedByExam: mine.every((l) => l.lockedByExam), exam }
 }
 
 // The student's classes and work, loaded when a page opens. null while loading.

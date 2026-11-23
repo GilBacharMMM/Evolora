@@ -10,6 +10,7 @@
 // - one test class, taught by Test Teacher 1, with test students 1 to 6, a class code,
 //   and joining turned on (REQ-5.2)
 // - the three demo lessons, and the two demo courses given to the whole test class (REQ-5.7)
+// - the demo exam (not given to anyone; the teacher gives it to try exams, REQ-4.26)
 // - no answers, red flags or other work left over
 //
 // People who signed in with their own Google accounts keep their sign-in, and staff
@@ -26,7 +27,7 @@ import { makeCode } from '../functions/classcode.js'
 
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const CLASS_ID = 'test-class'
-const LESSONS_AND_COURSES = ['courses/density-demo.md', 'courses/circles-demo.md']
+const LESSONS_AND_COURSES = ['courses/density-demo.md', 'courses/circles-demo.md', 'lessons/circles-exam']
 
 async function deleteAll(db, ...pathSegments) {
   const snap = await getDocs(collection(db, ...pathSegments))
@@ -110,7 +111,7 @@ async function main() {
   for (const line of report) console.log(`   ${line}`)
 
   console.log('5. Giving the demo courses to the whole test class...')
-  for (const file of LESSONS_AND_COURSES) await openCourseToClass(db, path.basename(file, '.md'), CLASS_ID)
+  for (const file of LESSONS_AND_COURSES.filter((f) => f.startsWith('courses/'))) await openCourseToClass(db, path.basename(file, '.md'), CLASS_ID)
 
   console.log(`\nThe test site is reset to the standard test data. Test class code: ${classCode}`)
 }
