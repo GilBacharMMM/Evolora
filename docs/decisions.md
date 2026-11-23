@@ -731,7 +731,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-5.12
 
 ### D-65: How exams work in stage 1
-**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building REQ-4.26 and 5.23
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Claude, while building REQ-4.26 and 5.23; approved by Gil 2026-11-23
 **Decision:**
 1. **One page:** an exam shows all its questions on one page. Answers are saved as the student goes and can be changed until "Submit exam" (with a confirmation). Teachers who open an exam try it like any lesson (REQ-5.32).
 2. **Results kept apart:** right and wrong answers and grades are saved where students can't read them until the teacher presses **Release the results** on the exam's results page. Then each student sees their grade, which answers were right, the correct answers and the solutions. This stops anyone from passing on answers while others are still taking the exam.
