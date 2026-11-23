@@ -1119,3 +1119,166 @@ figcaption {
   margin-inline-start: 12px;
   font-size: 14px;
 }
+
+/* Part 2: answering questions */
+.offline-banner {
+  background: var(--sun-light);
+  color: var(--sun-text);
+  border-block-end: 1px solid var(--sun);
+  font-weight: 500;
+  text-align: center;
+  padding-block: 8px;
+  padding-inline: 16px;
+}
+
+.player-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--ground);
+  padding-block: 4px;
+}
+
+.topic-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--ink-2);
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--teal);
+}
+
+.dot.full {
+  background: var(--teal);
+}
+
+.answer-form,
+.open-answer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.open-answer label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.check-button {
+  align-self: flex-start;
+}
+
+.choice.right {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+
+.right-mark {
+  margin-inline-start: auto;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.answer-problem {
+  margin: 0;
+  color: var(--practice-text);
+  font-weight: 500;
+}
+
+.feedback {
+  margin: 0;
+  padding-block: 12px;
+  padding-inline: 16px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.feedback .md p {
+  margin: 0;
+}
+
+.feedback-title {
+  font-weight: 700;
+}
+
+.feedback.correct {
+  background: var(--green-light);
+  border: 1px solid #8ccfa6;
+  color: var(--green);
+  font-weight: 500;
+}
+
+.feedback.hint {
+  background: var(--sun-light);
+  border: 1px solid var(--sun);
+  color: var(--sun-text);
+}
+
+.feedback.solution {
+  background: #eef1f5;
+  border: 1px solid var(--line-strong);
+}
+
+.feedback.saved,
+.feedback.teacher {
+  background: var(--teal-light);
+  color: var(--teal-dark);
+  font-weight: 500;
+}
+
+.correct-line {
+  margin: 0;
+  font-weight: 700;
+}
+
+.check-again {
+  border: 2px dashed var(--teal);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--teal-faint);
+}
+
+.video-blocked {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--ground);
+}
+
+.video-blocked p {
+  margin: 0;
+}
+
+.math-run {
+  unicode-bidi: isolate;
+}

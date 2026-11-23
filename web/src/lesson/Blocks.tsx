@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { getDownloadURL, ref } from 'firebase/storage'
 import { storage } from '../site'
 import { Formula, Markdown } from './Rich'
-import type { Block, Question } from './types'
+import type { Block } from './types'
+import { VideoPlayer } from './VideoPlayer'
 
 // Interface words (in the person's language) inside a lesson (in the lesson's language)
 // keep their own direction, so mixed Hebrew and English read correctly (REQ-9.3).
@@ -107,32 +108,8 @@ function ImageBlock({ block }: { block: Extract<Block, { type: 'image' }> }) {
 }
 
 function VideoBlock({ block }: { block: Extract<Block, { type: 'video' }> }) {
-  const { t } = useTranslation()
   if (!block.youtubeId) return null
-  // YouTube's privacy-enhanced player, inside the lesson (REQ-4.23, D-32).
-  const params = new URLSearchParams({ rel: '0' })
-  if (block.start != null) params.set('start', String(block.start))
-  if (block.end != null) params.set('end', String(block.end))
-  const watch = `https://www.youtube.com/watch?v=${block.youtubeId}${block.start ? `&t=${block.start}s` : ''}`
-  return (
-    <figure className="block-video">
-      <div className="video-frame">
-        <iframe
-          src={`https://www.youtube-nocookie.com/embed/${block.youtubeId}?${params}`}
-          title={block.title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          referrerPolicy="strict-origin-when-cross-origin"
-        />
-      </div>
-      <figcaption>
-        <span className="video-title">{block.title}</span>
-        <a href={watch} target="_blank" rel="noopener noreferrer" className="video-source">
-          <Ui>{t('lesson.source')}:</Ui> <bdi>{block.source}</bdi> · <Ui>{t('lesson.openOnYouTube')}</Ui>
-        </a>
-      </figcaption>
-    </figure>
-  )
+  return <VideoPlayer youtubeId={block.youtubeId} title={block.title} source={block.source} start={block.start} end={block.end} />
 }
 
 function AudioBlock({ block }: { block: Extract<Block, { type: 'audio' }> }) {
@@ -169,78 +146,6 @@ function SimulationBlock({ block }: { block: Extract<Block, { type: 'simulation'
       <a className="button secondary" href={block.link} target="_blank" rel="noopener noreferrer">
         <Ui>{t('lesson.openNewTab')}</Ui>
       </a>
-    </section>
-  )
-}
-
-// A question, shown so the lesson can be read. Checking answers (two attempts, hint,
-// full solution, check-again questions) comes in part 2 (REQ-4.16, 4.17, 6.3).
-export function QuestionView({ q, onContinue, answered }: { q: Question; onContinue: () => void; answered: boolean }) {
-  const { t } = useTranslation()
-  const [tipsOpen, setTipsOpen] = useState(false)
-  const [openTip, setOpenTip] = useState<number | null>(null)
-  return (
-    <section className={`block-question${answered ? ' answered' : ''}`} aria-label={t('lesson.question')}>
-      <Ui className="block-label">{t('lesson.question')}</Ui>
-      <Markdown text={q.prompt} className="question-prompt" />
-
-      {q.kind === 'choice' && (
-        <fieldset className="choices" disabled={answered}>
-          <legend className="visually-hidden">{t('lesson.chooseAnswer')}</legend>
-          {q.multipleCorrect && <p className="hint-line"><Ui>{t('lesson.chooseAll')}</Ui></p>}
-          {q.choices.map((c) => (
-            <label key={c.id} className="choice">
-              <input type={q.multipleCorrect ? 'checkbox' : 'radio'} name={q.id} value={c.id} />
-              <Markdown text={c.text} inline />
-            </label>
-          ))}
-        </fieldset>
-      )}
-      {q.kind === 'number' && (
-        <label className="number-answer">
-          <Ui>{t('lesson.yourAnswer')}</Ui>
-          <span className="number-row">
-            <input type="text" inputMode="decimal" dir="ltr" autoComplete="off" disabled={answered} />
-            {q.unit && <span>{q.unit}</span>}
-          </span>
-        </label>
-      )}
-      {q.kind === 'open' && (
-        <label className="open-answer">
-          <Ui>{t('lesson.yourAnswer')}</Ui>
-          <textarea rows={4} disabled={answered} dir="auto" />
-        </label>
-      )}
-      {q.kind === 'audio' && <p className="hint-line"><Ui>{t('lesson.audioLater')}</Ui></p>}
-
-      {q.tips.length > 0 && (
-        <div className="tips">
-          <button type="button" className="link-button" onClick={() => setTipsOpen((v) => !v)} aria-expanded={tipsOpen}>
-            <Ui>{t('lesson.tipsLink')}</Ui>
-          </button>
-          {tipsOpen && (
-            <div className="tips-box">
-              {q.tips.map((tip, i) => (
-                <div key={i} className="tip">
-                  <button type="button" className="tip-title" onClick={() => setOpenTip(openTip === i ? null : i)} aria-expanded={openTip === i}>
-                    {tip.title}
-                  </button>
-                  {openTip === i && <p className="tip-text">{tip.text}</p>}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {!answered && (
-        <div className="question-footer">
-          <p className="part-note"><Ui>{t('lesson.checkingLater')}</Ui></p>
-          <button type="button" className="button primary" onClick={onContinue}>
-            <Ui>{t('lesson.continue')}</Ui>
-          </button>
-        </div>
-      )}
     </section>
   )
 }

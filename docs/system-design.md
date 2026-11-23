@@ -1,7 +1,7 @@
 # Evolora: System Design
 
 **Status:** Approved by Gil on 2026-11-20 (D-16 to D-18), updated with the answers to D-Q1 to D-Q4
-**Last updated:** 2026-11-23 (part 1 built: sections 2.2, 4.2, 7.3)
+**Last updated:** 2026-11-23 (parts 1 and 2 built: sections 2.2, 2.4, 4.2, 5.1, 7.3)
 
 This document explains, in plain language, how Evolora is built. It always follows [requirements.md](requirements.md). Significant choices link to their entry in [decisions.md](decisions.md), which explains why they were made.
 
@@ -146,6 +146,10 @@ The correct answer, the hint and the solution are kept in the protected area. Th
 
 **Exam window and lock (REQ-5.23):** the time window is checked by the checking service, using the server's clock, not the Chromebook's. While a lock is on, the database rules refuse to open anything other than the exam for the class's students: in the class, or in all of Evolora.
 
+**Where the work is kept (part 2).** Each student's work on a lesson (answers, attempts, scores, the hints and solutions they have earned, and how many correct answers they have in each topic) is saved by the checking service in one record per student and lesson. The student can read their own record, and the teachers of their class can read it; nobody can write it except the checking service. That record is also how the student returns to the same place (REQ-6.2). Red flags (REQ-4.17, 4.21) are saved the same way, one per class, readable only by that class's teachers. Extra practice questions are skipped once the student has reached the topic's minimum; if the last checked question of a topic is finished below the minimum, the teacher gets a red flag.
+
+**Formulas inside sentences (REQ-4.3).** In lesson text, a run of math (for example "P = π × D = 3.14 × 6 = **18.84**") is shown left-to-right even inside a Hebrew or Arabic sentence.
+
 ### 5.2 Open and audio questions
 The answer is saved and the question is marked **pending**. The student continues. When the teacher grades it on the grading page (REQ-5.12), the checking service recalculates the lesson grade.
 
@@ -196,7 +200,7 @@ There is a **second, separate Firebase project**, **evolora-test**, used only fo
 
 This way, real students never see a half-finished feature, and testing never mixes made-up data with real grades.
 
-**Switching users (REQ-12.5).** On the test site, a "Switch user" menu lets Gil become any test user (for example, Test Teacher 1 or Test Student 3) with one click. The test users are simple made-up accounts that exist only in the test project. The menu is built so that it can't appear on the real site: the real site is built without it. Every test-site screen shows a "TEST SITE" banner.
+**Switching users (REQ-12.5).** On the test site, a "Switch user" menu lets Gil become any test user (for example, Test Teacher 1 or Test Student 3) with one click. The test users are simple made-up accounts that exist only in the test project. The menu is built so that it can't appear on the real site: the real site is built without it. Every test-site screen shows a "TEST SITE" banner. On the test site only, the end of each lesson shows the student's score (for example "score 11.5 out of 13"), so Gil can check the scoring rules (REQ-6.3) before the grade screens exist (part 4).
 
 **Test data (REQ-12.6).** Claude can fill or reset the test site with one command (`node tools/reset-test-site.mjs`) with a standard set: 2 test teachers, 7 test students (two each at levels 1, 2 and 3, and Test Student 7, who hasn't joined any class), a test class ("Test Class 7A", taught by Test Teacher 1, with test students 1 to 6), the three demo lessons and the two demo courses, open to the test class. The test users and how they sign in are described in decision D-49.
 

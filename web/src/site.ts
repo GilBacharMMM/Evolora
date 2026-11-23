@@ -2,6 +2,7 @@ import { initializeApp, type FirebaseApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
+import { getFunctions } from 'firebase/functions'
 import configs from './firebase-config.json'
 
 // Which site this build is for. The real site is built with VITE_SITE=production;
@@ -18,3 +19,6 @@ const app: FirebaseApp | null = config ? initializeApp(config) : null
 export const auth = app ? getAuth(app) : (null as never)
 export const db = app ? getFirestore(app) : (null as never)
 export const storage = app ? getStorage(app) : (null as never)
+
+// The checking service runs in Israel (me-west1), next to the database (system-design 5).
+export const functions = app ? getFunctions(app, 'me-west1') : (null as never)

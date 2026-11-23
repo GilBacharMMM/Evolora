@@ -8,6 +8,7 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `load.mjs` | The loading program: runs the lesson check, then loads lessons and courses into a site. A course brings its lessons with it. An unchanged lesson is skipped; a changed one is saved as a new version. | REQ-4.24, 4.10 |
 | `admin.mjs` | System admin tasks (D-47): make someone a teacher or system admin, take the role away, list everyone with their role, open a course to a class. | REQ-2.1, 2.2 |
 | `reset-test-site.mjs` | Fills or resets the test site with the standard test data: test users, the test class, the demo lessons and courses. Test site only. | REQ-12.6 |
+| `test-checking.mjs` | End-to-end test of the checking service: answers real questions as test students (right, wrong, check-again, numbers, letters) and checks the scores and red flags. | REQ-4.16, 4.17, 4.22, 6.3 |
 | `test-permissions.mjs` | Automatic permission tests: signs in as test users and checks that what must be blocked is blocked (for example, a student reading the correct answers). | REQ-3.4, 10.1, 10.3 |
 
 `check-lesson.mjs` also checks course files (`courses/<name>.md`): every listed lesson must exist, have the matching type (teaching, practice or exam), and pass the lesson check.
@@ -26,7 +27,10 @@ node tools/admin.mjs open circles-demo test-class
 
 node tools/reset-test-site.mjs
 node tools/test-permissions.mjs
+node tools/test-checking.mjs
 ```
+
+The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.
 
 All of these work on the test site (`--site test`, the default). The real site isn't set up yet; loading into it needs Gil's approval first (REQ-4.24).
 

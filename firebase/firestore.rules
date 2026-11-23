@@ -125,6 +125,28 @@ service cloud.firestore {
       allow write: if isLoader();
     }
 
+    // Student work: answers, attempts, scores and place in the lesson (REQ-6.2, 6.3).
+    // Written only by the checking service, never by students (system-design 4.3).
+    // Read by the student, and by the teachers of the classes the work belongs to.
+    function teachesAnyOf(classIds) {
+      return isTeacher() && classIds.size() > 0 && request.auth.uid in
+        get(/databases/$(database)/documents/classes/$(classIds[0])).data.teacherIds;
+    }
+
+    match /progress/{id} {
+      allow read: if isLoader()
+        || (signedIn() && id.split('__')[0] == request.auth.uid)
+        || teachesAnyOf(resource.data.get('classIds', []));
+      allow write: if isLoader() && request.method == 'delete';
+    }
+
+    // Red flags for teachers (REQ-4.17, 4.21, 1.3). Written only by the checking service.
+    match /flags/{id} {
+      allow read: if isLoader() || (isTeacher() && request.auth.uid in
+        get(/databases/$(database)/documents/classes/$(resource.data.classId)).data.teacherIds);
+      allow delete: if isLoader();
+    }
+
     // Anything not listed above is closed.
     match /{document=**} {
       allow read, write: if false;

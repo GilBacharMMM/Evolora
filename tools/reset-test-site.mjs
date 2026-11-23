@@ -9,7 +9,7 @@
 //   at levels 1, 2 and 3, and one student who hasn't joined any class (REQ-10.1)
 // - one test class, taught by Test Teacher 1, with test students 1 to 6
 // - the three demo lessons and the two demo courses, open to the test class
-// - no answers or other work left over
+// - no answers, red flags or other work left over
 //
 // People who signed in with their own Google accounts keep their sign-in, and staff
 // added with tools/admin.mjs keep their role, but they are no longer in any class.
@@ -67,6 +67,8 @@ async function main() {
     await deleteDoc(cls.ref)
   }
   await deleteAll(db, 'memberships')
+  await deleteAll(db, 'progress')
+  await deleteAll(db, 'flags')
   for (const s of (await getDocs(collection(db, 'staff'))).docs) if (s.id.endsWith('@evolora.test')) await deleteDoc(s.ref)
   for (const u of TEST.users) await deleteDoc(doc(db, 'users', u.uid))
   await wipeStorage(storage, 'lessons')

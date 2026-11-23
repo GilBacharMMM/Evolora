@@ -9,7 +9,8 @@
     "toHome": "Back to the home page",
     "notFound": "This page doesn't exist.",
     "teachersOnly": "This page is for teachers only.",
-    "notReady": "Evolora isn't open here yet."
+    "notReady": "Evolora isn't open here yet.",
+    "offline": "No internet connection. Your answers so far are saved; you can continue when you're connected."
   },
   "roles": {
     "student": "Student",
@@ -56,11 +57,8 @@
     "exam": "Exam"
   },
   "lesson": {
-    "partOneBanner": "Test site, part 1: you can read the lesson. Checking answers comes in part 2.",
     "grade": "Grade {{grade}}",
     "by": "By {{creator}}",
-    "questionsCount": "Questions: {{count}}",
-    "imagesNotYet": "The images in this lesson will appear once file storage is switched on.",
     "topic": "Topic {{number}}:",
     "solvedExample": "Solved example",
     "imageLoading": "Loading the image…",
@@ -76,12 +74,12 @@
     "chooseAll": "Choose all the correct answers.",
     "yourAnswer": "Your answer",
     "audioLater": "Recorded answers come later.",
-    "tipsLink": "I didn't understand…",
-    "checkingLater": "Answers aren't checked yet in part 1.",
-    "continue": "Continue",
+    "tipsLink": "I didn't understand… show me a tip",
     "notFound": "This lesson doesn't exist.",
     "notAllowed": "This lesson isn't open to you.",
-    "end": "You've reached the end of the lesson."
+    "end": "You've reached the end of the lesson.",
+    "videoBlocked": "This video can't be played inside the lesson.",
+    "openOnYouTubeButton": "Open the video on YouTube"
   },
   "test": {
     "switchUser": "Switch user",
@@ -89,5 +87,31 @@
     "switchFailed": "Switching didn't work. The test users may need to be set up again.",
     "level": "level {{level}}",
     "noClass": "no class yet"
+  },
+  "q": {
+    "questionNumber": "Question {{number}}",
+    "check": "Check",
+    "checking": "Checking…",
+    "send": "Send",
+    "correct": "Correct!",
+    "correctSecond": "Correct, on the second try!",
+    "tryAgain": "Not quite. Here's a hint, then try once more:",
+    "fullSolution": "Full solution",
+    "theCorrectAnswer": "The correct answer:",
+    "rightAnswer": "correct answer",
+    "checkAgain": "Check again",
+    "checkAgainExplain": "One more question like it, to make sure it's clear now.",
+    "teacherTold": "Your teacher was told, and will go over this question with you.",
+    "savedForTeacher": "Your answer is saved. Your teacher will check it.",
+    "topicCorrect": "Correct answers in this topic",
+    "testScore": "Test site: score {{points}} out of {{outOf}} ({{percent}}%).",
+    "testScorePending": "Open answers still wait for the teacher.",
+    "problem": {
+      "notNumber": "Please type a number, for example 12.5 (no letters). This didn't use up an attempt.",
+      "chooseOne": "Choose an answer first.",
+      "emptyAnswer": "Write your answer first.",
+      "offline": "No internet connection: your answer wasn't sent. Try again when you're connected.",
+      "failed": "Something went wrong, and your answer wasn't sent. Please try again."
+    }
   }
 }

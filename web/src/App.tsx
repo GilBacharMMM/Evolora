@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { IS_TEST_SITE, siteReady } from './site'
 import { SessionProvider, useSession } from './session'
@@ -10,7 +10,18 @@ import { LessonLibrary, TeacherClass, TeacherHome } from './pages/TeacherHome'
 
 // The lesson player, with its formula display, loads only when a lesson is opened,
 // so the home page opens quickly (REQ-12.1).
-const LessonPlayer = lazy(() => import('./pages/LessonPlayer').then((m) => ({ default: m.LessonPlayer })))
+const LessonPlayer = lazy(() =>
+  import('./pages/LessonPlayer')
+    .then((m) => ({ default: m.LessonPlayer }))
+    .catch((e) => {
+      // After a new release, an open page may ask for a file of the old one: reload once.
+      if (!sessionStorage.getItem('evolora.reloaded')) {
+        sessionStorage.setItem('evolora.reloaded', '1')
+        location.reload()
+      }
+      throw e
+    }),
+)
 
 function TestBanner() {
   const { t } = useTranslation()
@@ -18,6 +29,28 @@ function TestBanner() {
   return (
     <div className="test-banner" role="note">
       {t('testBanner')}
+    </div>
+  )
+}
+
+// If the internet connection drops, the student sees a clear message (REQ-12.2).
+function OfflineBanner() {
+  const { t } = useTranslation()
+  const [offline, setOffline] = useState(!navigator.onLine)
+  useEffect(() => {
+    const on = () => setOffline(false)
+    const off = () => setOffline(true)
+    window.addEventListener('online', on)
+    window.addEventListener('offline', off)
+    return () => {
+      window.removeEventListener('online', on)
+      window.removeEventListener('offline', off)
+    }
+  }, [])
+  if (!offline) return null
+  return (
+    <div className="offline-banner" role="alert">
+      {t('common.offline')}
     </div>
   )
 }
@@ -80,6 +113,7 @@ export default function App() {
   return (
     <SessionProvider>
       <TestBanner />
+      <OfflineBanner />
       <Header />
       <Screens />
     </SessionProvider>
