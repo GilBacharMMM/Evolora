@@ -110,6 +110,10 @@ The teacher's screens read a class's work through the checking service, which fi
 - **Going back to finished lessons (REQ-6.13):** a finished lesson opens with the material and the student's own answers, which can't be changed.
 - **Student page (REQ-5.28):** status, level with − and +, average, help tips opened, the **Not yet mastered** list (REQ-5.25: level 1 questions that ended wrong, including the check-again question, until their red flag is cleared), open and cleared red flags, progress and grades in each course and single lesson, and private **teacher notes** that only the class's teachers can read. Messages come with REQ-5.16, level suggestions with REQ-5.18.
 
+### 2.9 Course orders and due dates (priority 2, D-60)
+- **Course order (REQ-5.8):** when giving a course or a selection of lessons, the teacher chooses **Paired** (recommended, the default), **One after another** or **Any order** (marked "optional, not recommended"). Paired: teaching lessons open in order, each when the previous teaching lesson is finished; the practice lessons of a finished teaching lesson are open in any order. One after another: each lesson opens when the one before it is finished. In every order, a lesson the teacher opened early (REQ-5.20) or the student already started is open. The rules are in one place (`web/src/courseOrder.ts`) and tested automatically.
+- **Due date (REQ-5.9):** optional, with what happens after it: take off a number of points from a lesson finished late, or lock lessons that aren't finished. On Class settings the teacher changes the date for the whole class or extends it for one student, which opens a locked lesson again. Students see "Due: ..." and "late" on their lessons, and the To do list puts the nearest due date first (REQ-6.1). The dashboard shows yellow "late" (REQ-5.10), and the grade table shows grades after the late rule.
+
 ---
 
 ## 3. Where the data lives

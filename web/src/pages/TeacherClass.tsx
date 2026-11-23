@@ -23,6 +23,11 @@ interface AssignmentRow {
   everyone: boolean
   studentIds: string[]
   grades?: 'usual' | 'show' | 'hide'
+  order?: 'oneByOne' | 'paired' | 'any'
+  due?: number | null
+  afterDue?: 'reduce' | 'lock'
+  reduceBy?: number
+  extensions?: Record<string, number>
   createdAt: number
 }
 
@@ -162,8 +167,10 @@ export function TeacherClass({ classId }: { classId: string }) {
                   {a.kind === 'course' ? course?.title || a.courseId : a.lessonIds.map(titleOfLesson).join(' · ')}
                 </span>
                 <span className="muted given-to">
-                  {t(`teacher.gradesShort.${a.grades || 'usual'}`)} · {a.everyone ? t('teacher.toEveryone') : t('teacher.toSome', { count: a.studentIds.length, names: a.studentIds.map(nameOf).join(', ') })}
+                  {t(`teacher.orderShort.${a.order || (a.kind === 'course' ? 'oneByOne' : 'any')}`)} · {t(`teacher.gradesShort.${a.grades || 'usual'}`)} ·{' '}
+                  {a.everyone ? t('teacher.toEveryone') : t('teacher.toSome', { count: a.studentIds.length, names: a.studentIds.map(nameOf).join(', ') })}
                 </span>
+                <DueLine classId={classId} assignment={a} students={current} nameOf={nameOf} onChanged={load} />
               </li>
             )
           })}
@@ -328,6 +335,10 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
   const [to, setTo] = useState<'everyone' | 'some'>('everyone')
   const [studentIds, setStudentIds] = useState<string[]>([])
   const [grades, setGrades] = useState<'usual' | 'show' | 'hide'>('usual')
+  const [order, setOrder] = useState<'oneByOne' | 'paired' | 'any'>('paired')
+  const [due, setDue] = useState('')
+  const [afterDue, setAfterDue] = useState<'reduce' | 'lock'>('reduce')
+  const [reduceBy, setReduceBy] = useState('10')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState<{ good: boolean; text: string } | null>(null)
 
@@ -335,6 +346,8 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
 
   async function give() {
     setMessage(null)
+    const points = Number(reduceBy)
+    if (due && afterDue === 'reduce' && (!Number.isInteger(points) || points < 0 || points > 100)) return setMessage({ good: false, text: t('teacher.pointsRange') })
     if (what === 'course' && !courseId) return setMessage({ good: false, text: t('teacher.needCourse') })
     if (what === 'lessons' && lessonIds.length === 0) return setMessage({ good: false, text: t('teacher.needLessons') })
     if (to === 'some' && studentIds.length === 0) return setMessage({ good: false, text: t('teacher.needStudents') })
@@ -345,8 +358,13 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
         ...(what === 'course' ? { courseId } : { lessonIds }),
         studentIds: to === 'everyone' ? null : studentIds,
         grades,
+        order,
+        due: due ? new Date(due).getTime() : null,
+        afterDue,
+        reduceBy: due && afterDue === 'reduce' ? points : 0,
       })
       setMessage({ good: true, text: t('teacher.givenDone') })
+      setDue('')
       setCourseId('')
       setLessonIds([])
       setStudentIds([])
@@ -422,6 +440,36 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
                 </label>
               ))}
             </div>
+          )}
+        </fieldset>
+        <fieldset>
+          <legend>{t('teacher.orderTitle')}</legend>
+          {(['paired', 'oneByOne', 'any'] as const).map((o) => (
+            <label key={o} className="radio-line">
+              <input type="radio" name="order" checked={order === o} onChange={() => setOrder(o)} />
+              {t(`teacher.order.${o}`)}
+            </label>
+          ))}
+        </fieldset>
+        <fieldset>
+          <legend>{t('teacher.dueTitle')}</legend>
+          <label className="select-line">
+            <span>{t('teacher.dueDate')} </span>
+            <input type="datetime-local" value={due} onChange={(e) => setDue(e.target.value)} className="date-input" />
+          </label>
+          {due && (
+            <>
+              <label className="radio-line">
+                <input type="radio" name="after" checked={afterDue === 'reduce'} onChange={() => setAfterDue('reduce')} />
+                {t('teacher.afterReduce')}
+                <input className="points-input" value={reduceBy} onChange={(e) => setReduceBy(e.target.value)} inputMode="numeric" dir="ltr" aria-label={t('teacher.points')} />
+                {t('teacher.points')}
+              </label>
+              <label className="radio-line">
+                <input type="radio" name="after" checked={afterDue === 'lock'} onChange={() => setAfterDue('lock')} />
+                {t('teacher.afterLock')}
+              </label>
+            </>
           )}
         </fieldset>
         <fieldset>
@@ -559,5 +607,76 @@ function OpenEarlyForm({
         )}
       </form>
     </section>
+  )
+}
+
+// An assignment's due date, with changing it for the whole class or extending it for one student
+// (REQ-5.9). A later date opens a locked lesson again.
+function toLocalInput(ms: number | null | undefined): string {
+  if (!ms) return ''
+  const d = new Date(ms)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+function DueLine({ classId, assignment, students, nameOf, onChanged }: { classId: string; assignment: AssignmentRow; students: StudentRow[]; nameOf: (id: string) => string; onChanged: () => Promise<void> }) {
+  const { t, i18n } = useTranslation()
+  const [open, setOpen] = useState(false)
+  const [who, setWho] = useState('')
+  const [value, setValue] = useState(toLocalInput(assignment.due))
+  const [busy, setBusy] = useState(false)
+  const [failed, setFailed] = useState(false)
+  const show = (ms: number) => new Date(ms).toLocaleString(i18n.language, { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+  const extensions = Object.entries(assignment.extensions || {})
+  return (
+    <span className="due-line">
+      <span className="muted small-note">
+        {assignment.due
+          ? `${t('teacher.dueOn', { date: show(assignment.due) })} · ${assignment.afterDue === 'lock' ? t('teacher.afterLockShort') : t('teacher.afterReduceShort', { n: assignment.reduceBy ?? 0 })}`
+          : t('teacher.noDue')}
+        {extensions.map(([uid, ms]) => ` · ${t('teacher.extended', { name: nameOf(uid), date: show(ms) })}`)}
+      </span>
+      {!open ? (
+        <button type="button" className="link-button small-note" onClick={() => setOpen(true)}>
+          {t('teacher.changeDue')}
+        </button>
+      ) : (
+        <span className="due-form">
+          <select value={who} onChange={(e) => setWho(e.target.value)} aria-label={t('teacher.giveTo')}>
+            <option value="">{t('teacher.wholeClassNow')}</option>
+            {students.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+          <input type="datetime-local" className="date-input" value={value} onChange={(e) => setValue(e.target.value)} aria-label={t('teacher.dueDate')} />
+          <button
+            type="button"
+            className="button primary small"
+            disabled={busy}
+            onClick={async () => {
+              setBusy(true)
+              setFailed(false)
+              try {
+                await call('setDue', { classId, assignmentId: assignment.id, due: value ? new Date(value).getTime() : null, studentId: who || null })
+                setOpen(false)
+                await onChanged()
+              } catch {
+                setFailed(true)
+              } finally {
+                setBusy(false)
+              }
+            }}
+          >
+            {t('follow.save')}
+          </button>
+          <button type="button" className="button secondary small" onClick={() => setOpen(false)}>
+            {t('teacher.cancel')}
+          </button>
+          {failed && <span className="notice">{t('teacher.actionFailed')}</span>}
+        </span>
+      )}
+    </span>
   )
 }

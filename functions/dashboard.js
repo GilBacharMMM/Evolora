@@ -90,3 +90,13 @@ export function notMastered(questions, states, flags) {
     return !(qFlags.length && qFlags.every((f) => !f.open))
   })
 }
+
+// Due dates (REQ-5.9, D-60). The same rules as web/src/courseOrder.ts, which is tested in order.test.js.
+export function dueFor(rule, uid) {
+  return rule.extensions?.[uid] ?? rule.due ?? null
+}
+
+export function lateGrade(percent, rule, due, finishedAt) {
+  if (percent == null || rule.afterDue !== 'reduce' || !due || !finishedAt || finishedAt <= due) return percent
+  return Math.max(0, percent - (rule.reduceBy || 0))
+}

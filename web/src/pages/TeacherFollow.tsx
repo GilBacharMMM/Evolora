@@ -16,7 +16,7 @@ import type { LessonType } from '../lesson/types'
 
 const call = <T,>(name: string, data: unknown) => httpsCallable<unknown, T>(functions, name)(data).then((r) => r.data)
 
-export type Cell = { kind: 'notDone' | 'pending' | 'grade' | 'doneNoGrade'; percent: number | null; started: boolean; waiting: number; tips: number; sentBack?: 'review' | 'corrections' | null }
+export type Cell = { kind: 'notDone' | 'pending' | 'grade' | 'doneNoGrade'; percent: number | null; started: boolean; waiting: number; tips: number; sentBack?: 'review' | 'corrections' | null; due?: number | null; late?: boolean }
 
 interface CourseInfo {
   courseId: string
@@ -397,7 +397,11 @@ export function GradeCell({ cell }: { cell: Cell | undefined }) {
   if (cell.kind === 'notDone') return <span className="grade-chip notdone">{t('follow.notDone')}</span>
   if (cell.kind === 'pending') return <span className="grade-chip pending">{t('follow.pending')}</span>
   if (cell.kind === 'doneNoGrade') return <span className="grade-chip done">{t('status.done')}</span>
-  return <span className="grade-chip graded">{cell.percent}%</span>
+  return (
+    <span className="grade-chip graded">
+      {cell.percent}%{cell.late ? ` (${t('status.late')})` : ''}
+    </span>
+  )
 }
 
 // The grade table (REQ-5.11): students and lessons, a grade in each cell, CSV download.

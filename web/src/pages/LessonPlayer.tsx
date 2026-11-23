@@ -63,7 +63,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const { t } = useTranslation()
   const { user, role, classIds } = useSession()
   // A student opens only lessons given to them that aren't locked (REQ-5.7, 6.12, D-55, D-57).
-  const [gate, setGate] = useState<'checking' | 'open' | 'locked' | 'lockedByNotes' | 'notGiven'>(role === 'student' ? 'checking' : 'open')
+  const [gate, setGate] = useState<'checking' | 'open' | 'locked' | 'lockedByNotes' | 'lockedByDue' | 'notGiven'>(role === 'student' ? 'checking' : 'open')
   // Teachers always see grades; students only when the assignment shows them (REQ-5.22).
   const [showGrades, setShowGrades] = useState(role !== 'student')
   useEffect(() => {
@@ -74,7 +74,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
         if (!live) return
         const a = lessonAccess(c, lessonId)
         setShowGrades(a.showGrades)
-        setGate(a.access === 'locked' && a.lockedByNotes ? 'lockedByNotes' : a.access)
+        setGate(a.access === 'locked' && a.lockedByDue ? 'lockedByDue' : a.access === 'locked' && a.lockedByNotes ? 'lockedByNotes' : a.access)
       })
       .catch(() => live && setGate('open'))
     return () => {
@@ -177,12 +177,12 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
     })
   }, [lesson, progress])
 
-  if (gate === 'locked' || gate === 'lockedByNotes' || gate === 'notGiven') {
+  if (gate === 'locked' || gate === 'lockedByNotes' || gate === 'lockedByDue' || gate === 'notGiven') {
     return (
       <main className="page narrow">
         <BackButton />
         <div className="card message-card">
-          <p>{gate === 'locked' ? t('lesson.locked') : gate === 'lockedByNotes' ? t('lesson.lockedByNotes') : t('lesson.notAllowed')}</p>
+          <p>{gate === 'locked' ? t('lesson.locked') : gate === 'lockedByNotes' ? t('lesson.lockedByNotes') : gate === 'lockedByDue' ? t('lesson.lockedByDue') : t('lesson.notAllowed')}</p>
           <button type="button" className="button primary" onClick={() => navigate('/')}>
             {t('common.toHome')}
           </button>

@@ -119,3 +119,11 @@ test('not yet mastered (REQ-5.25): level 1, wrong, until the flag is cleared', a
   assert.deepEqual(notMastered(qs, states, [{ questionId: 'a', open: false }]).map((q) => q.id), [])
   assert.deepEqual(notMastered(qs, states, []).map((q) => q.id), ['a'])
 })
+
+test('server due-date rules match the website ones (REQ-5.9)', async () => {
+  const server = await import('./dashboard.js')
+  const web = await import('../web/src/courseOrder.ts')
+  const rule = { due: 1000, afterDue: 'reduce', reduceBy: 10, extensions: { s2: 5000 } }
+  for (const uid of ['s1', 's2']) assert.equal(server.dueFor(rule, uid), web.dueFor(rule, uid))
+  for (const [p, f] of [[80, 900], [80, 1100], [null, 1100], [5, 2000]]) assert.equal(server.lateGrade(p, rule, 1000, f), web.lateGrade(p, rule, 1000, f))
+})

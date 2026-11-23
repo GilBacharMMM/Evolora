@@ -40,7 +40,7 @@ export function StatusWord({ status }: { status: Status }) {
 
 // One lesson in a course or class page. Locked lessons show their title greyed out and can't be opened.
 export function WorkRow({ lesson, note }: { lesson: WorkLesson; note?: ReactNode }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const locked = lesson.status === 'locked'
   return (
     <button
@@ -48,7 +48,7 @@ export function WorkRow({ lesson, note }: { lesson: WorkLesson; note?: ReactNode
       className={`lesson-row work-row status-row-${lesson.status}${lesson.notes ? ' has-notes' : ''}`}
       disabled={locked}
       aria-disabled={locked}
-      title={locked ? (lesson.lockedByNotes ? t('status.lockedByNotes') : t('status.lockedExplain')) : undefined}
+      title={locked ? (lesson.lockedByDue ? t('status.lockedByDue') : lesson.lockedByNotes ? t('status.lockedByNotes') : t('status.lockedExplain')) : undefined}
       onClick={() => !locked && navigate(`/lesson/${lesson.lessonId}`)}
     >
       <span className="lesson-row-icon" aria-hidden="true">
@@ -60,6 +60,11 @@ export function WorkRow({ lesson, note }: { lesson: WorkLesson; note?: ReactNode
           {lesson.title}
         </span>
         {lesson.notes && <span className="notes-chip">{lesson.notes === 'review' ? t('status.notesReview') : t('status.notesCorrections')}</span>}
+        {lesson.due && lesson.status !== 'done' && (
+          <span className={lesson.late ? 'due-chip late' : 'due-chip'}>
+            {lesson.late ? t('status.late') : t('status.due', { date: new Date(lesson.due).toLocaleString(i18n.language, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) })}
+          </span>
+        )}
         {lesson.grade && (
           <span className="row-grade">{lesson.grade.pending ? t('status.gradePending') : lesson.grade.percent != null ? t('status.grade', { percent: lesson.grade.percent }) : null}</span>
         )}

@@ -126,7 +126,30 @@
       "usual": "Grades as usual",
       "show": "Grades shown",
       "hide": "Grades hidden"
-    }
+    },
+    "orderTitle": "Order of the lessons",
+    "order": {
+      "paired": "Paired (recommended): teaching lessons in order; the practice lessons of a finished teaching lesson in any order",
+      "oneByOne": "One after another: each lesson opens when the one before it is finished",
+      "any": "Any order: everything open from the start (optional, not recommended)"
+    },
+    "orderShort": {
+      "paired": "Paired",
+      "oneByOne": "One after another",
+      "any": "Any order"
+    },
+    "dueTitle": "Due date (optional)",
+    "dueDate": "Due date",
+    "afterReduce": "After the due date, take off",
+    "points": "points",
+    "afterLock": "After the due date, lock unfinished lessons",
+    "pointsRange": "Points to take off: a whole number from 0 to 100.",
+    "dueOn": "Due {{date}}",
+    "afterLockShort": "locked after it",
+    "afterReduceShort": "{{n}} points off if late",
+    "noDue": "No due date",
+    "extended": "extended for {{name}} to {{date}}",
+    "changeDue": "Change the due date"
   },
   "lessonType": {
     "teaching": "Teaching",
@@ -166,7 +189,8 @@
     "sentBackReview": "Your teacher sent this lesson back to you. Read the comments under your answers.",
     "sentBackCorrections": "Your teacher sent back questions to answer again: {{n}}.",
     "readComments": "I've read the comments",
-    "lockedByNotes": "First go over the lesson your teacher sent back to you. Then you can start new lessons."
+    "lockedByNotes": "First go over the lesson your teacher sent back to you. Then you can start new lessons.",
+    "lockedByDue": "The due date for this lesson has passed, so it is locked. Ask your teacher if you need more time."
   },
   "test": {
     "switchUser": "Switch user",
@@ -210,7 +234,10 @@
     "notesReview": "From your teacher: read the comments",
     "notesCorrections": "From your teacher: answer again",
     "gradePending": "Grade: waiting for the teacher",
-    "grade": "Grade: {{percent}}%"
+    "grade": "Grade: {{percent}}%",
+    "due": "Due: {{date}}",
+    "late": "late",
+    "lockedByDue": "Locked: the due date has passed."
   },
   "cls": {
     "activeCourses": "Active courses",

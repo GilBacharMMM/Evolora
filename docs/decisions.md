@@ -674,3 +674,17 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 
 **Also (Claude, following the requirements):** "new lessons are locked" means lessons the student hasn't started yet; lessons already started stay open. Questions sent back for corrections are answered again with 2 attempts, as new; the earlier answer is kept for the teacher. A level 1 question is "not yet mastered" (REQ-5.25) when it ended wrong and its check-again question wasn't answered correctly; it leaves the list when its red flag is cleared. When grades are hidden, the website doesn't show them; the student's own saved work still holds them, which a very determined student could look up (acceptable for the pilot).
 **Affects:** REQ-5.22, REQ-5.15, REQ-5.14, REQ-5.25, REQ-5.28, REQ-6.13
+
+### D-60: Points the requirements leave open in course orders and due dates
+**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building REQ-5.8 and 5.9
+**Context:** Building course orders (REQ-5.8) and due dates (REQ-5.9) while Gil was away raised small questions.
+**Decision:**
+1. **New assignments start with "Paired"**, the recommended order. Courses given before course orders existed keep "one after another" (D-55); selections given before keep "any order" (D-57), so nothing changes for students already working.
+2. **A selection of single lessons** uses the same three orders, in the order the teacher picked them, with each practice lesson grouped under the teaching lesson before it.
+3. **"Reduce by 10" means 10 points off** the lesson grade (80 becomes 70), never below 0. Other option: 10% of the grade (80 becomes 72).
+4. **The due date that counts** for a lesson is from the latest assignment that gives it to the student with a due date. An extension for one student replaces the class's date for them; changing the class's date doesn't change extensions. Clearing the date removes it.
+5. **Locking after the due date** is done by the website: the lesson can't be opened from the student's pages or by its address. A lesson the student already finished can still be opened to read.
+6. **The yellow "late" status** on the dashboard shows when a lesson given to the student is past its due date and not finished.
+7. **Not built yet from REQ-5.9:** changing the minimum questions per topic per assignment, "redo counts" (redo is REQ-6.5, priority 3), and exam time windows (REQ-5.23, priority 3). Who checks open answers is always the teacher.
+**Reason:** Keeps students' current work unchanged and follows the requirements' own recommendation; each point is easy to change.
+**Affects:** REQ-5.8, REQ-5.9, REQ-5.10, REQ-6.1, D-55, D-57

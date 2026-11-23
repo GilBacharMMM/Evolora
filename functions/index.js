@@ -12,7 +12,7 @@ import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 import { HttpsError, onCall } from 'firebase-functions/v2/https'
 import { setGlobalOptions } from 'firebase-functions/v2'
 import { answerCheckAgain, answerMain, isFinished, lessonFinished, lessonGrade, sendBackForCorrections, teacherScore } from './check.js'
-import { averageGrade, coursePosition, lessonCell, median, notMastered, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
+import { averageGrade, coursePosition, dueFor, lateGrade, lessonCell, median, notMastered, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
 import { CLASS_COLORS, WAIT_MS, afterWrong, makeCode, normalizeCode, validateCode, waitLeft } from './classcode.js'
 
 // "public" lets the website reach the service; every call still checks who is signed in.
@@ -324,9 +324,12 @@ export const removeStudent = onCall(async (request) => {
 // Gives a course, or one or more lessons, to the whole class or to chosen students (REQ-5.7).
 // studentIds: null for the whole class (including students who join later), or a list.
 export const assign = onCall(async (request) => {
-  const { classId, courseId, lessonIds, studentIds, grades = 'usual' } = request.data || {}
+  const { classId, courseId, lessonIds, studentIds, grades = 'usual', order = 'paired', due = null, afterDue = 'reduce', reduceBy = 10 } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!['usual', 'show', 'hide'].includes(grades)) throw new HttpsError('invalid-argument', 'Grades: usual, show or hide.')
+  if (!['oneByOne', 'paired', 'any'].includes(order)) throw new HttpsError('invalid-argument', 'Order: oneByOne, paired or any.')
+  if (due !== null && (!Number.isFinite(due) || due < 0)) throw new HttpsError('invalid-argument', 'Due date.')
+  if (!['reduce', 'lock'].includes(afterDue) || !Number.isInteger(reduceBy) || reduceBy < 0 || reduceBy > 100) throw new HttpsError('invalid-argument', 'After the due date: reduce (0 to 100 points) or lock.')
   const validId = (s) => typeof s === 'string' && s.length > 0 && !s.includes('/')
   let ids
   let course = null
@@ -364,6 +367,12 @@ export const assign = onCall(async (request) => {
     studentIds: chosen,
     // Whether students see grades (REQ-5.22, D-59): usual (teaching hidden), show or hide.
     grades,
+    // Course order (REQ-5.8) and due date with what happens after it (REQ-5.9, D-60).
+    order,
+    due,
+    afterDue,
+    reduceBy,
+    extensions: {},
     createdBy: request.auth.uid,
     createdAt: FieldValue.serverTimestamp(),
   })
@@ -473,17 +482,32 @@ export const classOverview = onCall(async (request) => {
     }),
   )
 
+  const now = Date.now()
+  // The assignment that sets a lesson's due date for a student (D-60): the latest one given to them
+  // that includes the lesson and has a due date; otherwise the latest one that includes it.
+  const ruleFor = (uid, l) => {
+    const mine = work.assignments.filter((a) => (a.everyone || (a.studentIds || []).includes(uid)) && (a.lessonIds || []).includes(l)).reverse()
+    return mine.find((a) => a.due || Object.keys(a.extensions || {}).length) || mine[0]
+  }
   const rows = current.map((s) => {
     const mine = given[s.id]
+    let pastDue = false
     const cells = Object.fromEntries(
       mine.lessonIds.map((l) => {
         const pr = p(s.id, l)
-        return [l, { ...lessonCell(pr), started: !!pr, sentBack: pr?.sentBack && !pr.sentBack.done ? pr.sentBack.mode : null, waiting: waitingAnswers(pr).length, tips: Object.values(pr?.tipsOpened || {}).reduce((a, b) => a + b, 0) }]
+        const rule = ruleFor(s.id, l) || {}
+        const due = dueFor(rule, s.id)
+        const finishedAt = toMillis(pr?.finishedAt)
+        const base = lessonCell(pr)
+        if (due && !pr?.finished && now > due) pastDue = true
+        const late = !!due && (finishedAt ? finishedAt > due : now > due)
+        const cell = base.kind === 'grade' ? { ...base, percent: lateGrade(base.percent, rule, due, finishedAt) } : base
+        return [l, { ...cell, due, late, started: !!pr, sentBack: pr?.sentBack && !pr.sentBack.done ? pr.sentBack.mode : null, waiting: waitingAnswers(pr).length, tips: Object.values(pr?.tipsOpened || {}).reduce((a, b) => a + b, 0) }]
       }),
     )
     const positions = Object.fromEntries(mine.courseIds.map((c) => [c, coursePosition(work.courses.find((k) => k.courseId === c).order, (l) => p(s.id, l))]))
     const openFlags = flags.filter((f) => f.uid === s.id && f.open).length
-    const { status, star } = studentStatus({ openFlags, courses: mine.courseIds.map((c) => ({ mine: positions[c].done, middle: middles[c] })) })
+    const { status, star } = studentStatus({ openFlags, pastDue, courses: mine.courseIds.map((c) => ({ mine: positions[c].done, middle: middles[c] })) })
     const times = mine.lessonIds.map((l) => toMillis(p(s.id, l)?.updatedAt)).filter(Boolean)
     return {
       ...s,
@@ -784,4 +808,20 @@ export const studentDetails = onCall(async (request) => {
     .map((d) => ({ id: d.id, text: d.data().text, byName: d.data().byName || '', createdAt: toMillis(d.data().createdAt) }))
     .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
   return { notMastered: list, notes }
+})
+
+// Changing a due date (REQ-5.9): for the whole class, or extended for one student.
+export const setDue = onCall(async (request) => {
+  const { classId, assignmentId, due, studentId } = request.data || {}
+  const { ref } = await requireClassTeacher(request.auth, classId)
+  if (!validId(assignmentId) || (due !== null && (!Number.isFinite(due) || due < 0))) throw new HttpsError('invalid-argument', 'Due date.')
+  const a = ref.collection('assignments').doc(assignmentId)
+  if (!(await a.get()).exists) throw new HttpsError('not-found', 'No such assignment.')
+  if (studentId != null) {
+    if (!validId(studentId)) throw new HttpsError('invalid-argument', 'Missing student.')
+    await a.update({ [`extensions.${studentId}`]: due === null ? FieldValue.delete() : due })
+  } else {
+    await a.update({ due })
+  }
+  return { ok: true }
 })
