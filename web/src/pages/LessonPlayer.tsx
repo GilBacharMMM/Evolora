@@ -84,11 +84,17 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const trying = role !== 'student'
   // Questions above the student's level are left out, without saying so (REQ-6.10).
   const [hidden, setHidden] = useState<Set<string>>(new Set())
+  const [minimumOverride, setMinimumOverride] = useState<number | null>(null)
   useEffect(() => {
     if (trying || !user) return
     let live = true
-    httpsCallable<{ lessonId: string }, { hidden: string[] }>(functions, 'lessonView')({ lessonId })
-      .then((r) => live && setHidden(new Set(r.data.hidden)))
+    httpsCallable<{ lessonId: string }, { hidden: string[]; minimum?: number }>(functions, 'lessonView')({ lessonId })
+      .then((r) => {
+        if (!live) return
+        setHidden(new Set(r.data.hidden))
+        // The teacher may change the lesson's minimum questions per topic (REQ-4.21, 5.9).
+        if (typeof r.data.minimum === 'number') setMinimumOverride(r.data.minimum)
+      })
       .catch(() => {})
     return () => {
       live = false
@@ -116,7 +122,8 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
     }
   }, [role, user, classIds, lessonId])
   const [currentVersion, setCurrentVersion] = useState<number | null>(null)
-  const [minimum, setMinimum] = useState(0)
+  const [lessonMinimum, setMinimum] = useState(0)
+  const minimum = minimumOverride ?? lessonMinimum
   const [lesson, setLesson] = useState<LessonVersion | null>(null)
   const [progress, setProgress] = useState<Progress | null>(null)
   const [local, setLocal] = useState<Record<string, QuestionState>>({})

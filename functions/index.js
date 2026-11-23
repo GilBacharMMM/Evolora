@@ -24,6 +24,22 @@ const progressId = (uid, lessonId) => `${uid}__${lessonId}`
 
 // The student's level for a lesson (REQ-5.18, 6.10): their level in the classes the lesson is
 // given to (the highest, if several); level 2 when the teacher hasn't set one. Teachers: all (3).
+// The minimum questions per topic for this student (REQ-4.21, 5.9): the teacher's choice in the
+// latest assignment that gives them the lesson and sets one; otherwise the lesson's default.
+async function minimumFor(uid, classIds, lessonId, lesson) {
+  let best = null
+  for (const c of classIds) {
+    const given = await db.collection(`classes/${c}/assignments`).where('lessonIds', 'array-contains', lessonId).get()
+    for (const d of given.docs) {
+      const a = d.data()
+      if (!(a.everyone || (a.studentIds || []).includes(uid)) || !Number.isInteger(a.minimumPerTopic)) continue
+      const at = a.createdAt?.toMillis?.() ?? 0
+      if (!best || at > best.at) best = { at, value: a.minimumPerTopic }
+    }
+  }
+  return best ? best.value : lesson.minimumPerTopic || 0
+}
+
 async function levelFor(uid, classIds) {
   if (!classIds.length) return 3
   const snaps = await db.getAll(...classIds.map((c) => db.doc(`classes/${c}/levels/${uid}`)))
@@ -72,6 +88,7 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
   const classIds = await access(request.auth, lesson)
   const uid = request.auth.uid
   const maxLevel = await levelFor(uid, classIds)
+  const topicMinimum = await minimumFor(uid, classIds, lessonId, lesson)
   // Exams are answered with examSave and examSubmit (REQ-4.26).
   if (lesson.type === 'exam') throw new HttpsError('failed-precondition', 'exam')
   const progressRef = db.doc(`progress/${progressId(uid, lessonId)}`)
@@ -103,7 +120,7 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
     if (outcome.flag) flagToRaise = { kind: 'checkAgainWrong', questionId, topicNumber: topic.number, topicName: topic.name }
 
     const newState = outcome.state
-    const minimum = lesson.minimumPerTopic || 0
+    const minimum = topicMinimum
     if (minimum && isFinished(newState) && lastAutoQuestionId(topic, maxLevel) === questionId && t.correct < minimum && !t.flagged) {
       t.flagged = true
       flagToRaise = flagToRaise || { kind: 'minimumNotReached', questionId, topicNumber: topic.number, topicName: topic.name }
@@ -189,7 +206,7 @@ export const finishLesson = onCall(async (request) => {
   if (progress?.finished) return { finished: true }
   const version = progress?.version || lesson.currentVersion
   const v = await lessonRef.collection('versions').doc(String(version)).get()
-  if (!lessonFinished(v.data(), progress?.questions || {}, progress?.topics || {}, lesson.minimumPerTopic || 0, await levelFor(request.auth.uid, classIds))) return { finished: false }
+  if (!lessonFinished(v.data(), progress?.questions || {}, progress?.topics || {}, await minimumFor(request.auth.uid, classIds, lessonId, lesson), await levelFor(request.auth.uid, classIds))) return { finished: false }
   const update = { uid: request.auth.uid, lessonId, version, classIds, finished: true, finishedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() }
   if (!progress) update.startedAt = FieldValue.serverTimestamp()
   await ref.set(update, { merge: true })
@@ -339,7 +356,7 @@ export const removeStudent = onCall(async (request) => {
 // Gives a course, or one or more lessons, to the whole class or to chosen students (REQ-5.7).
 // studentIds: null for the whole class (including students who join later), or a list.
 export const assign = onCall(async (request) => {
-  const { classId, courseId, lessonIds, studentIds, grades = 'usual', order = 'paired', due = null, afterDue = 'reduce', reduceBy = 10, redoCounts = false, examStart = null, examEnd = null, examTimer = true, examLock = 'none' } = request.data || {}
+  const { classId, courseId, lessonIds, studentIds, grades = 'usual', order = 'paired', due = null, afterDue = 'reduce', reduceBy = 10, redoCounts = false, minimumPerTopic = null, examStart = null, examEnd = null, examTimer = true, examLock = 'none' } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!['usual', 'show', 'hide'].includes(grades)) throw new HttpsError('invalid-argument', 'Grades: usual, show or hide.')
   if (!['oneByOne', 'paired', 'any'].includes(order)) throw new HttpsError('invalid-argument', 'Order: oneByOne, paired or any.')
@@ -392,6 +409,8 @@ export const assign = onCall(async (request) => {
     extensions: {},
     // Whether the latest redo's grade replaces the old one (REQ-5.9, 6.5).
     redoCounts: redoCounts === true,
+    // The minimum questions per topic, when the teacher changes the lesson's default (REQ-4.21, 5.9).
+    minimumPerTopic: Number.isInteger(minimumPerTopic) && minimumPerTopic >= 0 && minimumPerTopic <= 20 ? minimumPerTopic : null,
     // Exams (REQ-5.23): the time window, the timer, and locking the rest during the window.
     examStart,
     examEnd,
@@ -897,14 +916,15 @@ export const lessonView = onCall(async (request) => {
   const classIds = await access(request.auth, lesson)
   const maxLevel = await levelFor(request.auth.uid, classIds)
   // Levels don't apply in exams: everyone gets the same questions (REQ-4.26).
-  if (maxLevel >= 3 || lesson.type === 'exam') return { hidden: [] }
+  const minimum = await minimumFor(request.auth.uid, classIds, lessonId, lesson)
+  if (maxLevel >= 3 || lesson.type === 'exam') return { hidden: [], minimum }
   const p = await db.doc(`progress/${progressId(request.auth.uid, lessonId)}`).get()
   const version = (p.exists && p.data().version) || lesson.currentVersion
   const v = (await lessonRef.collection('versions').doc(String(version)).get()).data()
   const answered = p.exists ? p.data().questions || {} : {}
   // A question already answered stays (a level lowered later applies from the next question).
   const hidden = v.topics.flatMap((t) => t.blocks.filter((b) => b.type === 'question' && !receives(b, maxLevel) && !answered[b.id]).map((b) => b.id))
-  return { hidden }
+  return { hidden, minimum }
 })
 
 // Trying a lesson as a teacher (REQ-5.32): answers are checked as for a student, but nothing is

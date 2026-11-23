@@ -46,6 +46,7 @@ const secret = (await getDoc(doc(ldb, 'lessons', LESSON, 'versions', v, 'secret'
 const q = version.topics.flatMap((t) => t.blocks).find((b) => b.type === 'question' && b.kind === 'choice' && (b.level ?? 1) === 1)
 
 async function cleanUp() {
+  for (const a of (await getDocs(collection(ldb, 'classes', CLASS, 'assignments'))).docs) if (a.data().createdBy !== 'evolora-loader') await deleteDoc(a.ref)
   await updateDoc(doc(ldb, 'classes', CLASS), { teacherIds: arrayRemove('test-teacher-2'), teacherNames: arrayRemove('Test Teacher 2') })
   await deleteDoc(doc(ldb, 'progress', `test-student-2__${LESSON}`))
   for (const a of (await getDocs(query(collection(ldb, 'classes', CLASS, 'assignments'), where('courseId', '==', 'circles-demo')))).docs) await updateDoc(a.ref, { archived: deleteField() })
@@ -98,6 +99,12 @@ try {
   check('a student cannot change another student\'s language', await as('test-student-2', async ({ call }) => {
     try { await call('setStudentLanguage', { classId: CLASS, studentId: 'test-student-1', language: 'ar' }); return false } catch (e) { return e.code === 'functions/permission-denied' }
   }))
+
+  console.log('Minimum questions per topic, set when giving (REQ-4.21, 5.9)')
+  const practiceDefault = (await getDoc(doc(ldb, 'lessons', 'circles-practice'))).data().minimumPerTopic
+  check("before: the lesson's default", (await as('test-student-6', ({ call }) => call('lessonView', { lessonId: 'circles-practice' }))).minimum === practiceDefault)
+  await as('test-teacher-1', ({ call }) => call('assign', { classId: CLASS, lessonIds: ['circles-practice'], studentIds: ['test-student-6'], minimumPerTopic: 1 }))
+  check("after the teacher sets 1, the student's lesson asks for 1 per topic", (await as('test-student-6', ({ call }) => call('lessonView', { lessonId: 'circles-practice' }))).minimum === 1)
 } catch (e) {
   check('the test ran to the end', false, e.message)
 } finally {

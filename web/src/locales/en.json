@@ -165,7 +165,9 @@
     },
     "redoCounts": "Redo counts: the latest redo's grade replaces the earlier one, even if lower",
     "removeTeacher": "Remove from the class",
-    "removeTeacherConfirm": "Remove {{name}} as a teacher of this class? They will no longer see it. Nothing else changes."
+    "removeTeacherConfirm": "Remove {{name}} as a teacher of this class? They will no longer see it. Nothing else changes.",
+    "minimumPerTopic": "Minimum questions per topic (leave empty for the lesson's default):",
+    "minimumDefault": "default"
   },
   "lessonType": {
     "teaching": "Teaching",

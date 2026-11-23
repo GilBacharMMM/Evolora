@@ -360,6 +360,7 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
   const [studentIds, setStudentIds] = useState<string[]>([])
   const [grades, setGrades] = useState<'usual' | 'show' | 'hide'>('usual')
   const [redoCounts, setRedoCounts] = useState(false)
+  const [minimumPerTopic, setMinimumPerTopic] = useState('')
   const [examStart, setExamStart] = useState('')
   const [examEnd, setExamEnd] = useState('')
   const [examTimer, setExamTimer] = useState(true)
@@ -392,6 +393,7 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
         studentIds: to === 'everyone' ? null : studentIds,
         grades,
         redoCounts,
+        minimumPerTopic: minimumPerTopic.trim() === '' ? null : Number(minimumPerTopic),
         examStart: examStart && examEnd ? new Date(examStart).getTime() : null,
         examEnd: examStart && examEnd ? new Date(examEnd).getTime() : null,
         examTimer,
@@ -534,6 +536,10 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
             ))}
           </fieldset>
         )}
+        <label className="select-line">
+          <span>{t('teacher.minimumPerTopic')} </span>
+          <input className="points-input" value={minimumPerTopic} onChange={(e) => setMinimumPerTopic(e.target.value.replace(/[^0-9]/g, ''))} inputMode="numeric" dir="ltr" placeholder={t('teacher.minimumDefault')} />
+        </label>
         <label className="check-line">
           <input type="checkbox" checked={redoCounts} onChange={(e) => setRedoCounts(e.target.checked)} />
           {t('teacher.redoCounts')}

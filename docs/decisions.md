@@ -685,7 +685,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 4. **The due date that counts** for a lesson is from the latest assignment that gives it to the student with a due date. An extension for one student replaces the class's date for them; changing the class's date doesn't change extensions. Clearing the date removes it.
 5. **Locking after the due date** is done by the website: the lesson can't be opened from the student's pages or by its address. A lesson the student already finished can still be opened to read.
 6. **The yellow "late" status** on the dashboard shows when a lesson given to the student is past its due date and not finished.
-7. **Not built yet from REQ-5.9:** changing the minimum questions per topic per assignment, "redo counts" (redo is REQ-6.5, priority 3), and exam time windows (REQ-5.23, priority 3). Who checks open answers is always the teacher.
+7. **From REQ-5.9, built later the same day:** the minimum questions per topic per assignment (a box when giving lessons; empty means the lesson's default; the latest assignment that sets one counts), "redo counts" (D-63) and exam time windows (D-65). Who checks open answers is always the teacher.
 **Reason:** Keeps students' current work unchanged and follows the requirements' own recommendation; each point is easy to change.
 **Affects:** REQ-5.8, REQ-5.9, REQ-5.10, REQ-6.1, D-55, D-57
 
