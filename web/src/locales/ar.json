@@ -161,7 +161,20 @@
     "afterReduceShort": "خصم {{n}} نقاط عند التأخير",
     "noDue": "لا يوجد موعد تسليم",
     "extended": "مُدّد لـ{{name}} حتى {{date}}",
-    "changeDue": "تغيير موعد التسليم"
+    "changeDue": "تغيير موعد التسليم",
+    "archive": "نقل الدورة إلى الأرشيف",
+    "unarchive": "إعادتها إلى الدورات النشطة",
+    "archiveConfirm": "نقل هذه الدورة إلى الأرشيف؟ سيراها الطلاب تحت الدورات المؤرشفة؛ تبقى الدروس والعلامات.",
+    "archivedBadge": "مؤرشفة",
+    "teachersTitle": "معلمو الصف",
+    "teacherEmail": "البريد الإلكتروني للمعلم",
+    "addTeacher": "إضافة معلم",
+    "addTeacherResult": {
+      "added": "أصبح {{name}} معلمًا لهذا الصف.",
+      "already": "{{name}} يعلّم هذا الصف بالفعل.",
+      "notTeacher": "هذا البريد ليس في قائمة المعلمين. اطلب من مسؤول النظام إضافته أولًا.",
+      "notSignedIn": "لم يدخل هذا المعلم إلى Evolora بعد. اطلب منه الدخول مرة واحدة ثم حاول مجددًا."
+    }
   },
   "lessonType": {
     "teaching": "تعليم",
@@ -266,7 +279,8 @@
     "percentDone": "اكتمل {{percent}}%",
     "lessonsDone": "الدروس المكتملة: {{done}} من {{total}}",
     "course": "دورة",
-    "notInClass": "هذا الصف أو هذه الدورة غير موجودة، أو أنك لست في هذا الصف."
+    "notInClass": "هذا الصف أو هذه الدورة غير موجودة، أو أنك لست في هذا الصف.",
+    "archived": "الدورات المؤرشفة"
   },
   "follow": {
     "dashboard": "لوحة الصف",
@@ -369,6 +383,30 @@
     "sendBackThisConfirm": "إعادة هذا السؤال إلى {{name}} ليجيب عنه من جديد؟ ترسل ملاحظتك معه.",
     "tryLesson": "تجربة الدرس",
     "suggested": "اقتراح: المستوى {{level}}",
-    "accept": "قبول"
+    "accept": "قبول",
+    "successRate": "نسبة النجاح",
+    "rateFirst": "{{percent}}% صحيح من المحاولة الأولى",
+    "rateSecond": "{{percent}}% في الثانية",
+    "rateNot": "{{percent}}% لم ينجحوا",
+    "rateOf": "من {{n}} أجابوا",
+    "rateOpen": "المعدل {{percent}}% ({{n}} صُححت)",
+    "studentLanguage": "لغة واجهة الطالب:",
+    "chooseLanguage": "اختر",
+    "languageSet": "تم الحفظ. تتغير اللغة في المرة القادمة التي يفتح فيها الطالب Evolora."
+  },
+  "library": {
+    "search": "البحث حسب العنوان",
+    "searchPlaceholder": "مثلًا: دائرة",
+    "subject": "الموضوع",
+    "grade": "الصف",
+    "language": "اللغة",
+    "creator": "المؤلف",
+    "all": "الكل",
+    "count": "يظهر {{shown}} من {{total}} دروس",
+    "lang": {
+      "he": "العبرية",
+      "ar": "العربية",
+      "en": "الإنجليزية"
+    }
   }
 }

@@ -120,6 +120,13 @@ The teacher's screens read a class's work through the checking service, which fi
 - **Random order (REQ-4.19):** the choices of every multiple choice question, check-again questions included, are shown in an order that is fixed for each student and differs between students. Answers are checked by which choice was picked, so the order doesn't matter.
 - **Image sources (REQ-4.15):** a small "Source" note under each image opens to show where it comes from.
 - **Trying a lesson (REQ-5.32):** a teacher who opens any lesson (from the lesson list, a course or a class) sees the banner "Trying the lesson: answers are not saved". Answers are checked exactly as for a student, by a separate part of the checking service that saves nothing; Skip and Show answer buttons appear only for teachers, and Start again begins from the top.
+
+### 2.11 First priority 3 features (D-62)
+- **Success rate (REQ-5.29):** under each question on a lesson's results page: the share of students who answered it right on the 1st attempt, on the 2nd, and not at all (open questions: the average of graded answers).
+- **Lesson library (REQ-4.9):** search by title, and filters for subject, grade, language and creator.
+- **Archiving courses (REQ-5.21):** on Class settings, "Archive the course" (with a confirmation) or "Bring it back". Students see it under **Archived courses** on the class page; lessons and grades stay.
+- **Student's language (REQ-9.6):** on the student page, the teacher picks Hebrew, Arabic or English; it applies the next time the student opens Evolora.
+- **Co-teachers (REQ-5.5):** on Class settings, "Teachers of the class" with **Add a teacher** by email. Every teacher of the class can do everything; when two change the same thing, the last change counts.
 ---
 
 ## 3. Where the data lives

@@ -149,7 +149,20 @@
     "afterReduceShort": "{{n}} points off if late",
     "noDue": "No due date",
     "extended": "extended for {{name}} to {{date}}",
-    "changeDue": "Change the due date"
+    "changeDue": "Change the due date",
+    "archive": "Archive the course",
+    "unarchive": "Bring it back to active courses",
+    "archiveConfirm": "Archive this course? Students will see it under Archived courses; its lessons and grades stay.",
+    "archivedBadge": "Archived",
+    "teachersTitle": "Teachers of the class",
+    "teacherEmail": "Teacher's email address",
+    "addTeacher": "Add a teacher",
+    "addTeacherResult": {
+      "added": "{{name}} is now a teacher of this class.",
+      "already": "{{name}} already teaches this class.",
+      "notTeacher": "This email is not on the list of teachers. Ask the system admin to add it first.",
+      "notSignedIn": "This teacher hasn't signed in to Evolora yet. Ask them to sign in once, then try again."
+    }
   },
   "lessonType": {
     "teaching": "Teaching",
@@ -254,7 +267,8 @@
     "percentDone": "{{percent}}% done",
     "lessonsDone": "Lessons done: {{done}} of {{total}}",
     "course": "Course",
-    "notInClass": "This class or course doesn't exist, or you're not in it."
+    "notInClass": "This class or course doesn't exist, or you're not in it.",
+    "archived": "Archived courses"
   },
   "follow": {
     "dashboard": "Dashboard",
@@ -357,6 +371,30 @@
     "sendBackThisConfirm": "Send this question back to {{name}} to answer again? Your comment goes with it as a note.",
     "tryLesson": "Try the lesson",
     "suggested": "Suggested: level {{level}}",
-    "accept": "Accept"
+    "accept": "Accept",
+    "successRate": "Success rate",
+    "rateFirst": "{{percent}}% right on the 1st attempt",
+    "rateSecond": "{{percent}}% on the 2nd",
+    "rateNot": "{{percent}}% not at all",
+    "rateOf": "out of {{n}} who answered",
+    "rateOpen": "average {{percent}}% ({{n}} graded)",
+    "studentLanguage": "Student's interface language:",
+    "chooseLanguage": "Choose",
+    "languageSet": "Saved. It changes the next time the student opens Evolora."
+  },
+  "library": {
+    "search": "Search by title",
+    "searchPlaceholder": "For example: circle",
+    "subject": "Subject",
+    "grade": "Grade",
+    "language": "Language",
+    "creator": "Creator",
+    "all": "All",
+    "count": "Showing {{shown}} of {{total}} lessons",
+    "lang": {
+      "he": "Hebrew",
+      "ar": "Arabic",
+      "en": "English"
+    }
   }
 }

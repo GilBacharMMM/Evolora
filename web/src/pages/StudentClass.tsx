@@ -39,9 +39,10 @@ export function StudentClass({ classId }: { classId: string }) {
   if (!c) return <NotInClass />
 
   const hasNotes = (k: (typeof c.courses)[number]) => k.items.some((it) => [it, ...it.practice].some((l) => l.notes))
-  const active = c.courses.filter((k) => !k.finished || hasNotes(k))
+  const active = c.courses.filter((k) => !k.archived && (!k.finished || hasNotes(k)))
   const waiting = c.singles.filter((s) => s.status !== 'done' || s.notes)
-  const finishedCourses = c.courses.filter((k) => k.finished && !hasNotes(k))
+  const finishedCourses = c.courses.filter((k) => !k.archived && k.finished && !hasNotes(k))
+  const archived = c.courses.filter((k) => k.archived)
   const finishedSingles = c.singles.filter((s) => s.status === 'done' && !s.notes)
 
   return (
@@ -101,6 +102,20 @@ export function StudentClass({ classId }: { classId: string }) {
           ))}
         </ul>
       </section>
+
+      {archived.length > 0 && (
+        <section aria-labelledby="archived-title" className="class-section">
+          <h2 id="archived-title" className="section-title">{t('cls.archived')}</h2>
+          {archived.map((k) => (
+            <button key={k.courseId} type="button" className="card course-button archived" onClick={() => navigate(`/class/${classId}/course/${k.courseId}`)}>
+              <span className="course-button-title" dir="auto" lang={k.language}>
+                {k.title}
+              </span>
+              <ProgressBar percent={k.percent} done={k.done} total={k.total} />
+            </button>
+          ))}
+        </section>
+      )}
     </main>
   )
 }

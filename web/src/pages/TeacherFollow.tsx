@@ -24,6 +24,7 @@ interface CourseInfo {
   language: string
   order: string[]
   middle: number
+  archived?: boolean
   items: { lessonId: string; title: string; type: LessonType; practice: { lessonId: string; title: string; type: LessonType }[] }[]
 }
 
@@ -208,7 +209,7 @@ export function ClassDashboard({ classId }: { classId: string }) {
                 <Head k="status">{t('follow.statusTitle')}</Head>
                 <Head k="name">{t('follow.student')}</Head>
                 <Head k="level">{t('follow.level')}</Head>
-                {data.courses.map((c) => (
+                {data.courses.filter((c) => !c.archived).map((c) => (
                   <Head key={c.courseId} k={`course:${c.courseId}`}>
                     <span dir="auto">{c.title}</span>
                   </Head>
@@ -233,7 +234,7 @@ export function ClassDashboard({ classId }: { classId: string }) {
                     <LevelControl classId={classId} studentId={s.id} level={s.level} name={s.name} onChange={reload} />
                     {s.suggestion && <Suggestion classId={classId} studentId={s.id} level={s.suggestion} onAccepted={reload} />}
                   </td>
-                  {data.courses.map((c) => (
+                  {data.courses.filter((c) => !c.archived).map((c) => (
                     <td key={c.courseId}>
                       {s.courseIds.includes(c.courseId) ? <ProgressMap course={c} student={s} lessons={data.lessons} /> : <span className="muted">—</span>}
                     </td>
@@ -585,6 +586,7 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
           </span>
           <span>{t('follow.tipsOpened', { n: tips })}</span>
         </div>
+        <LanguageChange classId={classId} studentId={s.id} />
       </section>
 
       <section className="card list-card-padded" aria-labelledby="mastered-title">
@@ -664,6 +666,44 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
         </ul>
       </section>
     </main>
+  )
+}
+
+// The teacher changes the student's interface language; it applies next time they open Evolora (REQ-9.6).
+function LanguageChange({ classId, studentId }: { classId: string; studentId: string }) {
+  const { t } = useTranslation()
+  const [lang, setLang] = useState('')
+  const [done, setDone] = useState<string | null>(null)
+  return (
+    <div className="language-change">
+      <label>
+        <span>{t('follow.studentLanguage')} </span>
+        <select value={lang} onChange={(e) => setLang(e.target.value)}>
+          <option value="">{t('follow.chooseLanguage')}</option>
+          {(['he', 'ar', 'en'] as const).map((l) => (
+            <option key={l} value={l}>
+              {t(`library.lang.${l}`)}
+            </option>
+          ))}
+        </select>
+      </label>
+      <button
+        type="button"
+        className="button secondary small"
+        disabled={!lang}
+        onClick={async () => {
+          try {
+            await call('setStudentLanguage', { classId, studentId, language: lang })
+            setDone(t('follow.languageSet'))
+          } catch {
+            setDone(t('teacher.actionFailed'))
+          }
+        }}
+      >
+        {t('follow.save')}
+      </button>
+      {done && <span className="muted small-note">{done}</span>}
+    </div>
   )
 }
 
@@ -786,6 +826,29 @@ function AnswerMark({ st }: { st: AnswerState | undefined }) {
   if (st.result === 'correct1') return <span className="answer-mark right">✓ {t('follow.right')}</span>
   if (st.result === 'correct2') return <span className="answer-mark half">½ {t('follow.secondTry')}</span>
   return <span className="answer-mark wrong">✗ {t('follow.wrong')}</span>
+}
+
+// Which questions are hard for the class (REQ-5.29): of the students who answered, how many got it
+// right on the 1st attempt, on the 2nd, and not at all. Open answers: the average of graded ones.
+function SuccessRate({ states }: { states: AnswerState[] }) {
+  const { t } = useTranslation()
+  if (!states.length) return <span className="muted">—</span>
+  const pct = (n: number) => Math.round((n / states.length) * 100)
+  if (states.every((st) => st.result === 'pending')) {
+    const graded = states.filter((st) => st.graded && st.score != null)
+    if (!graded.length) return <span className="muted small-note">{t('follow.pending')}</span>
+    return <span className="small-note">{t('follow.rateOpen', { percent: Math.round((graded.reduce((a, st) => a + (st.score || 0), 0) / graded.length) * 100), n: graded.length })}</span>
+  }
+  const first = states.filter((st) => st.result === 'correct1').length
+  const second = states.filter((st) => st.result === 'correct2').length
+  return (
+    <span className="rate">
+      <span>{t('follow.rateFirst', { percent: pct(first) })}</span>
+      <span>{t('follow.rateSecond', { percent: pct(second) })}</span>
+      <span>{t('follow.rateNot', { percent: pct(states.length - first - second) })}</span>
+      <span className="muted">{t('follow.rateOf', { n: states.length })}</span>
+    </span>
+  )
 }
 
 // Full, half, zero or any percentage, saved for one answer (REQ-5.12, 5.15).
@@ -925,6 +988,16 @@ export function LessonResultsPage({ classId, lessonId }: { classId: string; less
               </tr>
             ))}
           </tbody>
+          <tfoot>
+            <tr className="success-row">
+              <th colSpan={3}>{t('follow.successRate')}</th>
+              {data.questions.map((q) => (
+                <td key={q.id}>
+                  <SuccessRate states={data.students.map((s) => s.states[q.id]).filter((st): st is AnswerState => !!st?.result)} />
+                </td>
+              ))}
+            </tr>
+          </tfoot>
         </table>
       </section>
     </main>

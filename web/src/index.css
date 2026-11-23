@@ -2287,3 +2287,61 @@ details.image-source summary {
   font-weight: 700;
   color: var(--sun-text);
 }
+
+/* Success rate per question (REQ-5.29) */
+.success-row th,
+.success-row td {
+  vertical-align: top;
+  background: var(--teal-faint);
+}
+
+.rate {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+/* Lesson library search (REQ-4.9) */
+.library-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.library-filters label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.library-filters input,
+.library-filters select {
+  font: inherit;
+  min-height: 44px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  padding-inline: 10px;
+  background: var(--white);
+}
+
+/* Archived courses (REQ-5.21) */
+.course-button.archived {
+  background: var(--ground);
+}
+
+.language-change {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.language-change select {
+  font: inherit;
+  min-height: 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+}

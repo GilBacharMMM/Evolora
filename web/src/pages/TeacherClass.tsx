@@ -23,6 +23,7 @@ interface AssignmentRow {
   everyone: boolean
   studentIds: string[]
   grades?: 'usual' | 'show' | 'hide'
+  archived?: boolean
   order?: 'oneByOne' | 'paired' | 'any'
   due?: number | null
   afterDue?: 'reduce' | 'lock'
@@ -171,12 +172,27 @@ export function TeacherClass({ classId }: { classId: string }) {
                   {a.everyone ? t('teacher.toEveryone') : t('teacher.toSome', { count: a.studentIds.length, names: a.studentIds.map(nameOf).join(', ') })}
                 </span>
                 <DueLine classId={classId} assignment={a} students={current} nameOf={nameOf} onChanged={load} />
+                {a.kind === 'course' && a.courseId && (
+                  <button
+                    type="button"
+                    className="link-button small-note"
+                    onClick={async () => {
+                      if (!a.archived && !window.confirm(t('teacher.archiveConfirm'))) return
+                      await call('archiveCourse', { classId, courseId: a.courseId, archived: !a.archived }).catch(() => {})
+                      await load()
+                    }}
+                  >
+                    {a.archived ? t('teacher.unarchive') : t('teacher.archive')}
+                  </button>
+                )}
+                {a.archived && <span className="badge badge-cleared">{t('teacher.archivedBadge')}</span>}
               </li>
             )
           })}
         </ul>
       </section>
 
+      <Teachers classId={classId} names={data.teacherNames} onAdded={load} />
       <GiveForm classId={classId} students={current} lessons={lessons} courses={courses} onGiven={load} />
       <OpenEarlyForm
         classId={classId}
@@ -678,5 +694,61 @@ function DueLine({ classId, assignment, students, nameOf, onChanged }: { classId
         </span>
       )}
     </span>
+  )
+}
+
+// The class's teachers, and adding a co-teacher by email (REQ-5.5).
+function Teachers({ classId, names, onAdded }: { classId: string; names: string[]; onAdded: () => Promise<void> }) {
+  const { t } = useTranslation()
+  const [email, setEmail] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [message, setMessage] = useState<{ good: boolean; text: string } | null>(null)
+  return (
+    <section className="card list-card-padded" aria-labelledby="teachers-title">
+      <h2 id="teachers-title" className="section-title">
+        {t('teacher.teachersTitle')}
+      </h2>
+      <ul className="given-list">
+        {names.map((n) => (
+          <li key={n} dir="auto">
+            {n}
+          </li>
+        ))}
+      </ul>
+      <form
+        className="join-form"
+        onSubmit={async (e) => {
+          e.preventDefault()
+          if (!email.trim()) return
+          setBusy(true)
+          setMessage(null)
+          try {
+            const r = await call<{ result: 'added' | 'already' | 'notTeacher' | 'notSignedIn'; name?: string }>('addTeacher', { classId, email })
+            setMessage({ good: r.result === 'added' || r.result === 'already', text: t(`teacher.addTeacherResult.${r.result}`, { name: r.name || email }) })
+            if (r.result === 'added') {
+              setEmail('')
+              await onAdded()
+            }
+          } catch {
+            setMessage({ good: false, text: t('teacher.actionFailed') })
+          } finally {
+            setBusy(false)
+          }
+        }}
+      >
+        <label>
+          <span className="visually-hidden">{t('teacher.teacherEmail')}</span>
+          <input className="name-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder={t('teacher.teacherEmail')} dir="ltr" />
+        </label>
+        <button type="submit" className="button primary" disabled={busy || !email.trim()}>
+          {t('teacher.addTeacher')}
+        </button>
+      </form>
+      {message && (
+        <p role="status" className={message.good ? 'notice good' : 'notice'}>
+          {message.text}
+        </p>
+      )}
+    </section>
   )
 }

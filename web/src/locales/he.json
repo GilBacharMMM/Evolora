@@ -155,7 +155,20 @@
     "afterReduceShort": "הורדה של {{n}} נקודות באיחור",
     "noDue": "אין תאריך הגשה",
     "extended": "הוארך ל{{name}} עד {{date}}",
-    "changeDue": "שינוי תאריך ההגשה"
+    "changeDue": "שינוי תאריך ההגשה",
+    "archive": "העברת הקורס לארכיון",
+    "unarchive": "החזרה לקורסים הפעילים",
+    "archiveConfirm": "להעביר את הקורס לארכיון? התלמידים יראו אותו תחת קורסים בארכיון; השיעורים והציונים נשמרים.",
+    "archivedBadge": "בארכיון",
+    "teachersTitle": "המורים של הכיתה",
+    "teacherEmail": "כתובת המייל של המורה",
+    "addTeacher": "הוספת מורה",
+    "addTeacherResult": {
+      "added": "{{name}} מלמד/ת עכשיו בכיתה הזו.",
+      "already": "{{name}} כבר מלמד/ת בכיתה הזו.",
+      "notTeacher": "הכתובת הזו לא ברשימת המורים. יש לבקש ממנהל/ת המערכת להוסיף אותה קודם.",
+      "notSignedIn": "המורה עדיין לא נכנס/ה לאבולורה. יש לבקש להיכנס פעם אחת ולנסות שוב."
+    }
   },
   "lessonType": {
     "teaching": "הקניה",
@@ -260,7 +273,8 @@
     "percentDone": "{{percent}}% הושלמו",
     "lessonsDone": "שיעורים שהושלמו: {{done}} מתוך {{total}}",
     "course": "קורס",
-    "notInClass": "הכיתה או הקורס לא קיימים, או שאינך בכיתה הזו."
+    "notInClass": "הכיתה או הקורס לא קיימים, או שאינך בכיתה הזו.",
+    "archived": "קורסים בארכיון"
   },
   "follow": {
     "dashboard": "לוח הכיתה",
@@ -363,6 +377,30 @@
     "sendBackThisConfirm": "להחזיר את השאלה הזו ל{{name}} כדי לענות שוב? ההערה שלך נשלחת איתה.",
     "tryLesson": "ניסיון השיעור",
     "suggested": "הצעה: רמה {{level}}",
-    "accept": "אישור"
+    "accept": "אישור",
+    "successRate": "אחוזי הצלחה",
+    "rateFirst": "{{percent}}% נכון בניסיון הראשון",
+    "rateSecond": "{{percent}}% בשני",
+    "rateNot": "{{percent}}% לא הצליחו",
+    "rateOf": "מתוך {{n}} שענו",
+    "rateOpen": "ממוצע {{percent}}% ({{n}} נבדקו)",
+    "studentLanguage": "שפת הממשק של התלמיד/ה:",
+    "chooseLanguage": "בחירה",
+    "languageSet": "נשמר. השפה תשתנה בפעם הבאה שהתלמיד/ה ייכנס/תיכנס לאבולורה."
+  },
+  "library": {
+    "search": "חיפוש לפי כותרת",
+    "searchPlaceholder": "לדוגמה: מעגל",
+    "subject": "מקצוע",
+    "grade": "כיתה",
+    "language": "שפה",
+    "creator": "יוצר/ת",
+    "all": "הכול",
+    "count": "מוצגים {{shown}} מתוך {{total}} שיעורים",
+    "lang": {
+      "he": "עברית",
+      "ar": "ערבית",
+      "en": "אנגלית"
+    }
   }
 }

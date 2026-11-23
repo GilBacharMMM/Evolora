@@ -40,6 +40,8 @@ export interface CourseWork {
   percent: number
   finished: boolean
   givenAt: number
+  // Archived by the teacher (REQ-5.21)
+  archived?: boolean
 }
 
 export interface SingleWork extends WorkLesson {
@@ -66,6 +68,7 @@ export interface TodoItem extends WorkLesson {
 }
 
 interface Assignment {
+  archived?: boolean
   grades?: 'usual' | 'show' | 'hide'
   order?: Order
   due?: number | null
@@ -196,6 +199,7 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
               percent: percent(done, order.length),
               finished: order.length > 0 && done === order.length,
               givenAt,
+              archived: a.archived === true,
             })
           } else {
             // A selection of single lessons, in the order chosen when giving them (REQ-5.8).
@@ -256,6 +260,7 @@ export function todoList(classes: ClassWork[]): TodoItem[] {
   for (const c of classes) {
     const base = { classId: c.id, className: c.name, color: c.color }
     for (const course of c.courses) {
+      if (course.archived) continue
       for (const it of course.items) {
         for (const l of [it, ...it.practice]) {
           if (l.status !== 'open' && !l.notes) continue

@@ -178,6 +178,9 @@ export function LessonLibrary() {
   const { t } = useTranslation()
   const [lessons, setLessons] = useState<LessonSummary[] | null>(null)
   const [courses, setCourses] = useState<Course[]>([])
+  // Search and filters (REQ-4.9): title, subject, grade, language and creator.
+  const [search, setSearch] = useState('')
+  const [filters, setFilters] = useState({ subject: '', grade: '', language: '', creator: '' })
 
   useEffect(() => {
     let live = true
@@ -192,10 +195,41 @@ export function LessonLibrary() {
     }
   }, [])
 
+  const values = (key: 'subject' | 'grade' | 'language' | 'creator') => [...new Set((lessons || []).map((l) => String(l[key] ?? '')).filter(Boolean))].sort()
+  const words = search.trim().toLowerCase()
+  const shown = (lessons || []).filter(
+    (l) =>
+      (!words || l.title.toLowerCase().includes(words)) &&
+      (!filters.subject || l.subject === filters.subject) &&
+      (!filters.grade || String(l.grade) === filters.grade) &&
+      (!filters.language || l.language === filters.language) &&
+      (!filters.creator || l.creator === filters.creator),
+  )
+
   return (
     <main className="page">
       <BackButton />
       <h1 className="page-title">{t('teacher.lessons')}</h1>
+      <section className="card library-filters" aria-label={t('library.search')}>
+        <label>
+          <span>{t('library.search')}</span>
+          <input type="search" value={search} onChange={(e) => setSearch(e.target.value)} dir="auto" placeholder={t('library.searchPlaceholder')} />
+        </label>
+        {(['subject', 'grade', 'language', 'creator'] as const).map((key) => (
+          <label key={key}>
+            <span>{t(`library.${key}`)}</span>
+            <select value={filters[key]} onChange={(e) => setFilters((f) => ({ ...f, [key]: e.target.value }))}>
+              <option value="">{t('library.all')}</option>
+              {values(key).map((v) => (
+                <option key={v} value={v}>
+                  {key === 'language' ? t(`library.lang.${v}`, { defaultValue: v }) : v}
+                </option>
+              ))}
+            </select>
+          </label>
+        ))}
+        <span className="muted small-note">{t('library.count', { shown: shown.length, total: lessons?.length ?? 0 })}</span>
+      </section>
       {lessons === null && <p className="loading">{t('common.loading')}</p>}
       <section className="card list-card">
         <table className="data-table">
@@ -209,7 +243,7 @@ export function LessonLibrary() {
             </tr>
           </thead>
           <tbody>
-            {lessons?.map((l) => (
+            {shown.map((l) => (
               <tr key={l.id}>
                 <td>
                   <button type="button" className="link-button" dir="auto" onClick={() => navigate(`/lesson/${l.id}`)}>

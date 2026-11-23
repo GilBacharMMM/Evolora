@@ -424,6 +424,8 @@ async function classWork(classRef) {
         language: c.language,
         items: c.items,
         order: c.items.flatMap((it) => [it.lessonId, ...it.practice.map((p) => p.lessonId)]),
+        // Archived when every assignment of this course in the class is archived (REQ-5.21).
+        archived: assignments.filter((a) => a.kind === 'course' && a.courseId === s.id).every((a) => a.archived === true),
       }
     })
   const lessonIds = [...new Set(assignments.flatMap((a) => a.lessonIds || []))]
@@ -517,7 +519,8 @@ export const classOverview = onCall(async (request) => {
     )
     const positions = Object.fromEntries(mine.courseIds.map((c) => [c, coursePosition(work.courses.find((k) => k.courseId === c).order, (l) => p(s.id, l))]))
     const openFlags = flags.filter((f) => f.uid === s.id && f.open).length
-    const { status, star } = studentStatus({ openFlags, pastDue, courses: mine.courseIds.map((c) => ({ mine: positions[c].done, middle: middles[c] })) })
+    const active = (c) => !work.courses.find((k) => k.courseId === c)?.archived
+    const { status, star } = studentStatus({ openFlags, pastDue, courses: mine.courseIds.filter(active).map((c) => ({ mine: positions[c].done, middle: middles[c] })) })
     const times = mine.lessonIds.map((l) => toMillis(p(s.id, l)?.updatedAt)).filter(Boolean)
     return {
       ...s,
@@ -886,4 +889,56 @@ export const tryAnswer = onCall(async (request) => {
   const outcome = checkAgain ? answerCheckAgain(state, secret, value) : answerMain(state, found.q, secret, value, (bank) => bank[Math.floor(Math.random() * bank.length)])
   if (outcome.invalid) throw new HttpsError('invalid-argument', 'invalid-answer')
   return { reply: outcome.reply, state: outcome.state }
+})
+
+// Archiving a course in a class, or bringing it back (REQ-5.21). Students see it under
+// "Archived courses"; its lessons and grades stay.
+export const archiveCourse = onCall(async (request) => {
+  const { classId, courseId, archived } = request.data || {}
+  const { ref } = await requireClassTeacher(request.auth, classId)
+  if (!validId(courseId) || typeof archived !== 'boolean') throw new HttpsError('invalid-argument', 'Missing course.')
+  const snap = await ref.collection('assignments').where('courseId', '==', courseId).get()
+  if (snap.empty) throw new HttpsError('not-found', 'The course was not given to this class.')
+  const batch = db.batch()
+  for (const d of snap.docs) batch.update(d.ref, { archived })
+  await batch.commit()
+  return { archived }
+})
+
+// A teacher changes a student's interface language (REQ-9.6); it applies the next time the student
+// opens Evolora (the website reads the saved language when they sign in, REQ-9.4).
+export const setStudentLanguage = onCall(async (request) => {
+  const { classId, studentId, language } = request.data || {}
+  const { ref } = await requireClassTeacher(request.auth, classId)
+  if (!validId(studentId) || !['he', 'ar', 'en'].includes(language)) throw new HttpsError('invalid-argument', 'Language: he, ar or en.')
+  const s = await ref.collection('students').doc(studentId).get()
+  if (!s.exists || s.data().removed) throw new HttpsError('not-found', 'Not in this class.')
+  await db.doc(`users/${studentId}`).set({ language }, { merge: true })
+  return { language }
+})
+
+// Co-teachers (REQ-5.5): a teacher of the class adds another teacher by email. The other teacher
+// must be on the staff list and have signed in once. All teachers of a class can do the same things.
+export const addTeacher = onCall(async (request) => {
+  const { classId, email } = request.data || {}
+  const { ref, data } = await requireClassTeacher(request.auth, classId)
+  const key = typeof email === 'string' ? email.trim().toLowerCase() : ''
+  if (!key || !key.includes('@')) throw new HttpsError('invalid-argument', 'email')
+  const staff = await db.doc(`staff/${key}`).get()
+  if (!staff.exists || !['teacher', 'admin'].includes(staff.data().role)) return { result: 'notTeacher' }
+  const users = await db.collection('users').where('email', '==', key).limit(1).get()
+  if (users.empty) {
+    const any = await db.collection('users').get()
+    const match = any.docs.find((d) => String(d.data().email || '').toLowerCase() === key)
+    if (!match) return { result: 'notSignedIn' }
+    users.docs.push(match)
+  }
+  const user = users.docs[0]
+  if ((data.teacherIds || []).includes(user.id)) return { result: 'already' }
+  await ref.update({
+    teacherIds: FieldValue.arrayUnion(user.id),
+    teacherNames: FieldValue.arrayUnion(user.data().name || staff.data().name || key),
+    updatedAt: FieldValue.serverTimestamp(),
+  })
+  return { result: 'added', name: user.data().name || key }
 })
