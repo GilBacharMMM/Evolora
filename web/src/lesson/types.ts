@@ -22,6 +22,7 @@ export interface Tip {
 export type Block =
   | { type: 'text' | 'note' | 'table' | 'solvedExample' | 'linkList'; markdown: string }
   | { type: 'formula'; latex: string[]; words: string[] }
+  | { type: 'quote'; markdown: string; source: string }
   | { type: 'image'; file: string; caption: string; source: string; storagePath: string | null }
   | { type: 'video'; youtubeId: string | null; link: string; title: string; source: string; start: number | null; end: number | null }
   | { type: 'audio'; link: string | null; file: string | null; title: string; intro: string }

@@ -581,7 +581,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-4.28, REQ-7.2, lesson file format, lesson check, teacher kit
 
 ### D-52: How test users and Claude's programs sign in (test site)
-**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building part 1
+**Date:** 2026-11-23 · **Status:** Decided (approved by Gil, 2026-11-23) · **Decided by:** Claude, while building part 1; approved by Gil
 **Context:** The "Switch user" menu (REQ-12.5) needs made-up test users who can be signed in with one click, and Claude's programs (loading lessons, adding teachers, resetting the test site; D-33, D-47) need a way to write to the database that no teacher or student has.
 **Options considered:**
 1. Test users with a shared, known password, kept in the project; the menu signs in with it. Claude's programs sign in with their own "loading program" account, whose password is kept only on Gil's computer (in the user folder, never on GitHub). The database rules let only that account change lessons, courses, classes and roles.
@@ -592,6 +592,29 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Also:** On the test site only, opening the site once with `?any-browser` at the end of the address lets a non-Chrome browser through (REQ-11.1). This is for Claude's automatic screen tests, whose test browser is not branded "Google Chrome". The real site has no such exception.
 **Affects:** REQ-12.5, REQ-12.6, REQ-11.1, system-design 4.2, 7.3
 
+### D-53: Formulas in Hebrew text go on a line of their own
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** A formula inside a Hebrew sentence (for example "…כי הרדיוס הוא חצי הקוטר: R = D ÷ 2 = 14 ÷ 2 = 7 ס"מ") was shown mixed into the sentence, and when the line wrapped, the parts came out in the wrong order. Gil: mixing Hebrew and math on one line is not good; a formula should move to the next line.
+**Options considered:**
+1. Rewrite the lesson texts (about 200 lines in the circles lessons) so every formula is on its own line.
+2. The lesson player does it automatically: any formula (with = or ≈) found inside Hebrew or Arabic text is shown on its own line, left-to-right.
+3. Both.
+
+**Decision:** Option 2. The lesson-writing rules also tell Claude to write formulas on their own line in new lessons. Tables and answer choices are left as they are. The unit is not part of the formula line (Gil): "P = π × D = 3.14 × 6 = 18.84 ס"מ" is shown as the formula ending in 18.84, and under it "כלומר 18.84 ס"מ."
+**Reason:** Works at once for every lesson, including teachers' future lessons, without rewriting approved text.
+**Affects:** REQ-4.3, lesson player, lessons/README.md, teacher kit
+
+### D-54: Quotations in a classic Hebrew font
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** The verse from the Book of Kings in the circles lesson looked like ordinary text. Gil wants quotations from the Bible in a more biblical-looking font, something like David.
+**Options considered:**
+1. A new "Quote" block: the quoted words, shown in David Libre (a free web version of the David font), with the source under it in the regular font.
+2. Mark quotes inside ordinary text with a special sign.
+
+**Decision:** Option 1.
+**Reason:** A separate block is easy to write and to check, it shows clearly where the quote starts and ends, and it gives the source its own place. David Libre is free to use (SIL Open Font License) and loads from Google Fonts, like the lesson's regular font.
+**Affects:** REQ-4.2, lesson player, lessons/README.md, the lesson check, teacher kit
+
 ### D-55: Lessons in a course open one after another, practice lessons included
 **Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
 **Context:** Until course orders come (REQ-5.8, priority 2), the course page (REQ-6.12) needs one rule for which lessons are open.
@@ -601,6 +624,17 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 
 **Decision:** Option 1. A lesson counts as finished when every question the student received has been answered (open answers count once sent). Lessons opened early for a student (REQ-5.20, part 4) will be open whatever comes before them.
 **Affects:** REQ-5.8, REQ-6.12, REQ-6.4
+
+### D-56: Question weights later
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** REQ-4.4 said a lesson file could make a question count more (for example double) in the lesson grade, but the lesson file format has no way to write it.
+**Options considered:**
+1. Add a weight mark to the lesson format (it would change the lesson check, the lesson-writing rules and the teachers' guide).
+2. Leave it for much later: every question counts equally.
+
+**Decision:** Option 2 (Gil, 2026-11-23): leave it for much, much later.
+**Reason:** Not needed for the pilot; keeps the lesson format simple for teachers.
+**Affects:** REQ-4.4, system-design 5.3
 
 ### D-57: Points the requirements leave open in part 3 (classes, codes and assignments)
 **Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building part 3

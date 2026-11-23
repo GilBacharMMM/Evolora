@@ -59,10 +59,86 @@ function wrapMathRuns(root: Node) {
   }
 }
 
+// Gil, D-53: a formula (with = or ≈) inside a Hebrew or Arabic sentence is shown on a line of
+// its own, so the two directions are never mixed on one line (REQ-4.3). Not in table cells or
+// in one-line places like answer choices. A full stop or comma right after it is dropped.
+const RTL_LETTERS = /[֐-׿؀-ۿ]/
+const FULL_FORMULA = /[=≈]/
+
+function formulasOnTheirOwnLine(root: ParentNode) {
+  for (const span of root.querySelectorAll('.math-run')) {
+    if (!FULL_FORMULA.test(span.textContent || '')) continue
+    const block = span.parentElement?.closest('p, li, div, blockquote, h1, h2, h3, h4') || null
+    if (span.closest('td, th')) continue
+    const blockText = block ? block.textContent || '' : ''
+    if (!RTL_LETTERS.test(blockText.replace(span.textContent || '', ''))) continue
+    // Find the outermost inline element holding the formula (for example, a bold part).
+    let line: Element = span
+    while (line.parentElement && line.parentElement !== block && ['STRONG', 'B', 'EM', 'I'].includes(line.parentElement.tagName)) line = line.parentElement
+    const before = line.previousSibling
+    const after = line.nextSibling
+    // Gil: the unit is not part of the formula line. "… = 18.84 ס"מ." becomes the formula
+    // ending in 18.84, and under it "כלומר 18.84 ס"מ." in Hebrew.
+    const result = unitAfterFormula(span, after)
+    if (result) {
+      const said = document.createElement('span')
+      said.className = 'math-result'
+      said.append('כלומר ')
+      const value = document.createElement(result.bold ? 'strong' : 'span')
+      value.append(Object.assign(document.createElement('bdi'), { textContent: result.number }), ` ${result.unit}`)
+      said.append(value, '.')
+      line.after(said)
+      if (after && after.nodeType === Node.TEXT_NODE && result.rest !== null) (after as Text).data = result.rest
+      said.before(document.createElement('br'))
+    }
+    // A full stop or comma right after the formula is dropped.
+    const next = (result ? line.nextSibling?.nextSibling?.nextSibling : line.nextSibling) || null
+    if (next && next.nodeType === Node.TEXT_NODE) (next as Text).data = (next as Text).data.replace(/^\s*[.,;]?\s*/, '')
+    const lastOfLine = result ? line.nextSibling?.nextSibling || null : null
+    const hasBefore = before && (before.textContent || '').trim() !== ''
+    const tail = result ? lastOfLine?.nextSibling : line.nextSibling
+    const hasAfter = tail && (tail.textContent || '').trim() !== ''
+    if (hasBefore) line.before(document.createElement('br'))
+    if (hasAfter) (lastOfLine || line).after(document.createElement('br'))
+    span.classList.add('math-line')
+  }
+}
+
+// Finds a Hebrew or Arabic unit written right after the formula's final number, either inside
+// a bold result ("= **7 ס"מ**") or as plain text ("= 18.84 ס"מ"). Removes it from the formula.
+// Returns the number, the unit, whether it was bold, and the text left after the unit.
+// A unit is a short abbreviation (ס"מ, סמ"ק, מ"ר, ק"מ) or a unit word, at most two words.
+const UNIT_WORDS = new Set(['מטר', 'מטרים', 'סנטימטר', 'סנטימטרים', 'מילימטר', 'קילומטר', 'גרם', 'קילוגרם', 'ק"ג', 'ליטר', 'ליטרים', 'אמה', 'אמות', 'שניות', 'דקות', 'שעות', 'מעלות', 'לסמ"ק', 'למ"ק', 'לליטר', 'לשנייה', 'לשעה'])
+const isUnitWord = (w: string) => UNIT_WORDS.has(w) || /^[֐-׿؀-ۿ]+["״׳'][֐-׿؀-ۿ]*$/.test(w)
+function readUnit(text: string): { unit: string; rest: string } | null {
+  const m = text.match(/^\s+(\S+?)(?=[\s.,;:!?)]|$)(?:\s+(\S+?)(?=[\s.,;:!?)]|$))?/)
+  if (!m || !isUnitWord(m[1])) return null
+  const two = m[2] && isUnitWord(m[2])
+  const unit = two ? `${m[1]} ${m[2]}` : m[1]
+  const used = two ? m[0] : text.match(/^\s+\S+?(?=[\s.,;:!?)]|$)/)![0]
+  return { unit, rest: text.slice(used.length).replace(/^\s*[.,;]?\s*/, '') }
+}
+function unitAfterFormula(span: Element, after: ChildNode | null): { number: string; unit: string; bold: boolean; rest: string | null } | null {
+  const bold = span.querySelector('strong, b')
+  if (bold && span.lastElementChild === bold) {
+    const m = (bold.textContent || '').match(/^\s*([0-9][0-9.,]*)\s+(\S.*?)\s*$/)
+    if (!m || !m[2].split(/\s+/).every(isUnitWord)) return null
+    bold.textContent = m[1]
+    return { number: m[1], unit: m[2], bold: true, rest: null }
+  }
+  const text = span.textContent || ''
+  const num = text.match(/([0-9][0-9.,]*)\s*$/)
+  if (!num || !after || after.nodeType !== Node.TEXT_NODE) return null
+  const u = readUnit((after as Text).data)
+  if (!u) return null
+  return { number: num[1], unit: u.unit, bold: false, rest: u.rest }
+}
+
 function toHtml(markdown: string, inline = false): string {
   const html = inline ? (marked.parseInline(markdown) as string) : (marked.parse(markdown) as string)
   const fragment = DOMPurify.sanitize(html, { RETURN_DOM_FRAGMENT: true })
   wrapMathRuns(fragment)
+  if (!inline) formulasOnTheirOwnLine(fragment)
   const box = document.createElement('div')
   box.appendChild(fragment)
   return box.innerHTML

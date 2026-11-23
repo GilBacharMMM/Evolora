@@ -116,6 +116,7 @@ Each block starts with a second-level heading in square brackets. Only these blo
 |---|---|---|
 | `## [TEXT]` | Text, with **bold**, lists and links | The text itself |
 | `## [NOTE BOX]` | A highlighted side note, for example a historical note | The text, starting with a bold title |
+| `## [QUOTE]` | A quotation, such as a verse from the Bible, shown in a classic Hebrew font (D-54) | The quoted words, then a `- source:` line, for example `- source: ספר מלכים א', פרק ז', פסוק כ"ג` |
 | `## [IMAGE]` | An image | `- file: images/<name>`, `- caption: ...`, `- source: ...` (see "Images") |
 | `## [TABLE]` | A table | A Markdown table |
 | `## [FORMULA]` | A formula, shown on its own line | Line 1: the formula in plain symbols (for example `S = π × R²`). Line 2: the same in LaTeX (for example `S = \pi R^2`) |
@@ -185,6 +186,9 @@ Example:
 - Answer: 62.8
 - Unit: ס"מ
 ```
+
+### Formulas in text
+Don't mix Hebrew (or Arabic) and math on one line (Gil, D-53). In text, hints, solutions, "why it's right" lines and tips, write the sentence in words and put the formula after it, as its own short line, for example: `כדי למצוא את הרדיוס, מחלקים את הקוטר ב-2:` and then `R = D ÷ 2 = 14 ÷ 2 = 7`. Write units (ס"מ, גרם) in the Hebrew sentence, not in the formula, for example: `כלומר 7 ס"מ.` The lesson player moves any formula it finds inside a Hebrew sentence to its own line, but writing it that way from the start reads better.
 
 ### Rules for good questions
 - **Questions throughout the lesson**, not only at the end. Put a question right after each video, simulation or important explanation, asking about it.

@@ -18,6 +18,7 @@ Each block starts with a heading in square brackets, matching the block types in
 |---|---|
 | `[TEXT]` | Text |
 | `[NOTE BOX]` | Highlighted side note |
+| `[QUOTE]` | A quotation, such as a verse from the Bible, shown in a classic Hebrew font: the quoted words, then a `- source:` line (D-54) |
 | `[IMAGE]` | Image, with `file`, `caption` and `source` lines (REQ-4.15) |
 | `[TABLE]` | Table |
 | `[FORMULA]` | Formula |
@@ -42,6 +43,8 @@ Extra lines for questions (REQ-4.16 to 4.18):
 | `- Why it's right:` | A short explanation (1 or 2 sentences) of why the correct answer is right, shown after a correct answer (REQ-4.28). Good practice for every multiple choice and number question; if it's missing, the full solution is shown instead, and the lesson check gives a warning. A check-again question may have its own. Not used in exams. |
 | `### Check-again question` | A similar question under the main one, asked right after the solution (REQ-4.17). Several can be added; each student gets one at random. It has 2 attempts, like the original; it may have its own `- Hint:` line (otherwise the original's hint is shown). Choices are shown in random order (REQ-4.19), so the order in the file doesn't matter. |
 | `- Tip: title \| text` | A help tip for the question, shown from the "I didn't understand…" line (REQ-6.15). Several per question; write them after the solution. A tip explains an idea or a method, and never gives the answer. Not allowed in exams. |
+
+**Formulas in text** (Gil, D-53): don't mix Hebrew and math on one line. When text needs a formula, write it on a line of its own. Keep units out of the formula line: write the result with its unit in a Hebrew sentence after it, for example `כלומר 18.84 ס"מ.` (The lesson player also does this by itself for formulas found inside a Hebrew sentence.)
 
 ## Course files
 

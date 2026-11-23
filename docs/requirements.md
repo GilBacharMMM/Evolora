@@ -120,6 +120,7 @@ In edit mode, a creator creates a lesson with a title, a short description, a le
 A lesson is a sequence of blocks, shown to the student in order. In stage 1 the blocks come from the lesson file; in stage 2 the creator can also add, edit, reorder and delete them in the lesson builder. Block types:
 - **Text**: with headings, bold, italics, lists and links
 - **Note box**: a highlighted text box, for example "Historical note"
+- **Quote**: a quotation, such as a verse from the Bible, shown in a classic Hebrew font (David), with its source under it (Gil, D-54)
 - **Image**: uploaded from the computer, with an optional caption and a required source (see REQ-4.15)
 - **Table**: rows and columns of text and numbers
 - **Formula**: see REQ-4.3
@@ -137,6 +138,7 @@ A lesson is a sequence of blocks, shown to the student in order. In stage 1 the 
 - [ ] A YouTube video plays inside the lesson without leaving Evolora.
 - [ ] In the circles lesson, each of the four videos plays inside the lesson, and the questions about it come right after it.
 - [ ] If a simulation website refuses to be shown inside Evolora, the student sees a button that opens it in a new tab.
+- [ ] In the circles lesson, the verse from the Book of Kings ("ויעש את הים מוצק...") is shown in a classic, Bible-like Hebrew font, with its source (ספר מלכים א', פרק ז', פסוק כ"ג) under it in the regular font.
 
 **REQ-4.3: Formulas** (Priority 1: must have)
 Formulas display properly inside Hebrew, Arabic and English text. In stage 1 formulas are written in the lesson file. In stage 2, creators write them with a visual editor (buttons and typing, no code).
@@ -145,7 +147,8 @@ Formulas display properly inside Hebrew, Arabic and English text. In stage 1 for
 - [ ] The formulas in the circles lesson (for example P = π × D and S = πR²) display correctly to the student.
 - [ ] (Stage 2) A creator can write a fraction, a power, a square root and a Greek letter without typing any code.
 - [ ] (Stage 2) The formula looks the same to the student as it did in the editor.
-- [ ] A formula inside a Hebrew sentence displays left-to-right as math should, without breaking the sentence.
+- [ ] A formula written inside a Hebrew (or Arabic) sentence is shown on a line of its own, left-to-right, so Hebrew and math are never mixed on one line (Gil, D-53). For example, in the circles lesson's solved example about a diameter of 14 cm, "R = D ÷ 2 = 14 ÷ 2 = 7 ס"מ" appears as "R = D ÷ 2 = 14 ÷ 2 = 7" on its own line under the Hebrew sentence, reading correctly from left to right, followed by the line "כלומר 7 ס"מ." (the unit is never inside the formula line).
+- [ ] Formulas in tables and in answer choices stay where they are.
 
 **REQ-4.4: Question types for the first version** (Priority 1: foundation)
 - **Multiple choice**: one correct answer, or several. Checked automatically.
@@ -155,13 +158,13 @@ Formulas display properly inside Hebrew, Arabic and English text. In stage 1 for
 For each question, the lesson file (in stage 2, the creator) sets:
 - the correct answer(s) (multiple choice)
 - **grading instructions** describing a good answer (open and audio questions)
-- the **grade weight** (by default, every question counts equally)
+- (much later, D-56) a **grade weight**; until then every question counts equally
 
 *Acceptance criteria:*
 - [ ] A loaded lesson can contain each of the three question types, and each works for the student.
 - [ ] A multiple choice question with two correct choices accepts only the right combination.
 - [ ] The teacher sees the grading instructions of an open or audio question on the grading page (REQ-5.12).
-- [ ] A question given double weight in the lesson file counts double in the lesson grade.
+- [ ] (Much later, D-56) A question given double weight in the lesson file counts double in the lesson grade.
 
 **REQ-4.5: Questions block progress** (Priority 1: foundation)
 When a student reaches a question, they must answer it before they can see the rest of the lesson. Attempts and scoring are in REQ-6.3.
@@ -409,6 +412,14 @@ When a student answers a multiple choice or type-a-number question correctly, Ev
 - [ ] Checking a lesson that has questions without explanations gives a warning that names how many, and the lesson still loads.
 
 ---
+
+**REQ-4.29: Explanations of words, shown on hover** (Stage 2)
+A creator can mark a word or term in the lesson text and attach a short explanation to it. The word is shown underlined with a dotted line, and the explanation opens in a small window when the student moves the mouse over it (or taps it). This replaces explanations written in brackets inside the sentence, which interrupt reading. For example, in the circles lesson: "עשר **אמות**", with the explanation "אמה בתנ"ך היא בערך 45 ס"מ, האורך של יד מהמרפק עד קצה האצבעות" (Gil, 2026-11-23).
+
+*Acceptance criteria:*
+- [ ] In the circles lesson, the word "אמות" is underlined with a dotted line, and moving the mouse over it shows the explanation of a cubit in a small window, without the explanation in brackets.
+- [ ] Moving the mouse away closes the window.
+- [ ] A creator can add an explanation to a word in the lesson file (and in stage 2, in the lesson builder).
 
 ## 5. Class management (teachers)
 
