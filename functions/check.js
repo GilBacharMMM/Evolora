@@ -196,7 +196,7 @@ export function gradeOpen(state, score, comment) {
 // The teacher sets the score of any answered question (REQ-5.15, D-59): a share of the marks from
 // 0 to 1. An open answer becomes graded; an automatically checked one is marked "changed by the
 // teacher". An optional comment goes with it.
-export function teacherScore(state, score, comment) {
+export function teacherScore(state, score, comment, markup) {
   if (!state || !state.result) return { invalid: true }
   if (typeof score !== 'number' || !Number.isFinite(score) || score < 0 || score > 1) return { invalid: true }
   const st = structuredClone(state)
@@ -207,6 +207,12 @@ export function teacherScore(state, score, comment) {
     const text = typeof comment === 'string' ? comment.trim().slice(0, 5000) : ''
     if (text) st.teacherComment = text
     else delete st.teacherComment
+  }
+  // A marked-up copy of a written answer (REQ-5.12, D-64): the teacher's edits and highlights.
+  if (markup !== undefined && st.result === 'pending') {
+    const m = typeof markup === 'string' ? markup.slice(0, 20000) : ''
+    if (m.trim()) st.markup = m
+    else delete st.markup
   }
   return { state: st }
 }

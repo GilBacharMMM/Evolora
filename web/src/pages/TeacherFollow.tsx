@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { httpsCallable } from 'firebase/functions'
 import { functions } from '../site'
@@ -8,6 +8,8 @@ import { TypeChip } from '../components/TypeChip'
 import { Markdown } from '../lesson/Rich'
 import { ClassTabs } from '../components/ClassTabs'
 import { Messages } from '../components/Messages'
+import { MarkedAnswer } from '../components/MarkedAnswer'
+import { HIGHLIGHT_END, HIGHLIGHT_START, hasMarkup } from '../markup'
 import type { LessonType } from '../lesson/types'
 
 // The teacher's screens for following a class (stage 1, part 4, system-design 2.7):
@@ -784,6 +786,7 @@ interface AnswerState {
   graded: boolean
   changedByTeacher: boolean
   teacherComment: string | null
+  markup?: string | null
   checkAgain: { result: string | null } | null
 }
 
@@ -829,6 +832,44 @@ function AnswerMark({ st }: { st: AnswerState | undefined }) {
   if (st.result === 'correct1') return <span className="answer-mark right">✓ {t('follow.right')}</span>
   if (st.result === 'correct2') return <span className="answer-mark half">½ {t('follow.secondTry')}</span>
   return <span className="answer-mark wrong">✗ {t('follow.wrong')}</span>
+}
+
+// Marking up a written answer (REQ-5.12, D-64): the teacher edits a copy of it, and can
+// highlight the selected text. A preview shows what the student will see.
+function MarkupBox({ original, value, onChange }: { original: string; value: string; onChange: (v: string) => void }) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(!!value)
+  const box = useRef<HTMLTextAreaElement>(null)
+  if (!open) {
+    return (
+      <button type="button" className="link-button" onClick={() => { onChange(value || original); setOpen(true) }}>
+        {t('markup.start')}
+      </button>
+    )
+  }
+  const highlight = () => {
+    const el = box.current
+    if (!el || el.selectionStart === el.selectionEnd) return
+    const { selectionStart: a, selectionEnd: b } = el
+    onChange(value.slice(0, a) + HIGHLIGHT_START + value.slice(a, b) + HIGHLIGHT_END + value.slice(b))
+  }
+  return (
+    <div className="markup-box">
+      <span className="feedback-subtitle">{t('markup.title')}</span>
+      <p className="muted small-note">{t('markup.explain')}</p>
+      <textarea ref={box} value={value} onChange={(e) => onChange(e.target.value)} rows={5} dir="auto" aria-label={t('markup.title')} />
+      <div className="button-row">
+        <button type="button" className="button secondary small" onClick={highlight}>
+          {t('markup.highlight')}
+        </button>
+        <button type="button" className="button secondary small" onClick={() => { onChange(''); setOpen(false) }}>
+          {t('markup.remove')}
+        </button>
+      </div>
+      <span className="feedback-subtitle">{t('markup.preview')}</span>
+      <MarkedAnswer original={original} markup={value} />
+    </div>
+  )
 }
 
 // Which questions are hard for the class (REQ-5.29): of the students who answered, how many got it
@@ -1129,6 +1170,7 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
   const [pos, setPos] = useState<{ q: number; s: number } | null>(null)
   const [score, setScore] = useState<string>('')
   const [comment, setComment] = useState('')
+  const [markup, setMarkup] = useState('')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ good: boolean; text: string } | null>(null)
   const rtl = i18n.dir() === 'rtl'
@@ -1155,6 +1197,7 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
   useEffect(() => {
     setScore(current?.graded && current.score != null ? String(Math.round(current.score * 100)) : '')
     setComment(current?.teacherComment || '')
+    setMarkup(current?.markup || '')
     setMessage(null)
     // Only when moving to another answer, not after saving this one.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1224,11 +1267,11 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
     if (score.trim() === '' || !Number.isFinite(n) || n < 0 || n > 100) return setMessage({ good: false, text: t('follow.scoreRange') })
     setSaving(true)
     try {
-      const r = await call<{ state: AnswerState & { score: number } }>('gradeAnswer', { classId, lessonId, studentId: student.id, questionId: q.id, score: n / 100, comment })
+      const r = await call<{ state: AnswerState & { score: number; markup?: string } }>('gradeAnswer', { classId, lessonId, studentId: student.id, questionId: q.id, score: n / 100, comment, markup: markup && hasMarkup(answer, markup) ? markup : '' })
       setData((d) =>
         d && {
           ...d,
-          students: d.students.map((s) => (s.id === student.id ? { ...s, states: { ...s.states, [q.id]: { ...s.states[q.id], graded: true, score: r.state.score, teacherComment: r.state.teacherComment || null } } } : s)),
+          students: d.students.map((s) => (s.id === student.id ? { ...s, states: { ...s.states, [q.id]: { ...s.states[q.id], graded: true, score: r.state.score, teacherComment: r.state.teacherComment || null, markup: r.state.markup || null } } } : s)),
         },
       )
       setMessage({ good: true, text: t('follow.saved') })
@@ -1336,6 +1379,7 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
             <span className="feedback-subtitle">{t('follow.comment')}</span>
             <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={4} dir="auto" maxLength={5000} />
           </label>
+          <MarkupBox original={answer} value={markup} onChange={setMarkup} />
           <div className="button-row">
             <button type="submit" className="button primary" disabled={saving}>
               {saving ? t('follow.saving') : current?.graded ? t('follow.saveChange') : t('follow.save')}

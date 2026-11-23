@@ -8,6 +8,7 @@ import { useSession } from '../session'
 import { navigate } from '../router'
 import { BlockView, Ui } from '../lesson/Blocks'
 import { Markdown } from '../lesson/Rich'
+import { MarkedAnswer } from '../components/MarkedAnswer'
 import { QuestionCard } from '../lesson/QuestionCard'
 import { isFinished, type QuestionState } from '../lesson/answers'
 import type { Block, LessonVersion, Question } from '../lesson/types'
@@ -16,14 +17,14 @@ import { BackButton } from '../components/BackButton'
 
 // What the teacher did with an answer (REQ-5.12, 5.13, 5.15) and, when the student may see
 // grades (REQ-5.22, D-59), the question's marks.
-type Graded = QuestionState & { graded?: boolean; changedByTeacher?: boolean; teacherComment?: string | null }
+type Graded = QuestionState & { graded?: boolean; changedByTeacher?: boolean; teacherComment?: string | null; markup?: string | null }
 
 function TeacherNote({ state, showGrades }: { state: Graded | undefined; showGrades: boolean }) {
   const { t } = useTranslation()
   if (!state?.result) return null
   const marked = state.result !== 'pending' || state.graded
   const marks = showGrades && marked && state.score != null ? Math.round(state.score * 100) : null
-  if (marks === null && !state.teacherComment) return null
+  if (marks === null && !state.teacherComment && !state.markup) return null
   return (
     <div className="teacher-note" role="note">
       {marks !== null && (
@@ -33,6 +34,14 @@ function TeacherNote({ state, showGrades }: { state: Graded | undefined; showGra
             {state.changedByTeacher ? ` · ${t('lesson.changedByTeacher')}` : ''}
           </Ui>
         </span>
+      )}
+      {state.graded && state.markup && (
+        <>
+          <span className="teacher-note-title">
+            <Ui>{t('markup.studentTitle')}</Ui>
+          </span>
+          <MarkedAnswer original={String(state.attempts?.[0] ?? '')} markup={state.markup} />
+        </>
       )}
       {state.teacherComment && (
         <>

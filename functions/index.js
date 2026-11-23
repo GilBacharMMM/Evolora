@@ -668,7 +668,7 @@ export const lessonResults = onCall(async (request) => {
       const states = Object.fromEntries(
         Object.entries(pr?.questions || {}).map(([id, st]) => [
           id,
-          { attempts: st.attempts || [], result: st.result, score: st.score, graded: !!st.graded, changedByTeacher: !!st.changedByTeacher, teacherComment: st.teacherComment || null, checkAgain: st.checkAgain ? { result: st.checkAgain.result } : null },
+          { attempts: st.attempts || [], result: st.result, score: st.score, graded: !!st.graded, changedByTeacher: !!st.changedByTeacher, teacherComment: st.teacherComment || null, markup: st.markup || null, checkAgain: st.checkAgain ? { result: st.checkAgain.result } : null },
         ]),
       )
       return { id: s.id, name: s.name, cell: lessonCell(pr), states, sentBack: pr?.sentBack || null, earlier: Object.fromEntries(Object.entries(pr?.history || {}).map(([q, h]) => [q, h.length])) }
@@ -677,7 +677,7 @@ export const lessonResults = onCall(async (request) => {
 })
 
 export const gradeAnswer = onCall(async (request) => {
-  const { classId, lessonId, studentId, questionId, score, comment } = request.data || {}
+  const { classId, lessonId, studentId, questionId, score, comment, markup } = request.data || {}
   await requireClassTeacher(request.auth, classId)
   if (![lessonId, studentId, questionId].every(validId)) throw new HttpsError('invalid-argument', 'Missing details.')
   const ref = db.doc(`progress/${progressId(studentId, lessonId)}`)
@@ -685,7 +685,7 @@ export const gradeAnswer = onCall(async (request) => {
     const snap = await tx.get(ref)
     if (!snap.exists || !(snap.data().classIds || []).includes(classId)) throw new HttpsError('not-found', 'No such answer in this class.')
     const p = snap.data()
-    const outcome = teacherScore(p.questions?.[questionId], score, comment)
+    const outcome = teacherScore(p.questions?.[questionId], score, comment, markup)
     if (outcome.invalid) throw new HttpsError('invalid-argument', 'invalid-grade')
     outcome.state.gradedBy = request.auth.uid
     outcome.state.gradedAt = Date.now()

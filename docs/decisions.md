@@ -720,3 +720,12 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 3. While a redo is going on, the earlier grade shows everywhere. When it's finished: with "redo counts", the redo's grade replaces it, even if lower; without it, the earlier grade stays and the redo is practice only.
 4. Earlier answers are kept for the teacher (not shown on screens yet). The lesson results page shows the student's latest answers.
 **Affects:** REQ-6.5, REQ-5.9
+
+### D-64: How teachers mark up written answers
+**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building the marking-up part of REQ-5.12
+**Decision:**
+1. On the grading page, **Mark up the answer** opens a copy of the student's answer to edit. What the teacher removes is shown to the student crossed out; what the teacher adds is shown in the teacher's colour (purple) and underlined. **Highlight the selected words** marks a part of the answer (yellow, with an underline).
+2. The comparison is word by word; a word with punctuation counts as one word.
+3. The student sees the marked-up answer under their answer, together with the grade and comment, as soon as the teacher saves. "Returning" work comes with REQ-5.14 (sending back).
+4. Every mark is shown by more than colour (crossed out, underlined, or a background), for students who don't see colours well (REQ-12.3).
+**Affects:** REQ-5.12

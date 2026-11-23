@@ -180,3 +180,12 @@ test('levels (REQ-6.10): a student receives questions up to their level; the les
   assert.equal(lessonFinished(version, { a: done, b: done }, {}, 0, 2), true)
   assert.equal(lessonFinished(version, { a: done, b: done }, {}, 0, 3), false, 'level 3: all three')
 })
+
+test('a marked-up copy is saved with the grade of a written answer (REQ-5.12)', async () => {
+  const { teacherScore } = await import('./check.js')
+  const open = { attempts: ['the crown is silver'], result: 'pending', score: null }
+  const r = teacherScore(open, 0.5, 'Close!', 'the crown is ⟦gold⟧')
+  assert.equal(r.state.markup, 'the crown is ⟦gold⟧')
+  assert.equal(teacherScore(r.state, 0.5, 'Close!', '').state.markup, undefined, 'an empty markup removes it')
+  assert.equal(teacherScore({ attempts: [['c1']], result: 'wrong', score: 0 }, 1, undefined, 'x').state.markup, undefined, 'only written answers')
+})
