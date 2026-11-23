@@ -33,6 +33,16 @@ export function BlockView({ block }: { block: Block }) {
       return <Markdown text={block.markdown} className="block-table" />
     case 'linkList':
       return <Markdown text={block.markdown} className="block-links" />
+    case 'quote':
+      // A quotation, such as a verse from the Bible, in a classic Hebrew font (D-54)
+      return (
+        <figure className="block-quote">
+          <blockquote>
+            <Markdown text={block.markdown} />
+          </blockquote>
+          {block.source && <figcaption>{block.source}</figcaption>}
+        </figure>
+      )
     case 'solvedExample':
       return <SolvedExample markdown={block.markdown} />
     case 'formula':

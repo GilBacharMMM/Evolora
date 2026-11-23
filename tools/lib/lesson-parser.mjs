@@ -202,6 +202,9 @@ export function parseLesson(target) {
           return { type: 'note', markdown: allText }
         case 'TABLE':
           return { type: 'table', markdown: allText }
+        case 'QUOTE':
+          // A quotation (for example from the Bible), shown in a classic Hebrew font (D-54)
+          return { type: 'quote', markdown: body.text, source: body.fields.source || '' }
         case 'SOLVED EXAMPLE':
           return { type: 'solvedExample', markdown: allText }
         case 'LINK LIST':

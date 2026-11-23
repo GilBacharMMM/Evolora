@@ -1283,6 +1283,36 @@ figcaption {
   unicode-bidi: isolate;
 }
 
+/* A quotation, such as a verse from the Bible, in a classic Hebrew font (D-54) */
+.block-quote {
+  margin: 0;
+  padding-block: 8px;
+  padding-inline: 20px;
+  border-inline-start: 4px solid var(--line-strong);
+}
+
+.block-quote blockquote {
+  margin: 0;
+  font-family: 'David Libre', 'David', serif;
+  font-size: 1.3em;
+  line-height: 1.7;
+}
+
+.block-quote blockquote .md p {
+  margin: 0;
+}
+
+.block-quote figcaption {
+  margin-top: 6px;
+  font-size: 0.9em;
+  opacity: 0.75;
+}
+
+/* A formula in Hebrew or Arabic text, on a line of its own (D-53) */
+.math-run.math-line {
+  white-space: nowrap;
+}
+
 /* "Why it's right" after a right answer (REQ-4.28) */
 .feedback.correct .why-right {
   color: var(--ink);

@@ -9,7 +9,7 @@ import path from 'node:path'
 
 const BLOCK_TYPES = new Set([
   'TEXT', 'NOTE BOX', 'IMAGE', 'TABLE', 'FORMULA', 'VIDEO', 'AUDIO', 'SIMULATION',
-  'LINK LIST', 'SOLVED EXAMPLE',
+  'LINK LIST', 'SOLVED EXAMPLE', 'QUOTE',
   'QUESTION: multiple choice', 'QUESTION: number', 'QUESTION: open', 'QUESTION: audio',
 ])
 const LESSON_TYPES = ['teaching lesson', 'practice lesson', 'exam']
@@ -172,6 +172,12 @@ function checkLesson(target) {
         const content = b.lines.filter((l) => l.text && !l.text.startsWith('>'))
         if (content.length === 0) err(b.n, 'Formula: the block is empty.')
         else if (!content.some((l) => /\\[a-zA-Z]+|\^|_\{/.test(l.text))) warn(b.n, 'Formula: no LaTeX line found (needed to display it properly).')
+        break
+      }
+      case 'QUOTE': {
+        const quoteText = b.lines.filter((l) => l.text && !l.text.startsWith('>') && !FIELD.test(l.text))
+        if (quoteText.length === 0) err(b.n, 'Quote: the quote text is missing.')
+        if (!fields.source || !fields.source.value) err(b.n, 'Quote: the "- source:" line is missing (where the quote comes from).')
         break
       }
       case 'SOLVED EXAMPLE': {

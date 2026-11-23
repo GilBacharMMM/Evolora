@@ -91,6 +91,7 @@ Each AI item first gets a cost estimate for Gil's approval.
 | REQ-7.6 | Teacher sees a student's answered lesson, with the AI conversations |
 | REQ-7.7 | AI summary of a student's difficulties on the student card |
 | REQ-4.27 | Teachers send comments to the lesson's creator; email and suggestions inbox |
+| REQ-4.29 | Explanations of words, shown in a small window on hover (for example "אמות" in the circles lesson) |
 
 ## Later / ideas
 
