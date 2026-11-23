@@ -1,5 +1,5 @@
 {
-  "_about": "Made-up test users for the test site only (REQ-12.5, 12.6). They exist only in the evolora-test project. The shared password is not secret: these accounts hold made-up data only (D-49).",
+  "_about": "Made-up test users for the test site only (REQ-12.5, 12.6). They exist only in the evolora-test project. The shared password is not secret: these accounts hold made-up data only (D-52).",
   "password": "evolora-test-site-c2b2db35c7",
   "users": [
     {

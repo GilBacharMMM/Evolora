@@ -30,7 +30,7 @@ REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-3.
 | Part | Requirements | What Gil can try on the test site |
 |---|---|---|
 | 1 | Foundation, REQ-12.4 to 12.6, 4.24 | Sign in, switch between test users, see the three demo lessons loaded |
-| 2 | REQ-4.3, 4.16, 4.17, 4.20, 4.21, 4.22, 4.23, 6.15 | Take the demo lessons as a student: formulas, two attempts with hint and solution, check-again questions, number questions, help tips, videos with start and end times, topics with extra practice, lesson types shown |
+| 2 | REQ-4.3, 4.16, 4.17, 4.28, 4.20, 4.21, 4.22, 4.23, 6.15 | Take the demo lessons as a student: formulas, two attempts with hint and solution, an explanation after a right answer, check-again questions, number questions, help tips, videos with start and end times, topics with extra practice, lesson types shown |
 | 3 | REQ-5.1, 5.2, 5.4, 5.6, 5.7, 4.10, 6.1, 6.4, 6.11, 6.12 | Classes and class codes, assigning lessons and courses, the student's home, class and course pages (lessons open one after another until REQ-5.8) |
 | 4 | REQ-5.27, 5.10, 5.24, 5.19, 5.20, 5.12, 5.13, 5.11 | Teacher home and class dashboard, red flags and clearing them, opening lessons early for chosen students, the grading page with written comments, the grade table with CSV download |
 
@@ -51,6 +51,7 @@ REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-3.
 | REQ-5.14, 5.15 | Send back for corrections; teacher changes grades |
 | REQ-5.25, 5.28 | "Not yet mastered" list; student page with teacher notes |
 | REQ-6.13 | Going back to finished lessons |
+| REQ-5.32 | Teacher tries a lesson before and after giving it, with Skip and Show answer |
 
 ### Priority 3: later
 
@@ -87,6 +88,9 @@ Each AI item first gets a cost estimate for Gil's approval.
 | REQ-5.17 | Google Classroom connection |
 | REQ-6.7 | Public courses without a teacher |
 | REQ-9.5 | Class language setting |
+| REQ-7.6 | Teacher sees a student's answered lesson, with the AI conversations |
+| REQ-7.7 | AI summary of a student's difficulties on the student card |
+| REQ-4.27 | Teachers send comments to the lesson's creator; email and suggestions inbox |
 
 ## Later / ideas
 

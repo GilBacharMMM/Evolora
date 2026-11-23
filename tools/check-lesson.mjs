@@ -14,7 +14,7 @@ const BLOCK_TYPES = new Set([
 ])
 const LESSON_TYPES = ['teaching lesson', 'practice lesson', 'exam']
 const LANGUAGES = ['he', 'ar', 'en']
-const FIELD = /^- (Hint|Solution|Answer|Unit|Grading instructions|Tip|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
+const FIELD = /^- (Hint|Solution|Why it's right|Answer|Unit|Grading instructions|Tip|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
 const NUMBER = /^-?\d+(\.\d+)?$/
 const TIME = /^\d{1,2}:\d{2}(:\d{2})?$/
 
@@ -128,6 +128,7 @@ function checkLesson(target) {
   let newTags = 0
   let tipCount = 0
   let noTips = 0
+  let noWhy = 0
   for (const b of blocks) {
     const { fields, choices, tips } = fieldsOf(b.lines)
     const isQuestion = b.type.startsWith('QUESTION')
@@ -216,6 +217,7 @@ function checkLesson(target) {
       } else {
         if (!fields.hint) err(b.n, `The ${what} has no hint (REQ-4.16).`)
         if (!fields.solution) err(b.n, `The ${what} has no full solution (REQ-4.16).`)
+        if (!fields["why it's right"]) noWhy++
         if (!isExtra && b.checkAgain.length === 0) err(b.n, `The ${what} has no check-again question (REQ-4.17).`)
       }
       for (const ca of b.checkAgain) {
@@ -242,6 +244,7 @@ function checkLesson(target) {
   newTags = (all.match(/\[NEW[^\]]*\]/g) || []).length
   if (newTags) out.notes.push(`${newTags} part(s) are still marked [NEW] (suggested by Claude, not yet approved).`)
   if (blueNotes) out.notes.push(`${blueNotes} comment(s) from Claude (🟦) are still in the file.`)
+  if (noWhy) warn(0, `${noWhy} question(s) have no "- Why it's right:" explanation. Good practice: write one for every multiple choice and number question (REQ-4.28); without it, the full solution is shown after a right answer.`)
   out.notes.push(`${tipCount} help tip(s); ${noTips} question(s) without tips.`)
   out.notes.push(`${topics.length} topic(s), ${blocks.length} blocks, ${blocks.filter((b) => b.type.startsWith('QUESTION')).length} questions.`)
   return { file, ...out }

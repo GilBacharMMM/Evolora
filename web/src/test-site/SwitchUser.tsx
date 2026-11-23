@@ -7,7 +7,7 @@ import testUsers from './test-users.json'
 
 // "Switch user" menu, test site only (REQ-12.5). The real site is built without this file,
 // so the menu can't appear there. The test users are made-up accounts that exist only in
-// the test project (D-49).
+// the test project (D-52).
 export function SwitchUser({ variant = 'menu' }: { variant?: 'menu' | 'list' }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)

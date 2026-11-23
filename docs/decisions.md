@@ -550,7 +550,37 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Gil set every feature to priority 1, 2 or 3 on the priorities page. The result is in the roadmap and on every requirement. Notable choices: exams, audio answers, messages and lesson versions moved to priority 3; opening lessons early for chosen students moved to priority 1; levels, random answer order and hiding grades are priority 2.
 **Affects:** roadmap; all requirements
 
-### D-49: How test users and Claude's programs sign in (test site)
+### D-49: Teachers can try a lesson
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** In stage 1 teachers don't write lessons inside Evolora (D-33), so the creator's preview (REQ-4.6) doesn't help them. Teachers need to see a lesson as students will, before giving it and after.
+**Options considered:**
+1. Teachers check lessons on the test site as a test student.
+2. A "Try the lesson" button in the teacher screens, going exactly like a student.
+3. The same, plus Skip and Show answer buttons that only the teacher sees.
+
+**Decision:** Option 3, priority 2 (should have). Nothing the teacher does while trying is recorded as a student's.
+**Reason:** Teachers can check a lesson quickly from where they work, without separate test accounts, and without touching class data.
+**Affects:** REQ-5.32
+
+### D-50: Stage 2: teachers see AI conversations, AI summaries, and comments to creators
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Decision:** Three new stage 2 requirements: a teacher can open a student's answered lesson with the AI help line conversations (REQ-7.6); after a lesson, the AI summarizes the student's difficulties on the student card (REQ-7.7); teachers can attach comments to places in a lesson and send them to its creator, who gets an email and a suggestions inbox (REQ-4.27).
+**Reason:** Teachers understand what each student needs without reading everything, and lessons improve from the teachers who use them.
+**Notes:** Students are told the teacher can read their AI conversations (privacy of minors, section 10). Like every AI item, REQ-7.7 gets a cost estimate first.
+**Affects:** REQ-4.27, REQ-7.6, REQ-7.7, REQ-5.28
+
+### D-51: Explanation after a right answer
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** Until now a student who answered correctly saw only "right". A student who guessed, or who isn't sure, doesn't learn why.
+**Options considered:**
+1. Show the full solution after a right answer too (nothing new to write, but often long).
+2. A new short "Why it's right" explanation written by the creator, with the full solution shown when it's missing.
+
+**Decision:** Option 2, priority 1. Writing it is good practice, not required: the lesson check warns when it's missing. Later, AI can suggest explanations.
+**Reason:** It makes students more confident, and a short explanation is read, where a long solution may not be.
+**Affects:** REQ-4.28, REQ-7.2, lesson file format, lesson check, teacher kit
+
+### D-52: How test users and Claude's programs sign in (test site)
 **Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building part 1
 **Context:** The "Switch user" menu (REQ-12.5) needs made-up test users who can be signed in with one click, and Claude's programs (loading lessons, adding teachers, resetting the test site; D-33, D-47) need a way to write to the database that no teacher or student has.
 **Options considered:**

@@ -34,6 +34,6 @@ The checking service itself is in the `functions` folder (system-design 5). Its 
 
 All of these work on the test site (`--site test`, the default). The real site isn't set up yet; loading into it needs Gil's approval first (REQ-4.24).
 
-The programs other than the lesson check need the Firebase library: run `npm install` in this folder once. They sign in with the loading program's own account (D-49). Its password is made the first time and kept on this computer only, in `%USERPROFILE%\.evolora\`.
+The programs other than the lesson check need the Firebase library: run `npm install` in this folder once. They sign in with the loading program's own account (D-52). Its password is made the first time and kept on this computer only, in `%USERPROFILE%\.evolora\`.
 
 When a teacher sends a lesson (REQ-4.25), Claude runs the check first and tells Gil what, if anything, needs fixing. Whenever the lesson file format changes, the check is updated together with `lessons/README.md`, the teacher kit (working rule 6 in `CLAUDE.md`) and the lesson reader in `tools/lib/lesson-parser.mjs`.

@@ -379,6 +379,35 @@ Interactive simulations that run inside Evolora rather than on an outside websit
 **REQ-4.14: Lesson marketplace** (Priority: Later)
 A place to discover, rate and share lessons widely, beyond the school.
 
+**REQ-4.27: Teachers send comments to the lesson's creator** (Stage 2)
+While going over a lesson (trying it, REQ-5.32), a teacher can attach a comment to any place in it: a block of material, a question, an answer, a hint or a solution, much like adding a comment in Microsoft Word. The teacher sends the comments to the lesson's creator.
+
+- The creator gets an email saying that new comments arrived on the lesson, with a link.
+- The creator has a **suggestions inbox** in Evolora listing all comments on their lessons: which lesson, where in the lesson, who sent it, when, and the text. Clicking a comment opens the lesson at that place.
+- The creator can mark each comment "done" or "not taken"; the teacher who sent it sees that mark.
+
+*Acceptance criteria:*
+- [ ] As a teacher, try a lesson, add a comment on a question and another on a block of text, and send them.
+- [ ] The lesson's creator receives an email about the new comments.
+- [ ] As the creator, the suggestions inbox shows both comments; clicking one opens the lesson at that place.
+- [ ] As the creator, mark one comment "done": as the teacher, you see it marked "done".
+
+**REQ-4.28: Explanation after a right answer** (Priority 1: must have)
+When a student answers a multiple choice or type-a-number question correctly, Evolora tells them it is right **and shows a short explanation of why**, so the student knows they got it right for the right reason and grows more confident (Gil, 2026-11-23). The creator writes this explanation in advance, in 1 or 2 sentences ("Why it's right").
+
+- If the creator didn't write one, Evolora shows the full solution (REQ-4.16) instead.
+- A check-again question (REQ-4.17) may have its own explanation; if it has none, Evolora shows its correct answer only.
+- Writing an explanation for every question is **good practice** for creators, and is in the lesson-writing rules. It is not required: the lesson check gives a reminder (a warning) when explanations are missing, but the lesson can still be loaded.
+- Not in exams: during an exam students don't see whether they were right (REQ-4.26).
+- In the future, AI can suggest explanations for the creator to approve (REQ-7.2).
+
+*Acceptance criteria:*
+- [ ] As a student, answer a question correctly on the first try: you see that it's right and its short explanation.
+- [ ] Answer a question correctly on the second try (after the hint): you also see the explanation.
+- [ ] For a question without a written explanation, a correct answer shows the full solution.
+- [ ] In an exam, no explanation appears after answering.
+- [ ] Checking a lesson that has questions without explanations gives a warning that names how many, and the lesson still loads.
+
 ---
 
 ## 5. Class management (teachers)
@@ -685,6 +714,25 @@ Besides seeing everything inside Evolora, each teacher can get one email a day w
 *Acceptance criteria:*
 - [ ] A teacher with the email on gets one email a day listing the new items; with it off, no email arrives.
 
+**REQ-5.32: Teacher tries a lesson** (Priority 2: should have)
+A teacher can try any lesson or exam they can see, straight from the teacher screens: from the lesson list, from a course, and from a class's assigned lessons. This works both before the lesson is given to students and after. The teacher goes through the lesson exactly as a student would: questions block progress, wrong answers show the hint, then the solution and a check-again question, and help tips work. A clear banner says "Trying the lesson: answers are not saved".
+
+- What the teacher does while trying is never recorded as a student's: it does not appear on any dashboard, grade table, grading page or CSV, and it does not change any student's level or the question success rates.
+- The teacher can leave at any moment and start again from the beginning.
+- After the lesson is given to students, trying it shows the same version the students get (REQ-4.7).
+- Each question also has two buttons only the teacher sees: **Skip** (move on without answering) and **Show answer** (show the correct answer and the full solution), so checking a long lesson is quick (Gil, Q-43).
+
+This is different from REQ-4.6, which is about a lesson's creator previewing it while writing it inside Evolora (stage 2).
+
+*Acceptance criteria:*
+- [ ] As a teacher, open a lesson that is not yet given to any class and press "Try the lesson": it opens like the student's lesson, with the "Trying the lesson" banner.
+- [ ] Answer a question wrongly: the hint appears and you get a second attempt, as a student would.
+- [ ] Give the same lesson to a class, then try it again from that class's page: it still works, and it is the same version the students see.
+- [ ] After trying, the class dashboard, grade table, grading page and CSV show nothing from your attempt.
+- [ ] Leave in the middle and press "Try the lesson" again: it starts from the beginning.
+- [ ] On any question, press **Skip**: the lesson moves on. Press **Show answer**: the correct answer and the full solution appear.
+- [ ] Signed in as a student, the lesson has no Skip or Show answer buttons.
+
 **REQ-5.17: Google Classroom connection** (Priority: Later)
 Import class lists from Google Classroom, and possibly post assignments and grades back to it. See the advice in the open questions summary.
 
@@ -830,7 +878,7 @@ The lesson grade is calculated only from the questions the student received (Gil
 
 ---
 
-## 7. AI features (all Later)
+## 7. AI features (all Later, stage 2)
 
 The MVP has no AI. The design must leave room for it. Gemini is preferred because the school has approved it. Before building any AI feature, Claude will prepare an estimate of its running costs for Gil to approve.
 
@@ -842,7 +890,7 @@ When assigning, the teacher chooses who checks open answers:
 - (d) AI grades and comments, without the teacher; the teacher can still look at the dashboard
 
 **REQ-7.2: AI help and AI-suggested check-again questions** (Priority: Later)
-The help line is in REQ-6.9. In addition, AI may suggest check-again questions (REQ-4.17) for the creator to approve or change.
+The help line is in REQ-6.9. In addition, AI may suggest check-again questions (REQ-4.17) and explanations for right answers (REQ-4.28) for the creator to approve or change.
 
 **REQ-7.3: AI lesson suggestion** (Priority: Later)
 A creator gives Evolora a document; Evolora suggests a complete lesson, which the creator reviews and improves. AI can also suggest improvements to existing lessons.
@@ -853,6 +901,24 @@ Audio answers are turned into text by AI (see REQ-10.5).
 **REQ-7.5: Automatic translation of lessons** (Priority: Later)
 A lesson can be translated into another language, and the translation reviewed by a person.
 
+**REQ-7.6: Teacher sees a student's answered lesson, with the AI conversations** (Stage 2)
+From the student page (REQ-5.28) or the class dashboard, a teacher can open any lesson a student has worked on and see it as the student went through it: each question with the student's answers and attempts, the hints and solutions they got, the help tips they opened, and the full conversation they had with the AI help line (REQ-6.9) next to the question it was about. This helps the teacher understand what the student needs.
+
+- Students are told, in the help line itself, that their teacher can read these conversations.
+- Only the student's own teachers (and co-teachers of that class) can see them.
+
+*Acceptance criteria:*
+- [ ] As a student, answer a question wrongly and ask the AI help line about it. As that student's teacher, open the student's lesson: you see the wrong answer, the second attempt and the whole AI conversation, placed by that question.
+- [ ] As a student, the AI help line says that the teacher can read the conversation.
+- [ ] As a teacher of a different class, you cannot open this student's lesson.
+
+**REQ-7.7: AI summary of a student's difficulties** (Stage 2)
+When a student finishes a lesson in which they talked to the AI help line, the AI writes a short summary for the teacher: which questions the student asked about, what they found hard and what doubts they had. The summary appears on the student's card on the student page (REQ-5.28), with a link to the full conversations (REQ-7.6). A lesson without AI conversations gets no summary.
+
+*Acceptance criteria:*
+- [ ] As a student, finish a lesson after asking the AI help line about two questions. As the teacher, the student's card shows a short summary naming those two questions and what the student found hard, with a link to the conversations.
+- [ ] As a student, finish a lesson without using the AI help line: no summary appears.
+- [ ] The summary is written in the teacher's language.
 ---
 
 ## 8. Subjects and age groups
@@ -1042,7 +1108,7 @@ The test site can be filled with a standard set of test data with one command, b
 
 ### Still open
 
-No open questions right now (2026-11-22).
+No open questions right now (2026-11-23).
 
 ### Answered (2026-11-20)
 
@@ -1068,6 +1134,8 @@ No open questions right now (2026-11-22).
 | Q-35 | Hard questions | Success rate for every question. (REQ-5.29) |
 | Q-36 | Live view | Later. (REQ-5.30) |
 | Q-37 | Notifications | Inside Evolora, plus an optional daily email. (REQ-5.31) |
+| Q-42 | Priority of teacher tries a lesson | Priority 2: should have (Gil, 2026-11-23). (REQ-5.32) |
+| Q-43 | Shortcuts while trying | Like a student, plus Skip and Show answer buttons. (REQ-5.32) |
 | Q-38 | Level suggestions | Average of the last 4 weeks, after at least 5 graded lessons. (REQ-5.18) |
 | Q-39 | Exporting grades | The school uses Smart School; a CSV download is enough. (REQ-5.11) |
 | Q-40 | Devices | Chromebooks and Windows and Mac laptops, in Google Chrome only; other browsers (Edge, Safari) are blocked for now with a "please use Chrome" message; phones much later, maybe never. Level suggestions confirmed. (REQ-11.1, 5.18) |
