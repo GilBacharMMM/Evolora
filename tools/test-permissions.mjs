@@ -65,6 +65,10 @@ await as('test-student-1', async (db) => {
   await expect('gives itself a lesson', false, () => setDoc(doc(given), { kind: 'lessons', lessonIds: ['circles-practice'], everyone: true, studentIds: [] }))
   await expect('reads the class codes', false, () => getDocs(collection(db, 'classCodes')))
   await expect('resets its own wrong-code count', false, () => setDoc(doc(db, 'joinAttempts', 'test-student-1'), { wrong: 0 }))
+  await expect('reads lessons opened early for the whole class', true, () => getDocs(query(collection(db, 'classes', 'test-class', 'openings'), where('everyone', '==', true))))
+  await expect("reads all early openings, including other students' ones", false, () => getDocs(collection(db, 'classes', 'test-class', 'openings')))
+  await expect('opens a lesson early for itself', false, () => setDoc(doc(collection(db, 'classes', 'test-class', 'openings')), { lessonId: 'circles-practice', everyone: true, studentIds: [] }))
+  await expect('clears its own red flags', false, () => setDoc(doc(db, 'flags', 'x'), { open: false }))
   await expect('adds itself to the class list', false, () => setDoc(doc(db, 'classes', 'test-class', 'students', 'test-student-1'), { name: 'x' }))
   // Leave the test user as the reset made it (no saved language).
   await setDoc(doc(db, 'users', 'test-student-1'), { language: deleteField() }, { merge: true })

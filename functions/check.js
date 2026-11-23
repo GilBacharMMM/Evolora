@@ -5,6 +5,7 @@
 //   attempts: the answers given so far
 //   result:   null (not finished) | 'correct1' | 'correct2' | 'wrong' | 'pending' (open question)
 //   score:    1 (correct on the 1st attempt), 0.5 (on the 2nd), 0 (two wrong), null (waiting for the teacher)
+//   graded, teacherComment: an open answer the teacher graded (score 0 to 1), with an optional comment (REQ-5.12, 5.13)
 //   hint, solution, correct, whyRight: shown to the student only once earned
 //   checkAgain: the check-again question asked after two wrong answers, with its own attempts
 
@@ -147,7 +148,8 @@ export function lessonGrade(questionStates, weights = {}) {
   for (const [id, st] of Object.entries(questionStates)) {
     if (!st || !st.result) continue
     const w = weights[id] ?? 1
-    if (st.result === 'pending') { pending = true; total += w; continue }
+    // An open answer is pending until the teacher grades it (REQ-5.12).
+    if (st.result === 'pending' && !st.graded) { pending = true; total += w; continue }
     total += w
     got += (st.score || 0) * w
   }
@@ -170,4 +172,18 @@ export function lessonFinished(version, questionStates, topics = {}, minimum = 0
     }
   }
   return true
+}
+
+// The teacher's grade for an open answer (REQ-5.12): a share of the question's full marks,
+// from 0 to 1 (shown to the teacher as 0 to 100%), and an optional written comment (REQ-5.13).
+export function gradeOpen(state, score, comment) {
+  if (!state || state.result !== 'pending') return { invalid: true }
+  if (typeof score !== 'number' || !Number.isFinite(score) || score < 0 || score > 1) return { invalid: true }
+  const st = structuredClone(state)
+  st.graded = true
+  st.score = Math.round(score * 1000) / 1000
+  const text = typeof comment === 'string' ? comment.trim().slice(0, 5000) : ''
+  if (text) st.teacherComment = text
+  else delete st.teacherComment
+  return { state: st }
 }

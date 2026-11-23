@@ -91,6 +91,18 @@ Every wrong code (steps 2 and 3) is counted. After 10 wrong codes in a row, the 
 
 **Finished lessons.** A lesson counts as finished when every question the student received has been answered: open answers count once sent, and extra practice questions that were skipped because the topic's minimum was reached count as done (D-55). The checking service marks the student's work as finished after the last answer; a lesson without questions is marked finished when the student reaches its end.
 
+### 2.7 Following a class and grading (stage 1, part 4)
+The teacher's screens read a class's work through the checking service, which first checks that the person teaches the class. Everything about the rules below is in one place in the service (`functions/dashboard.js`), so it can be changed after trying it (REQ-5.10).
+
+- **Teacher home (REQ-5.27):** a card for each class with its open red flags and answers waiting to be graded, and a **To do** list for all classes, oldest first. A red flag opens the student's page; answers to grade open the grading page of that lesson.
+- **Class page tabs:** **Dashboard**, **Grades**, and **Class settings** (the part 3 page: code, class list, giving lessons, and opening lessons early).
+- **Dashboard (REQ-5.10, 5.24):** a row per student, sortable by any column: status (a word and an icon: red flag, behind, late, OK; a star for students ahead), level with − and +, where they are in each course (the progress map: a square per lesson, filled when finished, striped for the lesson they're working on, and the title of their current lesson), average grade, open red flags and when they last worked. Below it: the open red flags, each saying which question or topic caused it, with **Clear** and an optional note (REQ-5.19).
+- **Status rules (D-58):** red = an open red flag; behind = more than 1 lesson below the class's median in a course; late = past a due date (from REQ-5.9; never yet); OK = everything else. The most serious wins.
+- **Grades (REQ-5.11):** a table of students and lessons; each cell shows the grade, "not done" (counts as 0) or "to grade" (left out of the average). **Download as CSV** saves the table as a file for a spreadsheet (with Hebrew and Arabic shown correctly). Clicking a lesson shows each student's result per question.
+- **Grading page (REQ-5.12, 5.13):** one open answer at a time: the question and grading instructions on top, the student's answer, then the grade (full, half, zero, or 0 to 100%) and a written comment. Sideways buttons move to the same question for the previous or next student (following the reading direction), up and down to another question; Alt + arrow keys do the same. A counter shows "graded 7 of 24" and **Next not graded** skips graded answers. Saving recalculates the lesson grade, so it is no longer pending once all its open answers are graded. The student sees the comment under their answer in the lesson.
+- **Student page:** status, level, average, help tips opened, red flags to clear, and cleared flags with the date and note (REQ-5.19), and grades per lesson. The full student page is REQ-5.28.
+- **Opening early (REQ-5.20):** on Class settings, the teacher opens any lesson of a course given to the class, for the whole class or chosen students. It is open for them whatever comes before it (D-55).
+
 ---
 
 ## 3. Where the data lives

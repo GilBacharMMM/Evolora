@@ -13,6 +13,12 @@ import { LessonLibrary, TeacherHome } from './pages/TeacherHome'
 // so the home page opens quickly (REQ-12.1).
 const LessonPlayer = lazyFresh(() => import('./pages/LessonPlayer').then((m) => ({ default: m.LessonPlayer })))
 const TeacherClass = lazyFresh(() => import('./pages/TeacherClass').then((m) => ({ default: m.TeacherClass })))
+const follow = () => import('./pages/TeacherFollow')
+const ClassDashboard = lazyFresh(() => follow().then((m) => ({ default: m.ClassDashboard })))
+const GradeTable = lazyFresh(() => follow().then((m) => ({ default: m.GradeTable })))
+const StudentPage = lazyFresh(() => follow().then((m) => ({ default: m.StudentPage })))
+const LessonResultsPage = lazyFresh(() => follow().then((m) => ({ default: m.LessonResultsPage })))
+const GradingPage = lazyFresh(() => follow().then((m) => ({ default: m.GradingPage })))
 const StudentClass = lazyFresh(() => import('./pages/StudentClass').then((m) => ({ default: m.StudentClass })))
 const StudentCourse = lazyFresh(() => import('./pages/StudentClass').then((m) => ({ default: m.StudentCourse })))
 
@@ -83,13 +89,29 @@ function Screens() {
       // Teacher screens can't be opened by students, even by typing the address (REQ-3.4).
       return isTeacher ? <LessonLibrary /> : <Message text={t('common.teachersOnly')} />
     case 'teacherClass':
-      return isTeacher ? (
-        <Suspense fallback={loading}>
-          <TeacherClass key={route.classId} classId={route.classId} />
-        </Suspense>
-      ) : (
-        <Message text={t('common.teachersOnly')} />
-      )
+    case 'teacherGrades':
+    case 'teacherManage':
+    case 'teacherStudent':
+    case 'teacherLesson':
+    case 'teacherGrading': {
+      if (!isTeacher) return <Message text={t('common.teachersOnly')} />
+      const key = location.pathname
+      const page =
+        route.name === 'teacherClass' ? (
+          <ClassDashboard key={key} classId={route.classId} />
+        ) : route.name === 'teacherGrades' ? (
+          <GradeTable key={key} classId={route.classId} />
+        ) : route.name === 'teacherManage' ? (
+          <TeacherClass key={key} classId={route.classId} />
+        ) : route.name === 'teacherStudent' ? (
+          <StudentPage key={key} classId={route.classId} studentId={route.studentId} />
+        ) : route.name === 'teacherLesson' ? (
+          <LessonResultsPage key={key} classId={route.classId} lessonId={route.lessonId} />
+        ) : (
+          <GradingPage key={key} classId={route.classId} lessonId={route.lessonId} />
+        )
+      return <Suspense fallback={loading}>{page}</Suspense>
+    }
     case 'studentClass':
       return (
         <Suspense fallback={loading}>

@@ -60,11 +60,12 @@ interface Assignment {
 }
 
 // D-55: every lesson in the course list (teaching 1, its practice lessons, teaching 2, ...)
-// opens when the one before it is finished. A lesson the student already started stays open.
-export function courseStatuses(order: string[], finished: Set<string>, started: Set<string>): Status[] {
+// opens when the one before it is finished. A lesson the student already started stays open, and
+// a lesson the teacher opened early for them is open whatever comes before it (REQ-5.20).
+export function courseStatuses(order: string[], finished: Set<string>, started: Set<string>, openedEarly: Set<string> = new Set()): Status[] {
   return order.map((id, i) => {
     if (finished.has(id)) return 'done'
-    if (i === 0 || finished.has(order[i - 1]) || started.has(id)) return 'open'
+    if (i === 0 || finished.has(order[i - 1]) || started.has(id) || openedEarly.has(id)) return 'open'
     return 'locked'
   })
 }
@@ -73,8 +74,8 @@ export function percent(done: number, total: number): number {
   return total ? Math.round((done / total) * 100) : 0
 }
 
-async function classAssignments(classId: string, uid: string): Promise<Assignment[]> {
-  const col = collection(db, 'classes', classId, 'assignments')
+async function classAssignments(classId: string, uid: string, sub: 'assignments' | 'openings' = 'assignments'): Promise<Assignment[]> {
+  const col = collection(db, 'classes', classId, sub)
   const [all, mine] = await Promise.all([getDocs(query(col, where('everyone', '==', true))), getDocs(query(col, where('studentIds', 'array-contains', uid)))])
   const seen = new Set<string>()
   const out: Assignment[] = []
@@ -107,7 +108,8 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
         const c = await getDoc(doc(db, 'classes', classId))
         if (!c.exists()) return null
         const data = c.data()
-        const assignments = await classAssignments(classId, uid)
+        const [assignments, openings] = await Promise.all([classAssignments(classId, uid), classAssignments(classId, uid, 'openings').catch(() => [])])
+        const openedEarly = new Set(openings.map((o) => (o as unknown as { lessonId: string }).lessonId))
         const courses: CourseWork[] = []
         const singles: SingleWork[] = []
         const seenCourses = new Set<string>()
@@ -124,7 +126,7 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
             const progress = await Promise.all(order.map(progressOf))
             const finished = new Set(order.filter((_, i) => progress[i].finished))
             const started = new Set(order.filter((_, i) => progress[i].started))
-            const statuses = courseStatuses(order, finished, started)
+            const statuses = courseStatuses(order, finished, started, openedEarly)
             const statusOf = new Map(order.map((id, i) => [id, statuses[i]]))
             const items = course.items.map((it) => ({
               lessonId: it.lessonId,

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocs } from 'firebase/firestore'
 import { httpsCallable } from 'firebase/functions'
 import { db, functions } from '../site'
 import { useSession } from '../session'
@@ -9,43 +9,40 @@ import { TypeChip } from '../components/TypeChip'
 import { BackButton } from '../components/BackButton'
 import type { Course, LessonSummary } from '../lesson/types'
 
-interface TeacherClass {
+interface ClassCard {
   id: string
   name: string
   color: string
   students: number
+  openFlags: number
+  waiting: number
 }
 
-// The teacher's home: their classes, creating a class (REQ-5.1), and the lessons in Evolora.
-// The full teacher home page, class dashboard and grading come in part 4.
+type TodoItem =
+  | { kind: 'flag'; classId: string; className: string; flagId: string; studentId: string; studentName: string; lessonTitle: string; flagKind: string; topicName: string | null; at: number | null }
+  | { kind: 'grade'; classId: string; className: string; lessonId: string; lessonTitle: string; count: number; at: number | null }
+
+// The teacher's home (REQ-5.27): a card for each class with what needs attention (open red flags,
+// answers to grade), and a "To do" list for all classes together. Messages and level suggestions
+// come with REQ-5.16 and 5.18. Also: creating a class (REQ-5.1), and the lessons in Evolora.
 export function TeacherHome() {
   const { t } = useTranslation()
   const { user } = useSession()
-  const [classes, setClasses] = useState<TeacherClass[] | null>(null)
-
+  const [data, setData] = useState<{ classes: ClassCard[]; todo: TodoItem[] } | null>(null)
   const [reload, setReload] = useState(0)
 
   useEffect(() => {
     if (!user) return
     let live = true
-    ;(async () => {
-      try {
-        const snap = await getDocs(query(collection(db, 'classes'), where('teacherIds', 'array-contains', user.uid)))
-        const out: TeacherClass[] = []
-        for (const c of snap.docs) {
-          const students = await getDocs(collection(db, 'classes', c.id, 'students'))
-          out.push({ id: c.id, name: c.data().name, color: c.data().color || '#0E6B73', students: students.docs.filter((s) => !s.data().removed).length })
-        }
-        if (live) setClasses(out)
-      } catch {
-        if (live) setClasses([])
-      }
-    })()
+    httpsCallable<unknown, { classes: ClassCard[]; todo: TodoItem[] }>(functions, 'teacherHome')({})
+      .then((r) => live && setData(r.data))
+      .catch(() => live && setData({ classes: [], todo: [] }))
     return () => {
       live = false
     }
   }, [user, reload])
 
+  const classes = data?.classes ?? null
   return (
     <main className="page">
       <div className="page-head">
@@ -54,24 +51,83 @@ export function TeacherHome() {
           {t('teacher.lessons')}
         </button>
       </div>
-      <h2 className="section-title">{t('teacher.myClasses')}</h2>
-      {classes === null && <p className="loading">{t('common.loading')}</p>}
-      {classes?.length === 0 && <p className="muted">{t('teacher.noClasses')}</p>}
-      <div className="class-grid">
-        {classes?.map((c) => (
-          <button key={c.id} type="button" className="card class-card class-card-button" onClick={() => navigate(`/teacher/class/${c.id}`)}>
-            <span className="class-card-top" style={{ background: c.color }}>
-              <span className="class-card-name" dir="auto">
-                {c.name}
-              </span>
-            </span>
-            <span className="class-card-body">
-              <span>{t('teacher.studentCount', { count: c.students })}</span>
-            </span>
-          </button>
-        ))}
-      </div>
-      <CreateClass onCreated={(id) => { setReload((n) => n + 1); navigate(`/teacher/class/${id}`) }} />
+      {classes === null ? (
+        <p className="loading">{t('common.loading')}</p>
+      ) : (
+        <div className="home-layout">
+          <section className="home-classes" aria-labelledby="classes-title">
+            <h2 id="classes-title" className="section-title">
+              {t('teacher.myClasses')}
+            </h2>
+            {classes.length === 0 && <p className="muted">{t('teacher.noClasses')}</p>}
+            <div className="class-grid">
+              {classes.map((c) => (
+                <button key={c.id} type="button" className="card class-card class-card-button" onClick={() => navigate(`/teacher/class/${c.id}`)}>
+                  <span className="class-card-top" style={{ background: c.color }}>
+                    <span className="class-card-name" dir="auto">
+                      {c.name}
+                    </span>
+                    <span>{t('teacher.studentCount', { count: c.students })}</span>
+                  </span>
+                  <span className="class-card-body attention">
+                    <span className={c.openFlags ? 'attn attn-flag' : 'attn'}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 3v18 M6 4h11l-2.5 4L17 12H6" />
+                      </svg>
+                      {t('follow.flagsCount', { n: c.openFlags })}
+                    </span>
+                    <span className={c.waiting ? 'attn attn-grade' : 'attn'}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 20h4l10-10-4-4L4 16z M13 7l4 4" />
+                      </svg>
+                      {t('follow.toGradeCount', { n: c.waiting })}
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+            <CreateClass
+              onCreated={(id) => {
+                setReload((n) => n + 1)
+                navigate(`/teacher/class/${id}/manage`)
+              }}
+            />
+          </section>
+          <aside className="card todo-card" aria-labelledby="todo-title">
+            <h2 id="todo-title" className="section-title">
+              {t('home.todo')}
+            </h2>
+            {data!.todo.length === 0 && <p className="muted">{t('follow.todoEmpty')}</p>}
+            <ul className="lesson-rows" role="list">
+              {data!.todo.map((item) => (
+                <li key={item.kind === 'flag' ? item.flagId : `${item.classId}-${item.lessonId}`}>
+                  <button
+                    type="button"
+                    className="lesson-row work-row"
+                    onClick={() => navigate(item.kind === 'flag' ? `/teacher/class/${item.classId}/student/${item.studentId}` : `/teacher/class/${item.classId}/lesson/${item.lessonId}/grade`)}
+                  >
+                    <span className="lesson-row-text">
+                      <span className={`badge ${item.kind === 'flag' ? 'badge-red' : 'badge-grade'}`}>{item.kind === 'flag' ? t('follow.redFlag') : t('follow.toGrade', { n: item.count })}</span>
+                      <span className="lesson-row-title" dir="auto">
+                        {item.kind === 'flag' ? item.studentName : item.lessonTitle}
+                      </span>
+                      <span className="muted row-note">
+                        <bdi>{item.className}</bdi>
+                        {item.kind === 'flag' && (
+                          <>
+                            {' · '}
+                            <bdi>{item.lessonTitle}</bdi>
+                          </>
+                        )}
+                      </span>
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        </div>
+      )}
     </main>
   )
 }

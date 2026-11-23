@@ -648,3 +648,17 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 6. **A locked lesson** can't be opened from the course page, and if its address is typed, the student sees "This lesson is still locked".
 **Reason:** These keep part 3 small and match how the rest of the pilot works; none of them can lose a student's work.
 **Affects:** REQ-5.2, REQ-5.4, REQ-5.7, REQ-6.1, REQ-6.11, REQ-6.12
+
+### D-58: Points the requirements leave open in part 4 (following and grading)
+**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building part 4
+**Context:** Building part 4 (REQ-5.27, 5.10, 5.24, 5.19, 5.20, 5.12, 5.13, 5.11) raised small questions. Some parts of these requirements depend on priority 2 and 3 features that aren't built yet.
+**Decision:**
+1. **Grading an open answer:** the teacher gives a share of the question's marks, from 0 to 100% (quick buttons: full 100%, half 50%, zero 0%). Every question counts the same in the lesson grade (D-56).
+2. **Average grade** on the dashboard and grade table: over all lessons given to the student; a lesson not finished counts as 0, even if it isn't open yet; a lesson with answers waiting for the teacher is left out until graded.
+3. **The middle of the class** in a course is the median number of finished lessons. "Behind" (orange) is more than 1 lesson below it; the star is more than 1 lesson above it.
+4. **Left for their own requirements:** the yellow "late" status (needs due dates, REQ-5.9), unread messages (REQ-5.16), level suggestions (REQ-5.18), marking up answers and audio comments (priority 3), and "send back for corrections" (REQ-5.14). The teacher can already change a level with − and +.
+5. **The student page** is simple for now (status, level, average, help tips opened, red flags to clear, cleared flags with date and note, grades per lesson). The full student page is REQ-5.28.
+6. **Teacher comments** appear to the student under their answer in the lesson as soon as the teacher saves the grade. "Returning" work comes with REQ-5.14.
+7. **Opening early** works on lessons in courses given to the class, for the whole class or chosen students, and can't be undone yet.
+**Reason:** Keeps part 4 within the pilot's must-haves; each point is easy to change after Gil tries it.
+**Affects:** REQ-5.10, REQ-5.11, REQ-5.12, REQ-5.13, REQ-5.19, REQ-5.20, REQ-5.27

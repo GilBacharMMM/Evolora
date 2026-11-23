@@ -10,6 +10,7 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `reset-test-site.mjs` | Fills or resets the test site with the standard test data: test users, the test class with its class code, the demo lessons, and the demo courses given to the whole class. It prints the test class code. Test site only. | REQ-12.6 |
 | `test-checking.mjs` | End-to-end test of the checking service: answers real questions as test students (right, wrong, check-again, numbers, letters) and checks the scores and red flags. | REQ-4.16, 4.17, 4.22, 6.3 |
 | `test-classes.mjs` | End-to-end test of classes: a teacher creates a class; students join with a good code, a mistyped code, a code of no class, a closed class and a new code; 10 wrong codes mean a wait; lessons given to the whole class and to one student; a student who joins later; finishing a lesson; removing a student while keeping their work. Cleans up after itself. | REQ-5.1, 5.2, 5.4, 5.6, 5.7, D-55 |
+| `test-following.mjs` | End-to-end test of following a class: teacher home counts and To do list, the class dashboard and progress map, levels, grading an open answer with a comment, clearing a red flag with a note, opening a lesson early for 2 students, and the CSV file. Cleans up after itself. | REQ-5.27, 5.10, 5.24, 5.19, 5.20, 5.12, 5.13, 5.11 |
 | `test-permissions.mjs` | Automatic permission tests: signs in as test users and checks that what must be blocked is blocked (for example, a student reading the correct answers). | REQ-3.4, 10.1, 10.3 |
 
 `check-lesson.mjs` also checks course files (`courses/<name>.md`): every listed lesson must exist, have the matching type (teaching, practice or exam), and pass the lesson check.
@@ -30,6 +31,7 @@ node tools/reset-test-site.mjs
 node tools/test-permissions.mjs
 node tools/test-checking.mjs
 node tools/test-classes.mjs
+node tools/test-following.mjs
 ```
 
 The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.

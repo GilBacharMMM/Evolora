@@ -11,7 +11,8 @@ import { initializeApp } from 'firebase-admin/app'
 import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 import { HttpsError, onCall } from 'firebase-functions/v2/https'
 import { setGlobalOptions } from 'firebase-functions/v2'
-import { answerCheckAgain, answerMain, isFinished, lessonFinished, lessonGrade } from './check.js'
+import { answerCheckAgain, answerMain, gradeOpen, isFinished, lessonFinished, lessonGrade } from './check.js'
+import { averageGrade, coursePosition, lessonCell, median, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
 import { CLASS_COLORS, WAIT_MS, afterWrong, makeCode, normalizeCode, validateCode, waitLeft } from './classcode.js'
 
 // "public" lets the website reach the service; every call still checks who is signed in.
@@ -366,4 +367,315 @@ export const assign = onCall(async (request) => {
   for (const l of ids) batch.update(db.doc(`lessons/${l}`), { classIds: FieldValue.arrayUnion(classId) })
   await batch.commit()
   return { assignmentId: assignmentRef.id }
+})
+
+// ---------------------------------------------------------------------------------------------
+// Following and grading (stage 1, part 4: REQ-5.27, 5.10, 5.24, 5.19, 5.20, 5.12, 5.13, 5.11,
+// system-design 2.7). Teachers read their class's work through these, after the same check.
+//
+//   teacherHome()                                                  counts and "To do" for all classes
+//   classOverview({ classId })                                     dashboard, progress map, grade table, CSV
+//   lessonResults({ classId, lessonId })                           each student's answers in one lesson
+//   gradeAnswer({ classId, lessonId, studentId, questionId, score, comment })   grade an open answer
+//   clearFlag({ flagId, note })                                    clear a red flag
+//   openEarly({ classId, lessonId, studentIds })                   open a course lesson early
+//   setLevel({ classId, studentId, level })                        change a student's level
+
+const toMillis = (t) => (t && typeof t.toMillis === 'function' ? t.toMillis() : null)
+const validId = (s) => typeof s === 'string' && s.length > 0 && !s.includes('/')
+
+// What the class was given, read once: courses (in course order, D-55), single lessons, openings.
+async function classWork(classRef) {
+  const [assignSnap, openSnap] = await Promise.all([classRef.collection('assignments').get(), classRef.collection('openings').get()])
+  const assignments = assignSnap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => (toMillis(a.createdAt) || 0) - (toMillis(b.createdAt) || 0))
+  const courseIds = [...new Set(assignments.filter((a) => a.kind === 'course' && a.courseId).map((a) => a.courseId))]
+  const courseSnaps = courseIds.length ? await db.getAll(...courseIds.map((c) => db.doc(`courses/${c}`))) : []
+  const courses = courseSnaps
+    .filter((s) => s.exists)
+    .map((s) => {
+      const c = s.data()
+      return {
+        courseId: s.id,
+        title: c.title,
+        language: c.language,
+        items: c.items,
+        order: c.items.flatMap((it) => [it.lessonId, ...it.practice.map((p) => p.lessonId)]),
+      }
+    })
+  const lessonIds = [...new Set(assignments.flatMap((a) => a.lessonIds || []))]
+  const lessonSnaps = lessonIds.length ? await db.getAll(...lessonIds.map((l) => db.doc(`lessons/${l}`))) : []
+  const lessons = Object.fromEntries(lessonSnaps.filter((s) => s.exists).map((s) => [s.id, { title: s.data().title, type: s.data().type, language: s.data().language }]))
+  const openings = openSnap.docs.map((d) => ({ id: d.id, ...d.data(), createdAt: toMillis(d.data().createdAt) }))
+  // The lessons each student was given: whole-class assignments, and those that name them.
+  const givenTo = (uid) => {
+    const mine = assignments.filter((a) => a.everyone || (a.studentIds || []).includes(uid))
+    return {
+      courseIds: [...new Set(mine.filter((a) => a.kind === 'course').map((a) => a.courseId))].filter((c) => courses.some((k) => k.courseId === c)),
+      lessonIds: [...new Set(mine.flatMap((a) => a.lessonIds || []))].filter((l) => lessons[l]),
+    }
+  }
+  return { assignments, courses, lessons, openings, givenTo }
+}
+
+async function classStudents(classRef) {
+  const [list, levels] = await Promise.all([classRef.collection('students').get(), classRef.collection('levels').get()])
+  const levelOf = Object.fromEntries(levels.docs.map((d) => [d.id, d.data().level]))
+  return list.docs
+    .map((d) => ({ id: d.id, name: d.data().name || '', email: d.data().email || '', removed: d.data().removed === true, level: levelOf[d.id] ?? 2 }))
+    .sort((a, b) => a.name.localeCompare(b.name))
+}
+
+async function progressMap(pairs) {
+  if (!pairs.length) return {}
+  const snaps = await db.getAll(...pairs.map(([uid, l]) => db.doc(`progress/${progressId(uid, l)}`)))
+  return Object.fromEntries(snaps.filter((s) => s.exists).map((s) => [s.id, s.data()]))
+}
+
+export const classOverview = onCall(async (request) => {
+  const classId = request.data?.classId
+  const { ref, data } = await requireClassTeacher(request.auth, classId)
+  const [work, students, flagSnap] = await Promise.all([classWork(ref), classStudents(ref), db.collection('flags').where('classId', '==', classId).get()])
+  const current = students.filter((s) => !s.removed)
+  const given = Object.fromEntries(current.map((s) => [s.id, work.givenTo(s.id)]))
+  const progress = await progressMap(current.flatMap((s) => given[s.id].lessonIds.map((l) => [s.id, l])))
+  const p = (uid, l) => progress[progressId(uid, l)]
+  const flags = flagSnap.docs
+    .map((d) => {
+      const f = d.data()
+      return {
+        id: d.id,
+        uid: f.uid,
+        studentName: f.studentName,
+        lessonId: f.lessonId,
+        lessonTitle: f.lessonTitle,
+        questionId: f.questionId,
+        topicName: f.topicName || null,
+        kind: f.kind,
+        alsoMinimum: !!f.alsoMinimum,
+        open: f.open !== false,
+        createdAt: toMillis(f.createdAt),
+        clearedAt: toMillis(f.clearedAt),
+        clearNote: f.clearNote || null,
+      }
+    })
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+
+  // The middle of the class in each course (REQ-5.10): the median number of finished lessons.
+  const middles = Object.fromEntries(
+    work.courses.map((c) => {
+      const counts = current.filter((s) => given[s.id].courseIds.includes(c.courseId)).map((s) => coursePosition(c.order, (l) => p(s.id, l)).done)
+      return [c.courseId, median(counts)]
+    }),
+  )
+
+  const rows = current.map((s) => {
+    const mine = given[s.id]
+    const cells = Object.fromEntries(
+      mine.lessonIds.map((l) => {
+        const pr = p(s.id, l)
+        return [l, { ...lessonCell(pr), started: !!pr, waiting: waitingAnswers(pr).length, tips: Object.values(pr?.tipsOpened || {}).reduce((a, b) => a + b, 0) }]
+      }),
+    )
+    const positions = Object.fromEntries(mine.courseIds.map((c) => [c, coursePosition(work.courses.find((k) => k.courseId === c).order, (l) => p(s.id, l))]))
+    const openFlags = flags.filter((f) => f.uid === s.id && f.open).length
+    const { status, star } = studentStatus({ openFlags, courses: mine.courseIds.map((c) => ({ mine: positions[c].done, middle: middles[c] })) })
+    const times = mine.lessonIds.map((l) => toMillis(p(s.id, l)?.updatedAt)).filter(Boolean)
+    return {
+      ...s,
+      courseIds: mine.courseIds,
+      lessonIds: mine.lessonIds,
+      cells,
+      positions,
+      average: averageGrade(Object.values(cells)),
+      openFlags,
+      lastWorked: times.length ? Math.max(...times) : null,
+      status,
+      star,
+    }
+  })
+
+  // The grade table as a CSV file (REQ-5.11): a row per student, a column per lesson.
+  const columns = [...work.courses.flatMap((c) => c.order), ...Object.keys(work.lessons)].filter((l, i, all) => all.indexOf(l) === i && work.lessons[l])
+  const csv = toCsv([
+    ['Student', 'Email', 'Average', ...columns.map((l) => work.lessons[l].title)],
+    ...rows.map((r) => [
+      r.name,
+      r.email,
+      r.average ?? '',
+      ...columns.map((l) => {
+        const c = r.cells[l]
+        if (!c) return ''
+        return c.kind === 'notDone' ? 'not done (0)' : c.kind === 'pending' ? 'pending' : c.kind === 'doneNoGrade' ? 'done' : c.percent
+      }),
+    ]),
+  ])
+
+  return {
+    name: data.name,
+    color: data.color || '#0E6B73',
+    teacherNames: data.teacherNames || [],
+    courses: work.courses.map((c) => ({ ...c, middle: middles[c.courseId] })),
+    lessons: work.lessons,
+    columns,
+    openings: work.openings,
+    students: rows,
+    flags,
+    csv,
+  }
+})
+
+export const teacherHome = onCall(async (request) => {
+  await requireTeacher(request.auth)
+  const classes = await db.collection('classes').where('teacherIds', 'array-contains', request.auth.uid).get()
+  const out = []
+  const todo = []
+  for (const c of classes.docs) {
+    const [flags, work, students] = await Promise.all([
+      db.collection('flags').where('classId', '==', c.id).where('open', '==', true).get(),
+      db.collection('progress').where('classIds', 'array-contains', c.id).get(),
+      classStudents(c.ref),
+    ])
+    const removed = new Set(students.filter((s) => s.removed).map((s) => s.id))
+    const openFlags = flags.docs.filter((f) => !removed.has(f.data().uid))
+    for (const f of openFlags) {
+      const d = f.data()
+      todo.push({ kind: 'flag', classId: c.id, className: c.data().name, flagId: f.id, studentId: d.uid, studentName: d.studentName, lessonTitle: d.lessonTitle, flagKind: d.kind, topicName: d.topicName || null, at: toMillis(d.createdAt) })
+    }
+    const waitingByLesson = {}
+    let waiting = 0
+    for (const w of work.docs) {
+      const n = waitingAnswers(w.data()).length
+      if (!n) continue
+      waiting += n
+      const l = w.data().lessonId
+      waitingByLesson[l] = waitingByLesson[l] || { count: 0, at: 0 }
+      waitingByLesson[l].count += n
+      waitingByLesson[l].at = Math.max(waitingByLesson[l].at, toMillis(w.data().updatedAt) || 0)
+    }
+    const lessonIds = Object.keys(waitingByLesson)
+    const titles = lessonIds.length ? await db.getAll(...lessonIds.map((l) => db.doc(`lessons/${l}`))) : []
+    for (const s of titles) {
+      todo.push({ kind: 'grade', classId: c.id, className: c.data().name, lessonId: s.id, lessonTitle: s.exists ? s.data().title : s.id, count: waitingByLesson[s.id].count, at: waitingByLesson[s.id].at })
+    }
+    out.push({ id: c.id, name: c.data().name, color: c.data().color || '#0E6B73', students: students.filter((s) => !s.removed).length, openFlags: openFlags.length, waiting })
+  }
+  todo.sort((a, b) => (a.at || 0) - (b.at || 0))
+  return { classes: out, todo }
+})
+
+export const lessonResults = onCall(async (request) => {
+  const { classId, lessonId } = request.data || {}
+  const { ref } = await requireClassTeacher(request.auth, classId)
+  if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
+  const lessonRef = db.doc(`lessons/${lessonId}`)
+  const lessonSnap = await lessonRef.get()
+  if (!lessonSnap.exists || !(lessonSnap.data().classIds || []).includes(classId)) throw new HttpsError('not-found', 'This lesson was not given to the class.')
+  const lesson = lessonSnap.data()
+  const [work, students] = await Promise.all([classWork(ref), classStudents(ref)])
+  const withLesson = students.filter((s) => !s.removed && work.givenTo(s.id).lessonIds.includes(lessonId))
+  const progress = await progressMap(withLesson.map((s) => [s.id, lessonId]))
+  // The questions of every version the students have, with the grading instructions (REQ-5.12).
+  const versions = [...new Set([lesson.currentVersion, ...Object.values(progress).map((p) => p.version).filter(Boolean)])]
+  const questions = []
+  for (const v of versions) {
+    const vRef = lessonRef.collection('versions').doc(String(v))
+    const [vs, ss] = await Promise.all([vRef.get(), vRef.collection('secret').doc('answers').get()])
+    if (!vs.exists) continue
+    const secret = ss.exists ? ss.data().questions || {} : {}
+    for (const topic of vs.data().topics) {
+      for (const b of topic.blocks) {
+        if (b.type !== 'question' || questions.some((q) => q.id === b.id)) continue
+        questions.push({
+          id: b.id,
+          kind: b.kind,
+          prompt: b.prompt,
+          extra: !!b.extra,
+          choices: b.choices || [],
+          unit: b.unit || null,
+          topic: topic.number,
+          topicName: topic.name || null,
+          gradingInstructions: secret[b.id]?.gradingInstructions || null,
+        })
+      }
+    }
+  }
+  return {
+    lessonId,
+    title: lesson.title,
+    language: lesson.language,
+    type: lesson.type,
+    questions,
+    students: withLesson.map((s) => {
+      const pr = progress[progressId(s.id, lessonId)]
+      const states = Object.fromEntries(
+        Object.entries(pr?.questions || {}).map(([id, st]) => [
+          id,
+          { attempts: st.attempts || [], result: st.result, score: st.score, graded: !!st.graded, teacherComment: st.teacherComment || null, checkAgain: st.checkAgain ? { result: st.checkAgain.result } : null },
+        ]),
+      )
+      return { id: s.id, name: s.name, cell: lessonCell(pr), states }
+    }),
+  }
+})
+
+export const gradeAnswer = onCall(async (request) => {
+  const { classId, lessonId, studentId, questionId, score, comment } = request.data || {}
+  await requireClassTeacher(request.auth, classId)
+  if (![lessonId, studentId, questionId].every(validId)) throw new HttpsError('invalid-argument', 'Missing details.')
+  const ref = db.doc(`progress/${progressId(studentId, lessonId)}`)
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref)
+    if (!snap.exists || !(snap.data().classIds || []).includes(classId)) throw new HttpsError('not-found', 'No such answer in this class.')
+    const p = snap.data()
+    const outcome = gradeOpen(p.questions?.[questionId], score, comment)
+    if (outcome.invalid) throw new HttpsError('invalid-argument', 'invalid-grade')
+    outcome.state.gradedBy = request.auth.uid
+    outcome.state.gradedAt = Date.now()
+    const questions = { ...p.questions, [questionId]: outcome.state }
+    const grade = lessonGrade(questions)
+    tx.update(ref, { questions, grade, updatedAt: FieldValue.serverTimestamp() })
+    return { state: outcome.state, grade }
+  })
+})
+
+export const clearFlag = onCall(async (request) => {
+  const { flagId, note } = request.data || {}
+  if (!validId(flagId)) throw new HttpsError('invalid-argument', 'Missing flag.')
+  const ref = db.doc(`flags/${flagId}`)
+  const snap = await ref.get()
+  if (!snap.exists) throw new HttpsError('not-found', 'No such flag.')
+  await requireClassTeacher(request.auth, snap.data().classId)
+  const text = typeof note === 'string' ? note.trim().slice(0, 1000) : ''
+  await ref.update({ open: false, clearedAt: FieldValue.serverTimestamp(), clearedBy: request.auth.uid, clearNote: text || null })
+  return { ok: true }
+})
+
+// Opens one lesson of a course given to the class early, for the whole class or chosen students
+// (REQ-5.20). It is open whatever comes before it (D-55).
+export const openEarly = onCall(async (request) => {
+  const { classId, lessonId, studentIds } = request.data || {}
+  const { ref } = await requireClassTeacher(request.auth, classId)
+  if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
+  const work = await classWork(ref)
+  if (!work.courses.some((c) => c.order.includes(lessonId))) throw new HttpsError('invalid-argument', 'The lesson is not in a course given to the class.')
+  const everyone = studentIds == null
+  let chosen = []
+  if (!everyone) {
+    if (!Array.isArray(studentIds) || !studentIds.length || studentIds.length > 500 || !studentIds.every(validId)) throw new HttpsError('invalid-argument', 'Choose students.')
+    chosen = [...new Set(studentIds)]
+    const snaps = await db.getAll(...chosen.map((s) => ref.collection('students').doc(s)))
+    if (snaps.some((s) => !s.exists || s.data().removed)) throw new HttpsError('invalid-argument', 'A chosen student is not in the class.')
+  }
+  const opening = ref.collection('openings').doc()
+  await opening.set({ lessonId, everyone, studentIds: chosen, createdBy: request.auth.uid, createdAt: FieldValue.serverTimestamp() })
+  return { openingId: opening.id }
+})
+
+export const setLevel = onCall(async (request) => {
+  const { classId, studentId, level } = request.data || {}
+  const { ref } = await requireClassTeacher(request.auth, classId)
+  if (!validId(studentId) || ![1, 2, 3].includes(level)) throw new HttpsError('invalid-argument', 'Level 1 to 3.')
+  if (!(await ref.collection('students').doc(studentId).get()).exists) throw new HttpsError('not-found', 'Not in this class.')
+  await ref.collection('levels').doc(studentId).set({ level, setBy: request.auth.uid, setAt: FieldValue.serverTimestamp() })
+  return { level }
 })

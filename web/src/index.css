@@ -1715,3 +1715,407 @@ figcaption {
   width: 320px;
   max-width: 100%;
 }
+
+/* Part 4: teacher home, class dashboard, progress map, grades and grading
+   (REQ-5.27, 5.10, 5.24, 5.19, 5.20, 5.12, 5.13, 5.11). Every status has a word and an icon. */
+.class-tabs {
+  display: flex;
+  gap: 4px;
+  padding-inline: 12px;
+  flex-wrap: wrap;
+  border-block-start: 1px solid var(--line);
+}
+
+.class-tab {
+  background: none;
+  border: 0;
+  border-block-end: 3px solid transparent;
+  font: inherit;
+  min-height: 48px;
+  padding-inline: 16px;
+  font-weight: 500;
+  color: var(--ink-2);
+  border-block-end: 3px solid transparent;
+  cursor: pointer;
+}
+
+.class-tab.active {
+  color: var(--teal-dark);
+  border-block-end-color: var(--teal);
+  font-weight: 700;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding-block: 2px;
+  padding-inline: 10px;
+  white-space: nowrap;
+}
+
+.badge-red {
+  background: #fde4e1;
+  color: #9c2f2f;
+}
+
+.badge-orange {
+  background: #ffe8d1;
+  color: #8a4300;
+}
+
+.badge-yellow {
+  background: var(--sun-light);
+  color: var(--sun-text);
+}
+
+.badge-green {
+  background: var(--green-light);
+  color: var(--green);
+}
+
+.badge-cleared {
+  background: #eceff3;
+  color: var(--locked);
+}
+
+.badge-grade {
+  background: var(--teal-light);
+  color: var(--teal-dark);
+}
+
+.status-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.star {
+  color: #c98a00;
+  display: inline-flex;
+}
+
+.sort-button {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: start;
+  min-height: 36px;
+}
+
+.dashboard-table td,
+.grade-table td {
+  vertical-align: middle;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.small-note {
+  font-size: 14px;
+}
+
+.flag-count {
+  color: #9c2f2f;
+}
+
+.level-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.level-button {
+  font-family: inherit;
+  color: var(--ink);
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  background: var(--white);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.level-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.level-value {
+  min-width: 18px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.progress-map {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 160px;
+}
+
+.map-marks {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.map-mark {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 2px solid var(--line-strong);
+  background: var(--white);
+}
+
+.map-done {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.map-working {
+  border-color: var(--teal);
+  background: repeating-linear-gradient(45deg, var(--teal-light), var(--teal-light) 3px, var(--white) 3px, var(--white) 6px);
+}
+
+.map-text {
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.flag-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.flag-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-block: 8px;
+  border-block-end: 1px solid var(--line);
+}
+
+.flag-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.flag-text .link-button {
+  align-self: flex-start;
+  font-weight: 700;
+}
+
+.clear-form {
+  flex-basis: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clear-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.clear-form input,
+.comment-box textarea,
+.score-input input {
+  font: inherit;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  padding: 8px 10px;
+  min-height: 44px;
+}
+
+.grade-chip {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 8px;
+  padding-inline: 8px;
+  white-space: nowrap;
+}
+
+.grade-chip.notdone {
+  background: #eceff3;
+  color: var(--locked);
+}
+
+.grade-chip.pending {
+  background: var(--sun-light);
+  color: var(--sun-text);
+}
+
+.grade-chip.graded,
+.grade-chip.done {
+  background: var(--teal-faint);
+  color: var(--teal-dark);
+}
+
+.answer-mark {
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.answer-mark.right {
+  color: var(--green);
+}
+
+.answer-mark.half {
+  color: var(--practice-text);
+}
+
+.answer-mark.wrong {
+  color: #9c2f2f;
+}
+
+.column-lesson {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  text-align: start;
+}
+
+.student-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+}
+
+.attention {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.attn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--slate);
+}
+
+.attn-flag {
+  color: #9c2f2f;
+  font-weight: 700;
+}
+
+.attn-grade {
+  color: var(--teal-dark);
+  font-weight: 700;
+}
+
+.grading-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.grading-count {
+  font-weight: 700;
+}
+
+.grading-instructions {
+  margin-block-start: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--teal-faint);
+  border: 1px solid var(--teal-light);
+}
+
+.grading-answer,
+.grading-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grading-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.student-answer {
+  white-space: pre-wrap;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--ground);
+  border: 1px solid var(--line);
+  min-height: 80px;
+}
+
+.score-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.button.chosen {
+  border-color: var(--teal);
+  background: var(--teal-light);
+  color: var(--teal-dark);
+}
+
+.score-input {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.score-input input {
+  width: 80px;
+}
+
+.comment-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.teacher-note {
+  margin-block: -8px 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: var(--teal-light);
+  border: 1px solid var(--teal);
+  color: var(--teal-dark);
+}
+
+.teacher-note p {
+  margin: 4px 0 0;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+.teacher-note-title {
+  font-weight: 700;
+  font-size: 14px;
+}

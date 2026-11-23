@@ -105,6 +105,14 @@ service cloud.firestore {
               && (resource.data.everyone == true || request.auth.uid in resource.data.studentIds));
         allow write: if isLoader();
       }
+
+      // Lessons the teacher opened early (REQ-5.20), read the same way as assignments.
+      match /openings/{openingId} {
+        allow read: if isLoader() || teachesThisClass()
+          || (signedIn() && classId in myClassIds()
+              && (resource.data.everyone == true || request.auth.uid in resource.data.studentIds));
+        allow write: if isLoader();
+      }
     }
 
     // Class codes and wrong-code counts (REQ-5.2): only the class service uses them.

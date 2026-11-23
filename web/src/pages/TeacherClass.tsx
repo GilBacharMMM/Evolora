@@ -4,6 +4,7 @@ import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import { httpsCallable } from 'firebase/functions'
 import { db, functions } from '../site'
 import { BackButton } from '../components/BackButton'
+import { ClassTabs } from '../components/ClassTabs'
 import { TypeChip } from '../components/TypeChip'
 import type { Course, LessonSummary } from '../lesson/types'
 
@@ -32,6 +33,7 @@ interface ClassData {
   joiningOpen: boolean
   students: StudentRow[]
   assignments: AssignmentRow[]
+  openings: { id: string; lessonId: string; everyone: boolean; studentIds: string[] }[]
 }
 
 const call = <T,>(name: string, data: unknown) => httpsCallable<unknown, T>(functions, name)(data).then((r) => r.data)
@@ -50,7 +52,11 @@ export function TeacherClass({ classId }: { classId: string }) {
     try {
       const c = await getDoc(doc(db, 'classes', classId))
       if (!c.exists()) throw new Error('not found')
-      const [list, given] = await Promise.all([getDocs(collection(db, 'classes', classId, 'students')), getDocs(collection(db, 'classes', classId, 'assignments'))])
+      const [list, given, openings] = await Promise.all([
+        getDocs(collection(db, 'classes', classId, 'students')),
+        getDocs(collection(db, 'classes', classId, 'assignments')),
+        getDocs(collection(db, 'classes', classId, 'openings')),
+      ])
       const d = c.data()
       setData({
         name: d.name,
@@ -64,6 +70,7 @@ export function TeacherClass({ classId }: { classId: string }) {
         assignments: given.docs
           .map((a) => ({ id: a.id, ...(a.data() as Omit<AssignmentRow, 'id' | 'createdAt'>), createdAt: a.data().createdAt?.toMillis?.() ?? 0 }))
           .sort((a, b) => a.createdAt - b.createdAt),
+        openings: openings.docs.map((o) => ({ id: o.id, lessonId: o.data().lessonId, everyone: o.data().everyone === true, studentIds: o.data().studentIds || [] })),
       })
     } catch {
       setBlocked(true)
@@ -107,16 +114,9 @@ export function TeacherClass({ classId }: { classId: string }) {
   return (
     <main className="page narrow">
       <BackButton />
-      <section className="card class-card">
-        <div className="class-card-top" style={{ background: data.color }}>
-          <h1 className="class-page-title" dir="auto">
-            {data.name}
-          </h1>
-          <span dir="auto">{data.teacherNames.join(', ')}</span>
-        </div>
-        <div className="class-card-body">
-          <CodeBox classId={classId} code={data.code} joiningOpen={data.joiningOpen} onChange={load} />
-        </div>
+      <ClassTabs classId={classId} name={data.name} color={data.color} active="manage" />
+      <section className="card">
+        <CodeBox classId={classId} code={data.code} joiningOpen={data.joiningOpen} onChange={load} />
       </section>
 
       <section className="card list-card-padded" aria-labelledby="students-title">
@@ -170,6 +170,14 @@ export function TeacherClass({ classId }: { classId: string }) {
       </section>
 
       <GiveForm classId={classId} students={current} lessons={lessons} courses={courses} onGiven={load} />
+      <OpenEarlyForm
+        classId={classId}
+        students={current}
+        courses={courses.filter((c) => data.assignments.some((a) => a.kind === 'course' && a.courseId === c.id))}
+        openings={data.openings}
+        nameOf={nameOf}
+        onOpened={load}
+      />
     </main>
   )
 }
@@ -415,6 +423,122 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
         </fieldset>
         <button type="submit" className="button primary" disabled={busy}>
           {busy ? t('teacher.giving') : t('teacher.giveButton')}
+        </button>
+        {message && (
+          <p role="status" className={message.good ? 'notice good' : 'notice'}>
+            {message.text}
+          </p>
+        )}
+      </form>
+    </section>
+  )
+}
+
+// Opening a lesson of a course early, for the whole class or chosen students (REQ-5.20). It is
+// then open for them whatever comes before it (D-55).
+function OpenEarlyForm({
+  classId,
+  students,
+  courses,
+  openings,
+  nameOf,
+  onOpened,
+}: {
+  classId: string
+  students: StudentRow[]
+  courses: Course[]
+  openings: ClassData['openings']
+  nameOf: (id: string) => string
+  onOpened: () => Promise<void>
+}) {
+  const { t } = useTranslation()
+  const [lessonId, setLessonId] = useState('')
+  const [to, setTo] = useState<'everyone' | 'some'>('some')
+  const [studentIds, setStudentIds] = useState<string[]>([])
+  const [busy, setBusy] = useState(false)
+  const [message, setMessage] = useState<{ good: boolean; text: string } | null>(null)
+  const lessonsInCourses = courses.flatMap((c) => c.items.flatMap((it) => [it, ...it.practice]).map((l) => ({ ...l, course: c.title })))
+  const titleOf = (id: string) => lessonsInCourses.find((l) => l.lessonId === id)?.title || id
+  if (lessonsInCourses.length === 0) return null
+
+  async function open() {
+    setMessage(null)
+    if (!lessonId) return setMessage({ good: false, text: t('teacher.needLesson') })
+    if (to === 'some' && studentIds.length === 0) return setMessage({ good: false, text: t('teacher.needStudents') })
+    setBusy(true)
+    try {
+      await call('openEarly', { classId, lessonId, studentIds: to === 'everyone' ? null : studentIds })
+      setMessage({ good: true, text: t('teacher.openedDone') })
+      setLessonId('')
+      setStudentIds([])
+      await onOpened()
+    } catch {
+      setMessage({ good: false, text: t('teacher.actionFailed') })
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <section className="card list-card-padded give-form" aria-labelledby="early-title">
+      <h2 id="early-title" className="section-title">
+        {t('teacher.openEarly')}
+      </h2>
+      <p className="muted">{t('teacher.openEarlyExplain')}</p>
+      {openings.length > 0 && (
+        <ul className="given-list">
+          {openings.map((o) => (
+            <li key={o.id}>
+              <span className="given-title" dir="auto">
+                {titleOf(o.lessonId)}
+              </span>
+              <span className="muted given-to">
+                {o.everyone ? t('teacher.toEveryone') : t('teacher.toSome', { count: o.studentIds.length, names: o.studentIds.map(nameOf).join(', ') })}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault()
+          void open()
+        }}
+      >
+        <label className="select-line">
+          <span className="visually-hidden">{t('teacher.chooseLesson')}</span>
+          <select value={lessonId} onChange={(e) => setLessonId(e.target.value)}>
+            <option value="">{t('teacher.chooseLesson')}</option>
+            {lessonsInCourses.map((l) => (
+              <option key={l.lessonId} value={l.lessonId}>
+                {l.title} ({l.course})
+              </option>
+            ))}
+          </select>
+        </label>
+        <fieldset>
+          <legend>{t('teacher.giveTo')}</legend>
+          <label className="radio-line">
+            <input type="radio" name="early-to" checked={to === 'some'} onChange={() => setTo('some')} />
+            {t('teacher.chosenStudents')}
+          </label>
+          <label className="radio-line">
+            <input type="radio" name="early-to" checked={to === 'everyone'} onChange={() => setTo('everyone')} />
+            {t('teacher.wholeClassNow')}
+          </label>
+          {to === 'some' && (
+            <div className="check-list">
+              {students.map((s) => (
+                <label key={s.id} className="check-line">
+                  <input type="checkbox" checked={studentIds.includes(s.id)} onChange={() => setStudentIds((v) => (v.includes(s.id) ? v.filter((x) => x !== s.id) : [...v, s.id]))} />
+                  <span dir="auto">{s.name}</span>
+                </label>
+              ))}
+            </div>
+          )}
+        </fieldset>
+        <button type="submit" className="button primary" disabled={busy}>
+          {busy ? t('teacher.giving') : t('teacher.openButton')}
         </button>
         {message && (
           <p role="status" className={message.good ? 'notice good' : 'notice'}>

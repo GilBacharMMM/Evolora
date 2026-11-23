@@ -13,7 +13,23 @@ import type { Block, LessonVersion, Question } from '../lesson/types'
 import { TypeChip } from '../components/TypeChip'
 import { BackButton } from '../components/BackButton'
 
-type Item = { kind: 'topic'; number: number; name: string } | { kind: 'block'; block: Block; key: string; topic: number }
+// An open answer the teacher graded, with their written comment (REQ-5.12, 5.13).
+type Graded = QuestionState & { graded?: boolean; teacherComment?: string | null }
+
+function TeacherNote({ state }: { state: Graded | undefined }) {
+  const { t } = useTranslation()
+  if (!state?.graded || !state.teacherComment) return null
+  return (
+    <div className="teacher-note" role="note">
+      <span className="teacher-note-title">
+        <Ui>{t('lesson.teacherComment')}</Ui>
+      </span>
+      <p dir="auto">{state.teacherComment}</p>
+    </div>
+  )
+}
+
+type Item ={ kind: 'topic'; number: number; name: string } | { kind: 'block'; block: Block; key: string; topic: number }
 
 interface Progress {
   version?: number
@@ -212,6 +228,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
                 <Ui className="topic-number">{t('lesson.topic', { number: it.number })}</Ui> <bdi>{it.name}</bdi>
               </h2>
             ) : it.block.type === 'question' ? (
+              <>
               <QuestionCard
                 q={it.block}
                 state={states[it.block.id]}
@@ -219,6 +236,8 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
                 label={t('q.questionNumber', { number: numbers[it.block.id] })}
                 onState={(s) => setLocal((l) => ({ ...l, [(it.block as Question).id]: s }))}
               />
+              <TeacherNote state={states[it.block.id] as Graded | undefined} />
+              </>
             ) : (
               <BlockView block={it.block} />
             )}

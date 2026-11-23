@@ -71,6 +71,9 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Finished lesson** | A lesson where every question the student received has been answered. Open answers count once sent; skipped extra practice questions count as done (D-55). In Hebrew: שיעור שהסתיים. | proposed |
 | **Lesson status** | How a lesson appears to a student in a course or class: **open** (can be started or continued), **done** (finished), or **locked** (opens later; title greyed out). Always shown with an icon and a word (REQ-6.12). In Hebrew: פתוח, הושלם, נעול. | proposed |
 | **Waiting lessons** | Single lessons a teacher gave outside a course, which the student hasn't finished yet. A section of the student's class page (REQ-6.11). In Hebrew: שיעורים ממתינים. | proposed |
+| **Class dashboard** | The teacher's table of a class, a row per student, with status, level, where they are in each course, average grade, open red flags and when they last worked (REQ-5.10). In Hebrew: לוח הכיתה. | proposed |
+| **Progress map** | On the class dashboard, a square per lesson of a course for each student: filled when finished, striped for the lesson they're working on (REQ-5.24). In Hebrew: מפת התקדמות. | proposed |
+| **Opening early** | A teacher opening a lesson of a course for the whole class or chosen students before the lessons before it are finished (REQ-5.20). In Hebrew: פתיחה מוקדמת. | proposed |
 | **Invite** | An email from a teacher that lets a student join a class. | proposed |
 | **Enroll** | To join a class (with a class code or invite) or a public course. | proposed |
 | **Assignment** | A lesson, a course, or a selection of lessons that a teacher gives to a whole class or to specific students. Its settings: the course order (one after another, paired, or any order), optional due date, whether a redo counts (the latest redo's grade replaces the old one), and who checks open answers. | proposed |
