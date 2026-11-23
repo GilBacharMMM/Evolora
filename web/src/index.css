@@ -1068,3 +1068,54 @@ figcaption {
   margin: 0;
   font-weight: 500;
 }
+
+/* Class card as a button, and the simple class page */
+.class-card-button {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: start;
+  cursor: pointer;
+}
+
+.class-card-button:hover {
+  border-color: var(--teal);
+}
+
+.class-card-button .class-card-top,
+.class-card-button .class-card-body {
+  display: flex;
+}
+
+.class-card-name,
+.class-page-title {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.class-page-title {
+  font-size: 26px;
+}
+
+.student-list {
+  margin: 0;
+  padding-inline-start: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.student-list li {
+  padding-block: 6px;
+  border-block-end: 1px solid var(--line);
+}
+
+.student-name {
+  font-weight: 500;
+}
+
+.student-email {
+  margin-inline-start: 12px;
+  font-size: 14px;
+}

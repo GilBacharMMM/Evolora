@@ -6,7 +6,7 @@ import { matchRoute, navigate, usePath } from './router'
 import { Header } from './components/Header'
 import { SignIn } from './pages/SignIn'
 import { StudentHome } from './pages/StudentHome'
-import { LessonLibrary, TeacherHome } from './pages/TeacherHome'
+import { LessonLibrary, TeacherClass, TeacherHome } from './pages/TeacherHome'
 
 // The lesson player, with its formula display, loads only when a lesson is opened,
 // so the home page opens quickly (REQ-12.1).
@@ -51,6 +51,8 @@ function Screens() {
     case 'library':
       // Teacher screens can't be opened by students, even by typing the address (REQ-3.4).
       return isTeacher ? <LessonLibrary /> : <Message text={t('common.teachersOnly')} />
+    case 'teacherClass':
+      return isTeacher ? <TeacherClass key={route.classId} classId={route.classId} /> : <Message text={t('common.teachersOnly')} />
     case 'lesson':
       return (
         <Suspense fallback={<main className="page narrow"><p className="loading">{t('common.loading')}</p></main>}>

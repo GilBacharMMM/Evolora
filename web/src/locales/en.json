@@ -44,7 +44,11 @@
     "subject": "Subject",
     "questions": "Questions",
     "version": "Version",
-    "courses": "Courses"
+    "courses": "Courses",
+    "students": "Students",
+    "noStudents": "No students have joined this class yet.",
+    "classNotYours": "This class doesn't exist, or you don't teach it.",
+    "classLater": "Test site, part 1: you can see who is in the class. Removing students, the class code and giving lessons come in part 3."
   },
   "lessonType": {
     "teaching": "Teaching",

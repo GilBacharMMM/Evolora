@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../site'
 import { useSession } from '../session'
 import { navigate } from '../router'
@@ -56,16 +56,109 @@ export function TeacherHome() {
       {classes?.length === 0 && <p className="card message-card">{t('teacher.noClasses')}</p>}
       <div className="class-grid">
         {classes?.map((c) => (
-          <section key={c.id} className="card class-card">
-            <div className="class-card-top" style={{ background: c.color }}>
-              <h3>{c.name}</h3>
-            </div>
-            <div className="class-card-body">
-              <p>{t('teacher.studentCount', { count: c.students })}</p>
-            </div>
-          </section>
+          <button key={c.id} type="button" className="card class-card class-card-button" onClick={() => navigate(`/teacher/class/${c.id}`)}>
+            <span className="class-card-top" style={{ background: c.color }}>
+              <span className="class-card-name" dir="auto">
+                {c.name}
+              </span>
+            </span>
+            <span className="class-card-body">
+              <span>{t('teacher.studentCount', { count: c.students })}</span>
+            </span>
+          </button>
         ))}
       </div>
+    </main>
+  )
+}
+
+interface StudentRow {
+  id: string
+  name: string
+  email: string
+}
+
+// A simple class page (part 1, at Gil's request): the class name and its students'
+// names, the viewing part of REQ-5.4. Removing students, the class code and assigning
+// lessons come in part 3. Only the class's own teachers can open it (REQ-3.4).
+export function TeacherClass({ classId }: { classId: string }) {
+  const { t } = useTranslation()
+  const [name, setName] = useState<string | null>(null)
+  const [color, setColor] = useState('#0E6B73')
+  const [teachers, setTeachers] = useState<string[]>([])
+  const [students, setStudents] = useState<StudentRow[] | null>(null)
+  const [blocked, setBlocked] = useState(false)
+
+  useEffect(() => {
+    let live = true
+    ;(async () => {
+      try {
+        const c = await getDoc(doc(db, 'classes', classId))
+        if (!c.exists()) throw new Error('not found')
+        const list = await getDocs(collection(db, 'classes', classId, 'students'))
+        if (!live) return
+        setName(c.data().name)
+        setColor(c.data().color || '#0E6B73')
+        setTeachers(c.data().teacherNames || [])
+        setStudents(
+          list.docs
+            .map((d) => ({ id: d.id, name: d.data().name || '', email: d.data().email || '' }))
+            .sort((a, b) => a.name.localeCompare(b.name)),
+        )
+      } catch {
+        if (live) setBlocked(true)
+      }
+    })()
+    return () => {
+      live = false
+    }
+  }, [classId])
+
+  if (blocked) {
+    return (
+      <main className="page narrow">
+        <BackButton />
+        <div className="card message-card">
+          <p>{t('teacher.classNotYours')}</p>
+        </div>
+      </main>
+    )
+  }
+
+  return (
+    <main className="page narrow">
+      <BackButton />
+      {name === null ? (
+        <p className="loading">{t('common.loading')}</p>
+      ) : (
+        <section className="card class-card">
+          <div className="class-card-top" style={{ background: color }}>
+            <h1 className="class-page-title" dir="auto">
+              {name}
+            </h1>
+            <span dir="auto">{teachers.join(', ')}</span>
+          </div>
+          <div className="class-card-body">
+            <h2 className="section-title">
+              {t('teacher.students')} ({students?.length ?? 0})
+            </h2>
+            {students?.length === 0 && <p className="muted">{t('teacher.noStudents')}</p>}
+            <ol className="student-list">
+              {students?.map((s) => (
+                <li key={s.id}>
+                  <span className="student-name" dir="auto">
+                    {s.name}
+                  </span>
+                  <span className="muted student-email" dir="ltr">
+                    {s.email}
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <p className="part-note">{t('teacher.classLater')}</p>
+          </div>
+        </section>
+      )}
     </main>
   )
 }
