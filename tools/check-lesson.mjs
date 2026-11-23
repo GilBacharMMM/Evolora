@@ -10,11 +10,11 @@ import path from 'node:path'
 const BLOCK_TYPES = new Set([
   'TEXT', 'NOTE BOX', 'IMAGE', 'TABLE', 'FORMULA', 'VIDEO', 'AUDIO', 'SIMULATION',
   'LINK LIST', 'SOLVED EXAMPLE', 'QUOTE',
-  'QUESTION: multiple choice', 'QUESTION: number', 'QUESTION: open', 'QUESTION: audio',
+  'QUESTION: multiple choice', 'QUESTION: number', 'QUESTION: open', 'QUESTION: audio', 'QUESTION: drag and drop',
 ])
 const LESSON_TYPES = ['teaching lesson', 'practice lesson', 'exam']
 const LANGUAGES = ['he', 'ar', 'en']
-const FIELD = /^- (Hint|Solution|Why it's right|Answer|Unit|Grading instructions|Tip|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
+const FIELD = /^- (Hint|Solution|Why it's right|Answer|Unit|Grading instructions|Tip|Spot|Extra card|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
 const NUMBER = /^-?\d+(\.\d+)?$/
 const TIME = /^\d{1,2}:\d{2}(:\d{2})?$/
 
@@ -33,6 +33,8 @@ function fieldsOf(lines) {
   const fields = {}
   const choices = []
   const tips = []
+  const spots = []
+  const extraCards = []
   for (const { text, n } of lines) {
     if (text.startsWith('>')) continue
     const f = text.match(FIELD)
@@ -40,12 +42,14 @@ function fieldsOf(lines) {
       const key = f[1].toLowerCase()
       const value = f[2].replace(/\[NEW[^\]]*\]\s*/g, '').trim()
       if (key === 'tip') tips.push({ value, n })
+      else if (key === 'spot') spots.push({ value, n })
+      else if (key === 'extra card') extraCards.push({ value, n })
       else fields[key] = { value, n }
     } else if (/^- /.test(text) && !fields.hint && !fields.solution && tips.length === 0) {
       choices.push({ text: text.slice(2).trim(), n, correct: text.startsWith('- (✔)') })
     }
   }
-  return { fields, choices, tips }
+  return { fields, choices, tips, spots, extraCards }
 }
 
 function checkLesson(target) {
@@ -130,9 +134,9 @@ function checkLesson(target) {
   let noTips = 0
   let noWhy = 0
   for (const b of blocks) {
-    const { fields, choices, tips } = fieldsOf(b.lines)
+    const { fields, choices, tips, spots, extraCards } = fieldsOf(b.lines)
     const isQuestion = b.type.startsWith('QUESTION')
-    const isAuto = b.type === 'QUESTION: multiple choice' || b.type === 'QUESTION: number'
+    const isAuto = b.type === 'QUESTION: multiple choice' || b.type === 'QUESTION: number' || b.type === 'QUESTION: drag and drop'
     const levelTag = b.tags.find((t) => /^LEVEL\s*\d$/.test(t))
     const level = levelTag ? Number(levelTag.replace(/\D/g, '')) : null
     const isExtra = b.tags.includes('EXTRA')
@@ -211,6 +215,28 @@ function checkLesson(target) {
       tipCount += tips.length
     } else if (!isExam) noTips++
 
+    // Drag and drop (REQ-4.12, D-70): an image with spots; each spot names the card that belongs there.
+    if (b.type === 'QUESTION: drag and drop') {
+      if (isExam) err(b.n, 'Drag-and-drop questions are not used in exams yet (D-70).')
+      if (!fields.file) err(b.n, 'Drag and drop: the "file" line (the image) is missing.')
+      else if (!fs.existsSync(path.join(dir, fields.file.value))) err(fields.file.n, `Drag and drop: the image "${fields.file.value}" doesn't exist.`)
+      const src = fields.source ? fields.source.value : ''
+      if (!src) err(b.n, 'Drag and drop: the image\'s "source" line is missing (REQ-4.15).')
+      if (spots.length < 2) err(b.n, 'Drag and drop: write at least 2 spots, as "- Spot: 30% 45% | card text".')
+      const seen = new Set()
+      for (const sp of spots) {
+        const m = sp.value.match(/^\s*([\d.]+)%?\s+([\d.]+)%?\s*\|\s*(.+)$/)
+        if (!m) err(sp.n, 'Drag and drop: write the spot as "- Spot: 30% 45% | card text" (across, then down, in percent of the image).')
+        else {
+          if (Number(m[1]) > 100 || Number(m[2]) > 100) err(sp.n, 'Drag and drop: a spot\'s place must be between 0% and 100%.')
+          if (seen.has(m[3].trim())) err(sp.n, `Drag and drop: the card "${m[3].trim()}" is used for two spots; each spot needs its own card.`)
+          seen.add(m[3].trim())
+        }
+      }
+      for (const ex of extraCards) if (seen.has(ex.value)) err(ex.n, `Drag and drop: the extra card "${ex.value}" is also the card of a spot.`)
+      if (b.checkAgain.length) err(b.checkAgain[0].n, 'Drag-and-drop questions have no check-again question yet (D-70).')
+    }
+
     if (b.type === 'QUESTION: open' || b.type === 'QUESTION: audio') {
       if (!fields['grading instructions']) err(b.n, `The ${what} has no grading instructions.`)
     }
@@ -224,7 +250,7 @@ function checkLesson(target) {
         if (!fields.hint) err(b.n, `The ${what} has no hint (REQ-4.16).`)
         if (!fields.solution) err(b.n, `The ${what} has no full solution (REQ-4.16).`)
         if (!fields["why it's right"]) noWhy++
-        if (!isExtra && b.checkAgain.length === 0) err(b.n, `The ${what} has no check-again question (REQ-4.17).`)
+        if (!isExtra && b.checkAgain.length === 0 && b.type !== 'QUESTION: drag and drop') err(b.n, `The ${what} has no check-again question (REQ-4.17).`)
       }
       for (const ca of b.checkAgain) {
         const caf = fieldsOf(ca.lines)
@@ -233,7 +259,7 @@ function checkLesson(target) {
         if (ca.tags.some((t) => t.startsWith('NEW'))) newTags++
       }
       b.topic.autoQuestions++
-      if (level === 1 || isExam) { if (isExtra) b.topic.extra++; else b.topic.level1++ }
+      if ((level === 1 || isExam) && b.type !== 'QUESTION: drag and drop') { if (isExtra) b.topic.extra++; else b.topic.level1++ }
     }
   }
 

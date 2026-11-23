@@ -44,10 +44,18 @@ export function judge(kind, secret, value) {
     if (!Array.isArray(value) || value.length === 0) return 'invalid'
     return choicesAreCorrect(value, secret.correct)
   }
+  // Drag and drop (REQ-4.12, D-70): one card for each spot, in the order of the spots; right only
+  // if every spot has its card.
+  if (kind === 'drag') {
+    const spots = (secret.correct || []).length
+    if (!Array.isArray(value) || value.length !== spots || !value.every((v) => typeof v === 'string' && v)) return 'invalid'
+    return value.every((v, i) => v === secret.correct[i])
+  }
   return 'invalid'
 }
 
 function correctAnswerFor(kind, secret) {
+  if (kind === 'drag') return { cards: secret.correct }
   return kind === 'number' ? { number: secret.answer } : { choices: secret.correct }
 }
 

@@ -774,3 +774,13 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** A school is an entity that holds teachers. Only teachers of the same school can be added to a class as co-teachers. The system admin, who makes accounts teachers, also puts them in a school. For now Claude does both with tools/admin.mjs, with no screen.
 **Also (Claude):** a teacher without a school can't add co-teachers; each class records its creator's school, for later use. The test site has "Test School" with both test teachers.
 **Affects:** new REQ-2.5, REQ-5.5, REQ-2.2, tools/admin.mjs
+
+### D-70: Drag-and-drop questions
+**Date:** 2026-11-24 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, as suggested to Gil (questions 10 to 14), built while Gil was away
+**Decision:**
+1. **How it works:** the student places word cards on numbered spots on an image. Each spot has one right card; there may be extra cards that fit nowhere. Cards can be dragged, or clicked and then a spot clicked (works with the keyboard too).
+2. **Checking:** like multiple choice: 2 attempts, a hint after the first, full marks if all right the first time, half on the second, then the full solution with the right card on every spot. Right only when every spot has its card.
+3. **Not yet:** check-again questions for drag-and-drop, and drag-and-drop in exams.
+4. **Lesson files:** "## [QUESTION: drag and drop]" with "- file:", "- caption:", "- source:", one "- Spot: 30% 45% | card text" per spot (across, then down, in percent from the top left of the image), optional "- Extra card:" lines, then "- Hint:", "- Solution:" and "- Why it's right:". The lesson format, the lesson check, the lesson reader and the teacher kit are updated (rule 6).
+5. **To try it:** a demo question ([NEW]) at the end of the circles teaching lesson: label a circle's center, radius, diameter and circumference, with "chord" as an extra card. The picture is new, drawn by Claude.
+**Affects:** REQ-4.12, lessons/README.md, tools/check-lesson.mjs, tools/lib/lesson-parser.mjs, the teacher kit, the circles teaching lesson

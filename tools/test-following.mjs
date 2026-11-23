@@ -93,7 +93,7 @@ try {
   await as('test-student-4', async ({ call, app }) => {
     for (const q of circles.questions) {
       if (q.kind === 'audio') { await answerWithRecording(app, call, 'test-student-4', 'circles-teaching', q.id).catch(notMine); continue }
-      const value = q.kind === 'choice' ? circles.secret[q.id].correct : q.kind === 'number' ? String(circles.secret[q.id].answer) : 'My answer.'
+      const value = q.kind === 'choice' || q.kind === 'drag' ? circles.secret[q.id].correct : q.kind === 'number' ? String(circles.secret[q.id].answer) : 'My answer.'
       await call('answer', { lessonId: 'circles-teaching', questionId: q.id, value }).catch(notMine)
     }
   })

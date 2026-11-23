@@ -54,7 +54,7 @@ const secret = (await getDoc(doc(ldb, 'lessons', LESSON, 'versions', v, 'secret'
 const questions = version.topics.flatMap((t) => t.blocks.filter((b) => b.type === 'question'))
 const level1 = questions.find((q) => q.kind === 'choice' && q.level === 1 && secret[q.id].checkAgain?.length)
 const wrong = (q, s) => [q.choices.find((c) => !s.correct.includes(c.id)).id]
-const right = (q) => (q.kind === 'choice' ? secret[q.id].correct : q.kind === 'number' ? String(secret[q.id].answer) : 'My answer.')
+const right = (q) => (q.kind === 'choice' || q.kind === 'drag' ? secret[q.id].correct : q.kind === 'number' ? String(secret[q.id].answer) : 'My answer.')
 const PEOPLE = ['test-student-2', 'test-student-4', 'test-student-6']
 
 async function cleanUp() {

@@ -208,3 +208,19 @@ test('a comment without a grade is saved, and the grade stays (D-68)', async () 
   assert.equal(lessonGrade({ a: r.state }).pending, true)
   assert.equal(teacherScore(open, undefined).invalid, true, 'a missing grade must be null, not left out')
 })
+
+test('drag and drop (REQ-4.12, D-70): right only when every spot has its card; 2 attempts like multiple choice', async () => {
+  const { answerMain, judge } = await import('./check.js')
+  const secret = { correct: ['k2', 'k1', 'k4'], hint: 'H', solution: 'S', checkAgain: [] }
+  assert.equal(judge('drag', secret, ['k2', 'k1', 'k4']), true)
+  assert.equal(judge('drag', secret, ['k2', 'k4', 'k1']), false)
+  assert.equal(judge('drag', secret, ['k2', 'k1']), 'invalid', 'every spot needs a card')
+  const q = { id: 'q9', kind: 'drag' }
+  const first = answerMain(undefined, q, secret, ['k1', 'k2', 'k4'], () => null)
+  assert.equal(first.reply.result, 'tryAgain')
+  assert.equal(first.reply.hint, 'H')
+  const second = answerMain(first.state, q, secret, ['k1', 'k2', 'k4'], () => null)
+  assert.equal(second.reply.result, 'wrong')
+  assert.deepEqual(second.reply.correct, { cards: ['k2', 'k1', 'k4'] })
+  assert.equal(answerMain(undefined, q, secret, ['k2', 'k1', 'k4'], () => null).state.score, 1)
+})

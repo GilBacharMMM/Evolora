@@ -960,7 +960,7 @@ export const tryAnswer = onCall(async (request) => {
   if (!found) throw new HttpsError('not-found', 'No such question.')
   const secret = sSnap.data().questions[questionId] || {}
   if (show) {
-    const correct = found.q.kind === 'number' ? { number: secret.answer } : found.q.kind === 'choice' ? { choices: secret.correct } : null
+    const correct = found.q.kind === 'number' ? { number: secret.answer } : found.q.kind === 'choice' ? { choices: secret.correct } : found.q.kind === 'drag' ? { cards: secret.correct } : null
     return { correct, solution: secret.solution || null, gradingInstructions: secret.gradingInstructions || null }
   }
   const state = before && typeof before === 'object' ? before : undefined

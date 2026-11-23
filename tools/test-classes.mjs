@@ -161,7 +161,7 @@ try {
     check('a lesson with unanswered questions is not marked finished', first.finished === false)
     for (const q of questions) {
       if (q.kind === 'audio') { await answerWithRecording(app, call, S.seven, 'circles-teaching', q.id).catch(notMine); continue }
-      const value = q.kind === 'choice' ? secret[q.id].correct : q.kind === 'number' ? String(secret[q.id].answer) : 'My answer for the test.'
+      const value = q.kind === 'choice' || q.kind === 'drag' ? secret[q.id].correct : q.kind === 'number' ? String(secret[q.id].answer) : 'My answer for the test.'
       await call('answer', { lessonId: 'circles-teaching', questionId: q.id, value }).catch(notMine)
     }
     const p = (await getDoc(doc(db, 'progress', `${S.seven}__circles-teaching`))).data()

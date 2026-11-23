@@ -380,7 +380,7 @@ Decided with Gil (Q-30):
 **REQ-4.11: Import from Google Docs and Word** (Priority: Later)
 A creator can import a Google Doc or Word document, and Evolora turns it into a lesson: text, images and formulas become blocks.
 
-**REQ-4.12: More question types** (Priority: Later)
+**REQ-4.12: More question types** (Priority: Later; drag-and-drop built first, at Gil's request, D-70)
 Short answer checked automatically (a word or a number), math-expression answers, file or photo upload, and drag-and-drop questions (dragging snippets from a bank onto an image).
 
 **REQ-4.13: Simulations built into Evolora** (Priority: Later)

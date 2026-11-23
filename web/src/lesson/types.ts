@@ -32,7 +32,7 @@ export type Block =
 export interface Question {
   type: 'question'
   id: string
-  kind: 'choice' | 'number' | 'open' | 'audio'
+  kind: 'choice' | 'number' | 'open' | 'audio' | 'drag'
   level: number | null
   extra: boolean
   prompt: string
@@ -40,6 +40,10 @@ export interface Question {
   multipleCorrect: boolean
   unit: string | null
   tips: Tip[]
+  // Drag and drop (REQ-4.12, D-70): an image, spots on it (in percent), and the cards to place.
+  image?: { file: string; caption: string; source: string; storagePath: string | null } | null
+  spots?: { x: number; y: number }[]
+  cards?: { id: string; text: string }[]
 }
 
 export interface Topic {

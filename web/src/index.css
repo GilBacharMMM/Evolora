@@ -2493,3 +2493,80 @@ details.image-source summary {
     animation: none;
   }
 }
+
+/* Drag-and-drop questions (REQ-4.12, D-70) */
+.drag-board {
+  position: relative;
+  direction: ltr;
+  max-width: 560px;
+  margin-inline: auto;
+}
+
+.drag-board img {
+  width: 100%;
+  display: block;
+}
+
+.drag-spot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  min-width: 44px;
+  min-height: 36px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  border: 2px dashed var(--teal);
+  background: rgba(255, 255, 255, 0.92);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.drag-spot.filled {
+  border-style: solid;
+  background: var(--teal-light);
+}
+
+.drag-spot.right {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+
+.drag-spot.wrong {
+  border-color: #9c2f2f;
+  background: #fde4e1;
+}
+
+.drag-spot-number {
+  color: var(--slate);
+}
+
+.drag-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.drag-card {
+  min-height: 44px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line-strong);
+  background: var(--white);
+  font: inherit;
+  cursor: grab;
+}
+
+.drag-card.picked {
+  border: 2px solid var(--teal);
+  background: var(--teal-light);
+}
+
+.drag-card.used {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.drag-board .image-missing {
+  aspect-ratio: 1;
+}

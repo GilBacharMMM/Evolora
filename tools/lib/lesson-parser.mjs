@@ -15,7 +15,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'
 
-const FIELD = /^- (Hint|Solution|Why it['’]s right|Answer|Unit|Grading instructions|Tip|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
+const FIELD = /^- (Hint|Solution|Why it['’]s right|Answer|Unit|Grading instructions|Tip|Spot|Extra card|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
 const LATEX = /\\[a-zA-Z]+|\^|_\{/
 const WORDS = /[֐-׿؀-ۿA-Za-z]{2,}/
 const TYPE_KEYS = {
@@ -28,6 +28,7 @@ const QUESTION_KINDS = {
   'QUESTION: number': 'number',
   'QUESTION: open': 'open',
   'QUESTION: audio': 'audio',
+  'QUESTION: drag and drop': 'drag',
 }
 
 const stripNew = (s) => s.replace(/\[NEW[^\]]*\]\s*/g, '').trim()
@@ -56,6 +57,9 @@ function readBody(lines) {
   const choices = []
   const fields = {}
   const tips = []
+  // Drag-and-drop questions (REQ-4.12, D-70): spots on the image, and extra cards that fit nowhere.
+  const spots = []
+  const extraCards = []
   let lastField = null
   let seenFieldOrChoice = false
   for (const raw of lines) {
@@ -66,7 +70,15 @@ function readBody(lines) {
     if (f) {
       const key = f[1].toLowerCase().replace('’', "'")
       const value = stripNew(f[2])
-      if (key === 'tip') {
+      if (key === 'spot') {
+        // - Spot: 30% 45% | the card that belongs here
+        const m = value.match(/^\s*([\d.]+)%?\s+([\d.]+)%?\s*\|\s*(.+)$/)
+        spots.push(m ? { x: Number(m[1]), y: Number(m[2]), card: m[3].trim() } : { x: NaN, y: NaN, card: value.trim(), bad: true })
+        lastField = null
+      } else if (key === 'extra card') {
+        extraCards.push(value.trim())
+        lastField = null
+      } else if (key === 'tip') {
         const [title, ...rest] = value.split('|')
         tips.push({ title: title.trim(), text: rest.join('|').trim() })
         lastField = null
@@ -92,7 +104,7 @@ function readBody(lines) {
     lastField = null
     if (!seenFieldOrChoice) text.push(stripNew(raw))
   }
-  return { text: tidy(text.join('\n')), choices, fields, tips }
+  return { text: tidy(text.join('\n')), choices, fields, tips, spots, extraCards }
 }
 
 // Removes extra blank lines at the start and end, and runs of blank lines.
@@ -244,6 +256,12 @@ export function parseLesson(target) {
           const levelTag = b.tags.find((tag) => /^LEVEL\s*\d$/.test(tag))
           const level = levelTag ? Number(levelTag.replace(/\D/g, '')) : null
           const choices = kind === 'choice' ? body.choices.map((c, n) => ({ id: `c${n + 1}`, text: c.text, correct: c.correct })) : []
+          // Drag and drop (D-70): the cards in alphabetical order (so their order gives nothing away);
+          // the right card for each spot is kept with the secret answers.
+          const cardTexts = kind === 'drag' ? [...new Set([...body.spots.map((sp) => sp.card), ...body.extraCards])].sort((a, b) => a.localeCompare(b)) : []
+          const cards = cardTexts.map((text, n) => ({ id: `k${n + 1}`, text }))
+          const dragImage = kind === 'drag' && body.fields.file ? { type: 'image', file: body.fields.file, caption: body.fields.caption || '', source: body.fields.source || '', storagePath: null } : null
+          if (dragImage) images.push({ block: dragImage, localPath: path.join(dir, body.fields.file) })
           const q = {
             type: 'question',
             id,
@@ -255,9 +273,10 @@ export function parseLesson(target) {
             multipleCorrect: choices.filter((c) => c.correct).length > 1,
             unit: body.fields.unit || null,
             tips: body.tips,
+            ...(kind === 'drag' ? { image: dragImage, spots: body.spots.map((sp) => ({ x: sp.x, y: sp.y })), cards } : {}),
           }
           secret[id] = {
-            correct: choices.filter((c) => c.correct).map((c) => c.id),
+            correct: kind === 'drag' ? body.spots.map((sp) => cards.find((c) => c.text === sp.card)?.id) : choices.filter((c) => c.correct).map((c) => c.id),
             answer: kind === 'number' ? numberValue(body.fields.answer) : null,
             hint: body.fields.hint || null,
             solution: body.fields.solution || null,

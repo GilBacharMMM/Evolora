@@ -59,7 +59,7 @@ try {
   await as('test-student-1', async ({ call }) => {
     const q = questions.find((x) => (x.level ?? 1) === 3 && x.kind !== 'audio')
     let refused = false
-    try { await call('answer', { lessonId: LESSON, questionId: q.id, value: q.kind === 'choice' ? secret[q.id].correct : q.kind === 'number' ? String(secret[q.id].answer) : 'An answer.' }) } catch (e) { refused = e.code === 'functions/failed-precondition'; if (!refused) console.log('    got', e.code, e.message) }
+    try { await call('answer', { lessonId: LESSON, questionId: q.id, value: q.kind === 'choice' || q.kind === 'drag' ? secret[q.id].correct : q.kind === 'number' ? String(secret[q.id].answer) : 'An answer.' }) } catch (e) { refused = e.code === 'functions/failed-precondition'; if (!refused) console.log('    got', e.code, e.message) }
     check('a level 1 student cannot answer a level 3 question', refused)
   })
 

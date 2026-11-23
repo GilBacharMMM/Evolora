@@ -483,5 +483,11 @@
     "studentAnswer": "The student's recording",
     "commentTitle": "Recorded comment (optional, up to 30 seconds)",
     "removeComment": "Remove the recorded comment"
+  },
+  "drag": {
+    "howTo": "Drag each card to its place on the picture, or click a card and then click its place.",
+    "fillAll": "Put a card on every place first.",
+    "spotEmpty": "Place {{n}}, empty",
+    "spotWith": "Place {{n}}: {{card}}"
   }
 }
