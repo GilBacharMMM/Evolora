@@ -561,3 +561,10 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 3, priority 2 (should have). Nothing the teacher does while trying is recorded as a student's.
 **Reason:** Teachers can check a lesson quickly from where they work, without separate test accounts, and without touching class data.
 **Affects:** REQ-5.32
+
+### D-50: Stage 2: teachers see AI conversations, AI summaries, and comments to creators
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Decision:** Three new stage 2 requirements: a teacher can open a student's answered lesson with the AI help line conversations (REQ-7.6); after a lesson, the AI summarizes the student's difficulties on the student card (REQ-7.7); teachers can attach comments to places in a lesson and send them to its creator, who gets an email and a suggestions inbox (REQ-4.27).
+**Reason:** Teachers understand what each student needs without reading everything, and lessons improve from the teachers who use them.
+**Notes:** Students are told the teacher can read their AI conversations (privacy of minors, section 10). Like every AI item, REQ-7.7 gets a cost estimate first.
+**Affects:** REQ-4.27, REQ-7.6, REQ-7.7, REQ-5.28

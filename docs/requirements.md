@@ -379,6 +379,19 @@ Interactive simulations that run inside Evolora rather than on an outside websit
 **REQ-4.14: Lesson marketplace** (Priority: Later)
 A place to discover, rate and share lessons widely, beyond the school.
 
+**REQ-4.27: Teachers send comments to the lesson's creator** (Stage 2)
+While going over a lesson (trying it, REQ-5.32), a teacher can attach a comment to any place in it: a block of material, a question, an answer, a hint or a solution, much like adding a comment in Microsoft Word. The teacher sends the comments to the lesson's creator.
+
+- The creator gets an email saying that new comments arrived on the lesson, with a link.
+- The creator has a **suggestions inbox** in Evolora listing all comments on their lessons: which lesson, where in the lesson, who sent it, when, and the text. Clicking a comment opens the lesson at that place.
+- The creator can mark each comment "done" or "not taken"; the teacher who sent it sees that mark.
+
+*Acceptance criteria:*
+- [ ] As a teacher, try a lesson, add a comment on a question and another on a block of text, and send them.
+- [ ] The lesson's creator receives an email about the new comments.
+- [ ] As the creator, the suggestions inbox shows both comments; clicking one opens the lesson at that place.
+- [ ] As the creator, mark one comment "done": as the teacher, you see it marked "done".
+
 ---
 
 ## 5. Class management (teachers)
@@ -849,7 +862,7 @@ The lesson grade is calculated only from the questions the student received (Gil
 
 ---
 
-## 7. AI features (all Later)
+## 7. AI features (all Later, stage 2)
 
 The MVP has no AI. The design must leave room for it. Gemini is preferred because the school has approved it. Before building any AI feature, Claude will prepare an estimate of its running costs for Gil to approve.
 
@@ -872,6 +885,24 @@ Audio answers are turned into text by AI (see REQ-10.5).
 **REQ-7.5: Automatic translation of lessons** (Priority: Later)
 A lesson can be translated into another language, and the translation reviewed by a person.
 
+**REQ-7.6: Teacher sees a student's answered lesson, with the AI conversations** (Stage 2)
+From the student page (REQ-5.28) or the class dashboard, a teacher can open any lesson a student has worked on and see it as the student went through it: each question with the student's answers and attempts, the hints and solutions they got, the help tips they opened, and the full conversation they had with the AI help line (REQ-6.9) next to the question it was about. This helps the teacher understand what the student needs.
+
+- Students are told, in the help line itself, that their teacher can read these conversations.
+- Only the student's own teachers (and co-teachers of that class) can see them.
+
+*Acceptance criteria:*
+- [ ] As a student, answer a question wrongly and ask the AI help line about it. As that student's teacher, open the student's lesson: you see the wrong answer, the second attempt and the whole AI conversation, placed by that question.
+- [ ] As a student, the AI help line says that the teacher can read the conversation.
+- [ ] As a teacher of a different class, you cannot open this student's lesson.
+
+**REQ-7.7: AI summary of a student's difficulties** (Stage 2)
+When a student finishes a lesson in which they talked to the AI help line, the AI writes a short summary for the teacher: which questions the student asked about, what they found hard and what doubts they had. The summary appears on the student's card on the student page (REQ-5.28), with a link to the full conversations (REQ-7.6). A lesson without AI conversations gets no summary.
+
+*Acceptance criteria:*
+- [ ] As a student, finish a lesson after asking the AI help line about two questions. As the teacher, the student's card shows a short summary naming those two questions and what the student found hard, with a link to the conversations.
+- [ ] As a student, finish a lesson without using the AI help line: no summary appears.
+- [ ] The summary is written in the teacher's language.
 ---
 
 ## 8. Subjects and age groups

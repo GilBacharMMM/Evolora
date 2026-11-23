@@ -86,6 +86,9 @@ Each AI item first gets a cost estimate for Gil's approval.
 | REQ-5.17 | Google Classroom connection |
 | REQ-6.7 | Public courses without a teacher |
 | REQ-9.5 | Class language setting |
+| REQ-7.6 | Teacher sees a student's answered lesson, with the AI conversations |
+| REQ-7.7 | AI summary of a student's difficulties on the student card |
+| REQ-4.27 | Teachers send comments to the lesson's creator; email and suggestions inbox |
 
 ## Later / ideas
 
