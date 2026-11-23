@@ -149,6 +149,7 @@ After the type, add the question's **level**, and `[EXTRA]` for extra practice q
 **Multiple choice and number questions** give the student 2 attempts. Each one must have:
 - `- Hint:` shown after the 1st wrong answer. It guides the student toward the method **without giving the answer**.
 - `- Solution:` the full solution, step by step, shown after the 2nd wrong answer.
+- `- Why it's right:` (good practice, write it for every question) 1 or 2 sentences explaining why the correct answer is right, shown when the student answers correctly. It makes students more confident: they know they were right for the right reason, not by luck. If it's missing, the full solution is shown instead.
 - At least one **check-again question**, written under the main question as `### Check-again question [LEVEL 1]`, followed by its own question and choices (or answer and unit). It is asked right after the solution, to check that the student now understands:
   - For a **calculation**, the check-again question is a similar calculation with different numbers.
   - For an **understanding** question, it asks the same thing in different words, mostly with different answer choices.
@@ -175,6 +176,7 @@ Example:
 
 - Hint: P = π × D. כפלו את הקוטר ב-3.14.
 - Solution: P = 3.14 × 15 = 47.1 ס"מ.
+- Why it's right: ההיקף הוא π כפול הקוטר, ו-3.14 × 15 = 47.1.
 
 ### Check-again question [LEVEL 1]
 
@@ -232,7 +234,7 @@ Before the lesson is sent to Gil, check every item:
 1. The lesson details at the top are complete, and the teacher agreed to the CC BY-SA 4.0 licence.
 2. Every block heading is one of the blocks listed above, written exactly.
 3. The lesson is divided into topics, and every topic has at least the minimum number of **level 1** questions, plus extra practice questions.
-4. Every multiple choice and number question has a level, a hint, a full solution and at least one check-again question (extra practice questions: hint and solution).
+4. Every multiple choice and number question has a level, a hint, a full solution, a short "Why it's right" explanation and at least one check-again question (extra practice questions: hint, solution and explanation).
 5. Every multiple choice question has exactly one choice marked `(✔)` (or several, if the question says "choose all that apply").
 6. Every number question has `Answer` and `Unit`, and you checked the answer twice.
 7. Every open and audio question has grading instructions.

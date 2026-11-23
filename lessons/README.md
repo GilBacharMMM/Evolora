@@ -39,6 +39,7 @@ Extra lines for questions (REQ-4.16 to 4.18):
 | `[EXTRA]` after the heading | Extra practice question: asked only until the student has answered the topic's minimum correctly (REQ-4.21) |
 | `- Hint:` | Shown after the 1st wrong answer (REQ-4.16) |
 | `- Solution:` | The full worked solution, shown after the 2nd wrong answer (REQ-4.16) |
+| `- Why it's right:` | A short explanation (1 or 2 sentences) of why the correct answer is right, shown after a correct answer (REQ-4.28). Good practice for every multiple choice and number question; if it's missing, the full solution is shown instead, and the lesson check gives a warning. A check-again question may have its own. Not used in exams. |
 | `### Check-again question` | A similar question under the main one, asked right after the solution (REQ-4.17). Several can be added; each student gets one at random. It has 2 attempts, like the original; it may have its own `- Hint:` line (otherwise the original's hint is shown). Choices are shown in random order (REQ-4.19), so the order in the file doesn't matter. |
 | `- Tip: title \| text` | A help tip for the question, shown from the "I didn't understand…" line (REQ-6.15). Several per question; write them after the solution. A tip explains an idea or a method, and never gives the answer. Not allowed in exams. |
 

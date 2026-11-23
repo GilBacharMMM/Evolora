@@ -392,6 +392,22 @@ While going over a lesson (trying it, REQ-5.32), a teacher can attach a comment 
 - [ ] As the creator, the suggestions inbox shows both comments; clicking one opens the lesson at that place.
 - [ ] As the creator, mark one comment "done": as the teacher, you see it marked "done".
 
+**REQ-4.28: Explanation after a right answer** (Priority 1: must have)
+When a student answers a multiple choice or type-a-number question correctly, Evolora tells them it is right **and shows a short explanation of why**, so the student knows they got it right for the right reason and grows more confident (Gil, 2026-11-23). The creator writes this explanation in advance, in 1 or 2 sentences ("Why it's right").
+
+- If the creator didn't write one, Evolora shows the full solution (REQ-4.16) instead.
+- A check-again question (REQ-4.17) may have its own explanation; if it has none, Evolora shows its correct answer only.
+- Writing an explanation for every question is **good practice** for creators, and is in the lesson-writing rules. It is not required: the lesson check gives a reminder (a warning) when explanations are missing, but the lesson can still be loaded.
+- Not in exams: during an exam students don't see whether they were right (REQ-4.26).
+- In the future, AI can suggest explanations for the creator to approve (REQ-7.2).
+
+*Acceptance criteria:*
+- [ ] As a student, answer a question correctly on the first try: you see that it's right and its short explanation.
+- [ ] Answer a question correctly on the second try (after the hint): you also see the explanation.
+- [ ] For a question without a written explanation, a correct answer shows the full solution.
+- [ ] In an exam, no explanation appears after answering.
+- [ ] Checking a lesson that has questions without explanations gives a warning that names how many, and the lesson still loads.
+
 ---
 
 ## 5. Class management (teachers)
@@ -874,7 +890,7 @@ When assigning, the teacher chooses who checks open answers:
 - (d) AI grades and comments, without the teacher; the teacher can still look at the dashboard
 
 **REQ-7.2: AI help and AI-suggested check-again questions** (Priority: Later)
-The help line is in REQ-6.9. In addition, AI may suggest check-again questions (REQ-4.17) for the creator to approve or change.
+The help line is in REQ-6.9. In addition, AI may suggest check-again questions (REQ-4.17) and explanations for right answers (REQ-4.28) for the creator to approve or change.
 
 **REQ-7.3: AI lesson suggestion** (Priority: Later)
 A creator gives Evolora a document; Evolora suggests a complete lesson, which the creator reviews and improves. AI can also suggest improvements to existing lessons.

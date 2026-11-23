@@ -568,3 +568,14 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Reason:** Teachers understand what each student needs without reading everything, and lessons improve from the teachers who use them.
 **Notes:** Students are told the teacher can read their AI conversations (privacy of minors, section 10). Like every AI item, REQ-7.7 gets a cost estimate first.
 **Affects:** REQ-4.27, REQ-7.6, REQ-7.7, REQ-5.28
+
+### D-51: Explanation after a right answer
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** Until now a student who answered correctly saw only "right". A student who guessed, or who isn't sure, doesn't learn why.
+**Options considered:**
+1. Show the full solution after a right answer too (nothing new to write, but often long).
+2. A new short "Why it's right" explanation written by the creator, with the full solution shown when it's missing.
+
+**Decision:** Option 2, priority 1. Writing it is good practice, not required: the lesson check warns when it's missing. Later, AI can suggest explanations.
+**Reason:** It makes students more confident, and a short explanation is read, where a long solution may not be.
+**Affects:** REQ-4.28, REQ-7.2, lesson file format, lesson check, teacher kit
