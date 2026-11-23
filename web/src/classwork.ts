@@ -130,7 +130,9 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
           .then((s): P => {
             const d = s.exists() ? s.data() : null
             const sb = d?.sentBack
-            return { finished: d?.finished === true, finishedAt: d?.finishedAt?.toMillis?.() ?? null, started: !!d, grade: d?.grade ? { percent: d.grade.percent ?? null, pending: !!d.grade.pending } : null, notes: sb && !sb.done ? sb.mode : null }
+            // The grade that counts (REQ-6.5): kept from before a redo, or the latest.
+            const g = d?.keptGrade || (d?.redo?.active ? d?.redos?.[d.redos.length - 1]?.grade : null) || d?.grade
+            return { finished: d?.finished === true, finishedAt: d?.finishedAt?.toMillis?.() ?? null, started: !!d, grade: g ? { percent: g.percent ?? null, pending: !!g.pending } : null, notes: sb && !sb.done ? sb.mode : null }
           })
           .catch((): P => ({ finished: false, finishedAt: null, started: false, grade: null, notes: null })),
       )

@@ -711,3 +711,12 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 4. **Co-teachers** are added by email; the other teacher must already be on the staff list and have signed in once. There is no "remove a co-teacher" yet (Claude can do it on request).
 5. **Changing a student's language** applies the next time the student opens Evolora; the teacher doesn't see the student's current language.
 **Affects:** REQ-5.29, REQ-4.9, REQ-5.21, REQ-9.6, REQ-5.5, roadmap
+
+### D-63: How redoing a lesson works
+**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building REQ-6.5
+**Decision:**
+1. A student can redo a **finished** lesson as many times as they like, from a **"Redo the lesson"** button at the end of the lesson (with a confirmation). Not while it waits for them after being sent back (REQ-5.14).
+2. **"Redo counts"** is a checkbox when giving lessons (REQ-5.9), off by default. A redo counts if any assignment that gives the lesson to the student has it on.
+3. While a redo is going on, the earlier grade shows everywhere. When it's finished: with "redo counts", the redo's grade replaces it, even if lower; without it, the earlier grade stays and the redo is practice only.
+4. Earlier answers are kept for the teacher (not shown on screens yet). The lesson results page shows the student's latest answers.
+**Affects:** REQ-6.5, REQ-5.9

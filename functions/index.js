@@ -123,9 +123,12 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
     if (!progress) update.startedAt = FieldValue.serverTimestamp()
     // Finished when every question the student received is answered (D-55).
     const nextTopics = update.topics
-    if (!progress?.finished && lessonFinished(vSnap.data(), nextQuestions, nextTopics, minimum, maxLevel)) {
+    const redoing = progress?.redo?.active === true
+    if ((!progress?.finished || redoing) && lessonFinished(vSnap.data(), nextQuestions, nextTopics, minimum, maxLevel)) {
       update.finished = true
       update.finishedAt = FieldValue.serverTimestamp()
+      // A redo is finished (REQ-6.5).
+      if (redoing) update.redo = { ...progress.redo, active: false }
       // Questions sent back for corrections are all answered again (REQ-5.14).
       if (progress?.sentBack && progress.sentBack.mode === 'corrections' && !progress.sentBack.done) update.sentBack = { ...progress.sentBack, done: true, doneAt: Date.now() }
     }
@@ -334,7 +337,7 @@ export const removeStudent = onCall(async (request) => {
 // Gives a course, or one or more lessons, to the whole class or to chosen students (REQ-5.7).
 // studentIds: null for the whole class (including students who join later), or a list.
 export const assign = onCall(async (request) => {
-  const { classId, courseId, lessonIds, studentIds, grades = 'usual', order = 'paired', due = null, afterDue = 'reduce', reduceBy = 10 } = request.data || {}
+  const { classId, courseId, lessonIds, studentIds, grades = 'usual', order = 'paired', due = null, afterDue = 'reduce', reduceBy = 10, redoCounts = false } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!['usual', 'show', 'hide'].includes(grades)) throw new HttpsError('invalid-argument', 'Grades: usual, show or hide.')
   if (!['oneByOne', 'paired', 'any'].includes(order)) throw new HttpsError('invalid-argument', 'Order: oneByOne, paired or any.')
@@ -383,6 +386,8 @@ export const assign = onCall(async (request) => {
     afterDue,
     reduceBy,
     extensions: {},
+    // Whether the latest redo's grade replaces the old one (REQ-5.9, 6.5).
+    redoCounts: redoCounts === true,
     createdBy: request.auth.uid,
     createdAt: FieldValue.serverTimestamp(),
   })
@@ -1001,4 +1006,39 @@ export const markRead = onCall(async (request) => {
   const ref = db.doc(`conversations/${conversationId(classId, side.studentId)}`)
   if ((await ref.get()).exists) await ref.update(side.from === 'teacher' ? { unreadByTeacher: false } : { unreadByStudent: false })
   return { ok: true }
+})
+
+// Redo a finished lesson (REQ-6.5). If the teacher allowed it when giving the lesson ("redo
+// counts", REQ-5.9), the latest redo's grade replaces the old one, even if lower; otherwise the
+// redo is practice only and the earlier grade is kept. Earlier answers are kept in `redos`.
+export const startRedo = onCall(async (request) => {
+  const { lessonId } = request.data || {}
+  if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
+  const lessonSnap = await db.doc(`lessons/${lessonId}`).get()
+  if (!lessonSnap.exists) throw new HttpsError('not-found', 'No such lesson.')
+  const classIds = await access(request.auth, lessonSnap.data())
+  const uid = request.auth.uid
+  let counts = false
+  for (const c of classIds) {
+    const given = await db.collection(`classes/${c}/assignments`).where('lessonIds', 'array-contains', lessonId).get()
+    if (given.docs.some((d) => d.data().redoCounts === true && (d.data().everyone || (d.data().studentIds || []).includes(uid)))) counts = true
+  }
+  const ref = db.doc(`progress/${progressId(uid, lessonId)}`)
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref)
+    const p = snap.exists ? snap.data() : null
+    if (!p?.finished || p.redo?.active) throw new HttpsError('failed-precondition', 'not-finished')
+    if (p.sentBack && !p.sentBack.done) throw new HttpsError('failed-precondition', 'sent-back')
+    const redos = [...(p.redos || []), { questions: p.questions || {}, topics: p.topics || {}, grade: p.grade || null, finishedAt: p.finishedAt || null }]
+    tx.update(ref, {
+      redos,
+      questions: {},
+      topics: {},
+      grade: lessonGrade({}),
+      keptGrade: counts ? null : p.keptGrade || p.grade || null,
+      redo: { active: true, counts, n: redos.length },
+      updatedAt: FieldValue.serverTimestamp(),
+    })
+    return { counts }
+  })
 })

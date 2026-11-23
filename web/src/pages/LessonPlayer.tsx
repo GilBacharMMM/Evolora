@@ -55,6 +55,10 @@ interface Progress {
   grade?: { percent: number | null; pending: boolean; points: number; outOf: number }
   finished?: boolean
   sentBack?: { mode: 'review' | 'corrections'; questionIds: string[]; note: string | null; done: boolean }
+  // Redo (REQ-6.5)
+  redo?: { active: boolean; counts: boolean; n: number }
+  redos?: { grade: Progress['grade'] }[]
+  keptGrade?: Progress['grade'] | null
 }
 
 // The lesson player (REQ-6.2, 4.5, 4.21, system-design 2.3). The student sees the lesson up to
@@ -147,6 +151,8 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   }, [lessonId, versionNumber])
 
   const states = useMemo(() => ({ ...(progress?.questions || {}), ...local }), [progress, local])
+  // The grade that counts (REQ-6.5): kept from before a redo, or the latest.
+  const countingGrade = progress?.keptGrade || (progress?.redo?.active ? progress.redos?.[progress.redos.length - 1]?.grade : null) || progress?.grade
   // While trying, right answers per topic are counted here, as the checking service does for students.
   const tryCorrect = useMemo(() => {
     const out: Record<number, number> = {}
@@ -281,6 +287,11 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
           </div>
         )}
         <SentBackBanner lessonId={lessonId} sentBack={progress?.sentBack} isStudent={role === 'student'} />
+        {progress?.redo?.active && (
+          <div className="try-banner redo-banner" role="note">
+            <Ui>{progress.redo.counts ? t('lesson.redoCounts') : t('lesson.redoPractice')}</Ui>
+          </div>
+        )}
 
         {visible.map((it) => (
           <Fragment key={it.kind === 'topic' ? `topic-${it.number}` : it.key}>
@@ -323,11 +334,26 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
               <Ui>{t('lesson.end')}</Ui>
             </p>
             {progress?.sentBack?.mode === 'review' && <SentBackBanner lessonId={lessonId} sentBack={progress.sentBack} isStudent={role === 'student'} />}
-            {showGrades && progress?.grade?.outOf ? (
+            {showGrades && countingGrade?.outOf ? (
               <p className="lesson-grade">
-                <Ui>{progress.grade.pending ? t('lesson.gradePending') : t('lesson.yourGrade', { percent: progress.grade.percent })}</Ui>
+                <Ui>{countingGrade.pending ? t('lesson.gradePending') : t('lesson.yourGrade', { percent: countingGrade.percent })}</Ui>
               </p>
             ) : null}
+            {role === 'student' && progress?.finished && !progress.redo?.active && !(progress.sentBack && !progress.sentBack.done) && Object.keys(states).length > 0 && (
+              <button
+                type="button"
+                className="button secondary"
+                onClick={async () => {
+                  if (!window.confirm(t('lesson.redoConfirm'))) return
+                  setLocal({})
+                  scrolled.current = true
+                  window.scrollTo(0, 0)
+                  await httpsCallable(functions, 'startRedo')({ lessonId }).catch(() => {})
+                }}
+              >
+                <Ui>{t('lesson.redo')}</Ui>
+              </button>
+            )}
             <button type="button" className="button primary" onClick={() => navigate('/')}>
               <Ui>{t('common.toHome')}</Ui>
             </button>

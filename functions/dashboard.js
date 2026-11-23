@@ -17,7 +17,7 @@ export function median(numbers) {
 // wait for the teacher; left out of averages), or a percentage.
 export function lessonCell(progress) {
   if (!progress || !progress.finished) return { kind: 'notDone', percent: 0 }
-  const g = progress.grade || {}
+  const g = effectiveGrade(progress) || {}
   if (g.pending) return { kind: 'pending', percent: null }
   if (g.percent == null) return { kind: 'doneNoGrade', percent: null } // a lesson without questions
   return { kind: 'grade', percent: g.percent }
@@ -122,4 +122,13 @@ export function levelSuggestions(students, now) {
   for (const s of eligible.slice(0, tenth)) if (s.level !== 1) out[s.id] = 1
   for (const s of eligible.slice(-tenth)) if (s.level !== 3 && !(s.id in out)) out[s.id] = 3
   return out
+}
+
+// The grade that counts for a lesson (REQ-6.5): while a redo is going on, or when redos don't count,
+// the kept grade (the one before the redo); otherwise the latest.
+export function effectiveGrade(progress) {
+  if (!progress) return null
+  if (progress.keptGrade) return progress.keptGrade
+  if (progress.redo?.active) return progress.redos?.[progress.redos.length - 1]?.grade || progress.grade || null
+  return progress.grade || null
 }

@@ -141,3 +141,14 @@ test('level suggestions (REQ-5.18): weakest 10% to level 1, strongest to level 3
   students[8].graded = lessons(90, 5, 40)
   assert.equal(levelSuggestions(students, now).s8, undefined, 'lessons older than 4 weeks do not count')
 })
+
+test('redo (REQ-6.5): the grade that counts', async () => {
+  const { effectiveGrade, lessonCell } = await import('./dashboard.js')
+  const g = (p) => ({ percent: p, pending: false })
+  // Redo counts: during the redo, the earlier grade; after it, the redo's grade, even if lower.
+  assert.equal(effectiveGrade({ finished: true, grade: g(0), redo: { active: true, counts: true }, redos: [{ grade: g(70) }] }).percent, 70)
+  assert.equal(effectiveGrade({ finished: true, grade: g(90), redo: { active: false, counts: true }, redos: [{ grade: g(70) }] }).percent, 90)
+  assert.equal(effectiveGrade({ finished: true, grade: g(50), redo: { active: false, counts: true }, redos: [{ grade: g(70) }] }).percent, 50)
+  // Redo doesn't count: the kept grade stays.
+  assert.equal(lessonCell({ finished: true, grade: g(95), keptGrade: g(70), redo: { active: false, counts: false } }).percent, 70)
+})

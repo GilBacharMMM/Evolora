@@ -162,7 +162,8 @@
       "already": "{{name}} already teaches this class.",
       "notTeacher": "This email is not on the list of teachers. Ask the system admin to add it first.",
       "notSignedIn": "This teacher hasn't signed in to Evolora yet. Ask them to sign in once, then try again."
-    }
+    },
+    "redoCounts": "Redo counts: the latest redo's grade replaces the earlier one, even if lower"
   },
   "lessonType": {
     "teaching": "Teaching",
@@ -208,7 +209,11 @@
     "tryAgain": "Start again",
     "skip": "Skip",
     "showAnswer": "Show answer",
-    "skipped": "Skipped."
+    "skipped": "Skipped.",
+    "redo": "Redo the lesson",
+    "redoConfirm": "Start the lesson again from the beginning? Your earlier answers are kept for your teacher.",
+    "redoCounts": "You are redoing this lesson. The grade of this redo will replace the earlier one.",
+    "redoPractice": "You are redoing this lesson for practice. Your earlier grade stays."
   },
   "test": {
     "switchUser": "Switch user",

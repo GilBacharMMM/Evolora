@@ -351,6 +351,7 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
   const [to, setTo] = useState<'everyone' | 'some'>('everyone')
   const [studentIds, setStudentIds] = useState<string[]>([])
   const [grades, setGrades] = useState<'usual' | 'show' | 'hide'>('usual')
+  const [redoCounts, setRedoCounts] = useState(false)
   const [order, setOrder] = useState<'oneByOne' | 'paired' | 'any'>('paired')
   const [due, setDue] = useState('')
   const [afterDue, setAfterDue] = useState<'reduce' | 'lock'>('reduce')
@@ -374,6 +375,7 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
         ...(what === 'course' ? { courseId } : { lessonIds }),
         studentIds: to === 'everyone' ? null : studentIds,
         grades,
+        redoCounts,
         order,
         due: due ? new Date(due).getTime() : null,
         afterDue,
@@ -488,6 +490,10 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
             </>
           )}
         </fieldset>
+        <label className="check-line">
+          <input type="checkbox" checked={redoCounts} onChange={(e) => setRedoCounts(e.target.checked)} />
+          {t('teacher.redoCounts')}
+        </label>
         <fieldset>
           <legend>{t('teacher.gradesTitle')}</legend>
           {(['usual', 'show', 'hide'] as const).map((g) => (
