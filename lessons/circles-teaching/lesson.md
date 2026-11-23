@@ -70,8 +70,8 @@ status: draft 1 (converted from Gil's Word document on 2026-11-21)
 - link: https://www.youtube.com/watch?v=dJOVTD7Rg6g
 - title: סרטון הסבר: המעגל, מה זה המספר פאי?
 - source: ללמוד אחרת (YouTube)
-- start: (the whole video)
-- end: (the whole video)
+- start: 0:22
+- end: 2:49
 
 ## [TEXT]
 
