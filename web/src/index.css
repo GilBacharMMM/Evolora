@@ -2443,3 +2443,21 @@ details.image-source summary {
 .exam-answer p {
   margin: 0 0 8px;
 }
+
+/* Right-to-left fixes: a left-to-right email next to a name keeps its gap; names don't wrap in tables */
+.student-who {
+  gap: 2px 12px;
+}
+
+.student-who .student-email {
+  margin-inline-start: 0;
+}
+
+.dashboard-table td .link-button,
+.grade-table td:first-child {
+  white-space: nowrap;
+}
+
+.comment-box .button {
+  align-self: flex-start;
+}
