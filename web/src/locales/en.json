@@ -464,5 +464,19 @@
     "allowRetake": "Allow a retake",
     "retakeConfirm": "Let {{name}} take the exam again? Their earlier answers are kept for you.",
     "notSubmittedYet": "not submitted"
+  },
+  "audio": {
+    "record": "Record (up to {{max}} seconds)",
+    "again": "Record again",
+    "stop": "Stop",
+    "recording": "Recording… {{seconds}} of {{max}} seconds",
+    "listenBack": "Listen to your recording",
+    "denied": "The microphone isn't allowed. Click the camera or microphone sign in Chrome's address bar, allow the microphone, and try again.",
+    "yours": "Your recording",
+    "missing": "This recording is no longer available.",
+    "teacherComment": "Your teacher's recorded comment",
+    "studentAnswer": "The student's recording",
+    "commentTitle": "Recorded comment (optional, up to 30 seconds)",
+    "removeComment": "Remove the recorded comment"
   }
 }

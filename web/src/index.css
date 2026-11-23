@@ -2461,3 +2461,35 @@ details.image-source summary {
 .comment-box .button {
   align-self: flex-start;
 }
+
+/* Recording (REQ-6.6, 5.13) */
+.recorder {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.recorder audio {
+  max-width: 100%;
+}
+
+.recording-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #c0392b;
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recording-dot {
+    animation: none;
+  }
+}

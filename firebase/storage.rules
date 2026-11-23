@@ -17,6 +17,20 @@ service firebase.storage {
       allow write: if isLoader();
     }
 
+    // Recordings (REQ-6.6, D-67): a student records into their own folder, which only they can
+    // open. When the answer is sent, the checking service attaches a private link to it, which
+    // only the student and the teachers of their class can see. Teachers' audio comments are
+    // saved by the checking service (in comments/), so no one's browser writes there.
+    match /recordings/{uid}/{lessonId}/{questionId}/{file} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null && request.auth.uid == uid
+        && request.resource.size < 2 * 1024 * 1024 && request.resource.contentType.matches('audio/.*');
+      allow delete: if isLoader();
+    }
+    match /comments/{allPaths=**} {
+      allow delete: if isLoader();
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

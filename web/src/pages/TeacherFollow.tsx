@@ -9,6 +9,7 @@ import { Markdown } from '../lesson/Rich'
 import { ClassTabs } from '../components/ClassTabs'
 import { Messages } from '../components/Messages'
 import { MarkedAnswer } from '../components/MarkedAnswer'
+import { Recorder, blobToBase64 } from '../components/Recorder'
 import { HIGHLIGHT_END, HIGHLIGHT_START, hasMarkup } from '../markup'
 import type { LessonType } from '../lesson/types'
 
@@ -792,6 +793,8 @@ interface AnswerState {
   changedByTeacher: boolean
   teacherComment: string | null
   markup?: string | null
+  teacherAudio?: string | null
+  audioUrl?: string | null
   checkAgain: { result: string | null } | null
 }
 
@@ -946,7 +949,7 @@ export function LessonResultsPage({ classId, lessonId }: { classId: string; less
       </main>
     )
   }
-  const hasOpen = data.questions.some((q) => q.kind === 'open')
+  const hasOpen = data.questions.some((q) => q.kind === 'open' || q.kind === 'audio')
   const waiting = data.students.reduce((n, s) => n + Object.values(s.states).filter((st) => st.result === 'pending' && !st.graded).length, 0)
   const number = (qid: string) => data.questions.findIndex((x) => x.id === qid) + 1
   const editStudent = editing && data.students.find((s) => s.id === editing.sid)
@@ -1209,11 +1212,15 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
   const [score, setScore] = useState<string>('')
   const [comment, setComment] = useState('')
   const [markup, setMarkup] = useState('')
+  // A recorded comment (REQ-5.13, D-67): a new recording, or removing the saved one.
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
+  const [removeAudio, setRemoveAudio] = useState(false)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ good: boolean; text: string } | null>(null)
   const rtl = i18n.dir() === 'rtl'
 
-  const questions = useMemo(() => (data ? data.questions.filter((q) => q.kind === 'open') : []), [data])
+  // Written and recorded answers are graded here (REQ-5.12, 6.6).
+  const questions = useMemo(() => (data ? data.questions.filter((q) => q.kind === 'open' || q.kind === 'audio') : []), [data])
   const students = useMemo(() => data?.students || [], [data])
   const answered = useCallback((q: number, s: number) => students[s]?.states[questions[q]?.id]?.result === 'pending', [students, questions])
   const all = useMemo(() => {
@@ -1236,6 +1243,8 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
     setScore(current?.graded && current.score != null ? String(Math.round(current.score * 100)) : '')
     setComment(current?.teacherComment || '')
     setMarkup(current?.markup || '')
+    setAudioBlob(null)
+    setRemoveAudio(false)
     setMessage(null)
     // Only when moving to another answer, not after saving this one.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1305,11 +1314,11 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
     if (score.trim() === '' || !Number.isFinite(n) || n < 0 || n > 100) return setMessage({ good: false, text: t('follow.scoreRange') })
     setSaving(true)
     try {
-      const r = await call<{ state: AnswerState & { score: number; markup?: string } }>('gradeAnswer', { classId, lessonId, studentId: student.id, questionId: q.id, score: n / 100, comment, markup: markup && hasMarkup(answer, markup) ? markup : '' })
+      const r = await call<{ state: AnswerState & { score: number; markup?: string } }>('gradeAnswer', { classId, lessonId, studentId: student.id, questionId: q.id, score: n / 100, comment, markup: markup && hasMarkup(answer, markup) ? markup : '', audioData: audioBlob ? await blobToBase64(audioBlob) : removeAudio ? '' : undefined })
       setData((d) =>
         d && {
           ...d,
-          students: d.students.map((s) => (s.id === student.id ? { ...s, states: { ...s.states, [q.id]: { ...s.states[q.id], graded: true, score: r.state.score, teacherComment: r.state.teacherComment || null, markup: r.state.markup || null } } } : s)),
+          students: d.students.map((s) => (s.id === student.id ? { ...s, states: { ...s.states, [q.id]: { ...s.states[q.id], graded: true, score: r.state.score, teacherComment: r.state.teacherComment || null, markup: r.state.markup || null, teacherAudio: (r.state as AnswerState).teacherAudio || null } } } : s)),
         },
       )
       setMessage({ good: true, text: t('follow.saved') })
@@ -1377,9 +1386,13 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
             {t('follow.nextStudent')} <span aria-hidden="true">{sideNext}</span>
           </button>
         </div>
-        <div className="student-answer" dir="auto">
-          {answer}
-        </div>
+        {q.kind === 'audio' ? (
+          current?.audioUrl ? <audio key={current.audioUrl} controls src={current.audioUrl} aria-label={t('audio.studentAnswer')} /> : <p className="muted">—</p>
+        ) : (
+          <div className="student-answer" dir="auto">
+            {answer}
+          </div>
+        )}
         <div className="grading-nav">
           <button type="button" className="button secondary small" onClick={() => move(-1, 0)} disabled={!canMove(-1, 0)}>
             ↑ {t('follow.prevQuestion')}
@@ -1417,7 +1430,19 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
             <span className="feedback-subtitle">{t('follow.comment')}</span>
             <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={4} dir="auto" maxLength={5000} />
           </label>
-          <MarkupBox original={answer} value={markup} onChange={setMarkup} />
+          {q.kind === 'open' && <MarkupBox original={answer} value={markup} onChange={setMarkup} />}
+          <div className="markup-box">
+            <span className="feedback-subtitle">{t('audio.commentTitle')}</span>
+            {current?.teacherAudio && !removeAudio && !audioBlob && (
+              <>
+                <audio key={current.teacherAudio} controls src={current.teacherAudio} aria-label={t('audio.commentTitle')} />
+                <button type="button" className="link-button small-note" onClick={() => setRemoveAudio(true)}>
+                  {t('audio.removeComment')}
+                </button>
+              </>
+            )}
+            <Recorder key={`${pos.q}-${pos.s}`} onReady={setAudioBlob} />
+          </div>
           <div className="button-row">
             <button type="submit" className="button primary" disabled={saving}>
               {saving ? t('follow.saving') : current?.graded ? t('follow.saveChange') : t('follow.save')}

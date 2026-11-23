@@ -160,7 +160,8 @@ test('lesson finished: every question answered; skipped extras and audio count a
   const pending = { attempts: ['text'], result: 'pending', score: null }
   assert.equal(lessonFinished(version, {}, {}, 1), false)
   assert.equal(lessonFinished(version, { a: done, b: pending }, { 1: { correct: 1 } }, 1), false, 'topic 2 not answered')
-  assert.equal(lessonFinished(version, { a: done, b: pending, c: done }, { 1: { correct: 1 }, 2: { correct: 1 } }, 1), true, 'extra skipped, open sent, audio left out')
+  assert.equal(lessonFinished(version, { a: done, b: pending, c: done }, { 1: { correct: 1 }, 2: { correct: 1 } }, 1), false, 'the recorded answer is still missing (REQ-6.6)')
+  assert.equal(lessonFinished(version, { a: done, b: pending, c: done, rec: pending }, { 1: { correct: 1 }, 2: { correct: 1 } }, 1), true, 'extra skipped, open and recorded answers sent')
   assert.equal(lessonFinished(version, { a: { ...done, result: 'wrong', score: 0 }, b: pending, c: done }, { 1: { correct: 0 } }, 1), false, 'minimum not reached: the extra question is still asked')
   const waitingCheckAgain = { result: 'wrong', score: 0, checkAgain: { result: null } }
   assert.equal(lessonFinished(version, { a: done, b: pending, c: waitingCheckAgain }, { 1: { correct: 1 } }, 1), false, 'check-again question still open')
@@ -188,4 +189,12 @@ test('a marked-up copy is saved with the grade of a written answer (REQ-5.12)', 
   assert.equal(r.state.markup, 'the crown is ⟦gold⟧')
   assert.equal(teacherScore(r.state, 0.5, 'Close!', '').state.markup, undefined, 'an empty markup removes it')
   assert.equal(teacherScore({ attempts: [['c1']], result: 'wrong', score: 0 }, 1, undefined, 'x').state.markup, undefined, 'only written answers')
+})
+
+test('recordings are deleted after 31 July (REQ-10.5, D-67)', async () => {
+  const { lastEndOfYear } = await import('./index.js')
+  const endOf2026 = Date.UTC(2026, 6, 31, 21)
+  assert.equal(lastEndOfYear(new Date(Date.UTC(2026, 6, 31, 10))), Date.UTC(2025, 6, 31, 21), 'on 31 July itself: nothing from this school year yet')
+  assert.equal(lastEndOfYear(new Date(Date.UTC(2026, 7, 1, 0))), endOf2026, 'from 1 August (Israel time): this year\'s end')
+  assert.equal(lastEndOfYear(new Date(Date.UTC(2027, 2, 1))), endOf2026, 'during the next school year')
 })

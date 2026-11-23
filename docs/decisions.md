@@ -749,3 +749,15 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** REQ-5.5 is now priority 1 (must have for the pilot).
 **Reason:** Gil made it the top priority.
 **Affects:** REQ-5.5, roadmap
+
+### D-67: Recorded audio answers and audio comments
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** REQ-6.6 (students record answers) and REQ-5.13 (teachers' audio comments) record voices, including children's.
+**Decision:**
+1. **Length:** up to **30 seconds**, for students and for teachers (Gil). Other option: 3 minutes for answers, 2 for comments.
+2. **Who can listen:** only the student and the teachers of their class.
+3. **How long they're kept:** deleted automatically at the end of each school year (31 July), as in REQ-10.5.
+4. **Consent:** no parents' consent step for now (Gil).
+5. **To try it:** a demo audio question ([NEW], for Gil's review) at the end of the circles teaching lesson.
+**Also (Claude):** a student records, listens back, re-records and then sends; once sent, it can't be changed, like a written answer. The teacher grades it on the grading page, with a player, and can record a comment there. Recordings are saved in file storage in Israel (me-west1), next to the lesson images. A student's recording is in a folder only they can open; when they send it, the checking service attaches a private link (a long random key) to the answer, which only the student and the class's teachers can read. Teachers' comments are saved by the checking service the same way. (This avoids giving file storage permission to read the database, a security setting in Gil's Google Cloud project.) Every day, recordings made before the last 31 July are deleted.
+**Affects:** REQ-6.6, REQ-5.13, REQ-10.5, the circles teaching lesson

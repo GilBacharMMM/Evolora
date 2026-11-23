@@ -10,6 +10,7 @@ import { BlockView, Ui } from '../lesson/Blocks'
 import { Markdown } from '../lesson/Rich'
 import { MarkedAnswer } from '../components/MarkedAnswer'
 import { ExamPlayer } from './ExamPlayer'
+import { Recorder, StoredAudio, uploadRecording } from '../components/Recorder'
 import { QuestionCard } from '../lesson/QuestionCard'
 import { isFinished, type QuestionState } from '../lesson/answers'
 import type { Block, LessonVersion, Question } from '../lesson/types'
@@ -18,14 +19,14 @@ import { BackButton } from '../components/BackButton'
 
 // What the teacher did with an answer (REQ-5.12, 5.13, 5.15) and, when the student may see
 // grades (REQ-5.22, D-59), the question's marks.
-type Graded = QuestionState & { graded?: boolean; changedByTeacher?: boolean; teacherComment?: string | null; markup?: string | null }
+type Graded = QuestionState & { graded?: boolean; changedByTeacher?: boolean; teacherComment?: string | null; markup?: string | null; teacherAudio?: string | null }
 
 function TeacherNote({ state, showGrades }: { state: Graded | undefined; showGrades: boolean }) {
   const { t } = useTranslation()
   if (!state?.result) return null
   const marked = state.result !== 'pending' || state.graded
   const marks = showGrades && marked && state.score != null ? Math.round(state.score * 100) : null
-  if (marks === null && !state.teacherComment && !state.markup) return null
+  if (marks === null && !state.teacherComment && !state.markup && !state.teacherAudio) return null
   return (
     <div className="teacher-note" role="note">
       {marks !== null && (
@@ -42,6 +43,14 @@ function TeacherNote({ state, showGrades }: { state: Graded | undefined; showGra
             <Ui>{t('markup.studentTitle')}</Ui>
           </span>
           <MarkedAnswer original={String(state.attempts?.[0] ?? '')} markup={state.markup} />
+        </>
+      )}
+      {state.graded && state.teacherAudio && (
+        <>
+          <span className="teacher-note-title">
+            <Ui>{t('audio.teacherComment')}</Ui>
+          </span>
+          <audio controls src={state.teacherAudio} aria-label={t('audio.teacherComment')} />
         </>
       )}
       {state.teacherComment && (
@@ -201,7 +210,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
     (it.kind === 'block' && it.block.type === 'question' && it.block.extra && !states[it.block.id] && minimum > 0 && topicCorrect(it.topic) >= minimum)
 
   const shown = items.filter((it) => !skipped(it))
-  const stop = shown.findIndex((it) => it.kind === 'block' && it.block.type === 'question' && it.block.kind !== 'audio' && !isFinished(states[(it.block as Question).id]))
+  const stop = shown.findIndex((it) => it.kind === 'block' && it.block.type === 'question' && !isFinished(states[(it.block as Question).id]))
   const visible = stop === -1 ? shown : shown.slice(0, stop + 1)
   const finished = lesson !== null && stop === -1
   const activeTopic = visible.length ? (visible[visible.length - 1] as Item & { topic?: number }).topic : undefined
@@ -327,7 +336,17 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
               </h2>
             ) : it.block.type === 'question' ? (
               <>
-              {(states[it.block.id] as TryState | undefined)?.tryShown ? (
+              {it.block.kind === 'audio' && !(states[it.block.id] as TryState | undefined)?.tryShown ? (
+                <AudioQuestion
+                  q={it.block}
+                  state={states[it.block.id]}
+                  lessonId={lessonId}
+                  trying={trying}
+                  uid={user?.uid || ''}
+                  label={t('q.questionNumber', { number: numbers[it.block.id] })}
+                  onState={(st) => setLocal((l) => ({ ...l, [(it.block as Question).id]: st }))}
+                />
+              ) : (states[it.block.id] as TryState | undefined)?.tryShown ? (
                 <ShownAnswer q={it.block} state={states[it.block.id] as TryState} label={t('q.questionNumber', { number: numbers[it.block.id] })} />
               ) : (
                 <QuestionCard
@@ -508,6 +527,70 @@ function ShownAnswer({ q, state, label }: { q: Question; state: TryState; label:
           )}
           {state.trySolution && <Markdown text={state.trySolution} />}
         </div>
+      )}
+    </section>
+  )
+}
+
+// A question answered by recording (REQ-6.6, D-67): record up to 30 seconds, listen back, record
+// again, then send. Once sent it can't be changed, like a written answer. While trying the lesson,
+// a teacher records without anything being saved.
+function AudioQuestion({ q, state, lessonId, label, trying, uid, onState }: { q: Question; state: QuestionState | undefined; lessonId: string; label: string; trying: boolean; uid: string; onState: (s: QuestionState) => void }) {
+  const { t } = useTranslation()
+  const [blob, setBlob] = useState<Blob | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [failed, setFailed] = useState(false)
+  const sent = state?.result
+  const path = typeof state?.attempts?.[0] === 'string' ? (state.attempts[0] as string) : null
+  return (
+    <section className={`block-question${sent ? ' answered' : ''}`}>
+      <span className="block-label">
+        <Ui>{label}</Ui>
+      </span>
+      <Markdown text={q.prompt} />
+      {!sent ? (
+        <>
+          <Recorder onReady={setBlob} disabled={busy} />
+          <button
+            type="button"
+            className="button primary check-button"
+            disabled={!blob || busy}
+            onClick={async () => {
+              if (!blob) return
+              setBusy(true)
+              setFailed(false)
+              try {
+                if (trying) {
+                  onState({ attempts: ['(trying)'], result: 'pending', score: null })
+                } else {
+                  const p = await uploadRecording(`recordings/${uid}/${lessonId}/${q.id}`, blob)
+                  const r = await httpsCallable<unknown, { state: QuestionState }>(functions, 'answer')({ lessonId, questionId: q.id, value: p })
+                  onState(r.data.state)
+                }
+              } catch {
+                setFailed(true)
+              } finally {
+                setBusy(false)
+              }
+            }}
+          >
+            <Ui>{t('q.send')}</Ui>
+          </button>
+          {failed && (
+            <p className="answer-problem">
+              <Ui>{t('q.problem.failed')}</Ui>
+            </p>
+          )}
+        </>
+      ) : (
+        <>
+          {path && path.startsWith('recordings/') && <StoredAudio path={path} label={t('audio.yours')} />}
+          {!(state as Graded).graded && (
+            <p className="feedback saved" role="status">
+              <Ui>{t('q.savedForTeacher')}</Ui>
+            </p>
+          )}
+        </>
       )}
     </section>
   )

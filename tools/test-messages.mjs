@@ -44,6 +44,8 @@ async function cleanUp() {
   await updateDoc(doc(ldb, 'classes', CLASS), { teacherIds: arrayRemove('test-teacher-2'), teacherNames: arrayRemove('Test Teacher 2') })
 }
 
+// The class's teachers as Gil left them; the test changes them and puts them back at the end.
+const teachersBefore = (await getDoc(doc(ldb, 'classes', CLASS))).data()
 await cleanUp()
 try {
   // Test Teacher 2 as a co-teacher, to check that both teachers share the conversation.
@@ -83,6 +85,7 @@ try {
   check('the test ran to the end', false, e.message)
 } finally {
   await cleanUp()
+  await updateDoc(doc(ldb, 'classes', CLASS), { teacherIds: teachersBefore.teacherIds, teacherNames: teachersBefore.teacherNames })
 }
 
 console.log(`\n${count - failures} of ${count} message tests passed.`)

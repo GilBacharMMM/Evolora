@@ -11,6 +11,9 @@ import { initializeApp } from 'firebase-admin/app'
 import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 import { HttpsError, onCall } from 'firebase-functions/v2/https'
 import { setGlobalOptions } from 'firebase-functions/v2'
+import { onSchedule } from 'firebase-functions/v2/scheduler'
+import { getStorage } from 'firebase-admin/storage'
+import { randomUUID } from 'node:crypto'
 import { answerCheckAgain, answerMain, isFinished, judge, lessonFinished, lessonGrade, receives, sendBackForCorrections, teacherScore } from './check.js'
 import { averageGrade, coursePosition, dueFor, lateGrade, lessonCell, levelSuggestions, median, notMastered, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
 import { CLASS_COLORS, WAIT_MS, afterWrong, makeCode, normalizeCode, validateCode, waitLeft } from './classcode.js'
@@ -93,6 +96,10 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
   if (lesson.type === 'exam') throw new HttpsError('failed-precondition', 'exam')
   const progressRef = db.doc(`progress/${progressId(uid, lessonId)}`)
 
+  // A sent recording gets its private link (REQ-6.6, D-67).
+  const { value: sentValue } = request.data
+  const audioUrl = typeof sentValue === 'string' && sentValue.startsWith(`recordings/${uid}/${lessonId}/${questionId}/`) && !sentValue.includes('..') ? await recordingLink(sentValue) : null
+
   let flagToRaise = null
   const result = await db.runTransaction(async (tx) => {
     flagToRaise = null
@@ -105,6 +112,8 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
     const found = findQuestion(vSnap.data(), questionId)
     if (!found) throw new HttpsError('not-found', 'No such question.')
     const { q, topic } = found
+    // A recorded answer is a file the student uploaded to their own place in file storage (REQ-6.6).
+    if (q.kind === 'audio' && !checkAgain && !(typeof value === 'string' && value.startsWith(`recordings/${uid}/${lessonId}/${questionId}/`) && !value.includes('..'))) throw new HttpsError('invalid-argument', 'invalid-answer')
     if (!receives(q, maxLevel)) throw new HttpsError('failed-precondition', 'Not one of your questions.')
     const secret = sSnap.data().questions[questionId] || {}
     const questions = progress?.questions || {}
@@ -120,6 +129,7 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
     if (outcome.flag) flagToRaise = { kind: 'checkAgainWrong', questionId, topicNumber: topic.number, topicName: topic.name }
 
     const newState = outcome.state
+    if (q.kind === 'audio' && audioUrl) newState.audioUrl = audioUrl
     const minimum = topicMinimum
     if (minimum && isFinished(newState) && lastAutoQuestionId(topic, maxLevel) === questionId && t.correct < minimum && !t.flagged) {
       t.flagged = true
@@ -716,7 +726,7 @@ export const lessonResults = onCall(async (request) => {
       const states = Object.fromEntries(
         Object.entries(pr?.questions || {}).map(([id, st]) => [
           id,
-          { attempts: st.attempts || [], result: st.result, score: st.score, graded: !!st.graded, changedByTeacher: !!st.changedByTeacher, teacherComment: st.teacherComment || null, markup: st.markup || null, checkAgain: st.checkAgain ? { result: st.checkAgain.result } : null },
+          { attempts: st.attempts || [], result: st.result, score: st.score, graded: !!st.graded, changedByTeacher: !!st.changedByTeacher, teacherComment: st.teacherComment || null, markup: st.markup || null, teacherAudio: st.teacherAudio || null, audioUrl: st.audioUrl || null, checkAgain: st.checkAgain ? { result: st.checkAgain.result } : null },
         ]),
       )
       return { id: s.id, name: s.name, cell: lessonCell(pr), states, submitted: !!pr?.submitted, released: !!pr?.released, sentBack: pr?.sentBack || null, earlier: Object.fromEntries(Object.entries(pr?.history || {}).map(([q, h]) => [q, h.length])) }
@@ -725,18 +735,22 @@ export const lessonResults = onCall(async (request) => {
 })
 
 export const gradeAnswer = onCall(async (request) => {
-  const { classId, lessonId, studentId, questionId, score, comment, markup } = request.data || {}
+  const { classId, lessonId, studentId, questionId, score, comment, markup, audioData } = request.data || {}
   await requireClassTeacher(request.auth, classId)
   if (![lessonId, studentId, questionId].every(validId)) throw new HttpsError('invalid-argument', 'Missing details.')
   // Exam answers are graded in the exam results (REQ-4.26).
   const isExam = (await db.doc(`lessons/${lessonId}`).get()).data()?.type === 'exam'
   const ref = db.doc(`${isExam ? 'examResults' : 'progress'}/${progressId(studentId, lessonId)}`)
+  // A recorded comment (REQ-5.13, D-67) is saved first; '' removes the one saved before.
+  const teacherAudio = typeof audioData === 'string' && audioData ? await saveComment(studentId, lessonId, questionId, audioData) : audioData === '' ? '' : undefined
   return db.runTransaction(async (tx) => {
     const snap = await tx.get(ref)
     if (!snap.exists || !(snap.data().classIds || []).includes(classId)) throw new HttpsError('not-found', 'No such answer in this class.')
     const p = snap.data()
     const outcome = teacherScore(p.questions?.[questionId], score, comment, markup)
     if (outcome.invalid) throw new HttpsError('invalid-argument', 'invalid-grade')
+    if (teacherAudio) outcome.state.teacherAudio = teacherAudio
+    else if (teacherAudio === '') delete outcome.state.teacherAudio
     outcome.state.gradedBy = request.auth.uid
     outcome.state.gradedAt = Date.now()
     const questions = { ...p.questions, [questionId]: outcome.state }
@@ -1275,3 +1289,51 @@ export const removeTeacher = onCall(async (request) => {
   await ref.update({ teacherIds: ids.filter((_, k) => k !== i), teacherNames: names.filter((_, k) => k !== i), updatedAt: FieldValue.serverTimestamp() })
   return { ok: true, self: teacherId === request.auth.uid }
 })
+
+// Recordings are kept until the end of the school year (REQ-10.5, D-67): every day at 03:00
+// (Israel time), files recorded before the last 31 July are deleted.
+export function lastEndOfYear(now = new Date()) {
+  const israel = new Date(now.getTime() + 3 * 3600 * 1000) // Israel summer time; precise enough for a daily run
+  const y = israel.getUTCMonth() >= 7 ? israel.getUTCFullYear() : israel.getUTCFullYear() - 1
+  return Date.UTC(y, 6, 31, 21, 0, 0) // 31 July, midnight in Israel (UTC+3)
+}
+
+export const deleteOldRecordings = onSchedule({ schedule: '0 3 * * *', timeZone: 'Asia/Jerusalem' }, async () => {
+  const cutoff = lastEndOfYear()
+  const bucket = getStorage().bucket()
+  for (const prefix of ['recordings/', 'comments/']) {
+    const [files] = await bucket.getFiles({ prefix })
+    for (const f of files) if (new Date(f.metadata.timeCreated).getTime() < cutoff) await f.delete().catch(() => {})
+  }
+})
+
+// A private link to a recording (D-67): a long random key in the address, kept only in the
+// student's work, which only the student and the class's teachers can read.
+async function privateLink(file) {
+  const [md] = await file.getMetadata()
+  let token = md.metadata?.firebaseStorageDownloadTokens?.split(',')[0]
+  if (!token) {
+    token = randomUUID()
+    await file.setMetadata({ metadata: { firebaseStorageDownloadTokens: token } })
+  }
+  return `https://firebasestorage.googleapis.com/v0/b/${file.bucket.name}/o/${encodeURIComponent(file.name)}?alt=media&token=${token}`
+}
+
+// Checks a student's sent recording and returns its private link (REQ-6.6).
+async function recordingLink(path) {
+  const file = getStorage().bucket().file(path)
+  const [exists] = await file.exists()
+  if (!exists) throw new HttpsError('invalid-argument', 'invalid-answer')
+  const [md] = await file.getMetadata()
+  if (Number(md.size) > 2 * 1024 * 1024 || !String(md.contentType || '').startsWith('audio/')) throw new HttpsError('invalid-argument', 'invalid-answer')
+  return privateLink(file)
+}
+
+// Saves a teacher's recorded comment (REQ-5.13), sent as base64, and returns its private link.
+async function saveComment(studentId, lessonId, questionId, base64) {
+  const data = Buffer.from(base64, 'base64')
+  if (!data.length || data.length > 2 * 1024 * 1024) throw new HttpsError('invalid-argument', 'invalid-audio')
+  const file = getStorage().bucket().file(`comments/${studentId}/${lessonId}/${questionId}/${Date.now()}.webm`)
+  await file.save(data, { contentType: 'audio/webm', metadata: { metadata: { firebaseStorageDownloadTokens: randomUUID() } } })
+  return privateLink(file)
+}
