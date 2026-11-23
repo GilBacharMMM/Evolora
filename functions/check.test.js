@@ -118,3 +118,31 @@ test('lesson grade: average of the questions received; weights count', () => {
   assert.equal(lessonGrade(states).percent, 50)
   assert.equal(lessonGrade(states, { q1: 2 }).percent, 63)
 })
+
+test('a right answer shows the "why it\'s right" explanation, on the 1st or 2nd attempt (REQ-4.28)', () => {
+  const s = { ...choiceS, whyRight: 'WHY' }
+  const a = answerMain(undefined, choiceQ, s, ['c1'], pickFirst)
+  assert.equal(a.reply.whyRight, 'WHY')
+  assert.equal(a.state.solution, undefined, 'the full solution is not needed when there is an explanation')
+  const w = answerMain(undefined, choiceQ, s, ['c2'], pickFirst)
+  assert.equal(w.state.whyRight, undefined, 'not sent before a right answer (D-17)')
+  const b = answerMain(w.state, choiceQ, s, ['c1'], pickFirst)
+  assert.equal(b.reply.whyRight, 'WHY')
+})
+
+test('without an explanation, a right answer shows the full solution (REQ-4.28)', () => {
+  const a = answerMain(undefined, choiceQ, choiceS, ['c1'], pickFirst)
+  assert.equal(a.reply.whyRight, null)
+  assert.equal(a.reply.solution, 'SOLUTION')
+})
+
+test('check-again: its own explanation, or else only its correct answer (REQ-4.28)', () => {
+  const wrong1 = answerMain(undefined, choiceQ, choiceS, ['c2'], pickFirst)
+  const wrong2 = answerMain(wrong1.state, choiceQ, choiceS, ['c2'], pickFirst)
+  const plain = answerCheckAgain(wrong2.state, choiceS, ['c2'])
+  assert.equal(plain.reply.whyRight, null)
+  assert.deepEqual(plain.reply.correct, { choices: ['c2'] })
+  const withWhy = { ...choiceS, checkAgain: [{ ...choiceS.checkAgain[0], whyRight: 'CA-WHY' }] }
+  const own = answerCheckAgain(wrong2.state, withWhy, ['c2'])
+  assert.equal(own.reply.whyRight, 'CA-WHY')
+})

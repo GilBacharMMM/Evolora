@@ -51,6 +51,7 @@ console.log('Test Student 2: right first time')
 await as('test-student-2', async ({ db, answer }) => {
   const r = (await answer({ lessonId: LESSON, questionId: choiceQ.id, value: secret[choiceQ.id].correct })).data
   check('correct answer is marked correct', r.reply.result === 'correct')
+  check("a right answer comes with its \"why it's right\" explanation (REQ-4.28)", !!secret[choiceQ.id].whyRight && r.reply.whyRight === secret[choiceQ.id].whyRight)
   const p = (await getDoc(doc(db, 'progress', `test-student-2__${LESSON}`))).data()
   check('full marks saved', p.questions[choiceQ.id].score === 1)
   check('student can read own progress', !!p)

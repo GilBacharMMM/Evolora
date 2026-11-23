@@ -8,6 +8,7 @@ export interface CheckAgainState {
   hint?: string | null
   correct?: { choices?: string[]; number?: number }
   solution?: string | null
+  whyRight?: string | null
 }
 
 export interface QuestionState {
@@ -16,6 +17,7 @@ export interface QuestionState {
   score: number | null
   hint?: string | null
   solution?: string | null
+  whyRight?: string | null
   correct?: { choices?: string[]; number?: number }
   checkAgain?: CheckAgainState
 }

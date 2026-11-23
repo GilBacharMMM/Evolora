@@ -244,9 +244,18 @@ export function QuestionCard({
 
       {/* Feedback on the answer (design language: no red for mistakes) */}
       {(result === 'correct1' || result === 'correct2') && (
-        <p className="feedback correct" role="status">
-          <Ui>{result === 'correct1' ? t('q.correct') : t('q.correctSecond')}</Ui>
-        </p>
+        <div className="feedback correct" role="status">
+          <Ui className="feedback-title">{result === 'correct1' ? t('q.correct') : t('q.correctSecond')}</Ui>
+          {/* Why it's right; without it, the full solution (REQ-4.28) */}
+          {st?.whyRight ? (
+            <Markdown text={st.whyRight} className="why-right" />
+          ) : st?.solution ? (
+            <>
+              <Ui className="feedback-subtitle">{t('q.fullSolution')}</Ui>
+              <Markdown text={st.solution} className="why-right" />
+            </>
+          ) : null}
+        </div>
       )}
       {result === 'pending' && (
         <p className="feedback saved" role="status">
@@ -321,9 +330,18 @@ function CheckAgainCard({ ca, onSubmit, fallbackHint }: { ca: CheckAgainState; o
       <Markdown text={q.prompt} className="question-prompt" />
       <AnswerForm kind={q.kind} choices={q.choices} multiple={q.multipleCorrect} unit={q.unit} name={q.id} finished={finished} lastAnswer={last} correctChoices={correctChoices} onSubmit={onSubmit} />
       {(ca.result === 'correct1' || ca.result === 'correct2') && (
-        <p className="feedback correct" role="status">
-          <Ui>{t('q.correct')}</Ui>
-        </p>
+        <div className="feedback correct" role="status">
+          <Ui className="feedback-title">{t('q.correct')}</Ui>
+          {/* Its own explanation, or else only its correct answer (REQ-4.28) */}
+          {ca.whyRight ? (
+            <Markdown text={ca.whyRight} className="why-right" />
+          ) : ca.correct ? (
+            <p className="correct-line">
+              <Ui>{t('q.theCorrectAnswer')}</Ui>{' '}
+              {q.kind === 'number' ? <bdi dir="ltr">{correctText('number', ca.correct, q.choices, q.unit)}</bdi> : <bdi>{correctText('choice', ca.correct, q.choices, q.unit)}</bdi>}
+            </p>
+          ) : null}
+        </div>
       )}
       {!ca.result && ca.attempts.length === 1 && (
         <div className="feedback hint" role="status">

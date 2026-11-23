@@ -7,9 +7,12 @@ import { NotChrome } from './NotChrome'
 import { browserAllowed } from './browser'
 import { IS_TEST_SITE } from './site'
 
-// A successful start clears the one-time reload after a new release (App.tsx).
-window.addEventListener('load', () => setTimeout(() => { try { sessionStorage.removeItem('evolora.reloaded') } catch { /* ignore */ } }, 10000))
+import { ErrorScreen, tidyAddress } from './freshness'
+
+tidyAddress()
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>{browserAllowed(IS_TEST_SITE) ? <App /> : <NotChrome />}</StrictMode>,
+  <StrictMode>
+    <ErrorScreen>{browserAllowed(IS_TEST_SITE) ? <App /> : <NotChrome />}</ErrorScreen>
+  </StrictMode>,
 )

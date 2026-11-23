@@ -1,4 +1,5 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
+import { lazyFresh } from './freshness'
 import { useTranslation } from 'react-i18next'
 import { IS_TEST_SITE, siteReady } from './site'
 import { SessionProvider, useSession } from './session'
@@ -10,18 +11,7 @@ import { LessonLibrary, TeacherClass, TeacherHome } from './pages/TeacherHome'
 
 // The lesson player, with its formula display, loads only when a lesson is opened,
 // so the home page opens quickly (REQ-12.1).
-const LessonPlayer = lazy(() =>
-  import('./pages/LessonPlayer')
-    .then((m) => ({ default: m.LessonPlayer }))
-    .catch((e) => {
-      // After a new release, an open page may ask for a file of the old one: reload once.
-      if (!sessionStorage.getItem('evolora.reloaded')) {
-        sessionStorage.setItem('evolora.reloaded', '1')
-        location.reload()
-      }
-      throw e
-    }),
-)
+const LessonPlayer = lazyFresh(() => import('./pages/LessonPlayer').then((m) => ({ default: m.LessonPlayer })))
 
 function TestBanner() {
   const { t } = useTranslation()

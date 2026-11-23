@@ -10,7 +10,9 @@
     "notFound": "This page doesn't exist.",
     "teachersOnly": "This page is for teachers only.",
     "notReady": "Evolora isn't open here yet.",
-    "offline": "No internet connection. Your answers so far are saved; you can continue when you're connected."
+    "offline": "No internet connection. Your answers so far are saved; you can continue when you're connected.",
+    "somethingWrong": "Something went wrong while loading this page.",
+    "reload": "Load the page again"
   },
   "roles": {
     "student": "Student",

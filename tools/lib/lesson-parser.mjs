@@ -7,14 +7,15 @@
 //
 // The result is split in two:
 // - "content": what a student may see (text, media, questions without their answers)
-// - "secret": correct answers, hints, solutions, check-again questions and grading
+// - "secret": correct answers, hints, solutions, "why it's right" explanations (REQ-4.28),
+//   check-again questions and grading
 //   instructions, saved where students can never read them (D-17).
 
 import fs from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'
 
-const FIELD = /^- (Hint|Solution|Answer|Unit|Grading instructions|Tip|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
+const FIELD = /^- (Hint|Solution|Why it['’]s right|Answer|Unit|Grading instructions|Tip|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
 const LATEX = /\\[a-zA-Z]+|\^|_\{/
 const WORDS = /[֐-׿؀-ۿA-Za-z]{2,}/
 const TYPE_KEYS = {
@@ -63,7 +64,7 @@ function readBody(lines) {
     if (line === '---') { lastField = null; continue }
     const f = line.match(FIELD)
     if (f) {
-      const key = f[1].toLowerCase()
+      const key = f[1].toLowerCase().replace('’', "'")
       const value = stripNew(f[2])
       if (key === 'tip') {
         const [title, ...rest] = value.split('|')
@@ -257,6 +258,7 @@ export function parseLesson(target) {
             answer: kind === 'number' ? numberValue(body.fields.answer) : null,
             hint: body.fields.hint || null,
             solution: body.fields.solution || null,
+            whyRight: body.fields["why it's right"] || null,
             gradingInstructions: body.fields['grading instructions'] || null,
             checkAgain: b.checkAgain.map((ca, n) => {
               const cab = readBody(ca.lines)
@@ -273,6 +275,7 @@ export function parseLesson(target) {
                 unit: cab.fields.unit || null,
                 hint: cab.fields.hint || null,
                 solution: cab.fields.solution || null,
+                whyRight: cab.fields["why it's right"] || null,
               }
             }),
           }

@@ -5,7 +5,7 @@
 //   attempts: the answers given so far
 //   result:   null (not finished) | 'correct1' | 'correct2' | 'wrong' | 'pending' (open question)
 //   score:    1 (correct on the 1st attempt), 0.5 (on the 2nd), 0 (two wrong), null (waiting for the teacher)
-//   hint, solution, correct: shown to the student only once earned
+//   hint, solution, correct, whyRight: shown to the student only once earned
 //   checkAgain: the check-again question asked after two wrong answers, with its own attempts
 
 export const TOLERANCE = 0.1
@@ -74,7 +74,10 @@ export function answerMain(state, q, s, value, pickCheckAgain) {
   if (ok) {
     st.result = attempt === 1 ? 'correct1' : 'correct2'
     st.score = attempt === 1 ? 1 : 0.5
-    return { state: st, reply: { result: 'correct', attempt }, countsCorrect: true }
+    // A short "why it's right" explanation; without one, the full solution (REQ-4.28).
+    if (s.whyRight) st.whyRight = s.whyRight
+    else st.solution = s.solution || null
+    return { state: st, reply: { result: 'correct', attempt, whyRight: st.whyRight || null, solution: st.solution || null }, countsCorrect: true }
   }
   if (attempt === 1) {
     st.hint = s.hint || null
@@ -113,7 +116,10 @@ export function answerCheckAgain(state, s, value) {
   const attempt = ca.attempts.length
   if (ok) {
     ca.result = attempt === 1 ? 'correct1' : 'correct2'
-    return { state: st, reply: { result: 'correct', attempt }, countsCorrect: true, flag: false }
+    // Its own explanation if it has one; otherwise only its correct answer (REQ-4.28).
+    if (secret.whyRight) ca.whyRight = secret.whyRight
+    else ca.correct = correctAnswerFor(secret.kind, secret)
+    return { state: st, reply: { result: 'correct', attempt, whyRight: ca.whyRight || null, correct: ca.correct || null }, countsCorrect: true, flag: false }
   }
   if (attempt === 1) {
     ca.hint = secret.hint || s.hint || null

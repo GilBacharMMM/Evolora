@@ -148,6 +148,10 @@ The correct answer, the hint and the solution are kept in the protected area. Th
 
 **Where the work is kept (part 2).** Each student's work on a lesson (answers, attempts, scores, the hints and solutions they have earned, and how many correct answers they have in each topic) is saved by the checking service in one record per student and lesson. The student can read their own record, and the teachers of their class can read it; nobody can write it except the checking service. That record is also how the student returns to the same place (REQ-6.2). Red flags (REQ-4.17, 4.21) are saved the same way, one per class, readable only by that class's teachers. Extra practice questions are skipped once the student has reached the topic's minimum; if the last checked question of a topic is finished below the minimum, the teacher gets a red flag.
 
+**Explanation after a right answer (REQ-4.28).** The "why it's right" explanation is kept in the protected area with the solution, and is sent only after a right answer. Without one, a right answer brings the full solution; a check-again question without one shows only its correct answer.
+
+**After a new release.** The website's start page is never kept by the browser, and if an open page still asks for a file of an older release, it loads itself again, so nobody gets a blank screen.
+
 **Formulas inside sentences (REQ-4.3).** In lesson text, a run of math (for example "P = π × D = 3.14 × 6 = **18.84**") is shown left-to-right even inside a Hebrew or Arabic sentence.
 
 ### 5.2 Open and audio questions

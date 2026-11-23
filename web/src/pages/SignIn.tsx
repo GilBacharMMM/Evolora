@@ -1,10 +1,11 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
+import { lazyFresh } from '../freshness'
 import { useTranslation } from 'react-i18next'
 import { IS_TEST_SITE } from '../site'
 import { useSession } from '../session'
 import { Logo } from '../components/Logo'
 
-const SwitchUser = IS_TEST_SITE ? lazy(() => import('../test-site/SwitchUser').then((m) => ({ default: m.SwitchUser }))) : null
+const SwitchUser = IS_TEST_SITE ? lazyFresh(() => import('../test-site/SwitchUser').then((m) => ({ default: m.SwitchUser }))) : null
 
 // Sign in with Google (REQ-3.1, 3.2). No Evolora passwords.
 export function SignIn() {

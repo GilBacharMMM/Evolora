@@ -1282,3 +1282,15 @@ figcaption {
 .math-run {
   unicode-bidi: isolate;
 }
+
+/* "Why it's right" after a right answer (REQ-4.28) */
+.feedback.correct .why-right {
+  color: var(--ink);
+  font-weight: 400;
+}
+
+.feedback-subtitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-2);
+}

@@ -1,4 +1,5 @@
-import { lazy, Suspense, useState } from 'react'
+import { Suspense, useState } from 'react'
+import { lazyFresh } from '../freshness'
 import { useTranslation } from 'react-i18next'
 import { LANGUAGES, type Language } from '../i18n'
 import { IS_TEST_SITE } from '../site'
@@ -7,7 +8,7 @@ import { navigate } from '../router'
 import { Logo } from './Logo'
 
 // Built only into the test site: on the real site this is never loaded (REQ-12.5).
-const SwitchUser = IS_TEST_SITE ? lazy(() => import('../test-site/SwitchUser').then((m) => ({ default: m.SwitchUser }))) : null
+const SwitchUser = IS_TEST_SITE ? lazyFresh(() => import('../test-site/SwitchUser').then((m) => ({ default: m.SwitchUser }))) : null
 
 export function Header() {
   const { t, i18n } = useTranslation()
