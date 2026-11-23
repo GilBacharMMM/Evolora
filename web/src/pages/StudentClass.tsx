@@ -38,10 +38,11 @@ export function StudentClass({ classId }: { classId: string }) {
   const c = classes.find((x) => x.id === classId)
   if (!c) return <NotInClass />
 
-  const active = c.courses.filter((k) => !k.finished)
-  const waiting = c.singles.filter((s) => s.status !== 'done')
-  const finishedCourses = c.courses.filter((k) => k.finished)
-  const finishedSingles = c.singles.filter((s) => s.status === 'done')
+  const hasNotes = (k: (typeof c.courses)[number]) => k.items.some((it) => [it, ...it.practice].some((l) => l.notes))
+  const active = c.courses.filter((k) => !k.finished || hasNotes(k))
+  const waiting = c.singles.filter((s) => s.status !== 'done' || s.notes)
+  const finishedCourses = c.courses.filter((k) => k.finished && !hasNotes(k))
+  const finishedSingles = c.singles.filter((s) => s.status === 'done' && !s.notes)
 
   return (
     <main className="page narrow">

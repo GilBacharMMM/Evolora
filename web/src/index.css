@@ -2119,3 +2119,93 @@ figcaption {
   font-weight: 700;
   font-size: 14px;
 }
+
+/* Priority 2: grades for students, sending back, student page (REQ-5.22, 5.14, 5.15, 5.28, 5.25) */
+.lesson-grade {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--teal-dark);
+}
+
+.sent-back {
+  margin-block-end: 18px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: var(--sun-light);
+  border: 2px solid var(--sun);
+  color: var(--sun-text);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.sent-back p {
+  margin: 0;
+}
+
+.sent-back-title {
+  font-weight: 700;
+}
+
+.sent-back-note {
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+.notes-chip {
+  display: inline-block;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding-block: 1px;
+  padding-inline: 10px;
+  background: var(--sun);
+  color: var(--sun-text);
+}
+
+.lesson-row.has-notes {
+  background: var(--sun-light);
+  border-color: var(--sun);
+}
+
+.row-grade {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--teal-dark);
+}
+
+.cell-button {
+  background: none;
+  border: 1px dashed transparent;
+  border-radius: 8px;
+  padding: 2px 4px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cell-button:hover {
+  border-color: var(--teal);
+}
+
+.score-editor {
+  max-width: 640px;
+}
+
+.student-course {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block-end: 10px;
+  border-block-end: 1px solid var(--line);
+}
+
+.student-course h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.note-text {
+  white-space: pre-wrap;
+}

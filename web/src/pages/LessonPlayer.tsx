@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { doc, getDoc, onSnapshot } from 'firebase/firestore'
 import { httpsCallable } from 'firebase/functions'
-import { db, functions, IS_TEST_SITE } from '../site'
+import { db, functions } from '../site'
 import { lessonAccess, loadClasswork } from '../classwork'
 import { useSession } from '../session'
 import { navigate } from '../router'
@@ -13,18 +13,34 @@ import type { Block, LessonVersion, Question } from '../lesson/types'
 import { TypeChip } from '../components/TypeChip'
 import { BackButton } from '../components/BackButton'
 
-// An open answer the teacher graded, with their written comment (REQ-5.12, 5.13).
-type Graded = QuestionState & { graded?: boolean; teacherComment?: string | null }
+// What the teacher did with an answer (REQ-5.12, 5.13, 5.15) and, when the student may see
+// grades (REQ-5.22, D-59), the question's marks.
+type Graded = QuestionState & { graded?: boolean; changedByTeacher?: boolean; teacherComment?: string | null }
 
-function TeacherNote({ state }: { state: Graded | undefined }) {
+function TeacherNote({ state, showGrades }: { state: Graded | undefined; showGrades: boolean }) {
   const { t } = useTranslation()
-  if (!state?.graded || !state.teacherComment) return null
+  if (!state?.result) return null
+  const marked = state.result !== 'pending' || state.graded
+  const marks = showGrades && marked && state.score != null ? Math.round(state.score * 100) : null
+  if (marks === null && !state.teacherComment) return null
   return (
     <div className="teacher-note" role="note">
-      <span className="teacher-note-title">
-        <Ui>{t('lesson.teacherComment')}</Ui>
-      </span>
-      <p dir="auto">{state.teacherComment}</p>
+      {marks !== null && (
+        <span className="teacher-note-title">
+          <Ui>
+            {t('lesson.marks', { percent: marks })}
+            {state.changedByTeacher ? ` · ${t('lesson.changedByTeacher')}` : ''}
+          </Ui>
+        </span>
+      )}
+      {state.teacherComment && (
+        <>
+          <span className="teacher-note-title">
+            <Ui>{t('lesson.teacherComment')}</Ui>
+          </span>
+          <p dir="auto">{state.teacherComment}</p>
+        </>
+      )}
     </div>
   )
 }
@@ -37,6 +53,7 @@ interface Progress {
   topics?: Record<string, { correct: number; flagged?: boolean }>
   grade?: { percent: number | null; pending: boolean; points: number; outOf: number }
   finished?: boolean
+  sentBack?: { mode: 'review' | 'corrections'; questionIds: string[]; note: string | null; done: boolean }
 }
 
 // The lesson player (REQ-6.2, 4.5, 4.21, system-design 2.3). The student sees the lesson up to
@@ -46,12 +63,19 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const { t } = useTranslation()
   const { user, role, classIds } = useSession()
   // A student opens only lessons given to them that aren't locked (REQ-5.7, 6.12, D-55, D-57).
-  const [gate, setGate] = useState<'checking' | 'open' | 'locked' | 'notGiven'>(role === 'student' ? 'checking' : 'open')
+  const [gate, setGate] = useState<'checking' | 'open' | 'locked' | 'lockedByNotes' | 'notGiven'>(role === 'student' ? 'checking' : 'open')
+  // Teachers always see grades; students only when the assignment shows them (REQ-5.22).
+  const [showGrades, setShowGrades] = useState(role !== 'student')
   useEffect(() => {
     if (role !== 'student' || !user) return
     let live = true
     loadClasswork(user.uid, classIds)
-      .then((c) => live && setGate(lessonAccess(c, lessonId)))
+      .then((c) => {
+        if (!live) return
+        const a = lessonAccess(c, lessonId)
+        setShowGrades(a.showGrades)
+        setGate(a.access === 'locked' && a.lockedByNotes ? 'lockedByNotes' : a.access)
+      })
       .catch(() => live && setGate('open'))
     return () => {
       live = false
@@ -145,18 +169,20 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
     if (scrolled.current || !lesson || progress === null) return
     scrolled.current = true
     if (Object.keys(progress.questions || {}).length === 0) return
+    // Sent back for review: stay at the top, where the teacher's note is (REQ-5.14).
+    if (progress.sentBack && !progress.sentBack.done && progress.sentBack.mode === 'review') return
     requestAnimationFrame(() => {
       const cards = document.querySelectorAll('.block-question')
       cards[cards.length - 1]?.scrollIntoView({ block: 'center' })
     })
   }, [lesson, progress])
 
-  if (gate === 'locked' || gate === 'notGiven') {
+  if (gate === 'locked' || gate === 'lockedByNotes' || gate === 'notGiven') {
     return (
       <main className="page narrow">
         <BackButton />
         <div className="card message-card">
-          <p>{gate === 'locked' ? t('lesson.locked') : t('lesson.notAllowed')}</p>
+          <p>{gate === 'locked' ? t('lesson.locked') : gate === 'lockedByNotes' ? t('lesson.lockedByNotes') : t('lesson.notAllowed')}</p>
           <button type="button" className="button primary" onClick={() => navigate('/')}>
             {t('common.toHome')}
           </button>
@@ -221,6 +247,8 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
           </p>
         </header>
 
+        <SentBackBanner lessonId={lessonId} sentBack={progress?.sentBack} isStudent={role === 'student'} />
+
         {visible.map((it) => (
           <Fragment key={it.kind === 'topic' ? `topic-${it.number}` : it.key}>
             {it.kind === 'topic' ? (
@@ -236,7 +264,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
                 label={t('q.questionNumber', { number: numbers[it.block.id] })}
                 onState={(s) => setLocal((l) => ({ ...l, [(it.block as Question).id]: s }))}
               />
-              <TeacherNote state={states[it.block.id] as Graded | undefined} />
+              <TeacherNote state={states[it.block.id] as Graded | undefined} showGrades={showGrades} />
               </>
             ) : (
               <BlockView block={it.block} />
@@ -249,12 +277,10 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
             <p>
               <Ui>{t('lesson.end')}</Ui>
             </p>
-            {IS_TEST_SITE && progress?.grade?.outOf ? (
-              <p className="part-note">
-                <Ui>
-                  {t('q.testScore', { points: progress.grade.points, outOf: progress.grade.outOf, percent: progress.grade.percent })}
-                  {progress.grade.pending ? ` ${t('q.testScorePending')}` : ''}
-                </Ui>
+            {progress?.sentBack?.mode === 'review' && <SentBackBanner lessonId={lessonId} sentBack={progress.sentBack} isStudent={role === 'student'} />}
+            {showGrades && progress?.grade?.outOf ? (
+              <p className="lesson-grade">
+                <Ui>{progress.grade.pending ? t('lesson.gradePending') : t('lesson.yourGrade', { percent: progress.grade.percent })}</Ui>
               </p>
             ) : null}
             <button type="button" className="button primary" onClick={() => navigate('/')}>
@@ -264,5 +290,39 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
         )}
       </article>
     </main>
+  )
+}
+
+// A lesson the teacher sent back (REQ-5.14, D-59). For review: the teacher's comments come first,
+// with "I've read the comments", which unlocks new lessons. For corrections: which questions to
+// answer again.
+function SentBackBanner({ lessonId, sentBack, isStudent }: { lessonId: string; sentBack: Progress['sentBack']; isStudent: boolean }) {
+  const { t } = useTranslation()
+  const [busy, setBusy] = useState(false)
+  if (!sentBack || sentBack.done) return null
+  return (
+    <div className="sent-back" role="note">
+      <p className="sent-back-title">
+        <Ui>{sentBack.mode === 'review' ? t('lesson.sentBackReview') : t('lesson.sentBackCorrections', { n: sentBack.questionIds.length })}</Ui>
+      </p>
+      {sentBack.note && (
+        <p dir="auto" className="sent-back-note">
+          {sentBack.note}
+        </p>
+      )}
+      {sentBack.mode === 'review' && isStudent && (
+        <button
+          type="button"
+          className="button primary"
+          disabled={busy}
+          onClick={() => {
+            setBusy(true)
+            httpsCallable(functions, 'readComments')({ lessonId }).catch(() => setBusy(false))
+          }}
+        >
+          <Ui>{t('lesson.readComments')}</Ui>
+        </button>
+      )}
+    </div>
   )
 }

@@ -106,6 +106,12 @@ service cloud.firestore {
         allow write: if isLoader();
       }
 
+      // Private teacher notes about students: never the student (REQ-5.28).
+      match /notes/{noteId} {
+        allow read: if isLoader() || teachesThisClass();
+        allow write: if isLoader();
+      }
+
       // Lessons the teacher opened early (REQ-5.20), read the same way as assignments.
       match /openings/{openingId} {
         allow read: if isLoader() || teachesThisClass()

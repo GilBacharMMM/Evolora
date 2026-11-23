@@ -187,3 +187,48 @@ export function gradeOpen(state, score, comment) {
   else delete st.teacherComment
   return { state: st }
 }
+
+// The teacher sets the score of any answered question (REQ-5.15, D-59): a share of the marks from
+// 0 to 1. An open answer becomes graded; an automatically checked one is marked "changed by the
+// teacher". An optional comment goes with it.
+export function teacherScore(state, score, comment) {
+  if (!state || !state.result) return { invalid: true }
+  if (typeof score !== 'number' || !Number.isFinite(score) || score < 0 || score > 1) return { invalid: true }
+  const st = structuredClone(state)
+  st.score = Math.round(score * 1000) / 1000
+  if (st.result === 'pending') st.graded = true
+  else st.changedByTeacher = true
+  if (comment !== undefined) {
+    const text = typeof comment === 'string' ? comment.trim().slice(0, 5000) : ''
+    if (text) st.teacherComment = text
+    else delete st.teacherComment
+  }
+  return { state: st }
+}
+
+const isCorrect = (r) => r === 'correct1' || r === 'correct2'
+
+// Questions sent back for corrections (REQ-5.14): they can be answered again, with 2 attempts as
+// new. The earlier answers go to `history`; topic counts of right answers go down so extra
+// practice questions work as before. `topicOf(questionId)` gives the question's topic number.
+export function sendBackForCorrections(progress, questionIds, topicOf) {
+  const questions = { ...(progress.questions || {}) }
+  const topics = structuredClone(progress.topics || {})
+  const history = structuredClone(progress.history || {})
+  const sent = []
+  for (const id of questionIds) {
+    const st = questions[id]
+    if (!st || !st.result) continue
+    const n = topicOf(id)
+    if (n != null && topics[n]) {
+      let minus = 0
+      if (isCorrect(st.result)) minus++
+      if (st.checkAgain && isCorrect(st.checkAgain.result)) minus++
+      topics[n].correct = Math.max(0, (topics[n].correct || 0) - minus)
+    }
+    history[id] = [...(history[id] || []), st]
+    delete questions[id]
+    sent.push(id)
+  }
+  return { questions, topics, history, sent }
+}

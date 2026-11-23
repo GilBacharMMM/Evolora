@@ -11,8 +11,8 @@ import { initializeApp } from 'firebase-admin/app'
 import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 import { HttpsError, onCall } from 'firebase-functions/v2/https'
 import { setGlobalOptions } from 'firebase-functions/v2'
-import { answerCheckAgain, answerMain, gradeOpen, isFinished, lessonFinished, lessonGrade } from './check.js'
-import { averageGrade, coursePosition, lessonCell, median, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
+import { answerCheckAgain, answerMain, isFinished, lessonFinished, lessonGrade, sendBackForCorrections, teacherScore } from './check.js'
+import { averageGrade, coursePosition, lessonCell, median, notMastered, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
 import { CLASS_COLORS, WAIT_MS, afterWrong, makeCode, normalizeCode, validateCode, waitLeft } from './classcode.js'
 
 // "public" lets the website reach the service; every call still checks who is signed in.
@@ -116,6 +116,8 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
     if (!progress?.finished && lessonFinished(vSnap.data(), nextQuestions, nextTopics, minimum)) {
       update.finished = true
       update.finishedAt = FieldValue.serverTimestamp()
+      // Questions sent back for corrections are all answered again (REQ-5.14).
+      if (progress?.sentBack && progress.sentBack.mode === 'corrections' && !progress.sentBack.done) update.sentBack = { ...progress.sentBack, done: true, doneAt: Date.now() }
     }
     tx.set(progressRef, update, { merge: true })
     return { reply: outcome.reply, state: newState, topicCorrect: t.correct }
@@ -322,8 +324,9 @@ export const removeStudent = onCall(async (request) => {
 // Gives a course, or one or more lessons, to the whole class or to chosen students (REQ-5.7).
 // studentIds: null for the whole class (including students who join later), or a list.
 export const assign = onCall(async (request) => {
-  const { classId, courseId, lessonIds, studentIds } = request.data || {}
+  const { classId, courseId, lessonIds, studentIds, grades = 'usual' } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
+  if (!['usual', 'show', 'hide'].includes(grades)) throw new HttpsError('invalid-argument', 'Grades: usual, show or hide.')
   const validId = (s) => typeof s === 'string' && s.length > 0 && !s.includes('/')
   let ids
   let course = null
@@ -359,6 +362,8 @@ export const assign = onCall(async (request) => {
     lessonIds: ids,
     everyone,
     studentIds: chosen,
+    // Whether students see grades (REQ-5.22, D-59): usual (teaching hidden), show or hide.
+    grades,
     createdBy: request.auth.uid,
     createdAt: FieldValue.serverTimestamp(),
   })
@@ -473,7 +478,7 @@ export const classOverview = onCall(async (request) => {
     const cells = Object.fromEntries(
       mine.lessonIds.map((l) => {
         const pr = p(s.id, l)
-        return [l, { ...lessonCell(pr), started: !!pr, waiting: waitingAnswers(pr).length, tips: Object.values(pr?.tipsOpened || {}).reduce((a, b) => a + b, 0) }]
+        return [l, { ...lessonCell(pr), started: !!pr, sentBack: pr?.sentBack && !pr.sentBack.done ? pr.sentBack.mode : null, waiting: waitingAnswers(pr).length, tips: Object.values(pr?.tipsOpened || {}).reduce((a, b) => a + b, 0) }]
       }),
     )
     const positions = Object.fromEntries(mine.courseIds.map((c) => [c, coursePosition(work.courses.find((k) => k.courseId === c).order, (l) => p(s.id, l))]))
@@ -590,6 +595,7 @@ export const lessonResults = onCall(async (request) => {
           kind: b.kind,
           prompt: b.prompt,
           extra: !!b.extra,
+          level: b.level ?? null,
           choices: b.choices || [],
           unit: b.unit || null,
           topic: topic.number,
@@ -610,10 +616,10 @@ export const lessonResults = onCall(async (request) => {
       const states = Object.fromEntries(
         Object.entries(pr?.questions || {}).map(([id, st]) => [
           id,
-          { attempts: st.attempts || [], result: st.result, score: st.score, graded: !!st.graded, teacherComment: st.teacherComment || null, checkAgain: st.checkAgain ? { result: st.checkAgain.result } : null },
+          { attempts: st.attempts || [], result: st.result, score: st.score, graded: !!st.graded, changedByTeacher: !!st.changedByTeacher, teacherComment: st.teacherComment || null, checkAgain: st.checkAgain ? { result: st.checkAgain.result } : null },
         ]),
       )
-      return { id: s.id, name: s.name, cell: lessonCell(pr), states }
+      return { id: s.id, name: s.name, cell: lessonCell(pr), states, sentBack: pr?.sentBack || null, earlier: Object.fromEntries(Object.entries(pr?.history || {}).map(([q, h]) => [q, h.length])) }
     }),
   }
 })
@@ -627,7 +633,7 @@ export const gradeAnswer = onCall(async (request) => {
     const snap = await tx.get(ref)
     if (!snap.exists || !(snap.data().classIds || []).includes(classId)) throw new HttpsError('not-found', 'No such answer in this class.')
     const p = snap.data()
-    const outcome = gradeOpen(p.questions?.[questionId], score, comment)
+    const outcome = teacherScore(p.questions?.[questionId], score, comment)
     if (outcome.invalid) throw new HttpsError('invalid-argument', 'invalid-grade')
     outcome.state.gradedBy = request.auth.uid
     outcome.state.gradedAt = Date.now()
@@ -678,4 +684,104 @@ export const setLevel = onCall(async (request) => {
   if (!(await ref.collection('students').doc(studentId).get()).exists) throw new HttpsError('not-found', 'Not in this class.')
   await ref.collection('levels').doc(studentId).set({ level, setBy: request.auth.uid, setAt: FieldValue.serverTimestamp() })
   return { level }
+})
+
+// ---------------------------------------------------------------------------------------------
+// Priority 2: sending back, teacher notes, the full student page (REQ-5.14, 5.25, 5.28, D-59).
+//
+//   sendBack({ classId, lessonId, studentId, mode, questionIds, note })   for review or corrections
+//   readComments({ lessonId })                                          the student has read them
+//   addNote({ classId, studentId, text })                               a private teacher note
+//   studentDetails({ classId, studentId })                              not yet mastered, notes
+
+export const sendBack = onCall(async (request) => {
+  const { classId, lessonId, studentId, mode, questionIds, note } = request.data || {}
+  await requireClassTeacher(request.auth, classId)
+  if (![lessonId, studentId].every(validId) || !['review', 'corrections'].includes(mode)) throw new HttpsError('invalid-argument', 'Missing details.')
+  const ids = mode === 'corrections' ? questionIds : []
+  if (mode === 'corrections' && (!Array.isArray(ids) || !ids.length || !ids.every(validId))) throw new HttpsError('invalid-argument', 'Choose questions.')
+  const ref = db.doc(`progress/${progressId(studentId, lessonId)}`)
+  const text = typeof note === 'string' ? note.trim().slice(0, 5000) : ''
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref)
+    if (!snap.exists || !(snap.data().classIds || []).includes(classId)) throw new HttpsError('not-found', 'No work in this class.')
+    const p = snap.data()
+    const sentBackNow = { mode, questionIds: [], note: text || null, by: request.auth.uid, at: Date.now(), done: false }
+    if (mode === 'review') {
+      if (!p.finished) throw new HttpsError('failed-precondition', 'not-finished')
+      tx.update(ref, { sentBack: sentBackNow, updatedAt: FieldValue.serverTimestamp() })
+      return { sent: [] }
+    }
+    const version = (await tx.get(db.doc(`lessons/${lessonId}/versions/${p.version}`))).data()
+    const topicOf = (id) => version.topics.find((t) => t.blocks.some((b) => b.type === 'question' && b.id === id))?.number ?? null
+    const r = sendBackForCorrections(p, ids, topicOf)
+    if (!r.sent.length) throw new HttpsError('invalid-argument', 'None of these questions were answered.')
+    sentBackNow.questionIds = r.sent
+    tx.update(ref, {
+      questions: r.questions,
+      topics: r.topics,
+      history: r.history,
+      grade: lessonGrade(r.questions),
+      finished: false,
+      sentBack: sentBackNow,
+      updatedAt: FieldValue.serverTimestamp(),
+    })
+    return { sent: r.sent }
+  })
+})
+
+// "I've read the comments" (REQ-5.14, D-59): the lesson sent back for review is gone over.
+export const readComments = onCall(async (request) => {
+  if (!request.auth) throw new HttpsError('unauthenticated', 'Sign in first.')
+  const { lessonId } = request.data || {}
+  if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
+  const ref = db.doc(`progress/${progressId(request.auth.uid, lessonId)}`)
+  const snap = await ref.get()
+  const sb = snap.exists ? snap.data().sentBack : null
+  if (!sb || sb.mode !== 'review' || sb.done) return { ok: true }
+  await ref.update({ 'sentBack.done': true, 'sentBack.doneAt': Date.now(), updatedAt: FieldValue.serverTimestamp() })
+  return { ok: true }
+})
+
+// Private notes about a student, seen only by the class's teachers (REQ-5.28).
+export const addNote = onCall(async (request) => {
+  const { classId, studentId, text } = request.data || {}
+  const { ref } = await requireClassTeacher(request.auth, classId)
+  const body = typeof text === 'string' ? text.trim().slice(0, 5000) : ''
+  if (!validId(studentId) || !body) throw new HttpsError('invalid-argument', 'Write a note.')
+  if (!(await ref.collection('students').doc(studentId).get()).exists) throw new HttpsError('not-found', 'Not in this class.')
+  const note = ref.collection('notes').doc()
+  await note.set({ studentId, text: body, by: request.auth.uid, byName: await personName(request.auth), createdAt: FieldValue.serverTimestamp() })
+  return { noteId: note.id }
+})
+
+// For the student page (REQ-5.28): the "not yet mastered" list (REQ-5.25) and the teacher notes.
+export const studentDetails = onCall(async (request) => {
+  const { classId, studentId } = request.data || {}
+  const { ref } = await requireClassTeacher(request.auth, classId)
+  if (!validId(studentId)) throw new HttpsError('invalid-argument', 'Missing student.')
+  const [work, notesSnap, flagSnap] = await Promise.all([
+    classWork(ref),
+    ref.collection('notes').where('studentId', '==', studentId).get(),
+    db.collection('flags').where('classId', '==', classId).where('uid', '==', studentId).get(),
+  ])
+  const lessonIds = work.givenTo(studentId).lessonIds
+  const progress = await progressMap(lessonIds.map((l) => [studentId, l]))
+  const flags = flagSnap.docs.map((d) => ({ id: d.id, ...d.data() }))
+  const list = []
+  for (const l of lessonIds) {
+    const p = progress[progressId(studentId, l)]
+    if (!p?.version) continue
+    const v = (await db.doc(`lessons/${l}/versions/${p.version}`).get()).data()
+    const questions = v.topics.flatMap((t) => t.blocks.filter((b) => b.type === 'question'))
+    const number = Object.fromEntries(questions.map((q, i) => [q.id, i + 1]))
+    for (const q of notMastered(questions, p.questions || {}, flags.filter((f) => f.lessonId === l))) {
+      const flag = flags.find((f) => f.lessonId === l && f.questionId === q.id && f.open !== false)
+      list.push({ lessonId: l, lessonTitle: work.lessons[l]?.title || l, questionId: q.id, number: number[q.id], prompt: q.prompt, flagId: flag ? flag.id : null })
+    }
+  }
+  const notes = notesSnap.docs
+    .map((d) => ({ id: d.id, text: d.data().text, byName: d.data().byName || '', createdAt: toMillis(d.data().createdAt) }))
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0))
+  return { notMastered: list, notes }
 })

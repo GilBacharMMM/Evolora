@@ -14,6 +14,14 @@ export interface WorkLesson {
   title: string
   type: LessonType
   status: Status
+  started?: boolean
+  // The lesson grade, only when the student may see it (REQ-5.22, D-59) and the lesson is finished.
+  grade?: { percent: number | null; pending: boolean } | null
+  showGrades?: boolean
+  // Sent back by the teacher and not yet gone over (REQ-5.14).
+  notes?: 'review' | 'corrections' | null
+  // Locked because the student must first go over their teacher's notes (REQ-5.14).
+  lockedByNotes?: boolean
 }
 
 export interface CourseWork {
@@ -53,6 +61,7 @@ export interface TodoItem extends WorkLesson {
 }
 
 interface Assignment {
+  grades?: 'usual' | 'show' | 'hide'
   kind: 'course' | 'lessons'
   courseId: string | null
   lessonIds: string[]
@@ -68,6 +77,13 @@ export function courseStatuses(order: string[], finished: Set<string>, started: 
     if (i === 0 || finished.has(order[i - 1]) || started.has(id) || openedEarly.has(id)) return 'open'
     return 'locked'
   })
+}
+
+// Whether students see the grade of a lesson (REQ-5.22, D-59); the same rule as functions/dashboard.js.
+export function gradesShown(grades: Assignment['grades'], type: LessonType): boolean {
+  if (grades === 'show') return true
+  if (grades === 'hide') return false
+  return type !== 'teaching'
 }
 
 export function percent(done: number, total: number): number {
@@ -89,14 +105,19 @@ async function classAssignments(classId: string, uid: string, sub: 'assignments'
 
 // Loads everything for the student's classes. Classes that can't be read are left out.
 export async function loadClasswork(uid: string, classIds: string[]): Promise<ClassWork[]> {
-  const progressCache = new Map<string, Promise<{ finished: boolean; started: boolean }>>()
+  type P = { finished: boolean; started: boolean; grade: { percent: number | null; pending: boolean } | null; notes: 'review' | 'corrections' | null }
+  const progressCache = new Map<string, Promise<P>>()
   const progressOf = (lessonId: string) => {
     if (!progressCache.has(lessonId)) {
       progressCache.set(
         lessonId,
         getDoc(doc(db, 'progress', `${uid}__${lessonId}`))
-          .then((s) => ({ finished: s.exists() && s.data().finished === true, started: s.exists() }))
-          .catch(() => ({ finished: false, started: false })),
+          .then((s): P => {
+            const d = s.exists() ? s.data() : null
+            const sb = d?.sentBack
+            return { finished: d?.finished === true, started: !!d, grade: d?.grade ? { percent: d.grade.percent ?? null, pending: !!d.grade.pending } : null, notes: sb && !sb.done ? sb.mode : null }
+          })
+          .catch((): P => ({ finished: false, started: false, grade: null, notes: null })),
       )
     }
     return progressCache.get(lessonId)!
@@ -127,14 +148,12 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
             const finished = new Set(order.filter((_, i) => progress[i].finished))
             const started = new Set(order.filter((_, i) => progress[i].started))
             const statuses = courseStatuses(order, finished, started, openedEarly)
-            const statusOf = new Map(order.map((id, i) => [id, statuses[i]]))
-            const items = course.items.map((it) => ({
-              lessonId: it.lessonId,
-              title: it.title,
-              type: it.type,
-              status: statusOf.get(it.lessonId)!,
-              practice: it.practice.map((p) => ({ lessonId: p.lessonId, title: p.title, type: p.type, status: statusOf.get(p.lessonId)! })),
-            }))
+            const info = (e: { lessonId: string; title: string; type: LessonType }): WorkLesson => {
+              const i = order.indexOf(e.lessonId)
+              const show = gradesShown(a.grades, e.type)
+              return { lessonId: e.lessonId, title: e.title, type: e.type, status: statuses[i], started: progress[i].started, showGrades: show, grade: show && progress[i].finished ? progress[i].grade : null, notes: progress[i].notes }
+            }
+            const items = course.items.map((it) => ({ ...info(it), practice: it.practice.map(info) }))
             const done = finished.size
             courses.push({
               courseId: course.id,
@@ -155,7 +174,8 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
               try {
                 const [l, p] = await Promise.all([getDoc(doc(db, 'lessons', lessonId)), progressOf(lessonId)])
                 if (!l.exists()) continue
-                singles.push({ lessonId, title: l.data().title, type: l.data().type, language: l.data().language, status: p.finished ? 'done' : 'open', givenAt })
+                const show = gradesShown(a.grades, l.data().type)
+                singles.push({ lessonId, title: l.data().title, type: l.data().type, language: l.data().language, status: p.finished ? 'done' : 'open', started: p.started, showGrades: show, grade: show && p.finished ? p.grade : null, notes: p.notes, givenAt })
               } catch {
                 // A lesson that can't be read is left out.
               }
@@ -168,11 +188,30 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
       }
     }),
   )
-  return classes.filter((c): c is ClassWork => c !== null)
+  const list = classes.filter((c): c is ClassWork => c !== null)
+  lockForNotes(list)
+  return list
 }
 
-// The "To do" list (REQ-6.1): every lesson the student can open now and hasn't finished,
-// in all their classes, oldest assignment first (no due dates yet, D-57).
+function allLessons(classes: ClassWork[]): WorkLesson[] {
+  return classes.flatMap((c) => [...c.courses.flatMap((k) => k.items.flatMap((it) => [it, ...it.practice])), ...c.singles])
+}
+
+// While a lesson sent back by the teacher waits to be gone over, the student can't start a new
+// lesson (REQ-5.14): open lessons not started yet are locked. Lessons already started stay open.
+export function lockForNotes(classes: ClassWork[]) {
+  const lessons = allLessons(classes)
+  if (!lessons.some((l) => l.notes)) return
+  for (const l of lessons) {
+    if (l.status === 'open' && !l.started && !l.notes) {
+      l.status = 'locked'
+      l.lockedByNotes = true
+    }
+  }
+}
+
+// The "To do" list (REQ-6.1): lessons sent back by the teacher first (pending notes, highlighted),
+// then every lesson the student can open now and hasn't finished, oldest assignment first.
 export function todoList(classes: ClassWork[]): TodoItem[] {
   const out: TodoItem[] = []
   for (const c of classes) {
@@ -180,32 +219,28 @@ export function todoList(classes: ClassWork[]): TodoItem[] {
     for (const course of c.courses) {
       for (const it of course.items) {
         for (const l of [it, ...it.practice]) {
-          if (l.status === 'open') out.push({ ...base, lessonId: l.lessonId, title: l.title, type: l.type, status: l.status, courseTitle: course.title, language: course.language, givenAt: course.givenAt })
+          if (l.status !== 'open' && !l.notes) continue
+          const { lessonId, title, type, status, started, grade, showGrades, notes } = l
+          out.push({ ...base, lessonId, title, type, status, started, grade, showGrades, notes, courseTitle: course.title, language: course.language, givenAt: course.givenAt })
         }
       }
     }
-    for (const s of c.singles) if (s.status === 'open') out.push({ ...base, ...s, courseTitle: null })
+    for (const s of c.singles) if (s.status === 'open' || s.notes) out.push({ ...base, ...s, courseTitle: null })
   }
-  return out.sort((a, b) => a.givenAt - b.givenAt)
+  return out.sort((a, b) => (a.notes ? 0 : 1) - (b.notes ? 0 : 1) || a.givenAt - b.givenAt)
 }
 
-// May the student open this lesson? 'open' if it is open or done anywhere they were given it,
-// 'locked' if it is only in courses where it is still locked, 'notGiven' otherwise.
-export function lessonAccess(classes: ClassWork[], lessonId: string): 'open' | 'locked' | 'notGiven' {
-  let found: 'locked' | 'notGiven' = 'notGiven'
-  for (const c of classes) {
-    for (const s of c.singles) if (s.lessonId === lessonId) return 'open'
-    for (const course of c.courses) {
-      for (const it of course.items) {
-        for (const l of [it, ...it.practice]) {
-          if (l.lessonId !== lessonId) continue
-          if (l.status !== 'locked') return 'open'
-          found = 'locked'
-        }
-      }
-    }
-  }
-  return found
+// May the student open this lesson, and see its grades? 'open' if it is open or done anywhere
+// they were given it, 'locked' if it is only where it is still locked, 'notGiven' otherwise.
+export function lessonAccess(
+  classes: ClassWork[],
+  lessonId: string,
+): { access: 'open' | 'locked' | 'notGiven'; showGrades: boolean; lockedByNotes: boolean } {
+  const mine = allLessons(classes).filter((l) => l.lessonId === lessonId)
+  if (!mine.length) return { access: 'notGiven', showGrades: false, lockedByNotes: false }
+  const showGrades = mine.some((l) => l.showGrades)
+  if (mine.some((l) => l.status !== 'locked')) return { access: 'open', showGrades, lockedByNotes: false }
+  return { access: 'locked', showGrades, lockedByNotes: mine.every((l) => l.lockedByNotes) }
 }
 
 // The student's classes and work, loaded when a page opens. null while loading.

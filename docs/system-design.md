@@ -103,6 +103,13 @@ The teacher's screens read a class's work through the checking service, which fi
 - **Student page:** status, level, average, help tips opened, red flags to clear, and cleared flags with the date and note (REQ-5.19), and grades per lesson. The full student page is REQ-5.28.
 - **Opening early (REQ-5.20):** on Class settings, the teacher opens any lesson of a course given to the class, for the whole class or chosen students. It is open for them whatever comes before it (D-55).
 
+### 2.8 Grades for students, sending back, and the student page (priority 2, D-59)
+- **Students see grades (REQ-5.22):** when giving lessons, the teacher chooses **As usual** (teaching lessons hidden; practice lessons and exams shown), **Show all grades** or **Hide all grades**. When shown, the student sees the lesson grade at the end of the lesson, next to the lesson on the course and class pages, and the marks under each question. When hidden, the student still sees right and wrong, hints, solutions and comments. The teacher always sees every grade.
+- **Changing grades (REQ-5.15):** on a lesson's results page, the teacher clicks any answer and sets its score (full, half, zero or a percentage). The lesson grade is recalculated, and the student sees "changed by your teacher" next to the marks.
+- **Sending back (REQ-5.14):** on the results page ("Send back"), or for one answer on the grading page. **For corrections**, the chosen questions can be answered again, with 2 attempts as new, and are checked again (open answers go back to the teacher to grade); the earlier answers are kept for the teacher. **For review**, the lesson opens at the top with the teacher's note and an **"I've read the comments"** button. Until the student has gone over it, lessons they haven't started are locked ("First go over the lesson your teacher sent back"), and the lesson is highlighted at the top of their To do list.
+- **Going back to finished lessons (REQ-6.13):** a finished lesson opens with the material and the student's own answers, which can't be changed.
+- **Student page (REQ-5.28):** status, level with − and +, average, help tips opened, the **Not yet mastered** list (REQ-5.25: level 1 questions that ended wrong, including the check-again question, until their red flag is cleared), open and cleared red flags, progress and grades in each course and single lesson, and private **teacher notes** that only the class's teachers can read. Messages come with REQ-5.16, level suggestions with REQ-5.18.
+
 ---
 
 ## 3. Where the data lives

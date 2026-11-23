@@ -115,7 +115,18 @@
     "openEarlyExplain": "A lesson from a course, opened now for the students you choose, whatever comes before it. Good for students who are ahead.",
     "wholeClassNow": "The whole class",
     "openButton": "Open it",
-    "openedDone": "Opened. The students see it as open."
+    "openedDone": "Opened. The students see it as open.",
+    "gradesTitle": "Students see grades",
+    "grades": {
+      "usual": "As usual (teaching lessons: hidden; practice lessons and exams: shown)",
+      "show": "Show all grades",
+      "hide": "Hide all grades"
+    },
+    "gradesShort": {
+      "usual": "Grades as usual",
+      "show": "Grades shown",
+      "hide": "Grades hidden"
+    }
   },
   "lessonType": {
     "teaching": "Teaching",
@@ -147,7 +158,15 @@
     "videoBlocked": "This video can't be played inside the lesson.",
     "openOnYouTubeButton": "Open the video on YouTube",
     "locked": "This lesson is still locked. It opens when you finish the lesson before it.",
-    "teacherComment": "Your teacher's comment"
+    "teacherComment": "Your teacher's comment",
+    "marks": "Marks: {{percent}}%",
+    "changedByTeacher": "changed by your teacher",
+    "yourGrade": "Your grade: {{percent}}%",
+    "gradePending": "Your grade will appear after your teacher checks your open answers.",
+    "sentBackReview": "Your teacher sent this lesson back to you. Read the comments under your answers.",
+    "sentBackCorrections": "Your teacher sent back questions to answer again: {{n}}.",
+    "readComments": "I've read the comments",
+    "lockedByNotes": "First go over the lesson your teacher sent back to you. Then you can start new lessons."
   },
   "test": {
     "switchUser": "Switch user",
@@ -186,7 +205,12 @@
     "open": "Open",
     "done": "Done",
     "locked": "Locked",
-    "lockedExplain": "Opens when you finish the lesson before it."
+    "lockedExplain": "Opens when you finish the lesson before it.",
+    "lockedByNotes": "First go over the lesson your teacher sent back.",
+    "notesReview": "From your teacher: read the comments",
+    "notesCorrections": "From your teacher: answer again",
+    "gradePending": "Grade: waiting for the teacher",
+    "grade": "Grade: {{percent}}%"
   },
   "cls": {
     "activeCourses": "Active courses",
@@ -271,6 +295,33 @@
     "flagsCount": "Open red flags: {{n}}",
     "toGradeCount": "Answers to grade: {{n}}",
     "todoEmpty": "Nothing waiting for you right now.",
-    "redFlag": "Red flag"
+    "redFlag": "Red flag",
+    "sentBack": {
+      "review": "Sent back for review",
+      "corrections": "Sent back for corrections"
+    },
+    "notMastered": "Not yet mastered",
+    "notMasteredExplain": "Level 1 questions the student got wrong (also on the check-again question). A question leaves the list when you clear its red flag.",
+    "allMastered": "Nothing here: no level 1 questions left wrong.",
+    "progressAndGrades": "Progress and grades",
+    "singleLessons": "Single lessons",
+    "notesTitle": "Teacher notes",
+    "notesExplain": "Private notes about the student. Only the teachers of this class see them, never the student.",
+    "addNote": "Add the note",
+    "resultsExplain": "Click an answer to change its score. \"Send back\" returns the lesson, or chosen questions, to the student.",
+    "sendBack": "Send back",
+    "changeScore": "Change the score",
+    "corrected": "(answered again)",
+    "sendBackTitle": "Send back to {{name}}",
+    "sendBackHow": "How",
+    "forCorrections": "For corrections: the student answers the chosen questions again, and they are checked again",
+    "forReview": "For review: the student reads your comments and presses \"I've read the comments\"",
+    "chooseQuestions": "Choose at least one question.",
+    "reviewNeedsFinished": "Only a finished lesson can be sent back for review.",
+    "noteForStudent": "Note for the student (optional)",
+    "sendBackExplain": "Until the student goes over it, they can't start new lessons. Their earlier answers are kept.",
+    "sendBackNow": "Send back",
+    "sendBackThis": "Send back for corrections",
+    "sendBackThisConfirm": "Send this question back to {{name}} to answer again? Your comment goes with it as a note."
   }
 }

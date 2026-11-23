@@ -662,3 +662,15 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 7. **Opening early** works on lessons in courses given to the class, for the whole class or chosen students, and can't be undone yet.
 **Reason:** Keeps part 4 within the pilot's must-haves; each point is easy to change after Gil tries it.
 **Affects:** REQ-5.10, REQ-5.11, REQ-5.12, REQ-5.13, REQ-5.19, REQ-5.20, REQ-5.27
+
+### D-59: How hiding grades, changing grades and sending back work
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** Building REQ-5.22, 5.15 and 5.14 (priority 2) needed four choices.
+**Options considered and decisions:**
+1. **Hiding grades when giving a course** (REQ-5.22): one setting with three choices: **As usual** (teaching lessons hidden; practice lessons and exams shown; the default), **Show all grades**, **Hide all grades**. Other option: one yes/no for the whole assignment.
+2. **Where students see grades** when shown: the lesson grade at the end of the lesson, next to the lesson on the course and class pages, and the marks on each question (full, half, 0). Other option: only at the end of the lesson.
+3. **Teacher changes grades** (REQ-5.15): the teacher can change the score of any single question, including automatically checked ones, and the lesson grade is recalculated; the student sees "changed by the teacher". Other option: typing a new grade for the whole lesson.
+4. **Sending back for review** (REQ-5.14): the lesson shows the teacher's comments at the top with an **"I've read the comments"** button; pressing it unlocks new lessons. Other option: opening the lesson is enough.
+
+**Also (Claude, following the requirements):** "new lessons are locked" means lessons the student hasn't started yet; lessons already started stay open. Questions sent back for corrections are answered again with 2 attempts, as new; the earlier answer is kept for the teacher. A level 1 question is "not yet mastered" (REQ-5.25) when it ended wrong and its check-again question wasn't answered correctly; it leaves the list when its red flag is cleared. When grades are hidden, the website doesn't show them; the student's own saved work still holds them, which a very determined student could look up (acceptable for the pilot).
+**Affects:** REQ-5.22, REQ-5.15, REQ-5.14, REQ-5.25, REQ-5.28, REQ-6.13

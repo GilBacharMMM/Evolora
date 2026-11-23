@@ -73,6 +73,8 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Waiting lessons** | Single lessons a teacher gave outside a course, which the student hasn't finished yet. A section of the student's class page (REQ-6.11). In Hebrew: שיעורים ממתינים. | proposed |
 | **Class dashboard** | The teacher's table of a class, a row per student, with status, level, where they are in each course, average grade, open red flags and when they last worked (REQ-5.10). In Hebrew: לוח הכיתה. | proposed |
 | **Progress map** | On the class dashboard, a square per lesson of a course for each student: filled when finished, striped for the lesson they're working on (REQ-5.24). In Hebrew: מפת התקדמות. | proposed |
+| **Not yet mastered list** | On the student page, the level 1 questions a student got wrong (also on the check-again question), until the teacher clears their red flag (REQ-5.25). In Hebrew: עדיין לא נשלט. | proposed |
+| **Changed by the teacher** | A score the teacher set by hand for an automatically checked question (REQ-5.15). The student sees it next to the marks. In Hebrew: שונה על ידי המורה. | proposed |
 | **Opening early** | A teacher opening a lesson of a course for the whole class or chosen students before the lessons before it are finished (REQ-5.20). In Hebrew: פתיחה מוקדמת. | proposed |
 | **Invite** | An email from a teacher that lets a student join a class. | proposed |
 | **Enroll** | To join a class (with a class code or invite) or a public course. | proposed |

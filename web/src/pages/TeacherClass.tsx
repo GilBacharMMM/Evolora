@@ -22,6 +22,7 @@ interface AssignmentRow {
   lessonIds: string[]
   everyone: boolean
   studentIds: string[]
+  grades?: 'usual' | 'show' | 'hide'
   createdAt: number
 }
 
@@ -161,7 +162,7 @@ export function TeacherClass({ classId }: { classId: string }) {
                   {a.kind === 'course' ? course?.title || a.courseId : a.lessonIds.map(titleOfLesson).join(' · ')}
                 </span>
                 <span className="muted given-to">
-                  {a.everyone ? t('teacher.toEveryone') : t('teacher.toSome', { count: a.studentIds.length, names: a.studentIds.map(nameOf).join(', ') })}
+                  {t(`teacher.gradesShort.${a.grades || 'usual'}`)} · {a.everyone ? t('teacher.toEveryone') : t('teacher.toSome', { count: a.studentIds.length, names: a.studentIds.map(nameOf).join(', ') })}
                 </span>
               </li>
             )
@@ -326,6 +327,7 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
   const [lessonIds, setLessonIds] = useState<string[]>([])
   const [to, setTo] = useState<'everyone' | 'some'>('everyone')
   const [studentIds, setStudentIds] = useState<string[]>([])
+  const [grades, setGrades] = useState<'usual' | 'show' | 'hide'>('usual')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState<{ good: boolean; text: string } | null>(null)
 
@@ -342,6 +344,7 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
         classId,
         ...(what === 'course' ? { courseId } : { lessonIds }),
         studentIds: to === 'everyone' ? null : studentIds,
+        grades,
       })
       setMessage({ good: true, text: t('teacher.givenDone') })
       setCourseId('')
@@ -420,6 +423,15 @@ function GiveForm({ classId, students, lessons, courses, onGiven }: { classId: s
               ))}
             </div>
           )}
+        </fieldset>
+        <fieldset>
+          <legend>{t('teacher.gradesTitle')}</legend>
+          {(['usual', 'show', 'hide'] as const).map((g) => (
+            <label key={g} className="radio-line">
+              <input type="radio" name="grades" checked={grades === g} onChange={() => setGrades(g)} />
+              {t(`teacher.grades.${g}`)}
+            </label>
+          ))}
         </fieldset>
         <button type="submit" className="button primary" disabled={busy}>
           {busy ? t('teacher.giving') : t('teacher.giveButton')}

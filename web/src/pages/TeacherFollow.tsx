@@ -11,11 +11,12 @@ import type { LessonType } from '../lesson/types'
 
 // The teacher's screens for following a class (stage 1, part 4, system-design 2.7):
 // class dashboard with the progress map (REQ-5.10, 5.24), grade table with CSV (REQ-5.11),
-// student page with red flags (REQ-5.19), one lesson's results, and the grading page (REQ-5.12, 5.13).
+// student page (REQ-5.28, 5.25, 5.19), one lesson's results with changing scores and sending back
+// (REQ-5.15, 5.14), and the grading page (REQ-5.12, 5.13).
 
 const call = <T,>(name: string, data: unknown) => httpsCallable<unknown, T>(functions, name)(data).then((r) => r.data)
 
-export type Cell = { kind: 'notDone' | 'pending' | 'grade' | 'doneNoGrade'; percent: number | null; started: boolean; waiting: number; tips: number }
+export type Cell = { kind: 'notDone' | 'pending' | 'grade' | 'doneNoGrade'; percent: number | null; started: boolean; waiting: number; tips: number; sentBack?: 'review' | 'corrections' | null }
 
 interface CourseInfo {
   courseId: string
@@ -468,11 +469,32 @@ export function GradeTable({ classId }: { classId: string }) {
   )
 }
 
-// The student page (simple for now; the full page is REQ-5.28, priority 2): status, level, red
-// flags to clear, cleared flags with their date and note (REQ-5.19), and grades per lesson.
+interface Details {
+  notMastered: { lessonId: string; lessonTitle: string; questionId: string; number: number; prompt: string; flagId: string | null }[]
+  notes: { id: string; text: string; byName: string; createdAt: number | null }[]
+}
+
+// The student page (REQ-5.28): status, level, average, help tips, progress in each course, grades,
+// the "not yet mastered" list (REQ-5.25) and red flags to clear (REQ-5.19), cleared flags with their
+// date and note, and private teacher notes. Messages come with REQ-5.16.
 export function StudentPage({ classId, studentId }: { classId: string; studentId: string }) {
   const { t, i18n } = useTranslation()
   const { data, failed, reload } = useOverview(classId)
+  const [details, setDetails] = useState<Details | null>(null)
+  const loadDetails = useCallback(async () => {
+    try {
+      setDetails(await call<Details>('studentDetails', { classId, studentId }))
+    } catch {
+      setDetails({ notMastered: [], notes: [] })
+    }
+  }, [classId, studentId])
+  useEffect(() => {
+    void loadDetails()
+  }, [loadDetails])
+  const reloadAll = async () => {
+    await Promise.all([reload(), loadDetails()])
+  }
+
   if (failed) return <NotYours />
   if (!data) {
     return (
@@ -494,6 +516,19 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
   }
   const tips = Object.values(s.cells).reduce((n, c) => n + c.tips, 0)
   const cleared = flags.filter((f) => !f.open)
+  const inCourses = new Set(data.courses.flatMap((c) => c.order))
+  const singles = s.lessonIds.filter((l) => !inCourses.has(l))
+  const LessonLine = ({ l }: { l: string }) => (
+    <li>
+      <TypeChip type={data.lessons[l].type} />
+      <button type="button" className="link-button given-title" dir="auto" onClick={() => navigate(`/teacher/class/${classId}/lesson/${l}`)}>
+        {data.lessons[l].title}
+      </button>
+      <span className="given-to">
+        {s.cells[l]?.sentBack && <span className="notes-chip">{t(`follow.sentBack.${s.cells[l].sentBack}`)}</span>} <GradeCell cell={s.cells[l]} />
+      </span>
+    </li>
+  )
   return (
     <main className="page narrow">
       <BackButton to={`/teacher/class/${classId}`} />
@@ -515,7 +550,63 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
           <span>{t('follow.tipsOpened', { n: tips })}</span>
         </div>
       </section>
-      <OpenFlags classId={classId} flags={flags.filter((f) => f.open)} onCleared={reload} showStudent={false} />
+
+      <section className="card list-card-padded" aria-labelledby="mastered-title">
+        <h2 id="mastered-title" className="section-title">
+          {t('follow.notMastered')}
+        </h2>
+        <p className="muted small-note">{t('follow.notMasteredExplain')}</p>
+        {details === null && <Loading />}
+        {details?.notMastered.length === 0 && <p className="muted">{t('follow.allMastered')}</p>}
+        <ul className="flag-list">
+          {details?.notMastered.map((q) => (
+            <li key={`${q.lessonId}-${q.questionId}`}>
+              {q.flagId && <span className="badge badge-red">{t('follow.status.red')}</span>}
+              <span className="flag-text">
+                <button type="button" className="link-button" dir="auto" onClick={() => navigate(`/teacher/class/${classId}/lesson/${q.lessonId}`)}>
+                  {q.lessonTitle}
+                </button>
+                <span>
+                  {t('q.questionNumber', { number: q.number })}: <bdi className="muted">{q.prompt.replace(/[*_#$`]/g, '').slice(0, 140)}</bdi>
+                </span>
+              </span>
+              {q.flagId && <ClearFlag flagId={q.flagId} onCleared={reloadAll} />}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <OpenFlags classId={classId} flags={flags.filter((f) => f.open)} onCleared={reloadAll} showStudent={false} />
+
+      <section className="card list-card-padded">
+        <h2 className="section-title">{t('follow.progressAndGrades')}</h2>
+        {data.courses
+          .filter((c) => s.courseIds.includes(c.courseId))
+          .map((c) => (
+            <div key={c.courseId} className="student-course">
+              <h3 dir="auto">{c.title}</h3>
+              <ProgressMap course={c} student={s} lessons={data.lessons} />
+              <ul className="given-list">
+                {c.order.filter((l) => s.lessonIds.includes(l)).map((l) => (
+                  <LessonLine key={l} l={l} />
+                ))}
+              </ul>
+            </div>
+          ))}
+        {singles.length > 0 && (
+          <div className="student-course">
+            <h3>{t('follow.singleLessons')}</h3>
+            <ul className="given-list">
+              {singles.map((l) => (
+                <LessonLine key={l} l={l} />
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
+
+      <TeacherNotes classId={classId} studentId={studentId} notes={details?.notes || []} onAdded={loadDetails} />
+
       <section className="card list-card-padded">
         <h2 className="section-title">{t('follow.history')}</h2>
         {cleared.length === 0 && <p className="muted">{t('follow.noHistory')}</p>}
@@ -536,23 +627,61 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
           ))}
         </ul>
       </section>
-      <section className="card list-card-padded">
-        <h2 className="section-title">{t('follow.grades')}</h2>
-        <ul className="given-list">
-          {s.lessonIds.map((l) => (
-            <li key={l}>
-              <TypeChip type={data.lessons[l].type} />
-              <button type="button" className="link-button given-title" dir="auto" onClick={() => navigate(`/teacher/class/${classId}/lesson/${l}`)}>
-                {data.lessons[l].title}
-              </button>
-              <span className="given-to">
-                <GradeCell cell={s.cells[l]} />
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
     </main>
+  )
+}
+
+// Private teacher notes about a student: only the class's teachers see them (REQ-5.28).
+function TeacherNotes({ classId, studentId, notes, onAdded }: { classId: string; studentId: string; notes: Details['notes']; onAdded: () => Promise<void> }) {
+  const { t, i18n } = useTranslation()
+  const [text, setText] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [failed, setFailed] = useState(false)
+  return (
+    <section className="card list-card-padded" aria-labelledby="notes-title">
+      <h2 id="notes-title" className="section-title">
+        {t('follow.notesTitle')}
+      </h2>
+      <p className="muted small-note">{t('follow.notesExplain')}</p>
+      <form
+        className="comment-box"
+        onSubmit={async (e) => {
+          e.preventDefault()
+          if (!text.trim()) return
+          setBusy(true)
+          setFailed(false)
+          try {
+            await call('addNote', { classId, studentId, text })
+            setText('')
+            await onAdded()
+          } catch {
+            setFailed(true)
+          } finally {
+            setBusy(false)
+          }
+        }}
+      >
+        <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} dir="auto" maxLength={5000} aria-label={t('follow.notesTitle')} />
+        <button type="submit" className="button primary" disabled={busy || !text.trim()}>
+          {t('follow.addNote')}
+        </button>
+        {failed && <p className="notice">{t('teacher.actionFailed')}</p>}
+      </form>
+      <ul className="flag-list">
+        {notes.map((n) => (
+          <li key={n.id}>
+            <span className="flag-text">
+              <span dir="auto" className="note-text">
+                {n.text}
+              </span>
+              <span className="muted small-note">
+                <bdi>{n.byName}</bdi> · {when(n.createdAt, i18n.language)}
+              </span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
   )
 }
 
@@ -561,6 +690,7 @@ interface QuestionInfo {
   kind: 'choice' | 'number' | 'open' | 'audio'
   prompt: string
   extra: boolean
+  level: number | null
   topic: number
   topicName: string | null
   gradingInstructions: string | null
@@ -573,6 +703,7 @@ interface AnswerState {
   result: string | null
   score: number | null
   graded: boolean
+  changedByTeacher: boolean
   teacherComment: string | null
   checkAgain: { result: string | null } | null
 }
@@ -583,7 +714,14 @@ interface Results {
   language: string
   type: LessonType
   questions: QuestionInfo[]
-  students: { id: string; name: string; cell: Cell; states: Record<string, AnswerState> }[]
+  students: {
+    id: string
+    name: string
+    cell: Cell
+    states: Record<string, AnswerState>
+    sentBack: { mode: 'review' | 'corrections'; questionIds: string[]; done: boolean } | null
+    earlier: Record<string, number>
+  }[]
 }
 
 function useResults(classId: string, lessonId: string) {
@@ -605,6 +743,7 @@ function useResults(classId: string, lessonId: string) {
 function AnswerMark({ st }: { st: AnswerState | undefined }) {
   const { t } = useTranslation()
   if (!st || !st.result) return <span className="muted">—</span>
+  if (st.changedByTeacher) return <span className="grade-chip graded">{Math.round((st.score ?? 0) * 100)}% ✎</span>
   if (st.result === 'pending') {
     return st.graded ? <span className="grade-chip graded">{Math.round((st.score ?? 0) * 100)}%</span> : <span className="grade-chip pending">{t('follow.pending')}</span>
   }
@@ -613,10 +752,40 @@ function AnswerMark({ st }: { st: AnswerState | undefined }) {
   return <span className="answer-mark wrong">✗ {t('follow.wrong')}</span>
 }
 
-// One lesson's results: each student's result per question (REQ-5.11), and "Grade open answers".
+// Full, half, zero or any percentage, saved for one answer (REQ-5.12, 5.15).
+function ScoreButtons({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const { t } = useTranslation()
+  return (
+    <div className="score-line">
+      {[
+        ['full', 100],
+        ['half', 50],
+        ['zero', 0],
+      ].map(([k, v]) => (
+        <button key={k} type="button" className={`button secondary small${value === String(v) ? ' chosen' : ''}`} onClick={() => onChange(String(v))}>
+          {t(`follow.${k}`)}
+        </button>
+      ))}
+      <label className="score-input">
+        <input value={value} onChange={(e) => onChange(e.target.value)} inputMode="decimal" dir="ltr" aria-label={t('follow.scoreLabel')} />
+        <span>%</span>
+      </label>
+    </div>
+  )
+}
+
+function readScore(v: string): number | null {
+  const n = Number(v.replace(',', '.'))
+  return v.trim() !== '' && Number.isFinite(n) && n >= 0 && n <= 100 ? n / 100 : null
+}
+
+// One lesson's results: each student's result per question (REQ-5.11), "Grade open answers",
+// changing any score (REQ-5.15) and sending work back (REQ-5.14).
 export function LessonResultsPage({ classId, lessonId }: { classId: string; lessonId: string }) {
   const { t } = useTranslation()
-  const { data, failed } = useResults(classId, lessonId)
+  const { data, failed, reload } = useResults(classId, lessonId)
+  const [editing, setEditing] = useState<{ sid: string; qid: string } | null>(null)
+  const [sending, setSending] = useState<string | null>(null)
   if (failed) return <NotYours />
   if (!data) {
     return (
@@ -628,6 +797,9 @@ export function LessonResultsPage({ classId, lessonId }: { classId: string; less
   }
   const hasOpen = data.questions.some((q) => q.kind === 'open')
   const waiting = data.students.reduce((n, s) => n + Object.values(s.states).filter((st) => st.result === 'pending' && !st.graded).length, 0)
+  const number = (qid: string) => data.questions.findIndex((x) => x.id === qid) + 1
+  const editStudent = editing && data.students.find((s) => s.id === editing.sid)
+  const sendStudent = sending && data.students.find((s) => s.id === sending)
   return (
     <main className="page">
       <BackButton to={`/teacher/class/${classId}/grades`} />
@@ -641,12 +813,39 @@ export function LessonResultsPage({ classId, lessonId }: { classId: string; less
           </button>
         )}
       </div>
+      <p className="muted small-note">{t('follow.resultsExplain')}</p>
+      {editStudent && editing && (
+        <ScoreEditor
+          classId={classId}
+          lessonId={lessonId}
+          student={editStudent}
+          questionId={editing.qid}
+          number={number(editing.qid)}
+          onDone={async () => {
+            setEditing(null)
+            await reload()
+          }}
+        />
+      )}
+      {sendStudent && (
+        <SendBackForm
+          classId={classId}
+          lessonId={lessonId}
+          student={sendStudent}
+          questions={data.questions}
+          onDone={async () => {
+            setSending(null)
+            await reload()
+          }}
+        />
+      )}
       <section className="card list-card">
         <table className="data-table grade-table">
           <thead>
             <tr>
               <th>{t('follow.student')}</th>
               <th>{t('follow.lessonGrade')}</th>
+              <th>{t('follow.sendBack')}</th>
               {data.questions.map((q, i) => (
                 <th key={q.id} title={q.prompt}>
                   {t('q.questionNumber', { number: i + 1 })}
@@ -663,9 +862,25 @@ export function LessonResultsPage({ classId, lessonId }: { classId: string; less
                 <td>
                   <GradeCell cell={{ ...s.cell, started: true, waiting: 0, tips: 0 }} />
                 </td>
+                <td>
+                  {s.sentBack && !s.sentBack.done ? (
+                    <span className="notes-chip">{t(`follow.sentBack.${s.sentBack.mode}`)}</span>
+                  ) : (
+                    <button type="button" className="link-button" disabled={!Object.keys(s.states).length} onClick={() => setSending(s.id)}>
+                      {t('follow.sendBack')}
+                    </button>
+                  )}
+                </td>
                 {data.questions.map((q) => (
                   <td key={q.id}>
-                    <AnswerMark st={s.states[q.id]} />
+                    {s.states[q.id]?.result ? (
+                      <button type="button" className="cell-button" title={t('follow.changeScore')} onClick={() => setEditing({ sid: s.id, qid: q.id })}>
+                        <AnswerMark st={s.states[q.id]} />
+                      </button>
+                    ) : (
+                      <AnswerMark st={s.states[q.id]} />
+                    )}
+                    {s.earlier[q.id] ? <span className="muted small-note"> {t('follow.corrected')}</span> : null}
                   </td>
                 ))}
               </tr>
@@ -674,6 +889,119 @@ export function LessonResultsPage({ classId, lessonId }: { classId: string; less
         </table>
       </section>
     </main>
+  )
+}
+
+// Changing the score of any answer (REQ-5.15, D-59); the lesson grade is recalculated.
+function ScoreEditor({ classId, lessonId, student, questionId, number, onDone }: { classId: string; lessonId: string; student: Results['students'][number]; questionId: string; number: number; onDone: () => Promise<void> }) {
+  const { t } = useTranslation()
+  const st = student.states[questionId]
+  const [value, setValue] = useState(st?.score != null ? String(Math.round(st.score * 100)) : '')
+  const [busy, setBusy] = useState(false)
+  const [problem, setProblem] = useState<string | null>(null)
+  return (
+    <section className="card confirm-box score-editor" role="dialog" aria-label={t('follow.changeScore')}>
+      <p>
+        <strong dir="auto">{student.name}</strong> · {t('q.questionNumber', { number })} · <AnswerMark st={st} />
+      </p>
+      <ScoreButtons value={value} onChange={setValue} />
+      <div className="button-row">
+        <button
+          type="button"
+          className="button primary"
+          disabled={busy}
+          onClick={async () => {
+            const score = readScore(value)
+            if (score === null) return setProblem(t('follow.scoreRange'))
+            setBusy(true)
+            try {
+              await call('gradeAnswer', { classId, lessonId, studentId: student.id, questionId, score })
+              await onDone()
+            } catch {
+              setProblem(t('teacher.actionFailed'))
+              setBusy(false)
+            }
+          }}
+        >
+          {t('follow.saveChange')}
+        </button>
+        <button type="button" className="button secondary" onClick={() => void onDone()}>
+          {t('teacher.cancel')}
+        </button>
+      </div>
+      {problem && <p className="notice">{problem}</p>}
+    </section>
+  )
+}
+
+// Sending a lesson back for review, or chosen questions for corrections (REQ-5.14).
+function SendBackForm({ classId, lessonId, student, questions, onDone }: { classId: string; lessonId: string; student: Results['students'][number]; questions: QuestionInfo[]; onDone: () => Promise<void> }) {
+  const { t } = useTranslation()
+  const [mode, setMode] = useState<'review' | 'corrections'>('corrections')
+  const [chosen, setChosen] = useState<string[]>([])
+  const [note, setNote] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [problem, setProblem] = useState<string | null>(null)
+  const answered = questions.filter((q) => student.states[q.id]?.result)
+  const finished = student.cell.kind !== 'notDone'
+  return (
+    <section className="card list-card-padded give-form" aria-labelledby="sendback-title">
+      <h2 id="sendback-title" className="section-title">
+        {t('follow.sendBackTitle', { name: student.name })}
+      </h2>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault()
+          setProblem(null)
+          if (mode === 'corrections' && !chosen.length) return setProblem(t('follow.chooseQuestions'))
+          if (mode === 'review' && !finished) return setProblem(t('follow.reviewNeedsFinished'))
+          setBusy(true)
+          try {
+            await call('sendBack', { classId, lessonId, studentId: student.id, mode, questionIds: chosen, note })
+            await onDone()
+          } catch {
+            setProblem(t('teacher.actionFailed'))
+            setBusy(false)
+          }
+        }}
+      >
+        <fieldset>
+          <legend>{t('follow.sendBackHow')}</legend>
+          <label className="radio-line">
+            <input type="radio" name="sb-mode" checked={mode === 'corrections'} onChange={() => setMode('corrections')} />
+            {t('follow.forCorrections')}
+          </label>
+          <label className="radio-line">
+            <input type="radio" name="sb-mode" checked={mode === 'review'} onChange={() => setMode('review')} />
+            {t('follow.forReview')}
+          </label>
+          {mode === 'corrections' && (
+            <div className="check-list">
+              {answered.map((q) => (
+                <label key={q.id} className="check-line">
+                  <input type="checkbox" checked={chosen.includes(q.id)} onChange={() => setChosen((v) => (v.includes(q.id) ? v.filter((x) => x !== q.id) : [...v, q.id]))} />
+                  <span>{t('q.questionNumber', { number: questions.indexOf(q) + 1 })}</span> <AnswerMark st={student.states[q.id]} />
+                </label>
+              ))}
+            </div>
+          )}
+        </fieldset>
+        <label className="comment-box">
+          <span className="feedback-subtitle">{t('follow.noteForStudent')}</span>
+          <textarea value={note} onChange={(e) => setNote(e.target.value)} rows={3} dir="auto" maxLength={5000} />
+        </label>
+        <p className="muted small-note">{t('follow.sendBackExplain')}</p>
+        <div className="button-row">
+          <button type="submit" className="button primary" disabled={busy}>
+            {t('follow.sendBackNow')}
+          </button>
+          <button type="button" className="button secondary" onClick={() => void onDone()}>
+            {t('teacher.cancel')}
+          </button>
+        </div>
+        {problem && <p className="notice">{problem}</p>}
+      </form>
+    </section>
   )
 }
 
@@ -796,6 +1124,22 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
     }
   }
 
+  // Send this answer back for corrections, with the comment as the note (REQ-5.12, 5.14).
+  async function sendBackThis() {
+    if (!window.confirm(t('follow.sendBackThisConfirm', { name: student.name }))) return
+    setSaving(true)
+    try {
+      await call('sendBack', { classId, lessonId, studentId: student.id, mode: 'corrections', questionIds: [q.id], note: comment })
+      setData((d) => d && { ...d, students: d.students.map((s) => (s.id === student.id ? { ...s, states: Object.fromEntries(Object.entries(s.states).filter(([id]) => id !== q.id)) } : s)) })
+      setPos(null)
+      setMessage(null)
+    } catch {
+      setMessage({ good: false, text: t('teacher.actionFailed') })
+    } finally {
+      setSaving(false)
+    }
+  }
+
   const nextUngraded = () => {
     const i = all.findIndex((p) => p.q === pos.q && p.s === pos.s)
     const after = [...all.slice(i + 1), ...all.slice(0, i)].find((p) => !isGraded(p))
@@ -877,9 +1221,14 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
             <span className="feedback-subtitle">{t('follow.comment')}</span>
             <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={4} dir="auto" maxLength={5000} />
           </label>
-          <button type="submit" className="button primary" disabled={saving}>
-            {saving ? t('follow.saving') : current?.graded ? t('follow.saveChange') : t('follow.save')}
-          </button>
+          <div className="button-row">
+            <button type="submit" className="button primary" disabled={saving}>
+              {saving ? t('follow.saving') : current?.graded ? t('follow.saveChange') : t('follow.save')}
+            </button>
+            <button type="button" className="button secondary" disabled={saving} onClick={() => void sendBackThis()}>
+              {t('follow.sendBackThis')}
+            </button>
+          </div>
           {message && (
             <p role="status" className={message.good ? 'notice good' : 'notice'}>
               {message.text}

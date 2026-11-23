@@ -45,10 +45,10 @@ export function WorkRow({ lesson, note }: { lesson: WorkLesson; note?: ReactNode
   return (
     <button
       type="button"
-      className={`lesson-row work-row status-row-${lesson.status}`}
+      className={`lesson-row work-row status-row-${lesson.status}${lesson.notes ? ' has-notes' : ''}`}
       disabled={locked}
       aria-disabled={locked}
-      title={locked ? t('status.lockedExplain') : undefined}
+      title={locked ? (lesson.lockedByNotes ? t('status.lockedByNotes') : t('status.lockedExplain')) : undefined}
       onClick={() => !locked && navigate(`/lesson/${lesson.lessonId}`)}
     >
       <span className="lesson-row-icon" aria-hidden="true">
@@ -59,13 +59,17 @@ export function WorkRow({ lesson, note }: { lesson: WorkLesson; note?: ReactNode
         <span className="lesson-row-title" dir="auto">
           {lesson.title}
         </span>
+        {lesson.notes && <span className="notes-chip">{lesson.notes === 'review' ? t('status.notesReview') : t('status.notesCorrections')}</span>}
+        {lesson.grade && (
+          <span className="row-grade">{lesson.grade.pending ? t('status.gradePending') : lesson.grade.percent != null ? t('status.grade', { percent: lesson.grade.percent }) : null}</span>
+        )}
         {note && (
           <span className="muted row-note">
             {note}
           </span>
         )}
       </span>
-      <StatusWord status={lesson.status} />
+      <StatusWord status={lesson.notes ? 'open' : lesson.status} />
     </button>
   )
 }

@@ -67,3 +67,26 @@ export function toCsv(rows) {
   }
   return '﻿' + rows.map((r) => r.map(cell).join(',')).join('\r\n') + '\r\n'
 }
+
+// Whether students see the grade of a lesson in an assignment (REQ-5.22, D-59).
+// grades: 'usual' (teaching hidden; practice and exams shown), 'show' or 'hide'.
+export function gradesShown(grades, lessonType) {
+  if (grades === 'show') return true
+  if (grades === 'hide') return false
+  return lessonType !== 'teaching'
+}
+
+// The "not yet mastered" list (REQ-5.25, D-59): level 1 questions that ended wrong, whose
+// check-again question wasn't answered correctly, and whose red flag (if any) isn't cleared.
+// `questions`: [{ id, level }], `states`: the student's question states, `flags`: their flags
+// for this lesson ({ questionId, open }).
+export function notMastered(questions, states, flags) {
+  return questions.filter((q) => {
+    if (q.level !== 1) return false
+    const st = states[q.id]
+    if (!st || st.result !== 'wrong') return false
+    if (st.checkAgain && (st.checkAgain.result === 'correct1' || st.checkAgain.result === 'correct2')) return false
+    const qFlags = flags.filter((f) => f.questionId === q.id)
+    return !(qFlags.length && qFlags.every((f) => !f.open))
+  })
+}
