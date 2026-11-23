@@ -139,6 +139,11 @@ service cloud.firestore {
       }
     }
 
+    // Schools (D-69): set by the system admin (Claude, D-47) with the loading program.
+    match /schools/{schoolId} {
+      allow read, write: if isLoader();
+    }
+
     // Class codes and wrong-code counts (REQ-5.2): only the class service uses them.
     match /classCodes/{code} {
       allow read, write: if isLoader();

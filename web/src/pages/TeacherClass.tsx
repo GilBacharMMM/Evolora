@@ -797,7 +797,7 @@ function Teachers({ classId, names, ids, onAdded }: { classId: string; names: st
           setBusy(true)
           setMessage(null)
           try {
-            const r = await call<{ result: 'added' | 'already' | 'notTeacher' | 'notSignedIn'; name?: string }>('addTeacher', { classId, email })
+            const r = await call<{ result: 'added' | 'already' | 'notTeacher' | 'notSignedIn' | 'otherSchool'; name?: string }>('addTeacher', { classId, email })
             setMessage({ good: r.result === 'added' || r.result === 'already', text: t(`teacher.addTeacherResult.${r.result}`, { name: r.name || email }) })
             if (r.result === 'added') {
               setEmail('')

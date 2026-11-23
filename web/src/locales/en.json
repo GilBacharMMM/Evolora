@@ -161,7 +161,8 @@
       "added": "{{name}} is now a teacher of this class.",
       "already": "{{name}} already teaches this class.",
       "notTeacher": "This email is not on the list of teachers. Ask the system admin to add it first.",
-      "notSignedIn": "This teacher hasn't signed in to Evolora yet. Ask them to sign in once, then try again."
+      "notSignedIn": "This teacher hasn't signed in to Evolora yet. Ask them to sign in once, then try again.",
+      "otherSchool": "This teacher is in a different school. Only teachers of the same school can teach a class together; the system admin decides each teacher's school."
     },
     "redoCounts": "Redo counts: the latest redo's grade replaces the earlier one, even if lower",
     "removeTeacher": "Remove from the class",
@@ -374,7 +375,7 @@
     "chooseQuestions": "Choose at least one question.",
     "reviewNeedsFinished": "Only a finished lesson can be sent back for review.",
     "noteForStudent": "Note for the student (optional)",
-    "sendBackExplain": "Until the student goes over it, they can't start new lessons. Their earlier answers are kept.",
+    "sendBackExplain": "If you choose \"must go over it\", the student can't start new lessons in the course until they do. A lesson they are in the middle of isn't stopped. Their earlier answers are kept.",
     "sendBackNow": "Send back",
     "sendBackThis": "Send back for corrections",
     "sendBackThisConfirm": "Send this question back to {{name}} to answer again? Your comment goes with it as a note.",
@@ -391,7 +392,11 @@
     "chooseLanguage": "Choose",
     "languageSet": "Saved. It changes the next time the student opens Evolora.",
     "flagExam": "wrong answer in the exam (question {{question}})",
-    "removedStudent": "This student was removed from the class. Their work, flags and notes are kept here."
+    "removedStudent": "This student was removed from the class. Their work, flags and notes are kept here.",
+    "whenTitle": "When",
+    "whenMust": "The student must go over it before going on in the course",
+    "whenOwnTime": "The student can go over it at their own time",
+    "whenMustShort": "Must go over it before going on"
   },
   "library": {
     "search": "Search by title",

@@ -60,6 +60,11 @@ try {
   console.log('Co-teachers (REQ-5.5)')
   await as('test-teacher-1', async ({ call }) => {
     check('an email that is not a teacher is refused', (await call('addTeacher', { classId: CLASS, email: 'student3@evolora.test' })).result === 'notTeacher')
+    // Schools (D-69): a teacher of another school can't be added.
+    await updateDoc(doc(ldb, 'staff', 'teacher2@evolora.test'), { schoolId: 'another-test-school' })
+    const other = await call('addTeacher', { classId: CLASS, email: 'teacher2@evolora.test' })
+    await updateDoc(doc(ldb, 'staff', 'teacher2@evolora.test'), { schoolId: 'test-school' })
+    check('a teacher from another school cannot be added (D-69)', other.result === 'otherSchool', JSON.stringify(other))
     const r = await call('addTeacher', { classId: CLASS, email: 'Teacher2@evolora.test' })
     check('Test Teacher 1 adds Test Teacher 2 to the class', r.result === 'added' && r.name === 'Test Teacher 2', JSON.stringify(r))
   })

@@ -13,6 +13,7 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { collection, deleteDoc, doc, getDoc, getDocs, initializeFirestore, query, where } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { ROOT, connect, finish, siteConfig } from './lib/connect.mjs'
+import { answerWithRecording, soloTeacher } from './lib/test-helpers.mjs'
 
 setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
@@ -37,7 +38,7 @@ async function as(uid, fn) {
   const db = initializeFirestore(app, {})
   const fns = getFunctions(app, 'me-west1')
   const call = async (name, data) => (await httpsCallable(fns, name)(data)).data
-  try { return await fn({ db, call }) } finally { await deleteApp(app) }
+  try { return await fn({ db, call, app }) } finally { await deleteApp(app) }
 }
 
 async function refused(action) {
@@ -63,6 +64,7 @@ async function cleanUp() {
   for (const a of (await getDocs(collection(ldb, 'classes', CLASS, 'assignments'))).docs) if (a.data().createdBy !== 'evolora-loader') await deleteDoc(a.ref)
 }
 
+const restoreTeachers = await soloTeacher(ldb, CLASS)
 await cleanUp()
 try {
   check('the circles lesson has a level 1 multiple choice question with check-again questions', !!level1)
@@ -116,8 +118,11 @@ try {
   })
 
   console.log('Send back for corrections and for review (REQ-5.14)')
-  await as('test-student-4', async ({ call }) => {
-    for (const q of questions.filter((x) => x.kind !== 'audio')) await call('answer', { lessonId: LESSON, questionId: q.id, value: right(q) }).catch(notMine)
+  await as('test-student-4', async ({ call, app }) => {
+    for (const q of questions) {
+      if (q.kind === 'audio') await answerWithRecording(app, call, 'test-student-4', LESSON, q.id).catch(notMine)
+      else await call('answer', { lessonId: LESSON, questionId: q.id, value: right(q) }).catch(notMine)
+    }
   })
   check('a lesson not finished cannot be sent back for review', await as('test-teacher-1', ({ call }) => refused(() => call('sendBack', { classId: CLASS, lessonId: LESSON, studentId: 'test-student-2', mode: 'review' }))))
   await as('test-teacher-1', async ({ call }) => {
@@ -135,10 +140,11 @@ try {
     check('after answering again, the lesson is finished and the corrections are done', p.finished === true && p.sentBack.done === true && p.questions[level1.id].score === 0.5)
   })
   await as('test-teacher-1', async ({ call }) => {
-    await call('sendBack', { classId: CLASS, lessonId: LESSON, studentId: 'test-student-4', mode: 'review', note: 'Read my comments, please.' })
+    await call('sendBack', { classId: CLASS, lessonId: LESSON, studentId: 'test-student-4', mode: 'review', note: 'Read my comments, please.', mustReturn: false })
     const r = await call('lessonResults', { classId: CLASS, lessonId: LESSON })
     const s4 = r.students.find((s) => s.id === 'test-student-4')
     check('the teacher sees the lesson as sent back for review', s4.sentBack?.mode === 'review' && !s4.sentBack.done && s4.earlier[level1.id] === 1)
+    check('the teacher chose "at their own time" (D-68)', s4.sentBack?.mustReturn === false)
   })
   await as('test-student-4', async ({ db, call }) => {
     await call('readComments', { lessonId: LESSON })
@@ -150,6 +156,7 @@ try {
   check('the test ran to the end', false, e.message)
 } finally {
   await cleanUp()
+  await restoreTeachers()
 }
 
 console.log(`\n${count - failures} of ${count} priority 2 tests passed.`)

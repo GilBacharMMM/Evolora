@@ -7,6 +7,7 @@
 // After a reset the test site has:
 // - the test users from web/src/test-site/test-users.json: 2 test teachers, test students
 //   at levels 1, 2 and 3, and one student who hasn't joined any class (REQ-10.1)
+// - a test school with both test teachers (D-69)
 // - one test class, taught by Test Teacher 1, with test students 1 to 6, a class code,
 //   and joining turned on (REQ-5.2)
 // - the three demo lessons, and the two demo courses given to the whole test class (REQ-5.7)
@@ -22,7 +23,7 @@ import { collection, deleteDoc, doc, getDocs, serverTimestamp, writeBatch } from
 import { deleteObject, listAll, ref } from 'firebase/storage'
 import { ROOT, connect, finish, importAccounts, siteConfig } from './lib/connect.mjs'
 import { loadAll } from './load.mjs'
-import { openCourseToClass, setStaff } from './admin.mjs'
+import { addSchool, openCourseToClass, setStaff } from './admin.mjs'
 import { makeCode } from '../functions/classcode.js'
 
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
@@ -82,7 +83,9 @@ async function main() {
   console.log('3. Creating the test teachers, students and class...')
   const teachers = TEST.users.filter((u) => u.role === 'teacher')
   const students = TEST.users.filter((u) => u.role === 'student')
-  for (const t of teachers) await setStaff(db, t.email, 'teacher', t.name)
+  // Both test teachers are in the same test school, so they can teach a class together (D-69).
+  await addSchool(db, 'test-school', 'Test School')
+  for (const t of teachers) await setStaff(db, t.email, 'teacher', t.name, 'test-school')
   const batch = writeBatch(db)
   for (const u of TEST.users) batch.set(doc(db, 'users', u.uid), { name: u.name, email: u.email, createdAt: serverTimestamp() })
   const classTeacher = teachers[0]

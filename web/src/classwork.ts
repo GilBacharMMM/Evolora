@@ -21,6 +21,8 @@ export interface WorkLesson {
   showGrades?: boolean
   // Sent back by the teacher and not yet gone over (REQ-5.14).
   notes?: 'review' | 'corrections' | null
+  // The teacher said the student must go over it before going on in the course (D-68).
+  notesMust?: boolean
   // Locked because the student must first go over their teacher's notes (REQ-5.14).
   lockedByNotes?: boolean
   // An exam's time window, timer and lock while it is going on (REQ-5.23).
@@ -130,7 +132,7 @@ async function classAssignments(classId: string, uid: string, sub: 'assignments'
 
 // Loads everything for the student's classes. Classes that can't be read are left out.
 export async function loadClasswork(uid: string, classIds: string[]): Promise<ClassWork[]> {
-  type P = { finished: boolean; finishedAt: number | null; started: boolean; grade: { percent: number | null; pending: boolean } | null; notes: 'review' | 'corrections' | null }
+  type P = { finished: boolean; finishedAt: number | null; started: boolean; grade: { percent: number | null; pending: boolean } | null; notes: 'review' | 'corrections' | null; notesMust: boolean }
   const progressCache = new Map<string, Promise<P>>()
   const progressOf = (lessonId: string) => {
     if (!progressCache.has(lessonId)) {
@@ -142,9 +144,9 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
             const sb = d?.sentBack
             // The grade that counts (REQ-6.5): kept from before a redo, or the latest.
             const g = d?.keptGrade || (d?.redo?.active ? d?.redos?.[d.redos.length - 1]?.grade : null) || d?.grade
-            return { finished: d?.finished === true, finishedAt: d?.finishedAt?.toMillis?.() ?? null, started: !!d, grade: g ? { percent: g.percent ?? null, pending: !!g.pending } : null, notes: sb && !sb.done ? sb.mode : null }
+            return { finished: d?.finished === true, finishedAt: d?.finishedAt?.toMillis?.() ?? null, started: !!d, grade: g ? { percent: g.percent ?? null, pending: !!g.pending } : null, notes: sb && !sb.done ? sb.mode : null, notesMust: !!sb && !sb.done && sb.mustReturn !== false }
           })
-          .catch((): P => ({ finished: false, finishedAt: null, started: false, grade: null, notes: null })),
+          .catch((): P => ({ finished: false, finishedAt: null, started: false, grade: null, notes: null, notesMust: false })),
       )
     }
     return progressCache.get(lessonId)!
@@ -200,6 +202,7 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
               showGrades: show,
               grade,
               notes: p.notes,
+              notesMust: p.notesMust,
               due,
               late: isLate(due, p.finishedAt, now),
             }
@@ -297,13 +300,21 @@ export function lockForExam(classes: ClassWork[]) {
 }
 
 export function lockForNotes(classes: ClassWork[]) {
-  const lessons = allLessons(classes)
-  if (!lessons.some((l) => l.notes)) return
-  for (const l of lessons) {
-    if (l.status === 'open' && !l.started && !l.notes) {
-      l.status = 'locked'
-      l.lockedByNotes = true
+  // Gil, D-68: when the teacher says the student must go over a lesson first, the lessons they
+  // haven't started yet in the same course are locked (for a single lesson: the class's other
+  // single lessons). "At their own time" locks nothing. A lesson already started stays open.
+  const lock = (lessons: WorkLesson[]) => {
+    if (!lessons.some((l) => l.notes && l.notesMust)) return
+    for (const l of lessons) {
+      if (l.status === 'open' && !l.started && !l.notes) {
+        l.status = 'locked'
+        l.lockedByNotes = true
+      }
     }
+  }
+  for (const c of classes) {
+    for (const k of c.courses) lock(k.items.flatMap((it) => [it, ...it.practice]))
+    lock(c.singles)
   }
 }
 

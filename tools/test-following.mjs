@@ -13,6 +13,7 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { collection, deleteDoc, doc, getDoc, getDocs, initializeFirestore, query, setDoc, where } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { ROOT, connect, finish, siteConfig } from './lib/connect.mjs'
+import { answerWithRecording, soloTeacher } from './lib/test-helpers.mjs'
 
 setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
@@ -36,7 +37,7 @@ async function as(uid, fn) {
   const db = initializeFirestore(app, {})
   const fns = getFunctions(app, 'me-west1')
   const call = async (name, data) => (await httpsCallable(fns, name)(data)).data
-  try { return await fn({ db, call }) } finally { await deleteApp(app) }
+  try { return await fn({ db, call, app }) } finally { await deleteApp(app) }
 }
 
 async function refused(action) {
@@ -64,6 +65,7 @@ async function cleanUp() {
   await setDoc(doc(ldb, 'classes', CLASS, 'levels', 'test-student-1'), { level: 1, setBy: 'test data' })
 }
 
+const restoreTeachers = await soloTeacher(ldb, CLASS)
 await cleanUp()
 const circles = await lessonData('circles-teaching')
 let openLesson = null
@@ -88,8 +90,9 @@ try {
   })
   check('there is an open question to grade in a demo lesson', !!openLesson)
   await as('test-student-3', ({ call }) => call('answer', { lessonId: openLesson.lessonId, questionId: openLesson.q.id, value: 'Because the density of gold is higher.' }))
-  await as('test-student-4', async ({ call }) => {
-    for (const q of circles.questions.filter((x) => x.kind !== 'audio')) {
+  await as('test-student-4', async ({ call, app }) => {
+    for (const q of circles.questions) {
+      if (q.kind === 'audio') { await answerWithRecording(app, call, 'test-student-4', 'circles-teaching', q.id).catch(notMine); continue }
       const value = q.kind === 'choice' ? circles.secret[q.id].correct : q.kind === 'number' ? String(circles.secret[q.id].answer) : 'My answer.'
       await call('answer', { lessonId: 'circles-teaching', questionId: q.id, value }).catch(notMine)
     }
@@ -178,6 +181,7 @@ try {
   check('the test ran to the end', false, e.message)
 } finally {
   await cleanUp()
+  await restoreTeachers()
 }
 
 console.log(`\n${count - failures} of ${count} following and grading tests passed.`)

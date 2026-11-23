@@ -11,10 +11,13 @@ import { initializeApp, deleteApp, setLogLevel } from 'firebase/app'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { collection, deleteDoc, deleteField, doc, getDoc, getDocs, initializeFirestore, query, setDoc, where } from 'firebase/firestore'
 import { getBytes, getStorage, ref } from 'firebase/storage'
-import { ROOT, finish, siteConfig } from './lib/connect.mjs'
+import { ROOT, connect, finish, siteConfig } from './lib/connect.mjs'
+import { soloTeacher } from './lib/test-helpers.mjs'
 
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const config = siteConfig('test')
+// Gil's co-teachers on the test class are taken out for the test and put back at the end.
+const restoreTeachers = await soloTeacher((await connect('test')).db, 'test-class')
 setLogLevel('silent')
 let failures = 0
 let count = 0
@@ -111,4 +114,5 @@ await as('test-teacher-2', async (db) => {
 })
 
 console.log(`\n${count - failures} of ${count} permission tests passed.`)
+await restoreTeachers()
 finish(failures ? 1 : 0)

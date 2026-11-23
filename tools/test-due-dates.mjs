@@ -12,6 +12,7 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { collection, deleteDoc, doc, getDoc, getDocs, initializeFirestore, query, where } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { ROOT, connect, finish, siteConfig } from './lib/connect.mjs'
+import { soloTeacher } from './lib/test-helpers.mjs'
 
 setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
@@ -49,6 +50,7 @@ async function cleanUp() {
   for (const f of (await getDocs(query(collection(ldb, 'flags'), where('classId', '==', CLASS)))).docs) await deleteDoc(f.ref)
 }
 
+const restoreTeachers = await soloTeacher(ldb, CLASS)
 await cleanUp()
 const lesson = (await getDoc(doc(ldb, 'lessons', LESSON))).data()
 const v = String(lesson.currentVersion)
@@ -93,6 +95,7 @@ try {
   check('the test ran to the end', false, e.message)
 } finally {
   await cleanUp()
+  await restoreTeachers()
 }
 
 console.log(`\n${count - failures} of ${count} order and due date tests passed.`)

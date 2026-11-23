@@ -72,6 +72,13 @@ A system admin can register a person as a creator only, for example someone from
 *Acceptance criteria:*
 - [ ] A creator-only person can create and edit lessons but cannot create classes.
 
+**REQ-2.5: Schools** (Priority 1: must have; Gil, 2026-11-24, D-69)
+A **school** holds teachers. When the system admin makes someone a teacher, they also put them in a school (in stage 1, Claude does both, with no screen, D-47). Only teachers of the same school can be added to a class as co-teachers (REQ-5.5). Each class remembers the school of the teacher who created it.
+
+*Acceptance criteria:*
+- [ ] Teacher A and Teacher B are in the same school: A adds B to a class, and B sees it.
+- [ ] Teacher C is in another school: A tries to add C, and sees a message that C is in a different school.
+
 ---
 
 ## 3. Accounts, sign-in and access
@@ -465,7 +472,7 @@ A teacher sees the list of students in a class and can remove a student.
 - [ ] A removed student no longer sees the class, but their past work is kept for the teacher.
 
 **REQ-5.5: Co-teachers** (Priority 1: must have; raised by Gil on 2026-11-23, D-66)
-A teacher can add other teachers to a class. All teachers of a class have the same permissions. When two teachers change the same thing (for example, a grade or a due date), the last change counts.
+A teacher can add other teachers **of the same school** (REQ-2.5) to a class. All teachers of a class have the same permissions. When two teachers change the same thing (for example, a grade or a due date), the last change counts.
 
 *Acceptance criteria:*
 - [ ] Teacher A adds Teacher B to a class; Teacher B sees the class and can do everything Teacher A can.
@@ -564,7 +571,7 @@ In a class, when the teacher opens a lesson that has open or audio answers, a bu
 - up and down: the next or previous question for the same student.
 - keyboard shortcuts: Alt + arrow keys, so the plain arrow keys still move inside the comment box.
 
-The page shows how many answers are graded ("graded 7 of 24"), has a button to jump to the next answer not yet graded, and lets the teacher **send the answer back for corrections** (REQ-5.14) from the same page.
+The page shows how many answers are graded ("graded 7 of 24"), has a button to jump to the next answer not yet graded, and lets the teacher **send the answer back for corrections** (REQ-5.14) from the same page. Moving to another student or question saves what the teacher changed (grade, comment, mark-up or recorded comment), as if they had pressed the save button; a comment without a grade is saved too (Gil, D-68).
 
 *Acceptance criteria:*
 - [ ] Clicking "Grade open answers" on a lesson opens the first answer not yet graded, with the question and grading instructions above it.
@@ -586,7 +593,11 @@ A teacher can send a finished lesson, or selected questions from it, back to a s
 - **For review**: the student must read or listen to the comments.
 - **For corrections**: the student must also answer those questions again; the new answers are graded again.
 
-In both cases, a student with pending notes cannot start any new lesson until they have gone over them.
+When sending back, the teacher marks either (Gil, D-68):
+- **the student must go over it before going on**: lessons of the same course that the student hasn't started yet stay locked until they do; or
+- **at their own time**: nothing is locked.
+
+In either case, a lesson the student is in the middle of isn't stopped.
 
 *Acceptance criteria:*
 - [ ] After a lesson is sent back for review, the student sees the comments, and new lessons are locked until they open them.

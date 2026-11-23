@@ -198,3 +198,13 @@ test('recordings are deleted after 31 July (REQ-10.5, D-67)', async () => {
   assert.equal(lastEndOfYear(new Date(Date.UTC(2026, 7, 1, 0))), endOf2026, 'from 1 August (Israel time): this year\'s end')
   assert.equal(lastEndOfYear(new Date(Date.UTC(2027, 2, 1))), endOf2026, 'during the next school year')
 })
+
+test('a comment without a grade is saved, and the grade stays (D-68)', async () => {
+  const { teacherScore, lessonGrade } = await import('./check.js')
+  const open = { attempts: ['x'], result: 'pending', score: null }
+  const r = teacherScore(open, null, 'Please add the units')
+  assert.equal(r.state.teacherComment, 'Please add the units')
+  assert.equal(r.state.graded, undefined, 'still waiting for a grade')
+  assert.equal(lessonGrade({ a: r.state }).pending, true)
+  assert.equal(teacherScore(open, undefined).invalid, true, 'a missing grade must be null, not left out')
+})

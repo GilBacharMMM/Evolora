@@ -8,6 +8,7 @@ These are the terms we use in all documents and in the app. When a term is used,
 |---|---|---|
 | **Creator** | A person who creates and edits lessons and courses. A teacher can also be a creator. In Hebrew: יוצר/ת שיעורים. | agreed |
 | **Teacher** | A person who runs one or more classes: decides which lessons each student gets, follows progress, and checks and comments on students' work. | proposed |
+| **School** | A group of teachers, set by the system admin. Only teachers of the same school can teach a class together (REQ-2.5). In Hebrew: בית ספר. | agreed |
 | **Student** | A person who learns: reads the material, watches and listens to media, and answers questions. Gets lessons from a teacher, or enrolls in a public course alone. | proposed |
 | **System admin** | A person who manages Evolora itself, including registering teachers. | proposed |
 

@@ -1135,6 +1135,7 @@ function ScoreEditor({ classId, lessonId, student, questionId, number, onDone }:
 function SendBackForm({ classId, lessonId, student, questions, onDone }: { classId: string; lessonId: string; student: Results['students'][number]; questions: QuestionInfo[]; onDone: () => Promise<void> }) {
   const { t } = useTranslation()
   const [mode, setMode] = useState<'review' | 'corrections'>('corrections')
+  const [mustReturn, setMustReturn] = useState(true)
   const [chosen, setChosen] = useState<string[]>([])
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
@@ -1154,7 +1155,7 @@ function SendBackForm({ classId, lessonId, student, questions, onDone }: { class
           if (mode === 'review' && !finished) return setProblem(t('follow.reviewNeedsFinished'))
           setBusy(true)
           try {
-            await call('sendBack', { classId, lessonId, studentId: student.id, mode, questionIds: chosen, note })
+            await call('sendBack', { classId, lessonId, studentId: student.id, mode, questionIds: chosen, note, mustReturn })
             await onDone()
           } catch {
             setProblem(t('teacher.actionFailed'))
@@ -1182,6 +1183,17 @@ function SendBackForm({ classId, lessonId, student, questions, onDone }: { class
               ))}
             </div>
           )}
+        </fieldset>
+        <fieldset>
+          <legend>{t('follow.whenTitle')}</legend>
+          <label className="radio-line">
+            <input type="radio" name="sb-when" checked={mustReturn} onChange={() => setMustReturn(true)} />
+            {t('follow.whenMust')}
+          </label>
+          <label className="radio-line">
+            <input type="radio" name="sb-when" checked={!mustReturn} onChange={() => setMustReturn(false)} />
+            {t('follow.whenOwnTime')}
+          </label>
         </fieldset>
         <label className="comment-box">
           <span className="feedback-subtitle">{t('follow.noteForStudent')}</span>
@@ -1217,6 +1229,7 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
   const [removeAudio, setRemoveAudio] = useState(false)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ good: boolean; text: string } | null>(null)
+  const [mustReturn, setMustReturn] = useState(true)
   const rtl = i18n.dir() === 'rtl'
 
   // Written and recorded answers are graded here (REQ-5.12, 6.6).
@@ -1257,9 +1270,75 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
     return false
   }
 
+  // Saving: from "Save the grade", and by itself when moving to another student or question with
+  // something changed (Gil, D-68). A comment without a grade is saved too; a grade that isn't a
+  // number from 0 to 100 stops the move and says so.
+  const latest = useRef({ pos, students, questions, score, comment, markup, audioBlob, removeAudio })
+  latest.current = { pos, students, questions, score, comment, markup, audioBlob, removeAudio }
+  const persist = useCallback(
+    async (onlyIfChanged: boolean): Promise<boolean> => {
+      const L = latest.current
+      if (!L.pos) return true
+      const q = L.questions[L.pos.q]
+      const student = L.students[L.pos.s]
+      const st = student?.states[q?.id]
+      if (!q || !student || !st) return true
+      const answer = String(st.attempts?.[0] ?? '')
+      const startScore = st.graded && st.score != null ? String(Math.round(st.score * 100)) : ''
+      const markupNow = L.markup && hasMarkup(answer, L.markup) ? L.markup : ''
+      const changed = L.score !== startScore || L.comment !== (st.teacherComment || '') || markupNow !== (st.markup || '') || !!L.audioBlob || L.removeAudio
+      if (onlyIfChanged && !changed) return true
+      let score: number | null = null
+      if (L.score.trim() !== '') {
+        const n = Number(L.score.replace(',', '.'))
+        if (!Number.isFinite(n) || n < 0 || n > 100) {
+          setMessage({ good: false, text: t('follow.scoreRange') })
+          return false
+        }
+        score = n / 100
+      } else if (!onlyIfChanged) {
+        setMessage({ good: false, text: t('follow.scoreRange') })
+        return false
+      }
+      setSaving(true)
+      try {
+        const r = await call<{ state: AnswerState & { score: number; markup?: string } }>('gradeAnswer', {
+          classId,
+          lessonId,
+          studentId: student.id,
+          questionId: q.id,
+          score,
+          comment: L.comment,
+          markup: markupNow,
+          audioData: L.audioBlob ? await blobToBase64(L.audioBlob) : L.removeAudio ? '' : undefined,
+        })
+        setData((d) =>
+          d && {
+            ...d,
+            students: d.students.map((s) =>
+              s.id === student.id
+                ? { ...s, states: { ...s.states, [q.id]: { ...s.states[q.id], graded: !!r.state.graded, score: r.state.score, teacherComment: r.state.teacherComment || null, markup: r.state.markup || null, teacherAudio: (r.state as AnswerState).teacherAudio || null } } }
+                : s,
+            ),
+          },
+        )
+        setMessage({ good: true, text: t('follow.saved') })
+        return true
+      } catch {
+        setMessage({ good: false, text: t('teacher.actionFailed') })
+        return false
+      } finally {
+        setSaving(false)
+      }
+    },
+    [classId, lessonId, setData, t],
+  )
+
   const move = useCallback(
-    (dq: number, ds: number) => {
+    async (dq: number, ds: number) => {
       if (!pos) return
+      // Unsaved changes are saved first; if they can't be, the page stays on this answer.
+      if (!(await persist(true))) return
       // Find the next answered (q, s) in that direction.
       let { q, s } = pos
       for (let i = 0; i < students.length * questions.length; i++) {
@@ -1269,7 +1348,7 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
         if (answered(q, s)) return setPos({ q, s })
       }
     },
-    [pos, students.length, questions.length, answered],
+    [pos, students.length, questions.length, answered, persist],
   )
 
   useEffect(() => {
@@ -1310,23 +1389,7 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
   const answer = String(current?.attempts?.[0] ?? '')
 
   async function save() {
-    const n = Number(score.replace(',', '.'))
-    if (score.trim() === '' || !Number.isFinite(n) || n < 0 || n > 100) return setMessage({ good: false, text: t('follow.scoreRange') })
-    setSaving(true)
-    try {
-      const r = await call<{ state: AnswerState & { score: number; markup?: string } }>('gradeAnswer', { classId, lessonId, studentId: student.id, questionId: q.id, score: n / 100, comment, markup: markup && hasMarkup(answer, markup) ? markup : '', audioData: audioBlob ? await blobToBase64(audioBlob) : removeAudio ? '' : undefined })
-      setData((d) =>
-        d && {
-          ...d,
-          students: d.students.map((s) => (s.id === student.id ? { ...s, states: { ...s.states, [q.id]: { ...s.states[q.id], graded: true, score: r.state.score, teacherComment: r.state.teacherComment || null, markup: r.state.markup || null, teacherAudio: (r.state as AnswerState).teacherAudio || null } } } : s)),
-        },
-      )
-      setMessage({ good: true, text: t('follow.saved') })
-    } catch {
-      setMessage({ good: false, text: t('teacher.actionFailed') })
-    } finally {
-      setSaving(false)
-    }
+    await persist(false)
   }
 
   // Send this answer back for corrections, with the comment as the note (REQ-5.12, 5.14).
@@ -1334,7 +1397,7 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
     if (!window.confirm(t('follow.sendBackThisConfirm', { name: student.name }))) return
     setSaving(true)
     try {
-      await call('sendBack', { classId, lessonId, studentId: student.id, mode: 'corrections', questionIds: [q.id], note: comment })
+      await call('sendBack', { classId, lessonId, studentId: student.id, mode: 'corrections', questionIds: [q.id], note: comment, mustReturn })
       setData((d) => d && { ...d, students: d.students.map((s) => (s.id === student.id ? { ...s, states: Object.fromEntries(Object.entries(s.states).filter(([id]) => id !== q.id)) } : s)) })
       setPos(null)
       setMessage(null)
@@ -1345,7 +1408,8 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
     }
   }
 
-  const nextUngraded = () => {
+  const nextUngraded = async () => {
+    if (!(await persist(true))) return
     const i = all.findIndex((p) => p.q === pos.q && p.s === pos.s)
     const after = [...all.slice(i + 1), ...all.slice(0, i)].find((p) => !isGraded(p))
     if (after) setPos(after)
@@ -1450,6 +1514,10 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
             <button type="button" className="button secondary" disabled={saving} onClick={() => void sendBackThis()}>
               {t('follow.sendBackThis')}
             </button>
+            <label className="check-line small-note">
+              <input type="checkbox" checked={mustReturn} onChange={(e) => setMustReturn(e.target.checked)} />
+              {t('follow.whenMustShort')}
+            </label>
           </div>
           {message && (
             <p role="status" className={message.good ? 'notice good' : 'notice'}>

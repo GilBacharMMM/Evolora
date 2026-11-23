@@ -198,11 +198,14 @@ export function gradeOpen(state, score, comment) {
 // teacher". An optional comment goes with it.
 export function teacherScore(state, score, comment, markup) {
   if (!state || !state.result) return { invalid: true }
-  if (typeof score !== 'number' || !Number.isFinite(score) || score < 0 || score > 1) return { invalid: true }
+  // score null: only the comment, mark-up or recorded comment change; the grade stays (D-68).
+  if (score !== null && (typeof score !== 'number' || !Number.isFinite(score) || score < 0 || score > 1)) return { invalid: true }
   const st = structuredClone(state)
-  st.score = Math.round(score * 1000) / 1000
-  if (st.result === 'pending') st.graded = true
-  else st.changedByTeacher = true
+  if (score !== null) {
+    st.score = Math.round(score * 1000) / 1000
+    if (st.result === 'pending') st.graded = true
+    else st.changedByTeacher = true
+  }
   if (comment !== undefined) {
     const text = typeof comment === 'string' ? comment.trim().slice(0, 5000) : ''
     if (text) st.teacherComment = text

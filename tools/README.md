@@ -6,7 +6,7 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 |---|---|---|
 | `check-lesson.mjs` | Checks a lesson file before it is loaded: the lesson details, that every block is a known type, image files and sources, video sources, question answers, hints, solutions, check-again questions, levels, exam rules, and that every topic has enough questions. It lists errors (the lesson can't be loaded) and warnings (worth fixing). | REQ-4.24 |
 | `load.mjs` | The loading program: runs the lesson check, then loads lessons and courses into a site. A course brings its lessons with it. An unchanged lesson is skipped; a changed one is saved as a new version. | REQ-4.24, 4.10 |
-| `admin.mjs` | System admin tasks (D-47): make someone a teacher or system admin, take the role away, list everyone with their role, give a course to a whole class. | REQ-2.1, 2.2, 5.7 |
+| `admin.mjs` | System admin tasks (D-47): make someone a teacher or system admin (and put teachers in a school, D-69), take the role away, list everyone with their role, add schools and list them, give a course to a whole class. | REQ-2.1, 2.2, 5.7 |
 | `reset-test-site.mjs` | Fills or resets the test site with the standard test data: test users, the test class with its class code, the demo lessons, and the demo courses given to the whole class. It prints the test class code. Test site only. | REQ-12.6 |
 | `test-checking.mjs` | End-to-end test of the checking service: answers real questions as test students (right, wrong, check-again, numbers, letters) and checks the scores and red flags. | REQ-4.16, 4.17, 4.22, 6.3 |
 | `test-classes.mjs` | End-to-end test of classes: a teacher creates a class; students join with a good code, a mistyped code, a code of no class, a closed class and a new code; 10 wrong codes mean a wait; lessons given to the whole class and to one student; a student who joins later; finishing a lesson; removing a student while keeping their work. Cleans up after itself. | REQ-5.1, 5.2, 5.4, 5.6, 5.7, D-55 |
@@ -31,7 +31,10 @@ node tools/check-lesson.mjs courses/circles-demo.md
 node tools/load.mjs courses/circles-demo.md               (loads the course and its lessons into the test site)
 node tools/load.mjs --skip-images lessons/circles-teaching (only while file storage isn't switched on)
 
-node tools/admin.mjs add-teacher someone@gmail.com "Name"
+node tools/admin.mjs add-school ort-rehovot "Ort Rehovot"
+node tools/admin.mjs add-teacher someone@gmail.com "Name" --school ort-rehovot
+node tools/admin.mjs set-school someone@gmail.com ort-rehovot
+node tools/admin.mjs schools
 node tools/admin.mjs remove-teacher someone@gmail.com
 node tools/admin.mjs people
 node tools/admin.mjs open circles-demo test-class

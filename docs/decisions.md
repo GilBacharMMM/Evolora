@@ -761,3 +761,16 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 5. **To try it:** a demo audio question ([NEW], for Gil's review) at the end of the circles teaching lesson.
 **Also (Claude):** a student records, listens back, re-records and then sends; once sent, it can't be changed, like a written answer. The teacher grades it on the grading page, with a player, and can record a comment there. Recordings are saved in file storage in Israel (me-west1), next to the lesson images. A student's recording is in a folder only they can open; when they send it, the checking service attaches a private link (a long random key) to the answer, which only the student and the class's teachers can read. Teachers' comments are saved by the checking service the same way. (This avoids giving file storage permission to read the database, a security setting in Gil's Google Cloud project.) Every day, recordings made before the last 31 July are deleted.
 **Affects:** REQ-6.6, REQ-5.13, REQ-10.5, the circles teaching lesson
+
+### D-68: Sending back "now" or "at their own time", and saving on the grading page
+**Date:** 2026-11-24 · **Status:** Decided · **Decided by:** Gil
+**Decision:**
+1. When sending a lesson or questions back (REQ-5.14), the teacher marks either **(a) the student must go over it before going on** in the course, or **(b) at their own time**. In either case, a lesson the student is in the middle of isn't stopped. (Claude: with (a), the course's lessons the student hasn't started yet are locked until they go over it; for a single lesson outside a course, the class's other single lessons. This replaces the rule in D-59 that locked every new lesson.)
+2. On the grading page (REQ-5.12), moving to the next or previous student or question saves the teacher's changes, like pressing "Save the grade". (Claude: a comment, mark-up or recorded comment without a grade is saved too, and the answer still waits for a grade; a grade that isn't a number from 0 to 100 stops the move with a message.)
+**Affects:** REQ-5.14, REQ-5.12, D-59
+
+### D-69: Schools
+**Date:** 2026-11-24 · **Status:** Decided · **Decided by:** Gil
+**Decision:** A school is an entity that holds teachers. Only teachers of the same school can be added to a class as co-teachers. The system admin, who makes accounts teachers, also puts them in a school. For now Claude does both with tools/admin.mjs, with no screen.
+**Also (Claude):** a teacher without a school can't add co-teachers; each class records its creator's school, for later use. The test site has "Test School" with both test teachers.
+**Affects:** new REQ-2.5, REQ-5.5, REQ-2.2, tools/admin.mjs

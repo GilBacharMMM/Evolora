@@ -275,7 +275,7 @@ async function saveNewCode(classId, oldCode) {
 }
 
 export const createClass = onCall(async (request) => {
-  await requireTeacher(request.auth)
+  const me = await requireTeacher(request.auth)
   const name = typeof request.data?.name === 'string' ? request.data.name.trim().replace(/\s+/g, ' ') : ''
   if (!name || name.length > 80) throw new HttpsError('invalid-argument', 'class-name')
   const ref = db.collection('classes').doc()
@@ -287,6 +287,8 @@ export const createClass = onCall(async (request) => {
     color: CLASS_COLORS[count % CLASS_COLORS.length],
     courseIds: [],
     joiningOpen: true,
+    // The school of the teacher who created it (D-69).
+    schoolId: me.schoolId || null,
     createdAt: FieldValue.serverTimestamp(),
   })
   const code = await saveNewCode(ref.id, null)
@@ -811,7 +813,7 @@ export const setLevel = onCall(async (request) => {
 //   studentDetails({ classId, studentId })                              not yet mastered, notes
 
 export const sendBack = onCall(async (request) => {
-  const { classId, lessonId, studentId, mode, questionIds, note } = request.data || {}
+  const { classId, lessonId, studentId, mode, questionIds, note, mustReturn = true } = request.data || {}
   await requireClassTeacher(request.auth, classId)
   if (![lessonId, studentId].every(validId) || !['review', 'corrections'].includes(mode)) throw new HttpsError('invalid-argument', 'Missing details.')
   const ids = mode === 'corrections' ? questionIds : []
@@ -822,7 +824,9 @@ export const sendBack = onCall(async (request) => {
     const snap = await tx.get(ref)
     if (!snap.exists || !(snap.data().classIds || []).includes(classId)) throw new HttpsError('not-found', 'No work in this class.')
     const p = snap.data()
-    const sentBackNow = { mode, questionIds: [], note: text || null, by: request.auth.uid, at: Date.now(), done: false }
+    // mustReturn (Gil, D-68): the student must go over it before going on in the course; otherwise
+    // at their own time. Either way, a lesson they are in the middle of isn't stopped.
+    const sentBackNow = { mode, questionIds: [], note: text || null, mustReturn: mustReturn !== false, by: request.auth.uid, at: Date.now(), done: false }
     if (mode === 'review') {
       if (!p.finished) throw new HttpsError('failed-precondition', 'not-finished')
       tx.update(ref, { sentBack: sentBackNow, updatedAt: FieldValue.serverTimestamp() })
@@ -1000,6 +1004,9 @@ export const addTeacher = onCall(async (request) => {
   if (!key || !key.includes('@')) throw new HttpsError('invalid-argument', 'email')
   const staff = await db.doc(`staff/${key}`).get()
   if (!staff.exists || !['teacher', 'admin'].includes(staff.data().role)) return { result: 'notTeacher' }
+  // Only teachers of the same school can be added (Gil, D-69). The system admin assigns schools.
+  const me = await requireTeacher(request.auth)
+  if (!me.schoolId || me.schoolId !== staff.data().schoolId) return { result: 'otherSchool' }
   const users = await db.collection('users').where('email', '==', key).limit(1).get()
   if (users.empty) {
     const any = await db.collection('users').get()

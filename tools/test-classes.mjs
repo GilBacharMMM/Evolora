@@ -13,6 +13,7 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { arrayRemove, collection, deleteDoc, doc, getDoc, getDocs, initializeFirestore, query, setDoc, updateDoc, where } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { ROOT, connect, finish, siteConfig } from './lib/connect.mjs'
+import { answerWithRecording, soloTeacher } from './lib/test-helpers.mjs'
 import { ALPHABET, checkCharacter, makeCode } from '../functions/classcode.js'
 
 setLogLevel('silent')
@@ -36,7 +37,7 @@ async function as(uid, fn) {
   const db = initializeFirestore(app, {})
   const fns = getFunctions(app, 'me-west1')
   const call = async (name, data) => (await httpsCallable(fns, name)(data)).data
-  try { return await fn({ db, call }) } finally { await deleteApp(app) }
+  try { return await fn({ db, call, app }) } finally { await deleteApp(app) }
 }
 
 async function refused(action) {
@@ -154,11 +155,12 @@ try {
   const version = (await getDoc(doc(ldb, 'lessons', 'circles-teaching', 'versions', String(lesson.currentVersion)))).data()
   const secret = (await getDoc(doc(ldb, 'lessons', 'circles-teaching', 'versions', String(lesson.currentVersion), 'secret', 'answers'))).data().questions
   for (const uid of [S.seven]) await deleteDoc(doc(ldb, 'progress', `${uid}__circles-teaching`))
-  await as(S.seven, async ({ db, call }) => {
-    const questions = version.topics.flatMap((t) => t.blocks.filter((b) => b.type === 'question' && b.kind !== 'audio'))
+  await as(S.seven, async ({ db, call, app }) => {
+    const questions = version.topics.flatMap((t) => t.blocks.filter((b) => b.type === 'question'))
     const first = await call('finishLesson', { lessonId: 'circles-teaching' })
     check('a lesson with unanswered questions is not marked finished', first.finished === false)
     for (const q of questions) {
+      if (q.kind === 'audio') { await answerWithRecording(app, call, S.seven, 'circles-teaching', q.id).catch(notMine); continue }
       const value = q.kind === 'choice' ? secret[q.id].correct : q.kind === 'number' ? String(secret[q.id].answer) : 'My answer for the test.'
       await call('answer', { lessonId: 'circles-teaching', questionId: q.id, value }).catch(notMine)
     }
