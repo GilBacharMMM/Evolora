@@ -676,7 +676,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-5.22, REQ-5.15, REQ-5.14, REQ-5.25, REQ-5.28, REQ-6.13
 
 ### D-60: Points the requirements leave open in course orders and due dates
-**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building REQ-5.8 and 5.9
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Claude, while building REQ-5.8 and 5.9; approved by Gil 2026-11-23
 **Context:** Building course orders (REQ-5.8) and due dates (REQ-5.9) while Gil was away raised small questions.
 **Decision:**
 1. **New assignments start with "Paired"**, the recommended order. Courses given before course orders existed keep "one after another" (D-55); selections given before keep "any order" (D-57), so nothing changes for students already working.
