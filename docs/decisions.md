@@ -581,7 +581,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-4.28, REQ-7.2, lesson file format, lesson check, teacher kit
 
 ### D-52: How test users and Claude's programs sign in (test site)
-**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building part 1
+**Date:** 2026-11-23 · **Status:** Decided (approved by Gil, 2026-11-23) · **Decided by:** Claude, while building part 1; approved by Gil
 **Context:** The "Switch user" menu (REQ-12.5) needs made-up test users who can be signed in with one click, and Claude's programs (loading lessons, adding teachers, resetting the test site; D-33, D-47) need a way to write to the database that no teacher or student has.
 **Options considered:**
 1. Test users with a shared, known password, kept in the project; the menu signs in with it. Claude's programs sign in with their own "loading program" account, whose password is kept only on Gil's computer (in the user folder, never on GitHub). The database rules let only that account change lessons, courses, classes and roles.
