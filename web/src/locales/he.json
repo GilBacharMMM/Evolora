@@ -194,7 +194,7 @@
     "noWaiting": "אין שיעורים ממתינים.",
     "noFinished": "עדיין לא הסתיים שום דבר.",
     "percentDone": "{{percent}}% הושלמו",
-    "lessonsDone": "{{done}} מתוך {{total}} שיעורים הושלמו",
+    "lessonsDone": "שיעורים שהושלמו: {{done}} מתוך {{total}}",
     "course": "קורס",
     "notInClass": "הכיתה או הקורס לא קיימים, או שאינך בכיתה הזו."
   }

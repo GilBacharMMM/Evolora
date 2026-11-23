@@ -188,7 +188,7 @@
     "noWaiting": "No waiting lessons.",
     "noFinished": "Nothing finished yet.",
     "percentDone": "{{percent}}% done",
-    "lessonsDone": "{{done}} of {{total}} lessons done",
+    "lessonsDone": "Lessons done: {{done}} of {{total}}",
     "course": "Course",
     "notInClass": "This class or course doesn't exist, or you're not in it."
   }

@@ -200,7 +200,7 @@
     "noWaiting": "لا توجد دروس بانتظارك.",
     "noFinished": "لم ينتهِ شيء بعد.",
     "percentDone": "اكتمل {{percent}}%",
-    "lessonsDone": "اكتمل {{done}} من {{total}} دروس",
+    "lessonsDone": "الدروس المكتملة: {{done}} من {{total}}",
     "course": "دورة",
     "notInClass": "هذا الصف أو هذه الدورة غير موجودة، أو أنك لست في هذا الصف."
   }

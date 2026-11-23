@@ -66,7 +66,17 @@ export function StudentHome() {
             <ul className="lesson-rows" role="list">
               {todo.map((item) => (
                 <li key={`${item.classId}-${item.lessonId}`} lang={item.language}>
-                  <WorkRow lesson={item} note={item.courseTitle ? `${item.className} · ${item.courseTitle}` : item.className} />
+                  <WorkRow lesson={item} note={
+                      <>
+                        <bdi>{item.className}</bdi>
+                        {item.courseTitle && (
+                          <>
+                            {' · '}
+                            <bdi>{item.courseTitle}</bdi>
+                          </>
+                        )}
+                      </>
+                    } />
                 </li>
               ))}
             </ul>

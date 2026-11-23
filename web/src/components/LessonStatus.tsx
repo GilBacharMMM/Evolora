@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { navigate } from '../router'
 import type { Status, WorkLesson } from '../classwork'
@@ -38,7 +39,7 @@ export function StatusWord({ status }: { status: Status }) {
 }
 
 // One lesson in a course or class page. Locked lessons show their title greyed out and can't be opened.
-export function WorkRow({ lesson, note }: { lesson: WorkLesson; note?: string | null }) {
+export function WorkRow({ lesson, note }: { lesson: WorkLesson; note?: ReactNode }) {
   const { t } = useTranslation()
   const locked = lesson.status === 'locked'
   return (
@@ -59,7 +60,7 @@ export function WorkRow({ lesson, note }: { lesson: WorkLesson; note?: string | 
           {lesson.title}
         </span>
         {note && (
-          <span className="muted row-note" dir="auto">
+          <span className="muted row-note">
             {note}
           </span>
         )}
