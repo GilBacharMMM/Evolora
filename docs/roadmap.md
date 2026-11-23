@@ -32,7 +32,7 @@ REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-3.
 | 1 | Foundation, REQ-12.4 to 12.6, 4.24 | Sign in, switch between test users, see the three demo lessons loaded |
 | 2 | REQ-4.3, 4.16, 4.17, 4.28, 4.20, 4.21, 4.22, 4.23, 6.15 | Take the demo lessons as a student: formulas, two attempts with hint and solution, an explanation after a right answer, check-again questions, number questions, help tips, videos with start and end times, topics with extra practice, lesson types shown |
 | 3 | REQ-5.1, 5.2, 5.4, 5.6, 5.7, 4.10, 6.1, 6.4, 6.11, 6.12 | Classes and class codes, assigning lessons and courses, the student's home, class and course pages (lessons open one after another until REQ-5.8) |
-| 4 | REQ-5.27, 5.10, 5.24, 5.19, 5.20, 5.12, 5.13, 5.11 | Teacher home and class dashboard, red flags and clearing them, opening lessons early for chosen students, the grading page with written comments, the grade table with CSV download |
+| 4 | REQ-5.27, 5.10, 5.24, 5.19, 5.20, 5.12, 5.13, 5.11, and 5.5 (D-66) | Teacher home and class dashboard, red flags and clearing them, opening lessons early for chosen students, the grading page with written comments, the grade table with CSV download |
 
 **Progress:** part 1 is on the test site (2026-11-23), waiting for Gil's checks. At Gil's request, part 1 also has a simple class page for teachers: clicking a class shows its name and its students' names (the viewing part of REQ-5.4). Removing students and the rest of the class page come in part 3. Part 2 is on the test site too (2026-11-23), waiting for Gil's checks. Part 3 is on the test site (2026-11-23), waiting for Gil's checks: classes and class codes, removing students, giving lessons and courses, and the student's home, class and course pages. Lessons in a course open one after another (D-55); small open points are in D-57. Part 4 is on the test site too (2026-11-23), waiting for Gil's checks: teacher home with counts and a To do list, the class dashboard with the progress map, clearing red flags, opening lessons early, the grading page with written comments, and the grade table with CSV download. Small open points, and what waits for other requirements, are in D-58. Gil approved D-57 and D-58, and parts 1 to 4 are merged into main (2026-11-23).
 
@@ -64,7 +64,7 @@ REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-3.
 | REQ-4.26, 5.23 | Exams; exam time window, lock and timer |
 | REQ-4.7 | Lesson versions (until then, Claude reloads a changed lesson only when no student is in the middle of it, or after checking with Gil) |
 | REQ-4.9 | Lesson library search |
-| REQ-5.3, 5.5 | Email invites; co-teachers |
+| REQ-5.3 | Email invites (co-teachers, REQ-5.5, moved to priority 1 by Gil, D-66) |
 | REQ-5.12 (marking up), 5.13 (audio comments) | Marking up answers; audio comments |
 | REQ-5.16, 10.2 | Messages |
 | REQ-5.21 | Archiving courses |

@@ -742,3 +742,10 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 7. **Retake:** "Allow a retake" on the results page lets a student take the exam again; the earlier attempt is kept for the teacher.
 8. **A demo exam** (`lessons/circles-exam`, 5 questions, marked [NEW] for Gil's review) is loaded on the test site. It isn't part of the circles course; the teacher gives it with "Give lessons".
 **Affects:** REQ-4.26, REQ-5.23, REQ-1.3, REQ-5.20
+
+### D-66: Co-teachers are a must-have
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** REQ-5.5 (co-teachers) was priority 3. It was already built (D-62) and is on the test site.
+**Decision:** REQ-5.5 is now priority 1 (must have for the pilot).
+**Reason:** Gil made it the top priority.
+**Affects:** REQ-5.5, roadmap

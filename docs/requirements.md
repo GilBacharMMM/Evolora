@@ -464,7 +464,7 @@ A teacher sees the list of students in a class and can remove a student.
 *Acceptance criteria:*
 - [ ] A removed student no longer sees the class, but their past work is kept for the teacher.
 
-**REQ-5.5: Co-teachers** (Priority 3: later)
+**REQ-5.5: Co-teachers** (Priority 1: must have; raised by Gil on 2026-11-23, D-66)
 A teacher can add other teachers to a class. All teachers of a class have the same permissions. When two teachers change the same thing (for example, a grade or a due date), the last change counts.
 
 *Acceptance criteria:*
