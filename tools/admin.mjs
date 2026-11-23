@@ -5,8 +5,8 @@
 //   node tools/admin.mjs add-admin <email> [name]       make someone a system admin
 //   node tools/admin.mjs remove-teacher <email>         take the teacher (or admin) role away
 //   node tools/admin.mjs people                         list everyone and their role (REQ-2.1)
-//   node tools/admin.mjs open <course id> <class id>    open a course to a class (until
-//                                                       teachers assign courses themselves, REQ-5.7)
+//   node tools/admin.mjs open <course id> <class id>    give a course to a whole class, as a
+//                                                       teacher does on the class page (REQ-5.7)
 //
 // Add "--site test" (the default) to choose the site.
 
@@ -20,6 +20,8 @@ export async function setStaff(db, email, role, name) {
   return key
 }
 
+// Gives a course to a whole class, as a teacher does on the class page (REQ-5.7): an assignment
+// for the whole class, and the course and its lessons opened to the class.
 export async function openCourseToClass(db, courseId, classId) {
   const course = await getDoc(doc(db, 'courses', courseId))
   if (!course.exists()) throw new Error(`There is no course "${courseId}". Load it first with tools/load.mjs.`)
@@ -29,6 +31,15 @@ export async function openCourseToClass(db, courseId, classId) {
   batch.update(course.ref, { classIds: arrayUnion(classId) })
   for (const lessonId of course.data().lessonIds) batch.update(doc(db, 'lessons', lessonId), { classIds: arrayUnion(classId) })
   batch.update(cls.ref, { courseIds: arrayUnion(courseId) })
+  batch.set(doc(collection(db, 'classes', classId, 'assignments')), {
+    kind: 'course',
+    courseId,
+    lessonIds: course.data().lessonIds,
+    everyone: true,
+    studentIds: [],
+    createdBy: 'evolora-loader',
+    createdAt: serverTimestamp(),
+  })
   await batch.commit()
 }
 

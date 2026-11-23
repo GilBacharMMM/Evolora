@@ -146,3 +146,23 @@ test('check-again: its own explanation, or else only its correct answer (REQ-4.2
   const own = answerCheckAgain(wrong2.state, withWhy, ['c2'])
   assert.equal(own.reply.whyRight, 'CA-WHY')
 })
+
+// A lesson counts as finished when every question the student received is answered (D-55).
+test('lesson finished: every question answered; skipped extras and audio count as done', async () => {
+  const { lessonFinished } = await import('./check.js')
+  const version = {
+    topics: [
+      { number: 1, blocks: [{ type: 'text' }, { type: 'question', id: 'a', kind: 'choice' }, { type: 'question', id: 'x', kind: 'number', extra: true }, { type: 'question', id: 'b', kind: 'open' }] },
+      { number: 2, blocks: [{ type: 'question', id: 'c', kind: 'choice' }, { type: 'question', id: 'rec', kind: 'audio' }] },
+    ],
+  }
+  const done = { attempts: ['c1'], result: 'correct1', score: 1 }
+  const pending = { attempts: ['text'], result: 'pending', score: null }
+  assert.equal(lessonFinished(version, {}, {}, 1), false)
+  assert.equal(lessonFinished(version, { a: done, b: pending }, { 1: { correct: 1 } }, 1), false, 'topic 2 not answered')
+  assert.equal(lessonFinished(version, { a: done, b: pending, c: done }, { 1: { correct: 1 }, 2: { correct: 1 } }, 1), true, 'extra skipped, open sent, audio left out')
+  assert.equal(lessonFinished(version, { a: { ...done, result: 'wrong', score: 0 }, b: pending, c: done }, { 1: { correct: 0 } }, 1), false, 'minimum not reached: the extra question is still asked')
+  const waitingCheckAgain = { result: 'wrong', score: 0, checkAgain: { result: null } }
+  assert.equal(lessonFinished(version, { a: done, b: pending, c: waitingCheckAgain }, { 1: { correct: 1 } }, 1), false, 'check-again question still open')
+  assert.equal(lessonFinished({ topics: [{ number: 1, blocks: [{ type: 'text' }] }] }, {}, {}, 0), true, 'a lesson without questions')
+})

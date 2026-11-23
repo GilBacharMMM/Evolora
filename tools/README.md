@@ -6,9 +6,10 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 |---|---|---|
 | `check-lesson.mjs` | Checks a lesson file before it is loaded: the lesson details, that every block is a known type, image files and sources, video sources, question answers, hints, solutions, check-again questions, levels, exam rules, and that every topic has enough questions. It lists errors (the lesson can't be loaded) and warnings (worth fixing). | REQ-4.24 |
 | `load.mjs` | The loading program: runs the lesson check, then loads lessons and courses into a site. A course brings its lessons with it. An unchanged lesson is skipped; a changed one is saved as a new version. | REQ-4.24, 4.10 |
-| `admin.mjs` | System admin tasks (D-47): make someone a teacher or system admin, take the role away, list everyone with their role, open a course to a class. | REQ-2.1, 2.2 |
-| `reset-test-site.mjs` | Fills or resets the test site with the standard test data: test users, the test class, the demo lessons and courses. Test site only. | REQ-12.6 |
+| `admin.mjs` | System admin tasks (D-47): make someone a teacher or system admin, take the role away, list everyone with their role, give a course to a whole class. | REQ-2.1, 2.2, 5.7 |
+| `reset-test-site.mjs` | Fills or resets the test site with the standard test data: test users, the test class with its class code, the demo lessons, and the demo courses given to the whole class. It prints the test class code. Test site only. | REQ-12.6 |
 | `test-checking.mjs` | End-to-end test of the checking service: answers real questions as test students (right, wrong, check-again, numbers, letters) and checks the scores and red flags. | REQ-4.16, 4.17, 4.22, 6.3 |
+| `test-classes.mjs` | End-to-end test of classes: a teacher creates a class; students join with a good code, a mistyped code, a code of no class, a closed class and a new code; 10 wrong codes mean a wait; lessons given to the whole class and to one student; a student who joins later; finishing a lesson; removing a student while keeping their work. Cleans up after itself. | REQ-5.1, 5.2, 5.4, 5.6, 5.7, D-55 |
 | `test-permissions.mjs` | Automatic permission tests: signs in as test users and checks that what must be blocked is blocked (for example, a student reading the correct answers). | REQ-3.4, 10.1, 10.3 |
 
 `check-lesson.mjs` also checks course files (`courses/<name>.md`): every listed lesson must exist, have the matching type (teaching, practice or exam), and pass the lesson check.
@@ -28,6 +29,7 @@ node tools/admin.mjs open circles-demo test-class
 node tools/reset-test-site.mjs
 node tools/test-permissions.mjs
 node tools/test-checking.mjs
+node tools/test-classes.mjs
 ```
 
 The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.

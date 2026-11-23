@@ -66,6 +66,11 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Open classroom** | (Stage 2) The card on a student's home page that holds all the open courses they joined on their own, without a teacher. In Hebrew: כיתה פתוחה. | proposed |
 | **Design language** | The shared look of all screens: colours, fonts, icons, spacing, buttons and cards. In Hebrew: שפה עיצובית. | proposed |
 | **Class code** | A unique code a teacher shares so students can join a class, as in Google Classroom. | proposed |
+| **Check character** | The last character of a class code, worked out from the other six. If one character is typed wrong, it doesn't fit, and the student sees "check the code" (REQ-5.2). In Hebrew: תו בדיקה. | proposed |
+| **Joining on / off** | Whether a class accepts new students with its class code. The teacher turns it off, for example once everyone has joined (REQ-5.2). In Hebrew: הצטרפות פתוחה / סגורה. | proposed |
+| **Finished lesson** | A lesson where every question the student received has been answered. Open answers count once sent; skipped extra practice questions count as done (D-55). In Hebrew: שיעור שהסתיים. | proposed |
+| **Lesson status** | How a lesson appears to a student in a course or class: **open** (can be started or continued), **done** (finished), or **locked** (opens later; title greyed out). Always shown with an icon and a word (REQ-6.12). In Hebrew: פתוח, הושלם, נעול. | proposed |
+| **Waiting lessons** | Single lessons a teacher gave outside a course, which the student hasn't finished yet. A section of the student's class page (REQ-6.11). In Hebrew: שיעורים ממתינים. | proposed |
 | **Invite** | An email from a teacher that lets a student join a class. | proposed |
 | **Enroll** | To join a class (with a class code or invite) or a public course. | proposed |
 | **Assignment** | A lesson, a course, or a selection of lessons that a teacher gives to a whole class or to specific students. Its settings: the course order (one after another, paired, or any order), optional due date, whether a redo counts (the latest redo's grade replaces the old one), and who checks open answers. | proposed |

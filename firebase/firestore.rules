@@ -3,9 +3,11 @@ rules_version = '2';
 // Evolora database rules (system-design section 4.3, REQ-3.4, REQ-10.1, REQ-10.3).
 // They apply even if someone tries to get around the website.
 //
-// Stage 1, part 1:
+// Stage 1:
 // - Only the loading program (the "loader" account, run by Claude) adds or changes
-//   lessons, courses, classes, memberships and staff (D-33, D-47).
+//   lessons, courses, classes, memberships and staff (D-33, D-47) from a browser or program.
+//   Teachers' and students' class actions (create a class, join, new code, remove a student,
+//   give lessons) go through the class service in the cloud, which these rules don't limit.
 // - A person's role comes from the staff list (staff/{email}); everyone else is a student (REQ-2.2).
 // - Students read only their own record, their own classes, and lessons and courses
 //   opened to one of their classes. Never the correct answers (D-17).
@@ -94,6 +96,23 @@ service cloud.firestore {
         allow read: if isLoader() || teachesThisClass();
         allow write: if isLoader();
       }
+
+      // What the class was given (REQ-5.7). Written only by the class service (system-design 2.6).
+      // A student reads only whole-class assignments and those given to them.
+      match /assignments/{assignmentId} {
+        allow read: if isLoader() || teachesThisClass()
+          || (signedIn() && classId in myClassIds()
+              && (resource.data.everyone == true || request.auth.uid in resource.data.studentIds));
+        allow write: if isLoader();
+      }
+    }
+
+    // Class codes and wrong-code counts (REQ-5.2): only the class service uses them.
+    match /classCodes/{code} {
+      allow read, write: if isLoader();
+    }
+    match /joinAttempts/{uid} {
+      allow read, write: if isLoader();
     }
 
     // Lessons: details, versions, and the protected answers

@@ -16,6 +16,8 @@ export interface Session {
   signInWithGoogle: () => Promise<void>
   signOutNow: () => Promise<void>
   chooseLanguage: (lang: Language) => void
+  // Reads the person's classes again, after joining one (REQ-5.2).
+  reloadClasses: () => Promise<void>
   error: string | null
 }
 
@@ -102,6 +104,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const reloadClasses = useCallback(async () => {
+    if (user) setClassIds(await loadClassIds(user))
+  }, [user])
+
   const signOutNow = useCallback(async () => {
     await signOut(auth)
   }, [])
@@ -115,7 +121,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   )
 
   return (
-    <SessionContext.Provider value={{ state, user, role, classIds, signInWithGoogle, signOutNow, chooseLanguage, error }}>
+    <SessionContext.Provider value={{ state, user, role, classIds, signInWithGoogle, signOutNow, chooseLanguage, reloadClasses, error }}>
       {children}
     </SessionContext.Provider>
   )

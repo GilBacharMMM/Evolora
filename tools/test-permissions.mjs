@@ -9,7 +9,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { initializeApp, deleteApp, setLogLevel } from 'firebase/app'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
-import { collection, deleteDoc, deleteField, doc, getDoc, getDocs, initializeFirestore, setDoc } from 'firebase/firestore'
+import { collection, deleteDoc, deleteField, doc, getDoc, getDocs, initializeFirestore, query, setDoc, where } from 'firebase/firestore'
 import { getBytes, getStorage, ref } from 'firebase/storage'
 import { ROOT, finish, siteConfig } from './lib/connect.mjs'
 
@@ -58,6 +58,14 @@ await as('test-student-1', async (db) => {
   await expect('saves own language', true, () => setDoc(doc(db, 'users', 'test-student-1'), { language: 'he' }, { merge: true }))
   await expect('adds a made-up field to own record', false, () => setDoc(doc(db, 'users', 'test-student-1'), { role: 'admin' }, { merge: true }))
   await expect('lists all lessons', false, () => getDocs(collection(db, 'lessons')))
+  const given = collection(db, 'classes', 'test-class', 'assignments')
+  await expect('reads whole-class assignments (REQ-5.7)', true, () => getDocs(query(given, where('everyone', '==', true))))
+  await expect('reads assignments given to them', true, () => getDocs(query(given, where('studentIds', 'array-contains', 'test-student-1'))))
+  await expect("reads all assignments, including other students' ones", false, () => getDocs(given))
+  await expect('gives itself a lesson', false, () => setDoc(doc(given), { kind: 'lessons', lessonIds: ['circles-practice'], everyone: true, studentIds: [] }))
+  await expect('reads the class codes', false, () => getDocs(collection(db, 'classCodes')))
+  await expect('resets its own wrong-code count', false, () => setDoc(doc(db, 'joinAttempts', 'test-student-1'), { wrong: 0 }))
+  await expect('adds itself to the class list', false, () => setDoc(doc(db, 'classes', 'test-class', 'students', 'test-student-1'), { name: 'x' }))
   // Leave the test user as the reset made it (no saved language).
   await setDoc(doc(db, 'users', 'test-student-1'), { language: deleteField() }, { merge: true })
 })
@@ -82,6 +90,9 @@ await as('test-teacher-1', async (db) => {
   await expect('changes a lesson (only the loading program may)', false, () => setDoc(doc(db, 'lessons', 'circles-teaching'), { title: 'x' }, { merge: true }))
   await expect('makes someone else a teacher', false, () => setDoc(doc(db, 'staff', 'student1@evolora.test'), { role: 'teacher' }))
   await expect("reads a student's private record", false, read(db, 'users', 'test-student-1'))
+  await expect('reads the class assignments', true, () => getDocs(collection(db, 'classes', 'test-class', 'assignments')))
+  await expect('changes the class directly (only through the class service)', false, () => setDoc(doc(db, 'classes', 'test-class'), { joiningOpen: false }, { merge: true }))
+  await expect('reads the class codes list', false, () => getDocs(collection(db, 'classCodes')))
 })
 
 await as('test-teacher-2', async (db) => {
@@ -89,6 +100,7 @@ await as('test-teacher-2', async (db) => {
   await expect('reads the test class (not theirs)', false, read(db, 'classes', 'test-class'))
   await expect('reads its student list', false, () => getDocs(collection(db, 'classes', 'test-class', 'students')))
   await expect('removes a student from it', false, () => deleteDoc(doc(db, 'classes', 'test-class', 'students', 'test-student-1')))
+  await expect('reads its assignments', false, () => getDocs(collection(db, 'classes', 'test-class', 'assignments')))
 })
 
 console.log(`\n${count - failures} of ${count} permission tests passed.`)

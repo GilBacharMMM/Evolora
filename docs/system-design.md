@@ -68,6 +68,29 @@ Videos, simulations and podcasts from other websites are shown inside the lesson
 ### 2.5 Screen size
 Screens are designed for a Chromebook screen (typically 11 to 14 inches) and work on larger screens too. They are tested in Chrome on a Chromebook, on Windows and on a Mac. Other browsers get only a "please open in Chrome" message (REQ-11.1). Phones aren't supported.
 
+### 2.6 Classes, class codes and assignments (stage 1, part 3)
+**Classes.** A teacher creates a class by typing its name (REQ-5.1). Evolora gives it a colour from a fixed set of 8, in turn (D-57), and a class code. The class page shows the code with a **Copy** button, a **Make a new code** button, a switch to turn joining on or off, the class list with a **Remove** button for each student (REQ-5.4), what the class was given, and a **Give lessons** form (REQ-5.7).
+
+**Class codes (REQ-5.2).** A code has 7 characters from a set of 31 that can't be confused with each other (letters and digits without 0, O, 1, I and L). The first 6 are chosen at random by the checking service; the 7th is a **check character**, worked out from the first 6 so that changing any one character, or swapping two neighbouring characters, always makes the code invalid. So a typing mistake gets "check the code" at once, without even looking for the class. Codes work in upper or lower case. Each code is kept in a list that only the checking service reads, pointing to its class. Making a new code removes the old one from the list, so it stops working.
+
+**Joining.** The student types the code under **Join a class**. The checking service:
+1. refuses at once if the student is waiting (see below);
+2. says "check the code" if the check character doesn't fit;
+3. says "no class has this code" if no class has it;
+4. says "this class is closed to new students" if the teacher turned joining off;
+5. otherwise adds the student to the class at once, with no approval.
+
+Every wrong code (steps 2 and 3) is counted. After 10 wrong codes in a row, the student must wait 5 minutes; a right code starts the count again. A student can't leave a class; only the teacher removes students. A removed student no longer sees the class or its lessons, but their work stays for the teacher. They can join again with the code while joining is on (D-57).
+
+**Assignments (REQ-5.7).** The teacher gives a course, one lesson, or several lessons, to the whole class or to chosen students. Each is saved as an **assignment** of the class, with who it is for. Whole-class assignments are for everyone in the class, including students who join later. Giving a lesson or course opens it to the class, so its students can read it. A selection of lessons appears as separate single lessons (D-57).
+
+**What the student sees.**
+- **Home page (REQ-6.1):** a card for each class (name, teacher, colour), the **To do** list beside the cards (every lesson the student can open now and hasn't finished, oldest assignment first, D-57), and **Join a class**.
+- **Class page (REQ-6.11):** active courses, each with its percentage done and a progress bar (REQ-6.4); waiting single lessons; and **Finished this semester**. Archived courses come with REQ-5.21.
+- **Course page (REQ-6.12):** every lesson in order, practice lessons under their teaching lesson, each with its status shown by an icon and a word: **open** (play icon), **done** (tick) or **locked** (padlock, title greyed out, can't be opened). Lessons open one after another, practice lessons included (D-55), until course orders come (REQ-5.8). On top: the percentage done and a progress bar (REQ-6.4).
+
+**Finished lessons.** A lesson counts as finished when every question the student received has been answered: open answers count once sent, and extra practice questions that were skipped because the topic's minimum was reached count as done (D-55). The checking service marks the student's work as finished after the last answer; a lesson without questions is marked finished when the student reaches its end.
+
 ---
 
 ## 3. Where the data lives
@@ -117,6 +140,8 @@ Rules inside the database decide what each person can read and change. They appl
 - Messages can be read only by the student and the teachers of that class (REQ-5.16).
 - Teacher notes about a student can be read only by the class's teachers, never by the student (REQ-5.28).
 - A teacher's markings on an answer (highlights and coloured edits, REQ-5.12) are saved next to the answer, without changing the student's original text, and the student can read them once the work is returned.
+- Classes, class codes, the class list and assignments are changed only by the checking service (creating a class, joining, new code, joining on or off, removing a student, giving lessons), after it has checked that the person is the class's teacher, or a student with a right code. Nobody's browser writes them directly. The list of class codes and the count of wrong codes can't be read by anyone's browser.
+- A student reads the assignments of their classes that are for the whole class or for them, not those for other students. A lesson given to some students is readable by everyone in the class, as all lessons are open in the lesson library anyway (REQ-4.10); only the chosen students see it on their pages.
 - Lessons in the lesson library can be read by all teachers. In stage 1, only Claude's loading program can add or change lessons. In stage 2, only the lesson's own creator can change it (others make a copy).
 - Lesson images in file storage can be seen by anyone signed in who has their exact address. They are shared openly (REQ-1.1) and hold no student data, and only the lessons, which are hidden from strangers, list those addresses (REQ-10.1).
 
@@ -276,8 +301,8 @@ Which part of the system delivers each group of requirements:
 | REQ-2.1 to 2.3 (roles, edit mode) | Accounts and permissions (4.2) |
 | REQ-3.1 to 3.4 (sign-in, access) | Accounts and permissions (4.1, 4.3) |
 | REQ-4.1 to 4.10, 4.24 (lessons, courses, loading) | Getting lessons into Evolora (2.2), lesson versions (3.2), permissions (4.3) |
-| REQ-5.1 to 5.26 (classes, dashboards, review, messages, levels, grades shown or hidden, exam windows) | Website screens (2.1), checking service (5), permissions (4.3), email (7.4) |
-| REQ-6.1 to 6.15 (student learning, help tips) | Lesson player (2.3), checking service (5), audio (6) |
+| REQ-5.1 to 5.26 (classes, dashboards, review, messages, levels, grades shown or hidden, exam windows) | Website screens (2.1), classes and assignments (2.6), checking service (5), permissions (4.3), email (7.4) |
+| REQ-6.1 to 6.15 (student learning, help tips) | Lesson player (2.3), student home, class and course pages (2.6), checking service (5), audio (6) |
 | REQ-4.11 to 4.26 (question features, topics, exams) | Lesson player (2.3), checking service (5.1) |
 | REQ-8.1 (subjects, grades) | Lesson details in the database (3.1) |
 | REQ-9.1 to 9.4 (languages, direction) | Languages and direction (2.4) |

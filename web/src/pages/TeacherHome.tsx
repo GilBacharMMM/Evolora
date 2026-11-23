@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
-import { db } from '../site'
+import { collection, getDocs, query, where } from 'firebase/firestore'
+import { httpsCallable } from 'firebase/functions'
+import { db, functions } from '../site'
 import { useSession } from '../session'
 import { navigate } from '../router'
 import { TypeChip } from '../components/TypeChip'
@@ -15,12 +16,14 @@ interface TeacherClass {
   students: number
 }
 
-// The teacher's home (part 1): their classes, and the lessons loaded into Evolora.
-// The teacher home page, class dashboard and grading come in parts 3 and 4.
+// The teacher's home: their classes, creating a class (REQ-5.1), and the lessons in Evolora.
+// The full teacher home page, class dashboard and grading come in part 4.
 export function TeacherHome() {
   const { t } = useTranslation()
   const { user } = useSession()
   const [classes, setClasses] = useState<TeacherClass[] | null>(null)
+
+  const [reload, setReload] = useState(0)
 
   useEffect(() => {
     if (!user) return
@@ -31,7 +34,7 @@ export function TeacherHome() {
         const out: TeacherClass[] = []
         for (const c of snap.docs) {
           const students = await getDocs(collection(db, 'classes', c.id, 'students'))
-          out.push({ id: c.id, name: c.data().name, color: c.data().color || '#0E6B73', students: students.size })
+          out.push({ id: c.id, name: c.data().name, color: c.data().color || '#0E6B73', students: students.docs.filter((s) => !s.data().removed).length })
         }
         if (live) setClasses(out)
       } catch {
@@ -41,7 +44,7 @@ export function TeacherHome() {
     return () => {
       live = false
     }
-  }, [user])
+  }, [user, reload])
 
   return (
     <main className="page">
@@ -53,7 +56,7 @@ export function TeacherHome() {
       </div>
       <h2 className="section-title">{t('teacher.myClasses')}</h2>
       {classes === null && <p className="loading">{t('common.loading')}</p>}
-      {classes?.length === 0 && <p className="card message-card">{t('teacher.noClasses')}</p>}
+      {classes?.length === 0 && <p className="muted">{t('teacher.noClasses')}</p>}
       <div className="class-grid">
         {classes?.map((c) => (
           <button key={c.id} type="button" className="card class-card class-card-button" onClick={() => navigate(`/teacher/class/${c.id}`)}>
@@ -68,98 +71,48 @@ export function TeacherHome() {
           </button>
         ))}
       </div>
+      <CreateClass onCreated={(id) => { setReload((n) => n + 1); navigate(`/teacher/class/${id}`) }} />
     </main>
   )
 }
 
-interface StudentRow {
-  id: string
-  name: string
-  email: string
-}
-
-// A simple class page (part 1, at Gil's request): the class name and its students'
-// names, the viewing part of REQ-5.4. Removing students, the class code and assigning
-// lessons come in part 3. Only the class's own teachers can open it (REQ-3.4).
-export function TeacherClass({ classId }: { classId: string }) {
+// A teacher creates a class by typing its name (REQ-5.1). Evolora gives it a colour and a class code.
+function CreateClass({ onCreated }: { onCreated: (classId: string) => void }) {
   const { t } = useTranslation()
-  const [name, setName] = useState<string | null>(null)
-  const [color, setColor] = useState('#0E6B73')
-  const [teachers, setTeachers] = useState<string[]>([])
-  const [students, setStudents] = useState<StudentRow[] | null>(null)
-  const [blocked, setBlocked] = useState(false)
-
-  useEffect(() => {
-    let live = true
-    ;(async () => {
-      try {
-        const c = await getDoc(doc(db, 'classes', classId))
-        if (!c.exists()) throw new Error('not found')
-        const list = await getDocs(collection(db, 'classes', classId, 'students'))
-        if (!live) return
-        setName(c.data().name)
-        setColor(c.data().color || '#0E6B73')
-        setTeachers(c.data().teacherNames || [])
-        setStudents(
-          list.docs
-            .map((d) => ({ id: d.id, name: d.data().name || '', email: d.data().email || '' }))
-            .sort((a, b) => a.name.localeCompare(b.name)),
-        )
-      } catch {
-        if (live) setBlocked(true)
-      }
-    })()
-    return () => {
-      live = false
-    }
-  }, [classId])
-
-  if (blocked) {
-    return (
-      <main className="page narrow">
-        <BackButton />
-        <div className="card message-card">
-          <p>{t('teacher.classNotYours')}</p>
-        </div>
-      </main>
-    )
-  }
-
+  const [name, setName] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [failed, setFailed] = useState(false)
   return (
-    <main className="page narrow">
-      <BackButton />
-      {name === null ? (
-        <p className="loading">{t('common.loading')}</p>
-      ) : (
-        <section className="card class-card">
-          <div className="class-card-top" style={{ background: color }}>
-            <h1 className="class-page-title" dir="auto">
-              {name}
-            </h1>
-            <span dir="auto">{teachers.join(', ')}</span>
-          </div>
-          <div className="class-card-body">
-            <h2 className="section-title">
-              {t('teacher.students')} ({students?.length ?? 0})
-            </h2>
-            {students?.length === 0 && <p className="muted">{t('teacher.noStudents')}</p>}
-            <ol className="student-list">
-              {students?.map((s) => (
-                <li key={s.id}>
-                  <span className="student-name" dir="auto">
-                    {s.name}
-                  </span>
-                  <span className="muted student-email" dir="ltr">
-                    {s.email}
-                  </span>
-                </li>
-              ))}
-            </ol>
-            <p className="part-note">{t('teacher.classLater')}</p>
-          </div>
-        </section>
-      )}
-    </main>
+    <section className="card join-card compact" aria-labelledby="create-title">
+      <h2 id="create-title">{t('teacher.createClass')}</h2>
+      <form
+        className="join-form"
+        onSubmit={async (e) => {
+          e.preventDefault()
+          if (!name.trim() || busy) return
+          setBusy(true)
+          setFailed(false)
+          try {
+            const r = await httpsCallable<{ name: string }, { classId: string }>(functions, 'createClass')({ name })
+            setName('')
+            onCreated(r.data.classId)
+          } catch {
+            setFailed(true)
+          } finally {
+            setBusy(false)
+          }
+        }}
+      >
+        <label>
+          <span className="visually-hidden">{t('teacher.className')}</span>
+          <input className="name-input" value={name} onChange={(e) => setName(e.target.value)} placeholder={t('teacher.classNameExample')} dir="auto" maxLength={80} />
+        </label>
+        <button type="submit" className="button primary" disabled={busy || !name.trim()}>
+          {busy ? t('teacher.creating') : t('teacher.create')}
+        </button>
+      </form>
+      {failed && <p className="notice" role="alert">{t('teacher.actionFailed')}</p>}
+    </section>
   )
 }
 

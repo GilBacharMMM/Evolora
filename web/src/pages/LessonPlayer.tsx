@@ -1,7 +1,9 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { doc, getDoc, onSnapshot } from 'firebase/firestore'
-import { db, IS_TEST_SITE } from '../site'
+import { httpsCallable } from 'firebase/functions'
+import { db, functions, IS_TEST_SITE } from '../site'
+import { lessonAccess, loadClasswork } from '../classwork'
 import { useSession } from '../session'
 import { navigate } from '../router'
 import { BlockView, Ui } from '../lesson/Blocks'
@@ -18,6 +20,7 @@ interface Progress {
   questions?: Record<string, QuestionState>
   topics?: Record<string, { correct: number; flagged?: boolean }>
   grade?: { percent: number | null; pending: boolean; points: number; outOf: number }
+  finished?: boolean
 }
 
 // The lesson player (REQ-6.2, 4.5, 4.21, system-design 2.3). The student sees the lesson up to
@@ -25,7 +28,19 @@ interface Progress {
 // checking service, and the student's work is saved there, so they return to the same place.
 export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const { t } = useTranslation()
-  const { user } = useSession()
+  const { user, role, classIds } = useSession()
+  // A student opens only lessons given to them that aren't locked (REQ-5.7, 6.12, D-55, D-57).
+  const [gate, setGate] = useState<'checking' | 'open' | 'locked' | 'notGiven'>(role === 'student' ? 'checking' : 'open')
+  useEffect(() => {
+    if (role !== 'student' || !user) return
+    let live = true
+    loadClasswork(user.uid, classIds)
+      .then((c) => live && setGate(lessonAccess(c, lessonId)))
+      .catch(() => live && setGate('open'))
+    return () => {
+      live = false
+    }
+  }, [role, user, classIds, lessonId])
   const [currentVersion, setCurrentVersion] = useState<number | null>(null)
   const [minimum, setMinimum] = useState(0)
   const [lesson, setLesson] = useState<LessonVersion | null>(null)
@@ -98,6 +113,17 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const finished = lesson !== null && stop === -1
   const activeTopic = visible.length ? (visible[visible.length - 1] as Item & { topic?: number }).topic : undefined
 
+  // Reaching the end of a lesson without questions marks it finished (D-55); lessons with
+  // questions are marked by the checking service with the last answer.
+  const askedToFinish = useRef(false)
+  useEffect(() => {
+    if (!finished || role !== 'student' || progress === null || progress.finished || askedToFinish.current) return
+    askedToFinish.current = true
+    httpsCallable(functions, 'finishLesson')({ lessonId }).catch(() => {
+      askedToFinish.current = false
+    })
+  }, [finished, role, progress, lessonId])
+
   // Coming back to a lesson: scroll to where the student stopped (REQ-6.2).
   useEffect(() => {
     if (scrolled.current || !lesson || progress === null) return
@@ -109,6 +135,19 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
     })
   }, [lesson, progress])
 
+  if (gate === 'locked' || gate === 'notGiven') {
+    return (
+      <main className="page narrow">
+        <BackButton />
+        <div className="card message-card">
+          <p>{gate === 'locked' ? t('lesson.locked') : t('lesson.notAllowed')}</p>
+          <button type="button" className="button primary" onClick={() => navigate('/')}>
+            {t('common.toHome')}
+          </button>
+        </div>
+      </main>
+    )
+  }
   if (problem) {
     return (
       <main className="page narrow">
@@ -122,7 +161,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
       </main>
     )
   }
-  if (!lesson) {
+  if (!lesson || gate === 'checking') {
     return (
       <main className="page narrow">
         <p className="loading">{t('common.loading')}</p>

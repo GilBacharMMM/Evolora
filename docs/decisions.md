@@ -591,3 +591,26 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Reason:** Works on the free plan, nothing secret goes to GitHub except the test users' password, and the test users only ever see made-up data. Anyone who finds that password can only sign in as a made-up test user on the test site. The real site has no test users and no "Switch user" menu: the real site is built without them (checked automatically: the built real-site files contain no test-user names or password).
 **Also:** On the test site only, opening the site once with `?any-browser` at the end of the address lets a non-Chrome browser through (REQ-11.1). This is for Claude's automatic screen tests, whose test browser is not branded "Google Chrome". The real site has no such exception.
 **Affects:** REQ-12.5, REQ-12.6, REQ-11.1, system-design 4.2, 7.3
+
+### D-55: Lessons in a course open one after another, practice lessons included
+**Date:** 2026-11-23 · **Status:** Decided · **Decided by:** Gil
+**Context:** Until course orders come (REQ-5.8, priority 2), the course page (REQ-6.12) needs one rule for which lessons are open.
+**Options considered:**
+1. Every lesson in the course list opens when the one before it is finished (teaching 1, its practice lessons, then teaching 2).
+2. Practice lessons open alongside their teaching lesson.
+
+**Decision:** Option 1. A lesson counts as finished when every question the student received has been answered (open answers count once sent). Lessons opened early for a student (REQ-5.20, part 4) will be open whatever comes before them.
+**Affects:** REQ-5.8, REQ-6.12, REQ-6.4
+
+### D-57: Points the requirements leave open in part 3 (classes, codes and assignments)
+**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building part 3
+**Context:** Building part 3 (REQ-5.1, 5.2, 5.4, 5.7, 6.1, 6.11, 6.12) raised small questions the requirements don't answer. Each was given the simplest answer, which is easy to change.
+**Decision:**
+1. **A selection of single lessons** (REQ-5.7) shows each lesson on its own under "Waiting lessons", all of them open at once. Course orders for selections come with REQ-5.8.
+2. **A removed student can join again** with the class code, while joining is on (REQ-5.2, 5.4). To keep them out, the teacher turns joining off or makes a new code. Their earlier work is still there when they come back.
+3. **The "To do" list** has no due dates yet (REQ-5.9 is priority 2), so it lists the lessons in the order they were given, oldest first, one line per lesson the student can open now. Pending notes come with comments in part 4.
+4. **"Finished this semester"** shows every finished course and single lesson, because there are no semesters or archived courses yet (REQ-5.21 is priority 3).
+5. **A new class gets a colour** from a fixed set of 8 colours, in turn, so a student's classes look different. The teacher doesn't choose it.
+6. **A locked lesson** can't be opened from the course page, and if its address is typed, the student sees "This lesson is still locked".
+**Reason:** These keep part 3 small and match how the rest of the pilot works; none of them can lose a student's work.
+**Affects:** REQ-5.2, REQ-5.4, REQ-5.7, REQ-6.1, REQ-6.11, REQ-6.12

@@ -153,3 +153,21 @@ export function lessonGrade(questionStates, weights = {}) {
   }
   return { percent: total ? Math.round((got / total) * 100) : null, pending, points: got, outOf: total }
 }
+
+// Is the lesson finished (D-55)? Every question the student received has been answered:
+// open answers count once sent, audio questions (not recorded yet) are left out, and extra
+// practice questions skipped because the topic's minimum was reached count as done (REQ-4.21).
+// The same rule the lesson player uses to show the end of the lesson.
+export function lessonFinished(version, questionStates, topics = {}, minimum = 0) {
+  for (const topic of version.topics || []) {
+    const correct = topics[topic.number]?.correct || 0
+    for (const b of topic.blocks || []) {
+      if (b.type !== 'question' || b.kind === 'audio') continue
+      const st = questionStates[b.id]
+      if (isFinished(st)) continue
+      if (b.extra && !st && minimum > 0 && correct >= minimum) continue
+      return false
+    }
+  }
+  return true
+}

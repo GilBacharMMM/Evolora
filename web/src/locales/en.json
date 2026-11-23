@@ -35,7 +35,21 @@
     "joinExplain": "Type the class code your teacher gave you.",
     "classCode": "Class code",
     "join": "Join",
-    "joinComingSoon": "Joining a class with a code isn't open on the test site yet. It comes in a later part."
+    "myClasses": "My classes",
+    "todo": "To do",
+    "todoEmpty": "Nothing to do right now. Well done!",
+    "lessonsToDo_one": "1 lesson to do",
+    "lessonsToDo_other": "{{count}} lessons to do",
+    "joining": "Joining…",
+    "joinResult": {
+      "joined": "You joined {{className}}.",
+      "already": "You're already in {{className}}.",
+      "closed": "{{className}} is closed to new students. Ask your teacher.",
+      "checkCode": "Check the code: one of the characters seems to be wrong.",
+      "noClass": "No class has this code. Check it with your teacher.",
+      "wait": "Too many wrong codes. Please wait {{minutes}} minutes, then try again.",
+      "failed": "Something went wrong, and you didn't join. Please try again."
+    }
   },
   "teacher": {
     "lessons": "Lessons in Evolora",
@@ -51,7 +65,50 @@
     "students": "Students",
     "noStudents": "No students have joined this class yet.",
     "classNotYours": "This class doesn't exist, or you don't teach it.",
-    "classLater": "Test site, part 1: you can see who is in the class. Removing students, the class code and giving lessons come in part 3."
+    "createClass": "Create a class",
+    "className": "Class name",
+    "classNameExample": "For example: Grade 7B Science",
+    "create": "Create",
+    "creating": "Creating…",
+    "code": "Class code",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "newCode": "Make a new code",
+    "newCodeConfirm": "Make a new code? The old code will stop working. Students already in the class stay in it.",
+    "yesNewCode": "Yes, make a new code",
+    "cancel": "Cancel",
+    "joiningOpen": "Joining is on: students can join with the code.",
+    "joiningClosed": "Joining is off: the code doesn't work.",
+    "turnOff": "Turn joining off",
+    "turnOn": "Turn joining on",
+    "remove": "Remove",
+    "removeConfirm": "Remove {{name}} from the class? They won't see the class any more. Their work is kept.",
+    "yesRemove": "Yes, remove",
+    "removedStudents": "Removed students",
+    "removedExplain": "Their work is kept. They can join again with the class code while joining is on.",
+    "given": "Given to the class",
+    "nothingGiven": "Nothing given yet.",
+    "courseLabel": "Course",
+    "lessonsLabel_one": "Lesson",
+    "lessonsLabel_other": "{{count}} lessons",
+    "toEveryone": "Whole class",
+    "toSome_one": "1 student: {{names}}",
+    "toSome_other": "{{count}} students: {{names}}",
+    "give": "Give lessons",
+    "giveWhat": "What to give",
+    "aCourse": "A course",
+    "someLessons": "One or more lessons",
+    "chooseCourse": "Choose a course",
+    "giveTo": "Give to",
+    "wholeClass": "The whole class (also students who join later)",
+    "chosenStudents": "Chosen students",
+    "giveButton": "Give",
+    "giving": "Giving…",
+    "givenDone": "Given. The students see it on their pages.",
+    "needCourse": "Choose a course first.",
+    "needLessons": "Choose at least one lesson.",
+    "needStudents": "Choose at least one student.",
+    "actionFailed": "That didn't work. Please try again."
   },
   "lessonType": {
     "teaching": "Teaching",
@@ -81,7 +138,8 @@
     "notAllowed": "This lesson isn't open to you.",
     "end": "You've reached the end of the lesson.",
     "videoBlocked": "This video can't be played inside the lesson.",
-    "openOnYouTubeButton": "Open the video on YouTube"
+    "openOnYouTubeButton": "Open the video on YouTube",
+    "locked": "This lesson is still locked. It opens when you finish the lesson before it."
   },
   "test": {
     "switchUser": "Switch user",
@@ -115,5 +173,23 @@
       "offline": "No internet connection: your answer wasn't sent. Try again when you're connected.",
       "failed": "Something went wrong, and your answer wasn't sent. Please try again."
     }
+  },
+  "status": {
+    "open": "Open",
+    "done": "Done",
+    "locked": "Locked",
+    "lockedExplain": "Opens when you finish the lesson before it."
+  },
+  "cls": {
+    "activeCourses": "Active courses",
+    "waitingLessons": "Waiting lessons",
+    "finished": "Finished this semester",
+    "noCourses": "No active courses.",
+    "noWaiting": "No waiting lessons.",
+    "noFinished": "Nothing finished yet.",
+    "percentDone": "{{percent}}% done",
+    "lessonsDone": "{{done}} of {{total}} lessons done",
+    "course": "Course",
+    "notInClass": "This class or course doesn't exist, or you're not in it."
   }
 }

@@ -25,6 +25,8 @@ export type Route =
   | { name: 'lesson'; lessonId: string }
   | { name: 'library' }
   | { name: 'teacherClass'; classId: string }
+  | { name: 'studentClass'; classId: string }
+  | { name: 'studentCourse'; classId: string; courseId: string }
   | { name: 'notFound' }
 
 export function matchRoute(path: string): Route {
@@ -34,5 +36,9 @@ export function matchRoute(path: string): Route {
   if (/^\/teacher\/lessons\/?$/.test(path)) return { name: 'library' }
   const cls = path.match(/^\/teacher\/class\/([\w-]+)\/?$/)
   if (cls) return { name: 'teacherClass', classId: cls[1] }
+  const sc = path.match(/^\/class\/([\w-]+)\/?$/)
+  if (sc) return { name: 'studentClass', classId: sc[1] }
+  const course = path.match(/^\/class\/([\w-]+)\/course\/([\w-]+)\/?$/)
+  if (course) return { name: 'studentCourse', classId: course[1], courseId: course[2] }
   return { name: 'notFound' }
 }

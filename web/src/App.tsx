@@ -7,11 +7,14 @@ import { matchRoute, navigate, usePath } from './router'
 import { Header } from './components/Header'
 import { SignIn } from './pages/SignIn'
 import { StudentHome } from './pages/StudentHome'
-import { LessonLibrary, TeacherClass, TeacherHome } from './pages/TeacherHome'
+import { LessonLibrary, TeacherHome } from './pages/TeacherHome'
 
 // The lesson player, with its formula display, loads only when a lesson is opened,
 // so the home page opens quickly (REQ-12.1).
 const LessonPlayer = lazyFresh(() => import('./pages/LessonPlayer').then((m) => ({ default: m.LessonPlayer })))
+const TeacherClass = lazyFresh(() => import('./pages/TeacherClass').then((m) => ({ default: m.TeacherClass })))
+const StudentClass = lazyFresh(() => import('./pages/StudentClass').then((m) => ({ default: m.StudentClass })))
+const StudentCourse = lazyFresh(() => import('./pages/StudentClass').then((m) => ({ default: m.StudentCourse })))
 
 function TestBanner() {
   const { t } = useTranslation()
@@ -68,6 +71,11 @@ function Screens() {
   if (session.state === 'signedOut') return <SignIn />
 
   const isTeacher = session.role === 'teacher' || session.role === 'admin'
+  const loading = (
+    <main className="page narrow">
+      <p className="loading">{t('common.loading')}</p>
+    </main>
+  )
   switch (route.name) {
     case 'home':
       return isTeacher ? <TeacherHome /> : <StudentHome />
@@ -75,7 +83,25 @@ function Screens() {
       // Teacher screens can't be opened by students, even by typing the address (REQ-3.4).
       return isTeacher ? <LessonLibrary /> : <Message text={t('common.teachersOnly')} />
     case 'teacherClass':
-      return isTeacher ? <TeacherClass key={route.classId} classId={route.classId} /> : <Message text={t('common.teachersOnly')} />
+      return isTeacher ? (
+        <Suspense fallback={loading}>
+          <TeacherClass key={route.classId} classId={route.classId} />
+        </Suspense>
+      ) : (
+        <Message text={t('common.teachersOnly')} />
+      )
+    case 'studentClass':
+      return (
+        <Suspense fallback={loading}>
+          <StudentClass key={route.classId} classId={route.classId} />
+        </Suspense>
+      )
+    case 'studentCourse':
+      return (
+        <Suspense fallback={loading}>
+          <StudentCourse key={route.courseId} classId={route.classId} courseId={route.courseId} />
+        </Suspense>
+      )
     case 'lesson':
       return (
         <Suspense fallback={<main className="page narrow"><p className="loading">{t('common.loading')}</p></main>}>
