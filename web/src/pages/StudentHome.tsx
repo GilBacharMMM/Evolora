@@ -50,6 +50,7 @@ export function StudentHome() {
                       <span dir="auto">{c.teacherNames.join(', ')}</span>
                     </span>
                     <span className="class-card-body">
+                      {c.unreadMessage && <span className="notes-chip">{t('messages.newReply')}</span>}
                       <span>{open ? t('home.lessonsToDo', { count: open }) : t('home.nothingYet')}</span>
                     </span>
                   </button>

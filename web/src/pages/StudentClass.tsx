@@ -1,4 +1,6 @@
 import { useTranslation } from 'react-i18next'
+import { useSession } from '../session'
+import { Messages } from '../components/Messages'
 import { navigate } from '../router'
 import { useClasswork, type ClassWork } from '../classwork'
 import { BackButton } from '../components/BackButton'
@@ -33,6 +35,7 @@ function ClassHead({ c }: { c: ClassWork }) {
 // was finished this semester. Archived courses come with REQ-5.21 (priority 3).
 export function StudentClass({ classId }: { classId: string }) {
   const { t } = useTranslation()
+  const { user } = useSession()
   const classes = useClasswork()
   if (classes === null) return <main className="page narrow"><p className="loading">{t('common.loading')}</p></main>
   const c = classes.find((x) => x.id === classId)
@@ -116,6 +119,7 @@ export function StudentClass({ classId }: { classId: string }) {
           ))}
         </section>
       )}
+      {user && <Messages classId={classId} studentId={user.uid} asTeacher={false} />}
     </main>
   )
 }

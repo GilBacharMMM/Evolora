@@ -50,6 +50,8 @@ export interface SingleWork extends WorkLesson {
 }
 
 export interface ClassWork {
+  // A new message from the class's teachers (REQ-5.16)
+  unreadMessage?: boolean
   id: string
   name: string
   teacherNames: string[]
@@ -225,7 +227,9 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
             for (const f of found) singles.push({ ...describe(f, f.p, statuses.get(f.lessonId)!), language: f.language, givenAt })
           }
         }
-        return { id: classId, name: data.name, teacherNames: data.teacherNames || [], color: data.color || '#0E6B73', courses, singles }
+        const convo = await getDoc(doc(db, 'conversations', `${classId}__${uid}`)).catch(() => null)
+        const unreadMessage = !!convo?.exists() && convo.data().unreadByStudent === true
+        return { unreadMessage, id: classId, name: data.name, teacherNames: data.teacherNames || [], color: data.color || '#0E6B73', courses, singles }
       } catch {
         return null
       }

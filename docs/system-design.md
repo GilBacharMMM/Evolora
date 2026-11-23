@@ -127,6 +127,7 @@ The teacher's screens read a class's work through the checking service, which fi
 - **Archiving courses (REQ-5.21):** on Class settings, "Archive the course" (with a confirmation) or "Bring it back". Students see it under **Archived courses** on the class page; lessons and grades stay.
 - **Student's language (REQ-9.6):** on the student page, the teacher picks Hebrew, Arabic or English; it applies the next time the student opens Evolora.
 - **Co-teachers (REQ-5.5):** on Class settings, "Teachers of the class" with **Add a teacher** by email. Every teacher of the class can do everything; when two change the same thing, the last change counts.
+- **Messages (REQ-5.16, 10.2):** each student has one private conversation with the teachers of each class, at the bottom of the student's class page and on the teacher's student page. All the class's teachers share it; nobody else can read it, and students can't message each other. A new reply shows "New message from your teacher" on the student's class card; the teacher's home counts unread messages and lists them in To do. Messages are written only by the class service and stored in the database next to the class's other data.
 ---
 
 ## 3. Where the data lives

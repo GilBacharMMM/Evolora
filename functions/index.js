@@ -606,7 +606,10 @@ export const teacherHome = onCall(async (request) => {
     for (const s of titles) {
       todo.push({ kind: 'grade', classId: c.id, className: c.data().name, lessonId: s.id, lessonTitle: s.exists ? s.data().title : s.id, count: waitingByLesson[s.id].count, at: waitingByLesson[s.id].at })
     }
-    out.push({ id: c.id, name: c.data().name, color: c.data().color || '#0E6B73', students: students.filter((s) => !s.removed).length, openFlags: openFlags.length, waiting })
+    // Unread messages from students (REQ-5.16, 5.27)
+    const unread = (await db.collection('conversations').where('classId', '==', c.id).where('unreadByTeacher', '==', true).get()).docs.filter((d) => !removed.has(d.data().uid))
+    for (const d of unread) todo.push({ kind: 'message', classId: c.id, className: c.data().name, studentId: d.data().uid, studentName: d.data().studentName, at: toMillis(d.data().lastAt) })
+    out.push({ id: c.id, name: c.data().name, color: c.data().color || '#0E6B73', students: students.filter((s) => !s.removed).length, openFlags: openFlags.length, waiting, unread: unread.length })
   }
   todo.sort((a, b) => (a.at || 0) - (b.at || 0))
   return { classes: out, todo }
@@ -941,4 +944,61 @@ export const addTeacher = onCall(async (request) => {
     updatedAt: FieldValue.serverTimestamp(),
   })
   return { result: 'added', name: user.data().name || key }
+})
+
+// Messages (REQ-5.16, 10.2): each student has one private conversation with the teachers of each
+// class. All the class's teachers share it; nobody else can read it; students can't message each
+// other. Stored in conversations/{classId}__{studentId}, with its messages under it.
+const conversationId = (classId, studentId) => `${classId}__${studentId}`
+
+// Who is writing: a teacher of the class (for a given student), or the student themself.
+async function conversationSide(auth, classId, studentId) {
+  if (!auth) throw new HttpsError('unauthenticated', 'Sign in first.')
+  if (!validId(classId)) throw new HttpsError('invalid-argument', 'Missing class.')
+  const cls = await db.doc(`classes/${classId}`).get()
+  if (!cls.exists) throw new HttpsError('not-found', 'No such class.')
+  if ((cls.data().teacherIds || []).includes(auth.uid) && studentId) {
+    await requireClassTeacher(auth, classId)
+    if (!validId(studentId)) throw new HttpsError('invalid-argument', 'Missing student.')
+    const s = await db.doc(`classes/${classId}/students/${studentId}`).get()
+    if (!s.exists) throw new HttpsError('not-found', 'Not in this class.')
+    return { from: 'teacher', studentId, studentName: s.data().name || '' }
+  }
+  const m = await db.doc(`memberships/${auth.uid}`).get()
+  if (!(m.exists && (m.data().classIds || []).includes(classId))) throw new HttpsError('permission-denied', 'Not your class.')
+  return { from: 'student', studentId: auth.uid, studentName: await personName(auth) }
+}
+
+export const sendMessage = onCall(async (request) => {
+  const { classId, studentId, text } = request.data || {}
+  const body = typeof text === 'string' ? text.trim().slice(0, 5000) : ''
+  if (!body) throw new HttpsError('invalid-argument', 'Write a message.')
+  const side = await conversationSide(request.auth, classId, studentId)
+  const ref = db.doc(`conversations/${conversationId(classId, side.studentId)}`)
+  const batch = db.batch()
+  batch.set(ref.collection('messages').doc(), { from: side.from, byUid: request.auth.uid, byName: await personName(request.auth), text: body, at: FieldValue.serverTimestamp() })
+  batch.set(
+    ref,
+    {
+      classId,
+      uid: side.studentId,
+      studentName: side.studentName,
+      lastAt: FieldValue.serverTimestamp(),
+      lastFrom: side.from,
+      unreadByStudent: side.from === 'teacher',
+      unreadByTeacher: side.from === 'student',
+    },
+    { merge: true },
+  )
+  await batch.commit()
+  return { ok: true }
+})
+
+// Opening the conversation marks the other side's messages as read.
+export const markRead = onCall(async (request) => {
+  const { classId, studentId } = request.data || {}
+  const side = await conversationSide(request.auth, classId, studentId)
+  const ref = db.doc(`conversations/${conversationId(classId, side.studentId)}`)
+  if ((await ref.get()).exists) await ref.update(side.from === 'teacher' ? { unreadByTeacher: false } : { unreadByStudent: false })
+  return { ok: true }
 })

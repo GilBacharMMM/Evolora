@@ -7,6 +7,7 @@ import { BackButton } from '../components/BackButton'
 import { TypeChip } from '../components/TypeChip'
 import { Markdown } from '../lesson/Rich'
 import { ClassTabs } from '../components/ClassTabs'
+import { Messages } from '../components/Messages'
 import type { LessonType } from '../lesson/types'
 
 // The teacher's screens for following a class (stage 1, part 4, system-design 2.7):
@@ -642,6 +643,8 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
           </div>
         )}
       </section>
+
+      <Messages classId={classId} studentId={studentId} asTeacher />
 
       <TeacherNotes classId={classId} studentId={studentId} notes={details?.notes || []} onAdded={loadDetails} />
 

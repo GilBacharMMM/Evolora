@@ -121,6 +121,24 @@ service cloud.firestore {
       }
     }
 
+    // Messages (REQ-5.16, 10.2): only the student and the teachers of that class. Written only by
+    // the class service.
+    function inConversation(conversation) {
+      return signedIn() && (
+        (conversation.uid == request.auth.uid && conversation.classId in myClassIds())
+        || (isTeacher() && request.auth.uid in
+            get(/databases/$(database)/documents/classes/$(conversation.classId)).data.teacherIds));
+    }
+    match /conversations/{conversationId} {
+      allow read: if isLoader() || inConversation(resource.data);
+      allow write: if isLoader();
+      match /messages/{messageId} {
+        allow read: if isLoader()
+          || inConversation(get(/databases/$(database)/documents/conversations/$(conversationId)).data);
+        allow write: if isLoader();
+      }
+    }
+
     // Class codes and wrong-code counts (REQ-5.2): only the class service uses them.
     match /classCodes/{code} {
       allow read, write: if isLoader();

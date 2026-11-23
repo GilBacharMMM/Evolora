@@ -15,6 +15,7 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `test-due-dates.mjs` | End-to-end test of due dates: the yellow "late" status, 10 points off a lesson finished late, extending the date for one student, removing it, and that course order and due date settings reach the student. Cleans up after itself. | REQ-5.8, 5.9 |
 | `test-levels.mjs` | End-to-end test of question levels (level 1, 2 and 3 students get the right questions; a higher question is refused; changing a level) and of a teacher trying a lesson (hint and second attempt, Show answer, nothing saved, students can't use it). Cleans up after itself. | REQ-4.18, 5.18, 6.10, 5.32 |
 | `test-priority3.mjs` | End-to-end test of co-teachers (adding by email, "last change counts"), archiving a course, and a teacher changing a student's language. Cleans up after itself. | REQ-5.5, 5.21, 9.6 |
+| `test-messages.mjs` | End-to-end test of messages: a student writes, both teachers of the class read and reply, the unread notices, and that other students, other teachers and people outside the class can't read or write. Cleans up after itself. | REQ-5.16, 10.2, 5.27 |
 | `test-permissions.mjs` | Automatic permission tests: signs in as test users and checks that what must be blocked is blocked (for example, a student reading the correct answers). | REQ-3.4, 10.1, 10.3 |
 
 `check-lesson.mjs` also checks course files (`courses/<name>.md`): every listed lesson must exist, have the matching type (teaching, practice or exam), and pass the lesson check.
@@ -40,6 +41,7 @@ node tools/test-priority2.mjs
 node tools/test-due-dates.mjs
 node tools/test-levels.mjs
 node tools/test-priority3.mjs
+node tools/test-messages.mjs
 ```
 
 The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.

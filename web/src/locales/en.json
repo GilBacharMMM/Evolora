@@ -396,5 +396,17 @@
       "ar": "Arabic",
       "en": "English"
     }
+  },
+  "messages": {
+    "titleTeacher": "Messages with the student",
+    "titleStudent": "Messages with your teacher",
+    "explainTeacher": "Only the student and the teachers of this class see these messages.",
+    "explainStudent": "Only you and your teachers in this class see these messages.",
+    "none": "No messages yet.",
+    "write": "Write a message",
+    "send": "Send",
+    "newReply": "New message from your teacher",
+    "newMessage": "New message",
+    "unreadCount": "Unread messages: {{n}}"
   }
 }

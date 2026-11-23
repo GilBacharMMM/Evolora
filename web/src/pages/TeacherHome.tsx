@@ -16,10 +16,12 @@ interface ClassCard {
   students: number
   openFlags: number
   waiting: number
+  unread?: number
 }
 
 type TodoItem =
   | { kind: 'flag'; classId: string; className: string; flagId: string; studentId: string; studentName: string; lessonTitle: string; flagKind: string; topicName: string | null; at: number | null }
+  | { kind: 'message'; classId: string; className: string; studentId: string; studentName: string; at: number | null }
   | { kind: 'grade'; classId: string; className: string; lessonId: string; lessonTitle: string; count: number; at: number | null }
 
 // The teacher's home (REQ-5.27): a card for each class with what needs attention (open red flags,
@@ -82,6 +84,7 @@ export function TeacherHome() {
                       </svg>
                       {t('follow.toGradeCount', { n: c.waiting })}
                     </span>
+                    <span className={c.unread ? 'attn attn-grade' : 'attn'}>{t('messages.unreadCount', { n: c.unread || 0 })}</span>
                   </span>
                 </button>
               ))}
@@ -100,16 +103,16 @@ export function TeacherHome() {
             {data!.todo.length === 0 && <p className="muted">{t('follow.todoEmpty')}</p>}
             <ul className="lesson-rows" role="list">
               {data!.todo.map((item) => (
-                <li key={item.kind === 'flag' ? item.flagId : `${item.classId}-${item.lessonId}`}>
+                <li key={item.kind === 'flag' ? item.flagId : item.kind === 'message' ? `m-${item.classId}-${item.studentId}` : `${item.classId}-${item.lessonId}`}>
                   <button
                     type="button"
                     className="lesson-row work-row"
-                    onClick={() => navigate(item.kind === 'flag' ? `/teacher/class/${item.classId}/student/${item.studentId}` : `/teacher/class/${item.classId}/lesson/${item.lessonId}/grade`)}
+                    onClick={() => navigate(item.kind !== 'grade' ? `/teacher/class/${item.classId}/student/${item.studentId}` : `/teacher/class/${item.classId}/lesson/${item.lessonId}/grade`)}
                   >
                     <span className="lesson-row-text">
-                      <span className={`badge ${item.kind === 'flag' ? 'badge-red' : 'badge-grade'}`}>{item.kind === 'flag' ? t('follow.redFlag') : t('follow.toGrade', { n: item.count })}</span>
+                      <span className={`badge ${item.kind === 'flag' ? 'badge-red' : 'badge-grade'}`}>{item.kind === 'flag' ? t('follow.redFlag') : item.kind === 'message' ? t('messages.newMessage') : t('follow.toGrade', { n: item.count })}</span>
                       <span className="lesson-row-title" dir="auto">
-                        {item.kind === 'flag' ? item.studentName : item.lessonTitle}
+                        {item.kind === 'grade' ? item.lessonTitle : item.studentName}
                       </span>
                       <span className="muted row-note">
                         <bdi>{item.className}</bdi>
