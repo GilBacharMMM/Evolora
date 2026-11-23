@@ -17,6 +17,7 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `test-priority3.mjs` | End-to-end test of co-teachers (adding by email, "last change counts"), archiving a course, and a teacher changing a student's language. Cleans up after itself. | REQ-5.5, 5.21, 9.6 |
 | `test-messages.mjs` | End-to-end test of messages: a student writes, both teachers of the class read and reply, the unread notices, and that other students, other teachers and people outside the class can't read or write. Cleans up after itself. | REQ-5.16, 10.2, 5.27 |
 | `test-redo.mjs` | End-to-end test of redoing a lesson, with "redo counts" on (a worse redo lowers the grade) and off (the grade stays). Cleans up after itself. | REQ-6.5, 5.9 |
+| `test-versions.mjs` | End-to-end test of lesson versions: a student who started keeps their version; a student who starts after a change gets the new one. Adds a changed version for a moment and puts the lesson back. | REQ-4.7 |
 | `test-permissions.mjs` | Automatic permission tests: signs in as test users and checks that what must be blocked is blocked (for example, a student reading the correct answers). | REQ-3.4, 10.1, 10.3 |
 
 `check-lesson.mjs` also checks course files (`courses/<name>.md`): every listed lesson must exist, have the matching type (teaching, practice or exam), and pass the lesson check.
@@ -44,6 +45,7 @@ node tools/test-levels.mjs
 node tools/test-priority3.mjs
 node tools/test-messages.mjs
 node tools/test-redo.mjs
+node tools/test-versions.mjs
 ```
 
 The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.

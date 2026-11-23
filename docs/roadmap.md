@@ -38,7 +38,7 @@ REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-3.
 
 **Priority 2 progress:** on the test site (2026-11-23), waiting for Gil's checks: REQ-5.22 hiding grades, 5.14 sending back, 5.15 changing grades, 5.28 student page (without messages and level suggestions), 5.25 "not yet mastered", 6.13 going back to finished lessons (D-59). Also REQ-5.8 course orders and REQ-5.9 due dates (without per-assignment topic minimums, D-60). Also REQ-4.18, 5.18, 6.10 levels with suggestions, 4.19 random order, 4.15 image sources and 5.32 trying a lesson (D-61). With these, priority 2 is built, apart from the points listed in D-58 to D-61.
 
-**Priority 3 progress:** on the test site (2026-11-23): REQ-5.29 success rate per question, 4.9 library search, 5.21 archiving courses, 9.6 teacher changes a student's language, 5.5 co-teachers (D-62), 5.16 and 10.2 messages, 6.5 redo (D-63), and marking up answers in 5.12 (D-64).
+**Priority 3 progress:** on the test site (2026-11-23): REQ-5.29 success rate per question, 4.9 library search, 5.21 archiving courses, 9.6 teacher changes a student's language, 5.5 co-teachers (D-62), 5.16 and 10.2 messages, 6.5 redo (D-63), marking up answers in 5.12 (D-64), and 4.7 lesson versions (already worked since part 2; now checked by an automatic test).
 
 **Done when:** the demo lessons (Archimedes, circles, circles practice) are loaded, Gil assigns them to a real class, the students complete them, and Gil follows them on the dashboard and grades their open answers.
 
