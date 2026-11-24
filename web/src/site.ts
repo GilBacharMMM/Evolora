@@ -9,6 +9,10 @@ import configs from './firebase-config.json'
 // everything else (the test site, and Claude's local preview) is the test site (REQ-12.4).
 export const IS_TEST_SITE = import.meta.env.VITE_SITE !== 'production'
 
+// The students-only test address (D-71): a test site build that lists only the test students,
+// with no Google sign-in and no teachers' password in it.
+export const STUDENTS_ONLY = IS_TEST_SITE && import.meta.env.VITE_STUDENTS_ONLY === 'true'
+
 type SiteConfig = typeof configs.test
 const config: SiteConfig | undefined = IS_TEST_SITE ? configs.test : (configs as Record<string, SiteConfig | string>).production as SiteConfig | undefined
 

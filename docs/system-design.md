@@ -275,6 +275,8 @@ This way, real students never see a half-finished feature, and testing never mix
 
 **Switching users (REQ-12.5).** On the test site, a "Switch user" menu lets Gil become any test user (for example, Test Teacher 1 or Test Student 3) with one click. The test users are simple made-up accounts that exist only in the test project. The menu is built so that it can't appear on the real site: the real site is built without it. Every test-site screen shows a "TEST SITE" banner. On the test site only, the end of each lesson shows the student's score (for example "score 11.5 out of 13"), so Gil can check the scoring rules (REQ-6.3) before the grade screens exist (part 4).
 
+**Students-only test address (REQ-12.8, D-71).** The test site has a second address, https://evolora-test-students.web.app, built from the same code with "students only" turned on: its "Switch user" list has only the test students, and it has no Google sign-in. Both addresses use the same test project and data. Test teachers have their own password, kept on Gil's computer (in the `.evolora` folder, next to the loading program's password) and built into the full test address only, so the students-only address can't be used to sign in as a teacher. Claude publishes both addresses together.
+
 **Test data (REQ-12.6).** Claude can fill or reset the test site with one command (`node tools/reset-test-site.mjs`) with a standard set: 2 test teachers, 7 test students (two each at levels 1, 2 and 3, and Test Student 7, who hasn't joined any class), a test class ("Test Class 7A", taught by Test Teacher 1, with test students 1 to 6), the three demo lessons and the two demo courses, open to the test class. The test users and how they sign in are described in decision D-52.
 
 ### 7.4 Email
@@ -352,5 +354,5 @@ Which part of the system delivers each group of requirements:
 | REQ-9.1 to 9.4 (languages, direction) | Languages and direction (2.4) |
 | REQ-10.1 to 10.4, 10.7 (privacy, class-code alerts) | Permissions (4.3), Israel region and backups (3.3, 7.1) |
 | REQ-11.1 to 11.3 (platform, hosting, size) | Screen size (2.5), hosting (7) |
-| REQ-12.4 to 12.6 (test site, user switching, test data) | Test site (7.3) |
+| REQ-12.4 to 12.6, 12.8 (test site, user switching, test data, students-only address) | Test site (7.3) |
 | REQ-12.1 to 12.3 (speed, no lost work, accessibility) | Lesson player saves after every answer (2.3); tested in screen tests (8.1) |

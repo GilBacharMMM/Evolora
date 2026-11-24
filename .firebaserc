@@ -3,5 +3,18 @@
     "default": "evolora-test",
     "test": "evolora-test",
     "production": "evolora"
-  }
+  },
+  "targets": {
+    "evolora-test": {
+      "hosting": {
+        "full": [
+          "evolora-test"
+        ],
+        "students": [
+          "evolora-test-students"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

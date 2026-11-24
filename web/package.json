@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "build:test": "tsc -b && vite build --mode test",
+    "build:students": "tsc -b && vite build --mode students",
     "build:prod": "tsc -b && vite build --mode production"
   },
   "dependencies": {

@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from '../site'
+import { STUDENTS_ONLY, auth } from '../site'
 import { navigate } from '../router'
 import testUsers from './test-users.json'
 
 // "Switch user" menu, test site only (REQ-12.5). The real site is built without this file,
 // so the menu can't appear there. The test users are made-up accounts that exist only in
-// the test project (D-52).
+// the test project (D-52). Test teachers have their own password, built in from this computer
+// (web/vite.config.ts); the students-only address lists only students and has no teachers'
+// password (D-71).
+declare const __TEACHER_PASSWORD__: string | null
+const people = STUDENTS_ONLY ? testUsers.users.filter((u) => u.role !== 'teacher') : testUsers.users
 export function SwitchUser({ variant = 'menu' }: { variant?: 'menu' | 'list' }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
@@ -29,11 +33,13 @@ export function SwitchUser({ variant = 'menu' }: { variant?: 'menu' | 'list' }) 
     }
   }, [open])
 
-  async function become(email: string) {
+  async function become(email: string, role: string) {
     setBusy(email)
     setError(false)
     try {
-      await signInWithEmailAndPassword(auth, email, testUsers.password)
+      const password = role === 'teacher' ? __TEACHER_PASSWORD__ : testUsers.password
+      if (!password) throw new Error('no password')
+      await signInWithEmailAndPassword(auth, email, password)
       setOpen(false)
       navigate('/')
     } catch {
@@ -46,12 +52,12 @@ export function SwitchUser({ variant = 'menu' }: { variant?: 'menu' | 'list' }) 
   const current = auth.currentUser?.email
   const list = (
     <ul className="switch-list" role="list">
-      {testUsers.users.map((u) => {
+      {people.map((u) => {
         const role = u.role === 'teacher' ? t('roles.teacher') : t('roles.student')
         const extra = 'level' in u && u.level ? ` · ${t('test.level', { level: u.level })}` : 'noClass' in u && u.noClass ? ` · ${t('test.noClass')}` : ''
         return (
           <li key={u.uid}>
-            <button type="button" className={`switch-item${current === u.email ? ' current' : ''}`} disabled={busy !== null} onClick={() => become(u.email)}>
+            <button type="button" className={`switch-item${current === u.email ? ' current' : ''}`} disabled={busy !== null} onClick={() => become(u.email, u.role)}>
               <span className="switch-name">{u.name}</span>
               <span className="switch-role">
                 {role}

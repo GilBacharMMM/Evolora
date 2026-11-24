@@ -10,7 +10,7 @@ import { deleteApp, initializeApp, setLogLevel } from 'firebase/app'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { deleteDoc, doc, getDoc, initializeFirestore } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
-import { ROOT, connect, finish, siteConfig } from './lib/connect.mjs'
+import { ROOT, connect, finish, siteConfig, testPassword } from './lib/connect.mjs'
 
 setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
@@ -28,7 +28,7 @@ function check(label, ok, detail = '') {
 async function as(uid, fn) {
   const user = TEST.users.find((u) => u.uid === uid)
   const app = initializeApp(config, `${uid}-${Date.now()}-${Math.random()}`)
-  await signInWithEmailAndPassword(getAuth(app), user.email, TEST.password)
+  await signInWithEmailAndPassword(getAuth(app), user.email, testPassword(user))
   const db = initializeFirestore(app, {})
   const fns = getFunctions(app, 'me-west1')
   const call = async (name, data) => (await httpsCallable(fns, name)(data)).data

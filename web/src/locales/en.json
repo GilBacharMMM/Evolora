@@ -225,7 +225,8 @@
     "switchExplain": "Test site only: sign in as a made-up test user with one click.",
     "switchFailed": "Switching didn't work. The test users may need to be set up again.",
     "level": "level {{level}}",
-    "noClass": "no class yet"
+    "noClass": "no class yet",
+    "studentsOnly": "Students-only test address: choose a test student from the list."
   },
   "q": {
     "questionNumber": "Question {{number}}",

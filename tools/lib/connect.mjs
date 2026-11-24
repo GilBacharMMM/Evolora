@@ -90,6 +90,25 @@ export async function connect(site) {
   return { app, auth, db: initializeFirestore(app, { ignoreUndefinedProperties: true }), storage: getStorage(app), config }
 }
 
+// The test users' passwords (D-71). Test students share the password in
+// web/src/test-site/test-users.json, which is not secret. Test teachers have their own password,
+// made on this computer and kept outside the project in ~/.evolora/evolora-test-teachers.json,
+// so it is never on GitHub or on the students-only test address.
+export function teacherPassword() {
+  const file = path.join(os.homedir(), '.evolora', 'evolora-test-teachers.json')
+  if (!fs.existsSync(file)) {
+    fs.mkdirSync(path.dirname(file), { recursive: true })
+    fs.writeFileSync(file, JSON.stringify({ password: crypto.randomBytes(18).toString('base64url') }, null, 2), { mode: 0o600 })
+    console.log('Made a new password for the test teachers. Run tools/set-teacher-passwords.mjs to give it to them.')
+  }
+  return JSON.parse(fs.readFileSync(file, 'utf8')).password
+}
+
+export function testPassword(user) {
+  if (user.role === 'teacher') return teacherPassword()
+  return JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8')).password
+}
+
 // Short pause-free exit: the Firebase SDK keeps connections open otherwise.
 export function finish(code = 0) {
   setTimeout(() => process.exit(code), 50)

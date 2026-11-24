@@ -121,6 +121,7 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Test site** | A separate copy of Evolora with made-up data, where Gil checks new features before they go to the real site. | agreed |
 | **Loading program** | The program Claude runs to put lesson files and course files into Evolora, after the lesson check (REQ-4.24). | proposed |
 | **Staff list** | The list of email addresses that have the teacher or system admin role. Everyone else who signs in is a student (REQ-2.2). | proposed |
+| **Students-only test address** | A second address for the test site (evolora-test-students.web.app) that offers only the test students, so a student can test Evolora without acting as a teacher (D-71). | proposed |
 | **Test user** | A made-up person (for example, "Test Student 3") that exists only on the test site. | agreed |
 | **Milestone A / B** | The two parts of the MVP: A puts a first lesson in front of real students; B completes the teacher tools. | proposed |
 | **Class language** | The interface language a teacher sets for a class, either required for students or just a default they can change. | proposed |

@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { lazyFresh } from '../freshness'
 import { useTranslation } from 'react-i18next'
-import { IS_TEST_SITE } from '../site'
+import { IS_TEST_SITE, STUDENTS_ONLY } from '../site'
 import { useSession } from '../session'
 import { Logo } from '../components/Logo'
 
@@ -17,6 +17,9 @@ export function SignIn() {
         <Logo size={64} />
         <h1>{t('appName')}</h1>
         <p className="tagline">{t('tagline')}</p>
+        {STUDENTS_ONLY ? (
+          <p className="muted">{t('test.studentsOnly')}</p>
+        ) : (
         <button type="button" className="button google" onClick={() => void signInWithGoogle()}>
           <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
             <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
@@ -26,6 +29,7 @@ export function SignIn() {
           </svg>
           <span>{t('auth.signInWithGoogle')}</span>
         </button>
+        )}
         {error && (
           <p role="alert" className="error">
             {t('auth.signInFailed')}

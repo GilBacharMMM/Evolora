@@ -21,7 +21,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { collection, deleteDoc, doc, getDocs, serverTimestamp, writeBatch } from 'firebase/firestore'
 import { deleteObject, listAll, ref } from 'firebase/storage'
-import { ROOT, connect, finish, importAccounts, siteConfig } from './lib/connect.mjs'
+import { ROOT, connect, finish, importAccounts, siteConfig, testPassword } from './lib/connect.mjs'
 import { loadAll } from './load.mjs'
 import { addSchool, openCourseToClass, setStaff } from './admin.mjs'
 import { makeCode } from '../functions/classcode.js'
@@ -52,7 +52,7 @@ async function main() {
   const projectId = siteConfig('test').projectId
 
   console.log('1. Test users: creating or refreshing their sign-in accounts...')
-  importAccounts(projectId, TEST.users.map((u) => ({ ...u, password: TEST.password })))
+  importAccounts(projectId, TEST.users.map((u) => ({ ...u, password: testPassword(u) })))
   const conn = await connect('test')
   const { db, storage } = conn
 

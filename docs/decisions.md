@@ -784,3 +784,19 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 4. **Lesson files:** "## [QUESTION: drag and drop]" with "- file:", "- caption:", "- source:", one "- Spot: 30% 45% | card text" per spot (across, then down, in percent from the top left of the image), optional "- Extra card:" lines, then "- Hint:", "- Solution:" and "- Why it's right:". The lesson format, the lesson check, the lesson reader and the teacher kit are updated (rule 6).
 5. **To try it:** a demo question ([NEW]) at the end of the circles teaching lesson: label a circle's center, radius, diameter and circumference, with "chord" as an extra card. The picture is new, drawn by Claude.
 **Affects:** REQ-4.12, lessons/README.md, tools/check-lesson.mjs, tools/lib/lesson-parser.mjs, the teacher kit, the circles teaching lesson
+
+### D-71: A students-only test address
+**Date:** 2026-11-24 · **Status:** Decided · **Decided by:** Gil (asked for it), details by Claude
+**Context:** Gil wants a student to test and look for bugs on the test site, without being able to act as a teacher. On the test site, the "Switch user" list lets anyone become any test user, teachers included, and all test users had the same password.
+**Options considered:**
+1. A second address that lists only the test students, with teachers given their own password that this address doesn't contain.
+2. Hide the teachers from the list only. Easy, but someone who knows a little about websites could still find the shared password and sign in as a teacher.
+3. Have the student sign in with their own Google account. That would put a real child's account into the test project.
+**Decision:** Option 1.
+1. **Two addresses** on the same test project and the same test data:
+   - https://evolora-test.web.app, the full test site, as before: every test user, Google sign-in.
+   - https://evolora-test-students.web.app, the students-only test address: only the 7 test students, and no Google sign-in.
+2. **Teachers' password:** test teachers now have their own password. It is kept only on Gil's computer, outside the project, and built into the full test address only. It is never on GitHub or on the students-only address. Test students keep the shared password.
+3. **What the student still can't do:** teacher actions are refused by the server anyway, so a test student can't do anything a real student couldn't.
+**Limit:** the full address is not hidden. A student who opens https://evolora-test.web.app could switch to a teacher there. Share only the students-only address with the student.
+**Affects:** REQ-12.5, new REQ-12.8, docs/system-design.md 7.3, tools/README.md, the test tools
