@@ -795,7 +795,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 1.
 1. **Two addresses** on the same test project and the same test data:
    - https://evolora-test.web.app, the full test site, as before: every test user, Google sign-in.
-   - https://evolora-test-students.web.app, the students-only test address: only the 7 test students, and no Google sign-in.
+   - https://evolora-test-students.web.app, the students-only test address: only the 7 test students, and no Google sign-in. It opens in Hebrew whatever the browser's language (Gil, the same day); the language menu still works.
 2. **Teachers' password:** test teachers now have their own password. It is kept only on Gil's computer, outside the project, and built into the full test address only. It is never on GitHub or on the students-only address. Test students keep the shared password.
 3. **What the student still can't do:** teacher actions are refused by the server anyway, so a test student can't do anything a real student couldn't.
 **Limit:** the full address is not hidden. A student who opens https://evolora-test.web.app could switch to a teacher there. Share only the students-only address with the student.
