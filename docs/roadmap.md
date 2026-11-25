@@ -23,7 +23,7 @@ Gil set every feature to one of 3 levels, on the priorities page:
 
 ### Foundation (always in)
 
-REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-3.1, 3.2, 3.4, 10.1 to 10.4 sign-in, access and privacy; REQ-4.2, 4.4, 4.5, 6.2, 6.3 the lesson player and scoring; REQ-4.24, 4.25 loading lesson and course files, and the teacher kit; REQ-8.1, 9.1 to 9.4 subjects, languages and direction; REQ-11.1 to 11.3 Chrome on Chromebooks and laptops, hosting, pilot size; REQ-12.1 to 12.7 speed, no lost work, accessibility, test site, test users and data, design language.
+REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-2.5 schools; REQ-3.1, 3.2, 3.4, 10.1 to 10.4 sign-in, access and privacy; REQ-4.2, 4.4, 4.5, 6.2, 6.3 the lesson player and scoring; REQ-4.24, 4.25 loading lesson and course files, and the teacher kit; REQ-8.1, 9.1 to 9.4 subjects, languages and direction; REQ-11.1 to 11.3 Chrome on Chromebooks and laptops, hosting, pilot size; REQ-12.1 to 12.8 speed, no lost work, accessibility, test site, test users and data, design language, students-only test address.
 
 ### Priority 1: must have (the first release for the pilot)
 
@@ -96,6 +96,7 @@ Each AI item first gets a cost estimate for Gil's approval.
 | REQ-7.3 | AI lesson suggestion from a document |
 | REQ-7.4, 10.5 | Audio transcription and recording retention |
 | REQ-5.17 | Google Classroom connection |
+| REQ-6.14 | Asking for more practice on a finished lesson |
 | REQ-6.7 | Public courses without a teacher |
 | REQ-9.5 | Class language setting |
 | REQ-5.33 | Time on each lesson (total and net), times away, "away a lot" sign and red flag |
