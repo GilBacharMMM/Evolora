@@ -722,7 +722,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-6.5, REQ-5.9
 
 ### D-64: How teachers mark up written answers
-**Date:** 2026-11-23, changed 2026-11-25 · **Status:** Decided: points 3 and 4 approved by Gil; points 1 and 2 changed at Gil's request (2026-11-25) · **Decided by:** Claude, while building the marking-up part of REQ-5.12; Gil changed how it works
+**Date:** 2026-11-23, changed 2026-11-25 · **Status:** Decided: points 3 and 4 approved by Gil; points 1 and 2 changed at Gil's request, and point 2 confirmed by Gil: "like Word" (2026-11-25) · **Decided by:** Claude, while building the marking-up part of REQ-5.12; Gil changed how it works
 **Decision:**
 1. **Changed by Gil: the teacher marks up the answer itself, with track changes, as in Word.** The first version had a "Mark up the answer" button that opened a separate copy to edit, with a preview below; Gil found it hard to find and slow, and wants to mark on the text itself, quickly.
    - On the grading page, the student's written answer **is** the place to mark: the teacher clicks into it and types, with no button to open first.
