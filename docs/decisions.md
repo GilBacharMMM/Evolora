@@ -702,7 +702,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-4.18, REQ-5.18, REQ-6.10, REQ-4.19, REQ-4.15, REQ-5.32
 
 ### D-62: Starting priority 3 without Gil, and points left open
-**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while Gil was away
+**Date:** 2026-11-23 · **Status:** Decided: approved by Gil, item by item (2026-11-25) · **Decided by:** Claude, while Gil was away
 **Context:** Gil asked Claude to continue without needing answers. Priority 3 has about 15 items; Claude started with the five smallest that help the pilot most and need no new outside services (email, audio recording) or big new screens (exams).
 **Decision:**
 1. **Built first:** REQ-5.29 success rate per question, REQ-4.9 lesson library search and filters, REQ-5.21 archiving courses, REQ-9.6 teacher changes a student's language, REQ-5.5 co-teachers. Left for Gil to choose the order: exams (4.26, 5.23), email invites (5.3), messages (5.16, 10.2), marking up answers and audio comments (5.12, 5.13), daily email (5.31), redo (6.5), audio answers (6.6), class-code guessing alerts (10.7), lesson versions screens (4.7).
