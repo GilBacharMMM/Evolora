@@ -390,10 +390,20 @@ A creator can import a Google Doc or Word document, and Evolora turns it into a 
 **REQ-4.12: More question types** (Priority: Later; drag-and-drop built first, at Gil's request, D-70)
 Short answer checked automatically (a word or a number), math-expression answers, file or photo upload, and drag-and-drop questions (dragging snippets from a bank onto an image).
 
+**Drag-and-drop checking (Gil, D-70):**
+- The answer is right only when every spot has its right card.
+- The student gets as many attempts as the number of cards (extra cards included) minus 2, and never fewer than 2.
+- After each attempt, each placed card gets a green outline if right and a red outline if wrong. Right cards stay locked; wrong cards go back to the pile.
+- The hint shows after the first wrong attempt.
+- Grades: full on the first attempt, half on the second, a quarter on a later one, 0 if all fail.
+- If all attempts fail, the solution shows the right card on every spot, and the teacher gets a red flag. There is no check-again question.
+
 *Acceptance criteria:*
 - [ ] As a student, in the circles teaching lesson, place the cards on the circle drawing by dragging, and also by clicking a card and then a spot: both work.
-- [ ] Place one card wrongly: the hint appears and you get a second attempt. Two wrong attempts show the solution with the right card on every spot.
-- [ ] All cards right on the first attempt gives full marks; on the second attempt, half.
+- [ ] Place one card wrongly and check: the right cards have a green outline and stay on their spots, the wrong card has a red outline and goes back to the pile, and the hint appears.
+- [ ] The circle question (4 spots and 1 extra card, 5 cards) gives 3 attempts. A question with 4 cards or fewer gives 2.
+- [ ] All cards right on the first attempt gives full marks; on the second, half; on the third, a quarter.
+- [ ] Fail every attempt: the solution shows the right card on every spot, no check-again question appears, and the teacher sees a red flag for that student and question on the class dashboard.
 - [ ] An extra card that fits nowhere can be left out, and the answer is still right.
 
 **REQ-4.13: Simulations built into Evolora** (Priority: Later)
@@ -559,7 +569,7 @@ The table can be sorted by any column. Clicking a student opens their student pa
 - [ ] Pressing + next to a student's level raises it by one; the change is saved at once.
 - [ ] A student whose average is well above their level shows a suggested change, which the teacher can accept with one click or ignore.
 - [ ] Clicking a column header sorts the table by it.
-- [ ] Red flags from check-again questions (REQ-4.17) and, later, from the help line (REQ-6.9) appear here, saying which question caused them.
+- [ ] Red flags from check-again questions (REQ-4.17), from drag-and-drop questions (REQ-4.12) and, later, from the help line (REQ-6.9) appear here, saying which question caused them.
 
 **REQ-5.11: Grade dashboard** (Priority 1: must have)
 A teacher sees grades per class, per course, per lesson and per question. An unfinished lesson counts as grade 0 and is clearly marked as not done. The grade table can be downloaded as a **CSV file** (a spreadsheet file), for example to copy grades into the school's system, Smart School (Gil, Q-39).
