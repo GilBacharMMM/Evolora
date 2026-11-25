@@ -722,10 +722,15 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-6.5, REQ-5.9
 
 ### D-64: How teachers mark up written answers
-**Date:** 2026-11-23 · **Status:** Proposed (waiting for Gil's approval) · **Decided by:** Claude, while building the marking-up part of REQ-5.12
+**Date:** 2026-11-23, changed 2026-11-25 · **Status:** Decided: points 3 and 4 approved by Gil; points 1 and 2 changed at Gil's request, and point 2 confirmed by Gil: "like Word" (2026-11-25) · **Decided by:** Claude, while building the marking-up part of REQ-5.12; Gil changed how it works
 **Decision:**
-1. On the grading page, **Mark up the answer** opens a copy of the student's answer to edit. What the teacher removes is shown to the student crossed out; what the teacher adds is shown in the teacher's colour (purple) and underlined. **Highlight the selected words** marks a part of the answer (yellow, with an underline).
-2. The comparison is word by word; a word with punctuation counts as one word.
+1. **Changed by Gil: the teacher marks up the answer itself, with track changes, as in Word.** The first version had a "Mark up the answer" button that opened a separate copy to edit, with a preview below; Gil found it hard to find and slow, and wants to mark on the text itself, quickly.
+   - On the grading page, the student's written answer **is** the place to mark: the teacher clicks into it and types, with no button to open first.
+   - Text the teacher deletes stays visible, **crossed out**. Text the teacher types appears in the teacher's colour (purple), **underlined**, as it is typed.
+   - When the teacher selects words, a small **Highlight** button appears next to them; it marks them yellow, with an underline. Pressing it on highlighted words removes the highlight.
+   - Ctrl+Z undoes the last change, and **Undo all changes** returns the student's original answer.
+   - The mark-up is saved together with the grade and comment, when the teacher moves on (as now).
+2. **Changed with point 1:** changes are kept exactly where the teacher made them, letter by letter, as in Word. Fixing only a comma marks only the comma, not the whole word.
 3. The student sees the marked-up answer under their answer, together with the grade and comment, as soon as the teacher saves. "Returning" work comes with REQ-5.14 (sending back).
 4. Every mark is shown by more than colour (crossed out, underlined, or a background), for students who don't see colours well (REQ-12.3).
 **Affects:** REQ-5.12

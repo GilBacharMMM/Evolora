@@ -589,7 +589,7 @@ In a class, when the teacher opens a lesson that has open or audio answers, a bu
 
 **Grade:** a score for the question out of its full marks, with quick buttons for full, half and zero marks, or any number.
 
-**Marking up the answer:** the teacher can **highlight** parts of a written answer, and **edit** it in another colour, like "track changes": the student's words stay visible, crossed out where the teacher changed them, with the teacher's words in the teacher's colour. The student sees the highlights, the edits and the comment when the work comes back to them.
+**Marking up the answer (Gil, D-64):** the teacher marks up the student's written answer **in place**, like "track changes" in Word: click into the answer and type, with no button to open first. Deleted words stay visible, crossed out; the teacher's words appear in the teacher's colour (purple), underlined. Selecting words shows a small **Highlight** button. Ctrl+Z undoes, and **Undo all changes** returns the original. Changes are marked exactly where they were made, so fixing a comma marks only the comma. The student sees the highlights, the edits and the comment when the work comes back to them.
 
 **Audio answers** have a player for the recording instead; the teacher comments in writing or by recording audio (REQ-5.13).
 
@@ -608,6 +608,10 @@ The page shows how many answers are graded ("graded 7 of 24"), has a button to j
 - [ ] Audio answers can be played on the page.
 - [ ] The counter shows how many answers are graded, and "next not graded" skips graded ones.
 - [ ] After grading, the student's lesson grade is no longer pending.
+- [ ] On the grading page, click into a student's written answer and type: no button is needed, the new words appear purple and underlined, and deleted words stay visible, crossed out.
+- [ ] Select words: a Highlight button appears next to them, and pressing it marks them yellow.
+- [ ] Remove only a comma: only the comma is crossed out. Ctrl+Z undoes the last change, and "Undo all changes" returns the original answer.
+- [ ] Move to the next student, then sign in as the student: the marked-up answer shows the same marks.
 
 **REQ-5.13: Teacher comments** (Priority 1: must have; audio comments: priority 3)
 A teacher can add a comment to any answer, either written or as an audio recording, on the grading page (REQ-5.12).
@@ -1244,8 +1248,15 @@ A second address for the test site lets a student test Evolora and look for bugs
 **REQ-12.6: Ready-made test data** (Priority 1: foundation)
 The test site can be filled with a standard set of test data with one command, by Claude: test teachers, test students, a test class, the Archimedes lesson with its two practice lessons, the circles lesson and the circles practice lesson, with their two demo courses (`courses/circles-demo.md`, `courses/density-demo.md`). It can be reset to that state at any time.
 
+**Test Student 5 comes with finished work (Gil, 2026-11-25):** after every reset, Test Student 5 has finished the Archimedes teaching lesson and the circles teaching lesson, so Gil can try grading without filling in answers first.
+- The answers are chosen at random on each reset: some right on the first attempt, some on the second, some wrong.
+- Written answers are filler text ("lorem ipsum"); the audio answer is a short test recording.
+- The written and audio answers wait for the teacher to grade them.
+
 *Acceptance criteria:*
-- [ ] After a reset, the test site has the same test users, class and lesson as before, and no leftover answers.
+- [ ] After a reset, the test site has the same test users, class and lesson as before, and no leftover answers, except Test Student 5's.
+- [ ] After a reset, Test Teacher 1 sees Test Student 5's written and audio answers in the Archimedes and circles teaching lessons waiting to be graded, and the class dashboard shows Test Student 5 has finished both lessons.
+- [ ] After a second reset, Test Student 5's answers are different.
 - [ ] The test students include at least one student at each level (1, 2 and 3), so REQ-6.10 can be checked.
 
 ## 13. Out of scope for now
