@@ -1057,6 +1057,28 @@ The alert says who tried (their Google account), how many times and when. In sta
 - [ ] On the test site, a test student enters 11 wrong codes; the system admin sees an alert naming that student.
 - [ ] With made-up numbers on the test site (an average of 20 wrong codes a week, then 45 in one week), the system admin gets the weekly alert.
 
+**REQ-10.8: Terms of use** (Priority 1: must have; Claude's suggestion, Gil to confirm, Q-46)
+Evolora has short **terms of use**, written in plain language in Hebrew, Arabic and English, that say what Evolora records about students and teachers, who can see it, and how long it is kept. They include, as each feature arrives:
+- **Answers and grades**: every answer, attempt, hint and solution seen, and every grade and teacher comment. Only the student and their class's teachers see them (REQ-10.3).
+- **Audio recordings** (Gil, 2026-11-25): students' recorded answers (REQ-6.6) and teachers' recorded comments (REQ-5.13). Only the student and their class's teachers can listen to them. They are kept until the end of the school year and then deleted, or turned into text and deleted sooner (REQ-10.5).
+- **Time on lessons and time away** (Gil, 2026-11-25): total and net time per lesson, and how many times and for how long the student was away (REQ-5.33). Evolora never knows what else the student did while away.
+- **Conversations with the AI help line** (stage 2): the student's class teachers can read them (REQ-7.6).
+- **Where the data is kept**: on Google Cloud in Israel (REQ-10.4). No advertising, and student data is never sold or shared outside the school.
+
+How people see and agree to them:
+- On first sign-in, before anything else, Evolora shows a short summary, a link to the full text and an **"I agree"** button. Nobody can use Evolora without agreeing.
+- When the terms change, everyone sees the new summary and agrees again at their next sign-in.
+- A **"Terms of use"** link at the bottom of every page opens the full text at any time.
+
+Claude drafts the text for Gil to edit and approve. A lawyer checks it before Evolora is used beyond the pilot (REQ-10.6). For the pilot, the school also sends parents a short letter (Claude drafts it) explaining Evolora and what it records.
+
+*Acceptance criteria:*
+- [ ] Sign in for the first time with a new test student: the terms summary and the "I agree" button appear before anything else, and nothing else can be opened until you agree.
+- [ ] Agree, sign out and sign in again: the terms don't appear again.
+- [ ] Claude loads a changed version of the terms: at the next sign-in, the test student must agree again.
+- [ ] The "Terms of use" link at the bottom of any page opens the full text, in the language Evolora is shown in.
+- [ ] The full text has a part about audio recordings and a part about time measurement.
+
 **REQ-10.2: Private messages** (Priority 3: later)
 See REQ-5.16. Messages are visible only to the student and that class's teachers.
 
@@ -1177,7 +1199,9 @@ The test site can be filled with a standard set of test data with one command, b
 
 ### Still open
 
-No open questions right now (2026-11-25).
+| # | Question | Claude's suggestion (written into REQ-10.8 until Gil decides) |
+|---|---|---|
+| Q-46 | Terms of use (REQ-10.8): who writes the text, how people agree, what about parents, and what priority? | Claude drafts and Gil approves, with a lawyer's check before wider use; "I agree" once at first sign-in and again when the terms change; a letter to parents from the school for the pilot; priority 1, since the pilot already records minors' answers and grades. |
 
 ### Answered (2026-11-20)
 
