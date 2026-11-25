@@ -1,7 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User } from 'firebase/auth'
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
-import { auth, db } from './site'
+import { httpsCallable } from 'firebase/functions'
+import { auth, db, functions } from './site'
+import { loadTerms, type Terms } from './terms'
 import i18n, { LANGUAGES, setLanguage, type Language } from './i18n'
 
 // Roles (REQ-2.1, 2.2): everyone who signs in is a student, unless the system admin
@@ -18,6 +20,10 @@ export interface Session {
   chooseLanguage: (lang: Language) => void
   // Reads the person's classes again, after joining one (REQ-5.2).
   reloadClasses: () => Promise<void>
+  // The terms of use (REQ-10.8): the current ones, whether the person agreed to them, and agreeing.
+  terms: Terms | null
+  termsOk: boolean
+  agreeTerms: () => Promise<void>
   error: string | null
 }
 
@@ -45,7 +51,7 @@ async function loadClassIds(user: User): Promise<string[]> {
 
 // Keeps the person's record up to date, and brings back their saved interface language,
 // so it follows them to any computer (REQ-9.4).
-async function syncProfile(user: User) {
+async function syncProfile(user: User): Promise<string | null> {
   const ref = doc(db, 'users', user.uid)
   const snap = await getDoc(ref)
   const saved = snap.exists() ? (snap.data().language as string | undefined) : undefined
@@ -60,6 +66,8 @@ async function syncProfile(user: User) {
   if (!snap.exists()) update.createdAt = serverTimestamp()
   if (!saved) update.language = i18n.language
   await setDoc(ref, update, { merge: true })
+  // Which version of the terms of use the person agreed to (REQ-10.8), if any.
+  return snap.exists() ? (snap.data().termsAccepted?.version ?? null) : null
 }
 
 export function SessionProvider({ children }: { children: ReactNode }) {
@@ -68,6 +76,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role>('student')
   const [classIds, setClassIds] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [terms, setTerms] = useState<Terms | null>(null)
+  const [agreed, setAgreed] = useState<string | null>(null)
 
   useEffect(() => {
     return onAuthStateChanged(auth, async (u) => {
@@ -79,12 +89,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         return
       }
       setState('loading')
+      let accepted: string | null = null
       try {
-        await syncProfile(u)
+        accepted = await syncProfile(u)
       } catch {
         // The record will be saved next time; the person can still continue.
       }
-      const [r, c] = await Promise.all([loadRole(u), loadClassIds(u)])
+      const [r, c, current] = await Promise.all([loadRole(u), loadClassIds(u), loadTerms(true)])
+      setTerms(current)
+      setAgreed(accepted)
       setUser(u)
       setRole(r)
       setClassIds(c)
@@ -108,6 +121,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     if (user) setClassIds(await loadClassIds(user))
   }, [user])
 
+  const agreeTerms = useCallback(async () => {
+    if (!terms) return
+    const r = await httpsCallable<{ version: string }, { version: string }>(functions, 'acceptTerms')({ version: terms.version })
+    setAgreed(r.data.version)
+  }, [terms])
+
+  // Nobody is asked while no terms are loaded (D-75).
+  const termsOk = !terms || agreed === terms.version
+
   const signOutNow = useCallback(async () => {
     await signOut(auth)
   }, [])
@@ -121,7 +143,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   )
 
   return (
-    <SessionContext.Provider value={{ state, user, role, classIds, signInWithGoogle, signOutNow, chooseLanguage, reloadClasses, error }}>
+    <SessionContext.Provider value={{ state, user, role, classIds, signInWithGoogle, signOutNow, chooseLanguage, reloadClasses, terms, termsOk, agreeTerms, error }}>
       {children}
     </SessionContext.Provider>
   )

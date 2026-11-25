@@ -829,3 +829,18 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Claude drafts the terms in Hebrew, Arabic and English, Gil approves them, and a lawyer checks them before use beyond the pilot. Everyone presses "I agree" at first sign-in and again when the terms change, and a link is on every page. For the pilot, the school sends parents a letter (Claude drafts it). Priority 1.
 **Reason:** Real students shouldn't start before they know what is recorded; a letter to parents is enough for the pilot (D-13), and full compliance comes before wider use (REQ-10.6).
 **Affects:** REQ-10.8, REQ-5.33, REQ-6.6, REQ-10.5
+
+### D-75: How the terms of use and the sent-back count are built
+**Date:** 2026-11-25 · **Status:** Decided by Claude, within D-73 and D-74 (Gil can change any of it)
+**Context:** REQ-10.8 (terms of use) and REQ-5.34 (count of answers sent back) leave some building details open.
+**Decision:**
+1. **The terms are content Claude loads, like lessons.** The text is in three files: `terms/terms.he.md`, `terms/terms.ar.md` and `terms/terms.en.md`. Each starts with a `version:` line, a `title:` line and a short `summary:` list, then the full text. `node tools/load-terms.mjs` checks that the three files have the same version and puts them on the test site. Until real text is approved, the files hold a short draft, version 0.1, clearly marked as a draft.
+2. **Who must agree:** everyone who signs in, students and teachers alike, including Gil's own accounts and the test users. If no terms have been loaded yet (as on the real site today), nobody is asked.
+3. **When to agree again:** whenever the version number changes. Fixing a typo without changing the version doesn't ask anyone again; the loading program warns about this.
+4. **Saving the agreement:** the checking service saves it (`acceptTerms`), with the version and the time. The database rules don't let anyone write it directly, so the record can't be faked.
+5. **How strict, for the pilot:** the screens are blocked: until a person agrees, every page shows only the terms screen (and the "Terms of use" page). The checking service does **not** also refuse answers from someone who hasn't agreed. Someone skilled with the browser's developer tools could get round the screen. Even then, they could do nothing a student who agreed can't do, and their agreement record stays missing. Before Evolora is used beyond the pilot (REQ-10.6), the checking service should refuse work from anyone who hasn't agreed.
+6. **Test users:** the test-data reset marks every test user as agreed to the loaded version, except **Test Student 7**, so Gil can try the first sign-in. After loading a new version, `node tools/load-terms.mjs --agree-test-users` does the same again. Without it, every test user is asked to agree again, as real people would be.
+7. **What counts as "sent back" (REQ-5.34):** every time a teacher sends a lesson's answers back **for corrections**. Sending a finished lesson back **to read the comments** (no answers to change) isn't counted. Each sending counts once, however many questions are in it.
+8. **The warning number** is set on **Class settings**, from 1 to 100, with a default of 10. The warning shows on the class dashboard under the course's progress: a ⚠ sign with the words "sent back N times". It shows as soon as a student's total in a course reaches the number.
+9. **For REQ-5.33 later:** every answer attempt now saves its time, so total and net time can be worked out in stage 2.
+**Affects:** REQ-10.8, REQ-5.34, REQ-5.33, docs/system-design.md 2.12 and 3.1, tools/README.md

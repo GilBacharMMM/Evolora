@@ -152,3 +152,18 @@ test('redo (REQ-6.5): the grade that counts', async () => {
   // Redo doesn't count: the kept grade stays.
   assert.equal(lessonCell({ finished: true, grade: g(95), keptGrade: g(70), redo: { active: false, counts: false } }).percent, 70)
 })
+
+test('sent-back count (REQ-5.34): totals per course and the warning at the class number', async () => {
+  const { sentBackLimit, sentBackTotals } = await import('./dashboard.js')
+  assert.equal(sentBackLimit({}), 10)
+  assert.equal(sentBackLimit({ sentBackWarnAt: 3 }), 3)
+  assert.equal(sentBackLimit({ sentBackWarnAt: 0 }), 10)
+  const courses = [{ courseId: 'a', order: ['l1', 'l2'] }, { courseId: 'b', order: ['l3'] }]
+  const counts = { l1: 2, l2: 1, l3: 0 }
+  const r = sentBackTotals(courses, (l) => counts[l], 10)
+  assert.deepEqual(r.totals, { a: 3, b: 0 })
+  assert.deepEqual(r.warnings, [])
+  assert.deepEqual(sentBackTotals(courses, (l) => counts[l], 3).warnings, ['a'])
+  assert.deepEqual(sentBackTotals(courses, (l) => ({ l1: 9, l2: 1 })[l], 10).warnings, ['a'])
+  assert.deepEqual(sentBackTotals(courses, (l) => ({ l1: 8, l2: 1 })[l], 10).warnings, [])
+})

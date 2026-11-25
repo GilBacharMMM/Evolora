@@ -15,7 +15,7 @@ import { onSchedule } from 'firebase-functions/v2/scheduler'
 import { getStorage } from 'firebase-admin/storage'
 import { randomUUID } from 'node:crypto'
 import { answerCheckAgain, answerMain, isFinished, judge, lessonFinished, lessonGrade, receives, sendBackForCorrections, teacherScore } from './check.js'
-import { averageGrade, coursePosition, dueFor, lateGrade, lessonCell, levelSuggestions, median, notMastered, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
+import { averageGrade, coursePosition, dueFor, lateGrade, lessonCell, levelSuggestions, median, notMastered, sentBackLimit, sentBackTotals, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
 import { CLASS_COLORS, WAIT_MS, afterWrong, makeCode, normalizeCode, validateCode, waitLeft } from './classcode.js'
 
 // "public" lets the website reach the service; every call still checks who is signed in.
@@ -130,6 +130,8 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
 
     const newState = outcome.state
     if (q.kind === 'audio' && audioUrl) newState.audioUrl = audioUrl
+    // The time of every attempt, so time on the lesson can be worked out later (REQ-5.33, D-75).
+    newState.answeredAt = [...(before?.answeredAt || []), Date.now()]
     const minimum = topicMinimum
     if (minimum && isFinished(newState) && lastAutoQuestionId(topic, maxLevel) === questionId && t.correct < minimum && !t.flagged) {
       t.flagged = true
@@ -351,6 +353,16 @@ export const setJoining = onCall(async (request) => {
   return { joiningOpen: open }
 })
 
+// The number of answers sent back for corrections, in one course, at which the dashboard warns
+// (REQ-5.34, D-75). Default 10.
+export const setSentBackLimit = onCall(async (request) => {
+  const { ref } = await requireClassTeacher(request.auth, request.data?.classId)
+  const limit = request.data?.limit
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100) throw new HttpsError('invalid-argument', 'A number from 1 to 100.')
+  await ref.update({ sentBackWarnAt: limit, updatedAt: FieldValue.serverTimestamp() })
+  return { limit }
+})
+
 // The student no longer sees the class; their work is kept for the teacher (REQ-5.4).
 export const removeStudent = onCall(async (request) => {
   const { classId, studentId } = request.data || {}
@@ -553,6 +565,7 @@ export const classOverview = onCall(async (request) => {
   )
 
   const now = Date.now()
+  const warnAt = sentBackLimit(data)
   // The assignment that sets a lesson's due date for a student (D-60): the latest one given to them
   // that includes the lesson and has a due date; otherwise the latest one that includes it.
   const ruleFor = (uid, l) => {
@@ -572,11 +585,12 @@ export const classOverview = onCall(async (request) => {
         if (due && !pr?.finished && now > due) pastDue = true
         const late = !!due && (finishedAt ? finishedAt > due : now > due)
         const cell = base.kind === 'grade' ? { ...base, percent: lateGrade(base.percent, rule, due, finishedAt) } : base
-        return [l, { ...cell, due, late, finishedAt, started: !!pr, sentBack: pr?.sentBack && !pr.sentBack.done ? pr.sentBack.mode : null, waiting: waitingAnswers(pr).length, tips: Object.values(pr?.tipsOpened || {}).reduce((a, b) => a + b, 0) }]
+        return [l, { ...cell, due, late, finishedAt, started: !!pr, sentBack: pr?.sentBack && !pr.sentBack.done ? pr.sentBack.mode : null, sentBackCount: pr?.sentBackCount || 0, waiting: waitingAnswers(pr).length, tips: Object.values(pr?.tipsOpened || {}).reduce((a, b) => a + b, 0) }]
       }),
     )
     const positions = Object.fromEntries(mine.courseIds.map((c) => [c, coursePosition(work.courses.find((k) => k.courseId === c).order, (l) => p(s.id, l))]))
     const openFlags = flags.filter((f) => f.uid === s.id && f.open).length
+    const sentBack = sentBackTotals(work.courses.filter((c) => mine.courseIds.includes(c.courseId)), (l) => cells[l]?.sentBackCount, warnAt)
     const active = (c) => !work.courses.find((k) => k.courseId === c)?.archived
     const { status, star } = studentStatus({ openFlags, pastDue, courses: mine.courseIds.filter(active).map((c) => ({ mine: positions[c].done, middle: middles[c] })) })
     const times = mine.lessonIds.map((l) => toMillis(p(s.id, l)?.updatedAt)).filter(Boolean)
@@ -588,6 +602,8 @@ export const classOverview = onCall(async (request) => {
       positions,
       average: averageGrade(Object.values(cells)),
       openFlags,
+      sentBackTotals: sentBack.totals,
+      sentBackWarnings: sentBack.warnings,
       lastWorked: times.length ? Math.max(...times) : null,
       status,
       star,
@@ -624,6 +640,7 @@ export const classOverview = onCall(async (request) => {
     name: data.name,
     color: data.color || '#0E6B73',
     teacherNames: data.teacherNames || [],
+    sentBackWarnAt: warnAt,
     courses: work.courses.map((c) => ({ ...c, middle: middles[c.courseId] })),
     lessons: work.lessons,
     columns,
@@ -844,6 +861,8 @@ export const sendBack = onCall(async (request) => {
       grade: lessonGrade(r.questions),
       finished: false,
       sentBack: sentBackNow,
+      // Every sending back for corrections is counted (REQ-5.34, D-75).
+      sentBackCount: FieldValue.increment(1),
       updatedAt: FieldValue.serverTimestamp(),
     })
     return { sent: r.sent }
@@ -1344,3 +1363,15 @@ async function saveComment(studentId, lessonId, questionId, base64) {
   await file.save(data, { contentType: 'audio/webm', metadata: { metadata: { firebaseStorageDownloadTokens: randomUUID() } } })
   return privateLink(file)
 }
+
+// Agreeing to the terms of use (REQ-10.8, D-74, D-75). Saved only here, with the version the
+// person saw and the time; the database rules don't let anyone write it directly.
+export const acceptTerms = onCall(async (request) => {
+  if (!request.auth) throw new HttpsError('unauthenticated', 'Sign in first.')
+  const current = await db.doc('terms/current').get()
+  if (!current.exists) throw new HttpsError('failed-precondition', 'no-terms')
+  const version = current.data().version
+  if (request.data?.version !== version) throw new HttpsError('failed-precondition', 'old-version')
+  await db.doc(`users/${request.auth.uid}`).set({ termsAccepted: { version, at: FieldValue.serverTimestamp() } }, { merge: true })
+  return { version }
+})

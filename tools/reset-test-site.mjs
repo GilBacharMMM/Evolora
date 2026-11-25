@@ -24,6 +24,7 @@ import { deleteObject, listAll, ref } from 'firebase/storage'
 import { ROOT, connect, finish, importAccounts, siteConfig, testPassword } from './lib/connect.mjs'
 import { loadAll } from './load.mjs'
 import { addSchool, openCourseToClass, setStaff } from './admin.mjs'
+import { agreeTestUsers, readTermsFiles, saveTerms } from './load-terms.mjs'
 import { makeCode } from '../functions/classcode.js'
 
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
@@ -115,6 +116,12 @@ async function main() {
 
   console.log('5. Giving the demo courses to the whole test class...')
   for (const file of LESSONS_AND_COURSES.filter((f) => f.startsWith('courses/'))) await openCourseToClass(db, path.basename(file, '.md'), CLASS_ID)
+
+  console.log('6. Terms of use: loading them; every test user agrees except Test Student 7 (D-75)...')
+  const terms = readTermsFiles()
+  if (terms.problems.length) throw new Error(`The terms files need fixing: ${terms.problems.join(' ')}`)
+  const { version } = await saveTerms(db, terms.parsed)
+  await agreeTestUsers(db, version)
 
   console.log(`\nThe test site is reset to the standard test data. Test class code: ${classCode}`)
 }

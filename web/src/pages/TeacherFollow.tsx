@@ -20,7 +20,7 @@ import type { LessonType } from '../lesson/types'
 
 const call = <T,>(name: string, data: unknown) => httpsCallable<unknown, T>(functions, name)(data).then((r) => r.data)
 
-export type Cell = { kind: 'notDone' | 'pending' | 'grade' | 'doneNoGrade'; percent: number | null; started: boolean; waiting: number; tips: number; sentBack?: 'review' | 'corrections' | null; due?: number | null; late?: boolean }
+export type Cell = { kind: 'notDone' | 'pending' | 'grade' | 'doneNoGrade'; percent: number | null; started: boolean; waiting: number; tips: number; sentBack?: 'review' | 'corrections' | null; sentBackCount?: number; due?: number | null; late?: boolean }
 
 interface CourseInfo {
   courseId: string
@@ -43,6 +43,9 @@ interface StudentRow {
   positions: Record<string, { done: number; current: string | null; working: boolean }>
   average: number | null
   openFlags: number
+  // Answers sent back for corrections, per course, and the courses where it reached the class's number (REQ-5.34).
+  sentBackTotals?: Record<string, number>
+  sentBackWarnings?: string[]
   lastWorked: number | null
   status: 'red' | 'orange' | 'yellow' | 'green'
   star: boolean
@@ -70,6 +73,7 @@ export interface Overview {
   name: string
   color: string
   teacherNames: string[]
+  sentBackWarnAt?: number
   courses: CourseInfo[]
   lessons: Record<string, { title: string; type: LessonType; language: string }>
   columns: string[]
@@ -243,6 +247,7 @@ export function ClassDashboard({ classId }: { classId: string }) {
                   {data.courses.filter((c) => !c.archived).map((c) => (
                     <td key={c.courseId}>
                       {s.courseIds.includes(c.courseId) ? <ProgressMap course={c} student={s} lessons={data.lessons} /> : <span className="muted">—</span>}
+                      {s.sentBackWarnings?.includes(c.courseId) && <SentBackWarning n={s.sentBackTotals?.[c.courseId] ?? 0} />}
                     </td>
                   ))}
                   <td>{s.average == null ? '—' : `${s.average}%`}</td>
@@ -257,6 +262,16 @@ export function ClassDashboard({ classId }: { classId: string }) {
       <p className="muted small-note">{t('follow.statusExplain')}</p>
       <OpenFlags classId={classId} flags={data.flags.filter((f) => f.open)} onCleared={reload} />
     </main>
+  )
+}
+
+// Many answers sent back for corrections in a course (REQ-5.34, D-75): a sign and words, not only a colour.
+function SentBackWarning({ n }: { n: number }) {
+  const { t } = useTranslation()
+  return (
+    <span className="sent-back-warning" role="note">
+      <span aria-hidden="true">⚠</span> {t('follow.sentBackWarning', { count: n })}
+    </span>
   )
 }
 
@@ -570,7 +585,8 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
         {data.lessons[l].title}
       </button>
       <span className="given-to">
-        {s.cells[l]?.sentBack && <span className="notes-chip">{t(`follow.sentBack.${s.cells[l].sentBack}`)}</span>} <GradeCell cell={s.cells[l]} />
+        {s.cells[l]?.sentBack && <span className="notes-chip">{t(`follow.sentBack.${s.cells[l].sentBack}`)}</span>}{' '}
+        {(s.cells[l]?.sentBackCount ?? 0) > 0 && <span className="muted sent-back-count">{t('follow.sentBackTimes', { count: s.cells[l].sentBackCount })}</span>} <GradeCell cell={s.cells[l]} />
       </span>
     </li>
   )
@@ -633,6 +649,15 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
             <div key={c.courseId} className="student-course">
               <h3 dir="auto">{c.title}</h3>
               <ProgressMap course={c} student={s} lessons={data.lessons} />
+              <p className="muted small-note">
+                {t('follow.sentBackCourse', { count: s.sentBackTotals?.[c.courseId] ?? 0 })}
+                {s.sentBackWarnings?.includes(c.courseId) && (
+                  <>
+                    {' '}
+                    <SentBackWarning n={s.sentBackTotals?.[c.courseId] ?? 0} />
+                  </>
+                )}
+              </p>
               <ul className="given-list">
                 {c.order.filter((l) => s.lessonIds.includes(l)).map((l) => (
                   <LessonLine key={l} l={l} />

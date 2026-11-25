@@ -135,6 +135,13 @@ The teacher's screens read a class's work through the checking service, which fi
 - **Drag-and-drop questions (REQ-4.12, D-70):** the student places word cards on numbered spots on an image, by dragging or by clicking a card and then a spot. The cards students see are in alphabetical order (shuffled on the screen), and the right card for each spot is kept with the secret answers. Checked like multiple choice, with 2 attempts and a hint.
 - **Recorded answers and audio comments (REQ-6.6, 5.13, D-67):** an audio question has a recorder: up to 30 seconds, listen back, record again, then send. The teacher plays it on the grading page and can record a comment (also up to 30 seconds), which the student plays under their answer. Only the student and the class's teachers can listen (private links kept in the student's work). Recordings are deleted after 31 July each year (REQ-10.5).
 - **Exams (REQ-4.26, 5.23, D-65):** an exam lesson shows all its questions on one page, with no hints, solutions, tips or check-again questions, and the same questions for every student; choices are in each student's own order. Answers are saved as the student goes (examSave) and checked only on "Submit exam" (examSubmit), into exam results that the student can read only after the teacher releases them. An exam opens in its time window or when the teacher opens it; a timer and a 5-minute notice show when the teacher chose them; at the end the exam is submitted by itself. During the window the teacher can lock the class's other lessons, or all of Evolora. Wrong level 1 answers raise red flags. The teacher releases results and allows retakes on the exam's results page.
+### 2.12 Terms of use and the sent-back count (D-74, D-75)
+- **Terms of use (REQ-10.8):** the text is kept in `terms/terms.he.md`, `terms.ar.md` and `terms.en.md`, each starting with `version:`, `title:` and a short `summary:` list, then the full text. Claude loads them with `node tools/load-terms.mjs`. They are saved in the database as the current terms (anyone can read them; only the loading program can change them), with a copy of every version.
+- **Agreeing:** when someone signs in and hasn't agreed to the current version, every page shows only the terms screen: the summary, a link to the full text and **"I agree"**. Pressing it calls the checking service (`acceptTerms`), which saves the version and the time with the person's record. The database rules don't let anyone write this directly. When the version changes, everyone is asked again at their next visit. For the pilot, only the screens are blocked (D-75).
+- **"Terms of use" link:** at the bottom of every page, signed in or not. It opens the full text in the interface language.
+- **Sent-back count (REQ-5.34):** each time a teacher sends a lesson's answers back for corrections, the student's work in that lesson counts one more. The student page shows the count for each lesson and the total for each course. The class dashboard shows a ⚠ warning, with words, under a course when a student's total reaches the class's number. The teacher sets the number on Class settings (default 10).
+- **Answer times, for REQ-5.33 (stage 2):** the lesson's start and finish times are already saved. Each answer attempt now also saves the time it was sent, so total and net time can be worked out later. Time away isn't measured yet.
+
 ---
 
 ## 3. Where the data lives
@@ -143,13 +150,14 @@ The teacher's screens read a class's work through the checking service, which fi
 
 | Information | Examples | Where |
 |---|---|---|
-| People | Name, school email, role, interface language | Database |
+| People | Name, school email, role, interface language, which version of the terms of use they agreed to and when | Database |
+| Terms of use | The current text in Hebrew, Arabic and English, its version, and every earlier version | Database (loaded from the `terms` folder) |
 | Lessons | Title, language, subject, grade, blocks, creator, versions | Database |
 | Correct answers and grading instructions | The right choice in a multiple-choice question | Database, in a protected area students can never read |
 | Courses | Name, list of lessons, public or private | Database |
 | Classes | Name, class code, teachers, students | Database |
 | Assignments | What was assigned, to whom, settings, due date | Database |
-| Student work | Answers, attempts, grades, place in the lesson | Database |
+| Student work | Answers, attempts (with the time of each), grades, place in the lesson, how many times it was sent back for corrections | Database |
 | Comments and messages | Teacher comments, student–teacher conversations | Database |
 | Images | Pictures in lessons | File storage |
 | Audio | Lesson audio, students' recorded answers, teachers' audio comments | File storage |
@@ -353,6 +361,8 @@ Which part of the system delivers each group of requirements:
 | REQ-8.1 (subjects, grades) | Lesson details in the database (3.1) |
 | REQ-9.1 to 9.4 (languages, direction) | Languages and direction (2.4) |
 | REQ-10.1 to 10.4, 10.7 (privacy, class-code alerts) | Permissions (4.3), Israel region and backups (3.3, 7.1) |
+| REQ-10.8 (terms of use) | Terms of use (2.12) |
+| REQ-5.34 (sent-back count), REQ-5.33 groundwork (answer times) | Sent-back count and answer times (2.12) |
 | REQ-11.1 to 11.3 (platform, hosting, size) | Screen size (2.5), hosting (7) |
 | REQ-12.4 to 12.6, 12.8 (test site, user switching, test data, students-only address) | Test site (7.3) |
 | REQ-12.1 to 12.3 (speed, no lost work, accessibility) | Lesson player saves after every answer (2.3); tested in screen tests (8.1) |

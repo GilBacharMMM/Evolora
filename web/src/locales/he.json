@@ -174,7 +174,14 @@
     "removeTeacher": "הסרה מהכיתה",
     "removeTeacherConfirm": "להסיר את {{name}} מהמורים של הכיתה? הכיתה לא תופיע יותר אצלו/ה. שום דבר אחר לא משתנה.",
     "minimumPerTopic": "מינימום שאלות בכל נושא (ריק = ברירת המחדל של השיעור):",
-    "minimumDefault": "ברירת מחדל"
+    "minimumDefault": "ברירת מחדל",
+    "sentBackTitle": "אזהרה על החזרות לתיקון",
+    "sentBackExplain": "בלוח הכיתה תופיע אזהרה ליד תלמיד שתשובותיו הוחזרו לתיקון לפחות כך וכך פעמים בקורס אחד.",
+    "sentBackLabel": "להזהיר אחרי (מספר החזרות בקורס):",
+    "sentBackBad": "מספר מ-1 עד 100.",
+    "sentBackSave": "שמירה",
+    "sentBackSaved": "נשמר",
+    "sentBackFailed": "לא הצליח. נסו שוב."
   },
   "lessonType": {
     "teaching": "הקניה",
@@ -403,7 +410,13 @@
     "whenTitle": "מתי",
     "whenMust": "התלמיד/ה חייב/ת לחזור לזה לפני שממשיכים בקורס",
     "whenOwnTime": "התלמיד/ה יכול/ה לחזור לזה בזמנו/ה",
-    "whenMustShort": "חובה לחזור לזה לפני שממשיכים"
+    "whenMustShort": "חובה לחזור לזה לפני שממשיכים",
+    "sentBackTimes_one": "הוחזר לתיקון פעם אחת",
+    "sentBackTimes_other": "הוחזר לתיקון {{count}} פעמים",
+    "sentBackCourse_one": "הוחזר לתיקון בקורס: פעם אחת",
+    "sentBackCourse_other": "הוחזר לתיקון בקורס: {{count}} פעמים",
+    "sentBackWarning_one": "הוחזר לתיקון פעם אחת",
+    "sentBackWarning_other": "הוחזר לתיקון {{count}} פעמים"
   },
   "library": {
     "search": "חיפוש לפי כותרת",
@@ -496,5 +509,15 @@
     "fillAll": "קודם צריך לשים כרטיס בכל מקום.",
     "spotEmpty": "מקום {{n}}, ריק",
     "spotWith": "מקום {{n}}: {{card}}"
+  },
+  "terms": {
+    "link": "תנאי שימוש",
+    "beforeYouStart": "לפני שמתחילים, הנה הדברים החשובים:",
+    "readAll": "לקריאת תנאי השימוש המלאים",
+    "agree": "אני מסכים/ה",
+    "notNow": "לא עכשיו (יציאה)",
+    "version": "גרסה {{version}}",
+    "failed": "השמירה לא הצליחה. נסו שוב.",
+    "none": "תנאי השימוש עדיין לא פורסמו."
   }
 }

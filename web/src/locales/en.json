@@ -168,7 +168,14 @@
     "removeTeacher": "Remove from the class",
     "removeTeacherConfirm": "Remove {{name}} as a teacher of this class? They will no longer see it. Nothing else changes.",
     "minimumPerTopic": "Minimum questions per topic (leave empty for the lesson's default):",
-    "minimumDefault": "default"
+    "minimumDefault": "default",
+    "sentBackTitle": "Warning for answers sent back",
+    "sentBackExplain": "The class dashboard shows a warning next to a student whose answers were sent back for corrections at least this many times in one course.",
+    "sentBackLabel": "Warn after (times sent back in a course):",
+    "sentBackBad": "A number from 1 to 100.",
+    "sentBackSave": "Save",
+    "sentBackSaved": "Saved",
+    "sentBackFailed": "Didn't work. Please try again."
   },
   "lessonType": {
     "teaching": "Teaching",
@@ -397,7 +404,13 @@
     "whenTitle": "When",
     "whenMust": "The student must go over it before going on in the course",
     "whenOwnTime": "The student can go over it at their own time",
-    "whenMustShort": "Must go over it before going on"
+    "whenMustShort": "Must go over it before going on",
+    "sentBackTimes_one": "sent back once",
+    "sentBackTimes_other": "sent back {{count}} times",
+    "sentBackCourse_one": "Sent back for corrections in this course: once",
+    "sentBackCourse_other": "Sent back for corrections in this course: {{count}} times",
+    "sentBackWarning_one": "sent back once",
+    "sentBackWarning_other": "sent back {{count}} times"
   },
   "library": {
     "search": "Search by title",
@@ -490,5 +503,15 @@
     "fillAll": "Put a card on every place first.",
     "spotEmpty": "Place {{n}}, empty",
     "spotWith": "Place {{n}}: {{card}}"
+  },
+  "terms": {
+    "link": "Terms of use",
+    "beforeYouStart": "Before you start, here is what matters:",
+    "readAll": "Read the full terms of use",
+    "agree": "I agree",
+    "notNow": "Not now (sign out)",
+    "version": "Version {{version}}",
+    "failed": "Couldn't save. Please try again.",
+    "none": "The terms of use haven't been published yet."
   }
 }

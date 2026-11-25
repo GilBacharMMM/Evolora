@@ -122,7 +122,7 @@ try {
     check('a lesson not finished shows "not done" (0)', row('test-student-1').cells['circles-teaching'].kind === 'notDone')
     check('an answer waiting for the teacher shows as pending, not 0', ['pending', 'notDone'].includes(row('test-student-3').cells[openLesson.lessonId].kind) && row('test-student-3').cells[openLesson.lessonId].waiting === 1)
     const lines = o.csv.replace(/^﻿/, '').trim().split('\r\n')
-    check('the CSV file has a header and a row per student, a column per lesson', lines.length === 7 && lines[0].split(',').length === 3 + o.columns.length && o.columns.length === 3, `${lines.length} lines`)
+    check('the CSV file has a header and a row per student, a column per lesson', lines.length === 7 && lines[0].match(/("[^"]*"|[^,]+)/g).length === 3 + o.columns.length && o.columns.length === o.courses.reduce((n, c) => n + c.order.length, 0), `${lines.length} lines, ${o.columns.length} columns`)
   })
   check("Test Teacher 2 cannot see Test Teacher 1's class", await as('test-teacher-2', ({ call }) => refused(() => call('classOverview', { classId: CLASS }))))
   check('a student cannot see the class dashboard', await as('test-student-1', ({ call }) => refused(() => call('classOverview', { classId: CLASS }))))

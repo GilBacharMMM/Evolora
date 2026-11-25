@@ -40,6 +40,7 @@ interface ClassData {
   teacherIds: string[]
   code: string
   joiningOpen: boolean
+  sentBackWarnAt: number
   students: StudentRow[]
   assignments: AssignmentRow[]
   openings: { id: string; lessonId: string; everyone: boolean; studentIds: string[] }[]
@@ -74,6 +75,7 @@ export function TeacherClass({ classId }: { classId: string }) {
         teacherIds: d.teacherIds || [],
         code: d.code || '',
         joiningOpen: d.joiningOpen !== false,
+        sentBackWarnAt: Number.isInteger(d.sentBackWarnAt) ? d.sentBackWarnAt : 10,
         students: list.docs
           .map((s) => ({ id: s.id, name: s.data().name || '', email: s.data().email || '', removed: s.data().removed === true }))
           .sort((a, b) => a.name.localeCompare(b.name)),
@@ -128,6 +130,8 @@ export function TeacherClass({ classId }: { classId: string }) {
       <section className="card">
         <CodeBox classId={classId} code={data.code} joiningOpen={data.joiningOpen} onChange={load} />
       </section>
+
+      <SentBackSetting classId={classId} value={data.sentBackWarnAt} onChange={load} />
 
       <section className="card list-card-padded" aria-labelledby="students-title">
         <h2 id="students-title" className="section-title">
@@ -823,6 +827,49 @@ function Teachers({ classId, names, ids, onAdded }: { classId: string; names: st
           {message.text}
         </p>
       )}
+    </section>
+  )
+}
+
+// The number of answers sent back for corrections, in one course, at which the class dashboard
+// warns (REQ-5.34, D-75). Default 10.
+function SentBackSetting({ classId, value, onChange }: { classId: string; value: number; onChange: () => Promise<void> }) {
+  const { t } = useTranslation()
+  const [n, setN] = useState(String(value))
+  const [busy, setBusy] = useState(false)
+  const [state, setState] = useState<'idle' | 'saved' | 'bad' | 'failed'>('idle')
+  async function save() {
+    const limit = Number(n)
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100) return setState('bad')
+    setBusy(true)
+    try {
+      await call('setSentBackLimit', { classId, limit })
+      await onChange()
+      setState('saved')
+    } catch {
+      setState('failed')
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <section className="card list-card-padded" aria-labelledby="sentback-title">
+      <h2 id="sentback-title" className="section-title">
+        {t('teacher.sentBackTitle')}
+      </h2>
+      <p className="muted small-note">{t('teacher.sentBackExplain')}</p>
+      <div className="inline-form">
+        <label>
+          <span>{t('teacher.sentBackLabel')} </span>
+          <input type="number" min={1} max={100} value={n} onChange={(e) => { setN(e.target.value); setState('idle') }} className="number-input" />
+        </label>
+        <button type="button" className="button secondary" disabled={busy || n === String(value)} onClick={() => void save()}>
+          {t('teacher.sentBackSave')}
+        </button>
+        {state === 'saved' && <span className="notice good" role="status">{t('teacher.sentBackSaved')}</span>}
+        {state === 'bad' && <span className="error" role="alert">{t('teacher.sentBackBad')}</span>}
+        {state === 'failed' && <span className="error" role="alert">{t('teacher.sentBackFailed')}</span>}
+      </div>
     </section>
   )
 }

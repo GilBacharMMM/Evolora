@@ -63,9 +63,19 @@ service cloud.firestore {
 
     match /users/{uid} {
       allow read: if isLoader() || isAdmin() || (signedIn() && request.auth.uid == uid);
-      allow create, update: if isLoader() || (signedIn() && request.auth.uid == uid
+      // People keep their own name, email and language up to date. Agreeing to the terms of use
+      // (termsAccepted, REQ-10.8, D-75) is saved only by the checking service, so it can't be faked.
+      allow create: if isLoader() || (signedIn() && request.auth.uid == uid
         && request.resource.data.keys().hasOnly(['name', 'email', 'language', 'createdAt', 'lastSignIn']));
+      allow update: if isLoader() || (signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'email', 'language', 'createdAt', 'lastSignIn']));
       allow delete: if isLoader();
+    }
+
+    // The terms of use (REQ-10.8): anyone can read them, even before signing in.
+    match /terms/{id} {
+      allow read: if true;
+      allow write: if isLoader();
     }
 
     match /memberships/{uid} {

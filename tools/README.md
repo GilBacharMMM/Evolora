@@ -7,6 +7,9 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `check-lesson.mjs` | Checks a lesson file before it is loaded: the lesson details, that every block is a known type, image files and sources, video sources, question answers, hints, solutions, check-again questions, levels, exam rules, and that every topic has enough questions. It lists errors (the lesson can't be loaded) and warnings (worth fixing). | REQ-4.24 |
 | `load.mjs` | The loading program: runs the lesson check, then loads lessons and courses into a site. A course brings its lessons with it. An unchanged lesson is skipped; a changed one is saved as a new version. | REQ-4.24, 4.10 |
 | `admin.mjs` | System admin tasks (D-47): make someone a teacher or system admin (and put teachers in a school, D-69), take the role away, list everyone with their role, add schools and list them, give a course to a whole class. | REQ-2.1, 2.2, 5.7 |
+| `load-terms.mjs` | Checks the terms of use in the `terms` folder (Hebrew, Arabic and English, same version) and puts them on the test site. With `--agree-test-users`, marks every test user except Test Student 7 as agreed to that version (D-75). | REQ-10.8 |
+| `test-terms.mjs` | End-to-end test of the terms of use: anyone can read them, nobody can fake agreeing, agreeing is saved, and a new version needs agreeing again. | REQ-10.8 |
+| `test-sent-back.mjs` | End-to-end test of the sent-back count: per lesson, per course, and the warning at the default number and at a number the teacher changes. | REQ-5.34 |
 | `set-teacher-passwords.mjs` | Gives the test teachers their own password (kept on this computer, never on GitHub), so the students-only test address can't be used to sign in as a teacher. Then rebuild and publish the test site. | REQ-12.8, D-71 |
 | `reset-test-site.mjs` | Fills or resets the test site with the standard test data: test users, the test class with its class code, the demo lessons, and the demo courses given to the whole class. It prints the test class code. Test site only. | REQ-12.6 |
 | `test-checking.mjs` | End-to-end test of the checking service: answers real questions as test students (right, wrong, check-again, numbers, letters) and checks the scores and red flags. | REQ-4.16, 4.17, 4.22, 6.3 |
@@ -56,6 +59,8 @@ node tools/test-versions.mjs
 node tools/test-exams.mjs
 node tools/test-audio.mjs
 node tools/test-drag.mjs
+node tools/test-terms.mjs
+node tools/test-sent-back.mjs
 ```
 
 The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.

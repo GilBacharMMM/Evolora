@@ -16,7 +16,9 @@ import { ROOT, connect, finish, siteConfig, testPassword } from './lib/connect.m
 setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const config = siteConfig('test')
-const LESSON = 'archimedes-density-teaching'
+// The first density practice lesson has questions at levels 1, 2 and 3 (they moved there from the
+// Archimedes teaching lesson).
+const LESSON = 'archimedes-density-practice'
 let failures = 0
 let count = 0
 
@@ -49,7 +51,7 @@ const cleanUp = async () => { for (const uid of PEOPLE) await deleteDoc(doc(ldb,
 
 await cleanUp()
 try {
-  check('the Archimedes lesson has questions at levels 2 and 3', byLevel(2).length > 0 && byLevel(3).length > 0)
+  check('the density practice lesson has questions at levels 2 and 3', byLevel(2).length > 0 && byLevel(3).length > 0)
   const hiddenFor = (uid) => as(uid, async ({ call }) => (await call('lessonView', { lessonId: LESSON })).hidden)
   const h1 = await hiddenFor('test-student-1')
   check('a level 1 student gets no level 2 or 3 questions', [...byLevel(2), ...byLevel(3)].every((id) => h1.includes(id)) && byLevel(1).every((id) => !h1.includes(id)))

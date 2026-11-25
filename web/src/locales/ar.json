@@ -180,7 +180,14 @@
     "removeTeacher": "إزالة من الصف",
     "removeTeacherConfirm": "إزالة {{name}} من معلمي هذا الصف؟ لن يرى الصف بعد الآن. لا يتغير شيء آخر.",
     "minimumPerTopic": "الحد الأدنى من الأسئلة لكل موضوع (اتركه فارغًا للقيمة الافتراضية للدرس):",
-    "minimumDefault": "افتراضي"
+    "minimumDefault": "افتراضي",
+    "sentBackTitle": "تنبيه عند الإعادة للتصحيح",
+    "sentBackExplain": "تظهر في لوحة الصف علامة تنبيه بجانب طالب أُعيدت إجاباته للتصحيح هذا العدد من المرات على الأقل في دورة واحدة.",
+    "sentBackLabel": "التنبيه بعد (عدد الإعادات في الدورة):",
+    "sentBackBad": "رقم من 1 إلى 100.",
+    "sentBackSave": "حفظ",
+    "sentBackSaved": "تم الحفظ",
+    "sentBackFailed": "لم ينجح. حاولوا مرة أخرى."
   },
   "lessonType": {
     "teaching": "تعليم",
@@ -409,7 +416,25 @@
     "whenTitle": "متى",
     "whenMust": "يجب على الطالب مراجعته قبل المتابعة في الدورة",
     "whenOwnTime": "يمكن للطالب مراجعته في وقته",
-    "whenMustShort": "يجب مراجعته قبل المتابعة"
+    "whenMustShort": "يجب مراجعته قبل المتابعة",
+    "sentBackTimes_one": "أُعيد للتصحيح مرة واحدة",
+    "sentBackTimes_other": "أُعيد للتصحيح {{count}} مرات",
+    "sentBackCourse_one": "أُعيد للتصحيح في الدورة: مرة واحدة",
+    "sentBackCourse_other": "أُعيد للتصحيح في الدورة: {{count}} مرات",
+    "sentBackWarning_one": "أُعيد للتصحيح مرة واحدة",
+    "sentBackWarning_other": "أُعيد للتصحيح {{count}} مرات",
+    "sentBackTimes_zero": "أُعيد للتصحيح 0 مرات",
+    "sentBackTimes_two": "أُعيد للتصحيح مرتين",
+    "sentBackTimes_few": "أُعيد للتصحيح {{count}} مرات",
+    "sentBackTimes_many": "أُعيد للتصحيح {{count}} مرة",
+    "sentBackCourse_zero": "أُعيد للتصحيح في الدورة: 0 مرات",
+    "sentBackCourse_two": "أُعيد للتصحيح في الدورة: مرتين",
+    "sentBackCourse_few": "أُعيد للتصحيح في الدورة: {{count}} مرات",
+    "sentBackCourse_many": "أُعيد للتصحيح في الدورة: {{count}} مرة",
+    "sentBackWarning_zero": "أُعيد للتصحيح 0 مرات",
+    "sentBackWarning_two": "أُعيد للتصحيح مرتين",
+    "sentBackWarning_few": "أُعيد للتصحيح {{count}} مرات",
+    "sentBackWarning_many": "أُعيد للتصحيح {{count}} مرة"
   },
   "library": {
     "search": "البحث حسب العنوان",
@@ -502,5 +527,15 @@
     "fillAll": "ضع بطاقة في كل مكان أولًا.",
     "spotEmpty": "المكان {{n}}، فارغ",
     "spotWith": "المكان {{n}}: {{card}}"
+  },
+  "terms": {
+    "link": "شروط الاستخدام",
+    "beforeYouStart": "قبل أن تبدأ، إليك الأمور المهمة:",
+    "readAll": "لقراءة شروط الاستخدام كاملة",
+    "agree": "أوافق",
+    "notNow": "ليس الآن (خروج)",
+    "version": "النسخة {{version}}",
+    "failed": "لم ينجح الحفظ. حاولوا مرة أخرى.",
+    "none": "لم تُنشر شروط الاستخدام بعد."
   }
 }

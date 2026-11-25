@@ -132,3 +132,22 @@ export function effectiveGrade(progress) {
   if (progress.redo?.active) return progress.redos?.[progress.redos.length - 1]?.grade || progress.grade || null
   return progress.grade || null
 }
+
+// How many times a student's answers were sent back for corrections (REQ-5.34, D-73, D-75):
+// the total in each course, and the courses where it reached the class's warning number.
+export const SENT_BACK_DEFAULT = 10
+
+export function sentBackLimit(classData) {
+  const n = classData?.sentBackWarnAt
+  return Number.isInteger(n) && n >= 1 && n <= 100 ? n : SENT_BACK_DEFAULT
+}
+
+export function sentBackTotals(courses, countFor, limit) {
+  const totals = {}
+  const warnings = []
+  for (const c of courses) {
+    totals[c.courseId] = c.order.reduce((n, l) => n + (countFor(l) || 0), 0)
+    if (totals[c.courseId] >= limit) warnings.push(c.courseId)
+  }
+  return { totals, warnings }
+}
