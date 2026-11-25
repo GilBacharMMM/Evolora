@@ -210,7 +210,10 @@ Teachers can browse and search all lessons by title, subject, grade level, langu
 **REQ-4.10: Courses** (Priority 1: must have)
 A course is an ordered list of **teaching lessons**. Each teaching lesson has **zero or more practice lessons** (for example, none, one, or three), which the course's creator names and pairs with it. In stage 1, courses are written as **course files** by Gil with Claude, or by pilot teachers with Claude Code (sent to Gil, who loads them), like lessons (D-37). In stage 2, a teacher can also bundle lessons from the lesson library into a course inside Evolora. A course is either **public** (listed in the course library) or **private**, which means unlisted: it doesn't appear in the course library and only classes it is assigned to can use it, but its lessons are still open to everyone in the lesson library.
 
+When a lesson is added to a course that classes already have, every class that has the course gets the new lesson by itself, with the same students as the rest of the course (D-72). The teacher doesn't need to give the course again. A lesson taken out of a course stays open to classes that already had it, so students don't lose their work.
+
 *Acceptance criteria:*
+- [ ] A course is given to a class. A practice lesson is then added to the course file and loaded. The class's students see the new practice lesson in the course and can open it, and the teacher sees it on the class's follow-up page, without giving the course again.
 - [ ] A course file with 3 teaching lessons, the first with 2 practice lessons and the second with none, loads and shows the lessons in the right order and pairing.
 - [ ] (Stage 2) A teacher can create a course from 3 existing lessons and change their order.
 - [ ] A public course appears in the course library; a private one does not.

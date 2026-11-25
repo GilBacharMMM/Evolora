@@ -11,7 +11,8 @@
 // 2. Uploads each lesson's images to file storage.
 // 3. Saves each lesson as a new version (an unchanged lesson is skipped), with its
 //    answers in the protected area that students can never read (D-17).
-// 4. Saves each course with its lessons in order.
+// 4. Saves each course with its lessons in order. Classes that already have the course
+//    get any lessons added to it (REQ-4.10, D-72).
 //
 // Options:
 //   --site test          which site (only the test site for now)
@@ -21,7 +22,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { spawnSync } from 'node:child_process'
-import { doc, getDoc, writeBatch, serverTimestamp } from 'firebase/firestore'
+import { arrayUnion, collection, doc, getDoc, getDocs, query, where, writeBatch, serverTimestamp } from 'firebase/firestore'
 import { ref, uploadBytes } from 'firebase/storage'
 import { parseLesson, parseCourse } from './lib/lesson-parser.mjs'
 import { ROOT, chosenSite, connect, finish } from './lib/connect.mjs'
@@ -137,6 +138,33 @@ export async function loadAll(conn, targets, { skipImages = false, log = console
     })
     await batch.commit()
     report.push(`course ${course.id}: loaded (${course.lessonIds.length} lesson${course.lessonIds.length === 1 ? '' : 's'}).`)
+    report.push(...(await reachClasses(db, course.id, course.lessonIds, existing.exists() ? existing.data().classIds || [] : [])))
+  }
+  return report
+}
+
+// Lessons added to a course reach every class that already has it (REQ-4.10, D-72):
+// each of the class's assignments of this course gets the new lessons, for the same
+// students, and the new lessons are opened to the class. Lessons taken out of the
+// course stay open to the class, so no student loses their work.
+export async function reachClasses(db, courseId, lessonIds, classIds) {
+  const report = []
+  for (const classId of classIds) {
+    const given = await getDocs(query(collection(db, 'classes', classId, 'assignments'), where('courseId', '==', courseId)))
+    const batch = writeBatch(db)
+    const added = new Set()
+    for (const a of given.docs) {
+      if (a.data().kind !== 'course') continue
+      const had = a.data().lessonIds || []
+      const missing = lessonIds.filter((l) => !had.includes(l))
+      if (missing.length === 0) continue
+      batch.update(a.ref, { lessonIds: [...lessonIds, ...had.filter((l) => !lessonIds.includes(l))] })
+      missing.forEach((l) => added.add(l))
+    }
+    if (added.size === 0) continue
+    for (const l of added) batch.update(doc(db, 'lessons', l), { classIds: arrayUnion(classId) })
+    await batch.commit()
+    report.push(`  class ${classId}: now also has ${[...added].join(', ')}.`)
   }
   return report
 }

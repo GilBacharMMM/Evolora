@@ -800,3 +800,13 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 3. **What the student still can't do:** teacher actions are refused by the server anyway, so a test student can't do anything a real student couldn't.
 **Limit:** the full address is not hidden. A student who opens https://evolora-test.web.app could switch to a teacher there. Share only the students-only address with the student.
 **Affects:** REQ-12.5, new REQ-12.8, docs/system-design.md 7.3, tools/README.md, the test tools
+
+### D-72: Lessons added to a course reach the classes that have it
+**Date:** 2026-11-25 · **Status:** Decided · **Decided by:** Gil
+**Context:** Two practice lessons were added to the density course after it had been given to the test class. The students saw them in the course list but couldn't open them, because a course is given to a class with the lessons it had at that moment.
+**Options considered:**
+1. Automatically: every class that has the course gets the new lesson, with the same students as the rest of the course.
+2. The teacher decides: the teacher gives the new lesson to the class by hand.
+**Decision:** Option 1. A lesson taken out of a course stays open to classes that already had it, so no student loses their work (Claude's suggestion, for Gil to confirm).
+**Reason:** Teachers expect a course to be one thing: when it grows, their classes get the new part.
+**Affects:** REQ-4.10, tools/load.mjs
