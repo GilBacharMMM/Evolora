@@ -2668,3 +2668,16 @@ details.image-source summary {
   flex-direction: column;
   gap: 0.35rem;
 }
+
+/* Drag and drop after each attempt (D-70, changed by Gil) */
+.drag-spot.locked {
+  cursor: default;
+  opacity: 1;
+}
+.drag-spot.ghost {
+  opacity: 0.75;
+  text-decoration: line-through;
+}
+.drag-spot.solution {
+  outline: 3px solid #0e6b73;
+}

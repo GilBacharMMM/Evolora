@@ -431,7 +431,9 @@
     "timeNet": "net time: {{time}}",
     "timesAway_one": "away once",
     "timesAway_other": "away {{count}} times",
-    "timeAway": "time away: {{time}}"
+    "timeAway": "time away: {{time}}",
+    "laterTry": "later attempt",
+    "flagDrag": "Drag-and-drop question {{question}}: every attempt failed"
   },
   "library": {
     "search": "Search by title",
@@ -523,7 +525,14 @@
     "howTo": "Drag each card to its place on the picture, or click a card and then click its place.",
     "fillAll": "Put a card on every place first.",
     "spotEmpty": "Place {{n}}, empty",
-    "spotWith": "Place {{n}}: {{card}}"
+    "spotWith": "Place {{n}}: {{card}}",
+    "attemptsLeft_one": "1 attempt left.",
+    "attemptsLeft_other": "{{count}} attempts left.",
+    "someWrong_one": "1 card was in the wrong place (marked red) and went back to the pile. The right cards (green) stay.",
+    "someWrong_other": "{{count}} cards were in the wrong place (marked red) and went back to the pile. The right cards (green) stay.",
+    "markRight": "right",
+    "markWrong": "wrong",
+    "correctLater": "Correct, on a later attempt!"
   },
   "terms": {
     "link": "Terms of use",

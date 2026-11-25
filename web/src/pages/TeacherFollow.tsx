@@ -66,7 +66,7 @@ export interface Flag {
   lessonTitle: string
   questionId: string
   topicName: string | null
-  kind: 'checkAgainWrong' | 'minimumNotReached' | 'examWrong' | 'awayALot'
+  kind: 'checkAgainWrong' | 'minimumNotReached' | 'examWrong' | 'awayALot' | 'dragWrong'
   awayCount?: number | null
   alsoMinimum: boolean
   open: boolean
@@ -407,6 +407,7 @@ export function LevelControl({ classId, studentId, level, name, onChange }: { cl
 
 function flagText(f: Flag, t: (k: string, o?: Record<string, unknown>) => string) {
   if (f.kind === 'examWrong') return t('follow.flagExam', { question: f.questionId })
+  if (f.kind === 'dragWrong') return t('follow.flagDrag', { question: f.questionId })
   if (f.kind === 'awayALot') return t('follow.flagAway', { count: f.awayCount ?? 0 })
   return f.kind === 'checkAgainWrong' ? t('follow.flagCheckAgain', { question: f.questionId }) : t('follow.flagMinimum', { topic: f.topicName || '' })
 }
@@ -913,6 +914,7 @@ function AnswerMark({ st }: { st: AnswerState | undefined }) {
   }
   if (st.result === 'correct1') return <span className="answer-mark right">✓ {t('follow.right')}</span>
   if (st.result === 'correct2') return <span className="answer-mark half">½ {t('follow.secondTry')}</span>
+  if (st.result === 'correct3') return <span className="answer-mark half">¼ {t('follow.laterTry')}</span>
   return <span className="answer-mark wrong">✗ {t('follow.wrong')}</span>
 }
 
@@ -966,7 +968,8 @@ function SuccessRate({ states }: { states: AnswerState[] }) {
     return <span className="small-note">{t('follow.rateOpen', { percent: Math.round((graded.reduce((a, st) => a + (st.score || 0), 0) / graded.length) * 100), n: graded.length })}</span>
   }
   const first = states.filter((st) => st.result === 'correct1').length
-  const second = states.filter((st) => st.result === 'correct2').length
+  // A drag-and-drop question answered right on a later attempt counts with the second (D-70).
+  const second = states.filter((st) => st.result === 'correct2' || st.result === 'correct3').length
   return (
     <span className="rate">
       <span>{t('follow.rateFirst', { percent: pct(first) })}</span>

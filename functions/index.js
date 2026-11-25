@@ -152,7 +152,7 @@ export const answer = onCallAgreed({ enforceAppCheck: false }, async (request) =
     const topics = progress?.topics || {}
     const t = { correct: 0, flagged: false, ...(topics[topic.number] || {}) }
     if (outcome.countsCorrect) t.correct += 1
-    if (outcome.flag) flagToRaise = { kind: 'checkAgainWrong', questionId, topicNumber: topic.number, topicName: topic.name }
+    if (outcome.flag) flagToRaise = { kind: outcome.flagKind || 'checkAgainWrong', questionId, topicNumber: topic.number, topicName: topic.name }
 
     const newState = outcome.state
     if (q.kind === 'audio' && audioUrl) newState.audioUrl = audioUrl

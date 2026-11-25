@@ -437,7 +437,21 @@
     "timeNet": "זמן נטו: {{time}}",
     "timesAway_one": "יצא/ה פעם אחת",
     "timesAway_other": "יצא/ה {{count}} פעמים",
-    "timeAway": "זמן מחוץ לשיעור: {{time}}"
+    "timeAway": "זמן מחוץ לשיעור: {{time}}",
+    "laterTry": "ניסיון מאוחר",
+    "flagDrag": "שאלת גרירה {{question}}: כל הניסיונות נכשלו",
+    "sentBackTimes_two": "הוחזר לתיקון {{count}} פעמים",
+    "sentBackCourse_two": "הוחזר לתיקון בקורס: {{count}} פעמים",
+    "sentBackWarning_two": "הוחזר לתיקון {{count}} פעמים",
+    "flagAway_two": "יצא/ה מהשיעור {{count}} פעמים",
+    "minutes_two": "{{count}} דקות",
+    "timesAway_two": "יצא/ה {{count}} פעמים",
+    "sentBackTimes_many": "הוחזר לתיקון {{count}} פעמים",
+    "sentBackCourse_many": "הוחזר לתיקון בקורס: {{count}} פעמים",
+    "sentBackWarning_many": "הוחזר לתיקון {{count}} פעמים",
+    "flagAway_many": "יצא/ה מהשיעור {{count}} פעמים",
+    "minutes_many": "{{count}} דקות",
+    "timesAway_many": "יצא/ה {{count}} פעמים"
   },
   "library": {
     "search": "חיפוש לפי כותרת",
@@ -529,7 +543,18 @@
     "howTo": "גררו כל כרטיס למקום שלו בתמונה, או לחצו על כרטיס ואחר כך על המקום שלו.",
     "fillAll": "קודם צריך לשים כרטיס בכל מקום.",
     "spotEmpty": "מקום {{n}}, ריק",
-    "spotWith": "מקום {{n}}: {{card}}"
+    "spotWith": "מקום {{n}}: {{card}}",
+    "attemptsLeft_one": "נשאר ניסיון אחד.",
+    "attemptsLeft_other": "נשארו {{count}} ניסיונות.",
+    "someWrong_one": "כרטיס אחד לא במקום (מסומן באדום) וחזר לערימה. הכרטיסים הנכונים (בירוק) נשארים.",
+    "someWrong_other": "{{count}} כרטיסים לא במקום (מסומנים באדום) וחזרו לערימה. הכרטיסים הנכונים (בירוק) נשארים.",
+    "markRight": "נכון",
+    "markWrong": "לא נכון",
+    "correctLater": "נכון, בניסיון מאוחר יותר!",
+    "attemptsLeft_two": "נשארו 2 ניסיונות.",
+    "someWrong_two": "2 כרטיסים לא במקום (מסומנים באדום) וחזרו לערימה. הכרטיסים הנכונים (בירוק) נשארים.",
+    "attemptsLeft_many": "נשארו {{count}} ניסיונות.",
+    "someWrong_many": "{{count}} כרטיסים לא במקום (מסומנים באדום) וחזרו לערימה. הכרטיסים הנכונים (בירוק) נשארים."
   },
   "terms": {
     "link": "תנאי שימוש",

@@ -196,7 +196,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const tryCorrect = useMemo(() => {
     const out: Record<number, number> = {}
     if (!trying || !lesson) return out
-    const right = (r?: string | null) => r === 'correct1' || r === 'correct2'
+    const right = (r?: string | null) => r === 'correct1' || r === 'correct2' || r === 'correct3'
     for (const topic of lesson.topics) for (const b of topic.blocks) if (b.type === 'question') out[topic.number] = (out[topic.number] || 0) + (right(states[b.id]?.result) ? 1 : 0) + (right(states[b.id]?.checkAgain?.result) ? 1 : 0)
     return out
   }, [trying, lesson, states])
