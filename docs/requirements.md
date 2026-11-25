@@ -1142,7 +1142,9 @@ The test site can be filled with a standard set of test data with one command, b
 
 ### Still open
 
-No open questions right now (2026-11-23).
+| # | Question | Notes |
+|---|---|---|
+| Q-44 | **Idea from Gil (2026-11-25), not yet a requirement:** the teacher's dashboard shows, for each student and lesson, how long the student spent on it: **total time** (from starting the lesson to finishing it, in real-world time, even across several sittings) and **net time** (only the time the student was actually working: the counter stops when they leave the computer or switch away, and starts again when they come back). Can Evolora also tell how much of the time the lesson was in front of the student, and not another tab or app? | Claude's answer: yes, partly. Evolora can know when its own tab is hidden or not in use (another tab or app is in front) and when there has been no mouse, keyboard or touch for a few minutes. It cannot know *what else* the student was doing. To decide with Gil: priority, how many idle minutes stop the counter, whether students are told that time is measured, and whether "time away" is shown to the teacher. |
 
 ### Answered (2026-11-20)
 
