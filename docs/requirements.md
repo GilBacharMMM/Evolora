@@ -1114,9 +1114,10 @@ On the test site only, Gil can switch between made-up test users (for example, "
 - [ ] The "Switch user" menu doesn't exist on the real site.
 
 **REQ-12.8: Students-only test address** (Priority 1: foundation)
-A second address for the test site lets a student test Evolora and look for bugs without being able to act as a teacher (D-71). It shows the same test data, but its "Switch user" list has only the test students, and it has no Google sign-in.
+A second address for the test site lets a student test Evolora and look for bugs without being able to act as a teacher (D-71). It shows the same test data, but its "Switch user" list has only the test students, and it has no Google sign-in. It opens in Hebrew, whatever the browser's language; the language can still be changed.
 
 *Acceptance criteria:*
+- [ ] At https://evolora-test-students.web.app, in a browser that has never opened it (for example, an English one), the page is in Hebrew.
 - [ ] At https://evolora-test-students.web.app, the sign-in page lists Test Student 1 to 7 and no teachers, and has no "Sign in with Google" button.
 - [ ] Choosing a test student there shows Evolora as that student, with the same classes and work as on the full test site.
 - [ ] At https://evolora-test.web.app, everything works as before, including switching to Test Teacher 1 and 2.

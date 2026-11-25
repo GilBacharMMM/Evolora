@@ -16,8 +16,10 @@ export type Language = keyof typeof LANGUAGES
 const STORAGE_KEY = 'evolora.language'
 
 // A new person starts in their browser's language if Evolora has it,
-// and in English otherwise (REQ-9.4).
+// and in English otherwise (REQ-9.4). On the students-only test address, a new person
+// starts in Hebrew (REQ-12.8, D-71).
 function browserLanguage(): Language {
+  if (import.meta.env.VITE_STUDENTS_ONLY === 'true') return 'he'
   const preferred = typeof navigator !== 'undefined' ? navigator.languages ?? [navigator.language] : []
   for (const tag of preferred) {
     const code = String(tag || '').slice(0, 2).toLowerCase()
