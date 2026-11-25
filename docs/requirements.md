@@ -101,6 +101,8 @@ A new person who signs in is a student with no classes. They see nothing except 
 **REQ-3.3: Other sign-in methods** (Priority: Later)
 Allow school accounts (@taded.org.il) after Ministry of Education approval, and the Ministry of Education sign-in.
 
+*Acceptance criteria:* to be written when this requirement is planned in detail.
+
 **REQ-3.4: People only see what they are allowed to** (Priority 1: foundation)
 Each person sees only what their role and classes allow.
 
@@ -383,14 +385,26 @@ Decided with Gil (Q-30):
 **REQ-4.11: Import from Google Docs and Word** (Priority: Later)
 A creator can import a Google Doc or Word document, and Evolora turns it into a lesson: text, images and formulas become blocks.
 
+*Acceptance criteria:* to be written when this requirement is planned in detail.
+
 **REQ-4.12: More question types** (Priority: Later; drag-and-drop built first, at Gil's request, D-70)
 Short answer checked automatically (a word or a number), math-expression answers, file or photo upload, and drag-and-drop questions (dragging snippets from a bank onto an image).
+
+*Acceptance criteria:*
+- [ ] As a student, in the circles teaching lesson, place the cards on the circle drawing by dragging, and also by clicking a card and then a spot: both work.
+- [ ] Place one card wrongly: the hint appears and you get a second attempt. Two wrong attempts show the solution with the right card on every spot.
+- [ ] All cards right on the first attempt gives full marks; on the second attempt, half.
+- [ ] An extra card that fits nowhere can be left out, and the answer is still right.
 
 **REQ-4.13: Simulations built into Evolora** (Priority: Later)
 Interactive simulations that run inside Evolora rather than on an outside website.
 
+*Acceptance criteria:* to be written when this requirement is planned in detail.
+
 **REQ-4.14: Lesson marketplace** (Priority: Later)
 A place to discover, rate and share lessons widely, beyond the school.
+
+*Acceptance criteria:* to be written when this requirement is planned in detail.
 
 **REQ-4.27: Teachers send comments to the lesson's creator** (Stage 2)
 While going over a lesson (trying it, REQ-5.32), a teacher can attach a comment to any place in it: a block of material, a question, an answer, a hint or a solution, much like adding a comment in Microsoft Word. The teacher sends the comments to the lesson's creator.
@@ -703,6 +717,10 @@ For each student, the teacher sees a list of the level 1 questions the student h
 **REQ-5.26: Nudge when a student runs out of work** (Priority: Later)
 When a student finishes everything open to them, the teacher gets a nudge suggesting to open more lessons or raise the student's level (Gil, Q-27).
 
+*Acceptance criteria:*
+- [ ] As a student, finish every lesson open to you: the teacher sees a nudge for that student, suggesting to open more lessons or raise the level.
+- [ ] Once the teacher opens a new lesson for the student, the nudge disappears.
+
 **REQ-5.27: Teacher's home page** (Priority 1: must have)
 After signing in, a teacher sees a card for each of their classes, like the student's home page. Each card shows what needs attention in that class: open red flags, answers waiting to be graded, unread messages and level suggestions. Beside the cards, a teacher **"To do" list** shows the same items for all classes together (Gil, Q-32).
 
@@ -733,6 +751,8 @@ For every lesson, and for every exam after its results are released, the teacher
 
 **REQ-5.30: Live view during class** (Priority: Later)
 A screen for when the class works on a lesson together: who is working right now, on which question, and who is stuck (Gil, Q-36: later).
+
+*Acceptance criteria:* to be written when this requirement is planned in detail.
 
 **REQ-5.31: Daily email summary for teachers** (Priority 3: later)
 Besides seeing everything inside Evolora, each teacher can get one email a day with what is new: red flags, answers to grade and messages. Each teacher can turn it off (Gil, Q-37).
@@ -796,6 +816,8 @@ For each student, Evolora counts how many times the teacher sent their answers b
 **REQ-5.17: Google Classroom connection** (Priority: Later)
 Import class lists from Google Classroom, and possibly post assignments and grades back to it. See the advice in the open questions summary.
 
+*Acceptance criteria:* to be written when this requirement is planned in detail.
+
 ---
 
 ## 6. Student learning
@@ -841,6 +863,9 @@ A student can open any finished lesson again, to read it and see their own answe
 
 **REQ-6.14: Asking for more practice** (Priority: Later, stage 2)
 On a finished lesson, a student can ask for more practice, and gets more questions on the same topics.
+
+*Acceptance criteria:*
+- [ ] As a student, on a finished lesson, press "More practice": you get new questions on the same topics, not ones you already answered.
 
 **REQ-6.2: Taking a lesson** (Priority 1: foundation)
 The student moves through the lesson block by block: reads, watches, listens and answers questions. If they leave, they continue from the same point next time.
@@ -898,6 +923,8 @@ On their home page, a student has an **"Open courses"** tab, where they can brow
 **REQ-6.8: Game-like progress** (Priority: Later)
 A more playful progress display (for example, a figure advancing along a path, like in a building-block instruction booklet) and possibly points or coins.
 
+*Acceptance criteria:* to be written when this requirement is planned in detail.
+
 **REQ-6.9: "I didn't understand" help line with AI** (Priority: Later, stage 2; uses AI)
 Under every question there is a help line: **"I didn't understand ______, please explain."** The student fills in the gap and sends it. AI answers in writing and tries to help **without revealing the answer**. It may go on for a few messages back and forth.
 
@@ -949,17 +976,31 @@ When assigning, the teacher chooses who checks open answers:
 - (c) AI grades and writes a comment, the teacher approves
 - (d) AI grades and comments, without the teacher; the teacher can still look at the dashboard
 
+*Acceptance criteria:*
+- [ ] As a teacher, when assigning, choose each of the four options (a) to (d), and check that open answers are graded by the right person, with or without an AI comment.
+- [ ] With option (b) or (c), no AI grade reaches the student before the teacher approves it.
+- [ ] With option (d), the student gets the AI grade and comment, and the teacher still sees them on the dashboard.
+
 **REQ-7.2: AI help and AI-suggested check-again questions** (Priority: Later)
 The help line is in REQ-6.9. In addition, AI may suggest check-again questions (REQ-4.17) and explanations for right answers (REQ-4.28) for the creator to approve or change.
+
+*Acceptance criteria:* to be written when this requirement is planned in detail.
 
 **REQ-7.3: AI lesson suggestion** (Priority: Later)
 A creator gives Evolora a document; Evolora suggests a complete lesson, which the creator reviews and improves. AI can also suggest improvements to existing lessons.
 
+*Acceptance criteria:* to be written when this requirement is planned in detail.
+
 **REQ-7.4: Audio transcription** (Priority: Later)
 Audio answers are turned into text by AI (see REQ-10.5).
 
+*Acceptance criteria:*
+- [ ] As a student, record an audio answer: as the teacher, the grading page shows the recording and its text.
+
 **REQ-7.5: Automatic translation of lessons** (Priority: Later)
 A lesson can be translated into another language, and the translation reviewed by a person.
+
+*Acceptance criteria:* to be written when this requirement is planned in detail.
 
 **REQ-7.6: Teacher sees a student's answered lesson, with the AI conversations** (Stage 2)
 From the student page (REQ-5.28) or the class dashboard, a teacher can open any lesson a student has worked on and see it as the student went through it: each question with the student's answers and attempts, the hints and solutions they got, the help tips they opened, and the full conversation they had with the AI help line (REQ-6.9) next to the question it was about. This helps the teacher understand what the student needs.
@@ -1082,8 +1123,14 @@ Claude drafts the text for Gil to edit and approve. A lawyer checks it before Ev
 **REQ-10.2: Private messages** (Priority 3: later)
 See REQ-5.16. Messages are visible only to the student and that class's teachers.
 
+*Acceptance criteria:*
+- [ ] See the acceptance criteria of REQ-5.16.
+
 **REQ-10.3: Students cannot see each other's work** (Priority 1: foundation)
 See REQ-3.4.
+
+*Acceptance criteria:*
+- [ ] See the acceptance criteria of REQ-3.4.
 
 **REQ-10.4: Data stored in a safe place** (Priority 1: foundation)
 Student data is stored on Google Cloud in its Israel (Tel Aviv) region, and is backed up daily.
@@ -1094,8 +1141,13 @@ Student data is stored on Google Cloud in its Israel (Tel Aviv) region, and is b
 **REQ-10.5: Keeping audio recordings** (Priority: Later)
 Audio recordings are kept until the end of the school year (end of July) and then deleted, or transcribed to text by AI and deleted sooner. The choice depends on AI costs.
 
+*Acceptance criteria:*
+- [ ] On the test site, with the date set after the end of July, recordings from the past school year are deleted, and the grading page says the recording was deleted.
+
 **REQ-10.6: Full privacy compliance** (Priority: Later)
 Before Evolora is used beyond the pilot, it must meet Israeli privacy law and Ministry of Education rules for student data.
+
+*Acceptance criteria:* to be written when this requirement is planned in detail.
 
 ---
 
