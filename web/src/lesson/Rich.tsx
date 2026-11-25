@@ -134,8 +134,20 @@ function unitAfterFormula(span: Element, after: ChildNode | null): { number: str
   return { number: num[1], unit: u.unit, bold: false, rest: u.rest }
 }
 
+// Explanations of words (REQ-4.29, D-76): "[[word|explanation]]" in lesson text becomes the word,
+// underlined with dots, with the explanation in a small window on hover, on tap or with the keyboard.
+const escapeHtml = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+export function withWordExplanations(markdown: string): string {
+  return markdown.replace(/\[\[([^[\]|]+)\|([^[\]]+)\]\]/g, (_, word: string, tip: string) => {
+    const w = escapeHtml(word.trim())
+    const e = escapeHtml(tip.trim())
+    return `<span class="term" tabindex="0" data-tip="${e}" aria-label="${w}: ${e}">${w}</span>`
+  })
+}
+
 function toHtml(markdown: string, inline = false): string {
-  const html = inline ? (marked.parseInline(markdown) as string) : (marked.parse(markdown) as string)
+  const source = withWordExplanations(markdown)
+  const html = inline ? (marked.parseInline(source) as string) : (marked.parse(source) as string)
   const fragment = DOMPurify.sanitize(html, { RETURN_DOM_FRAGMENT: true })
   wrapMathRuns(fragment)
   if (!inline) formulasOnTheirOwnLine(fragment)

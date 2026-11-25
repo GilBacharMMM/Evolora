@@ -142,6 +142,17 @@ The teacher's screens read a class's work through the checking service, which fi
 - **Sent-back count (REQ-5.34):** each time a teacher sends a lesson's answers back for corrections, the student's work in that lesson counts one more. The student page shows the count for each lesson and the total for each course. The class dashboard shows a ⚠ warning, with words, under a course when a student's total reaches the class's number. The teacher sets the number on Class settings (default 10).
 - **Answer times, for REQ-5.33 (stage 2):** the lesson's start and finish times are already saved. Each answer attempt now also saves the time it was sent, so total and net time can be worked out later. Time away isn't measured yet.
 
+### 2.13 Time on lessons, word explanations and the class language (D-76)
+- **Time on lessons (REQ-5.33):**
+  - **Measuring:** while a student has an unfinished lesson open, the browser checks every second whether they are working on it. They are away when the Evolora tab isn't in front, or after 2 minutes without mouse, keyboard or touch, unless a video or audio is playing.
+  - **Saving:** about every 20 seconds, the browser sends the working time and the times away to the checking service (`lessonTime`). The service saves them for that student and lesson, and never accepts more working time than the real time between reports.
+  - **Coming back:** opening the lesson again counts as coming back from being away.
+  - **What the teacher sees:** on the student page, for each lesson: the total time from the first opening to the finish, the net (working) time, the times away and the time away. On the class dashboard, a "⏸ away a lot" sign next to the student's name.
+  - **Away a lot:** more times away in one lesson than the class's number (Class settings, default 5). This also gives one red flag per lesson.
+- **Word explanations (REQ-4.29):** lesson text may contain `[[word|explanation]]`. The lesson player shows the word underlined with dots, with the explanation in a small window on hover, on tap or with the keyboard.
+- **Class language (REQ-9.5):** on Class settings, a class can have a language that students **must** use inside it, or **may choose**. With "must", the class page, its course pages and the lessons it gives are shown in that language, and the language menu is locked there.
+- **Strict terms of use (REQ-10.8, D-76):** besides the terms screen, the checking service refuses every request from someone who hasn't agreed to the current terms (except agreeing).
+
 ---
 
 ## 3. Where the data lives
@@ -157,6 +168,7 @@ The teacher's screens read a class's work through the checking service, which fi
 | Courses | Name, list of lessons, public or private | Database |
 | Classes | Name, class code, teachers, students | Database |
 | Assignments | What was assigned, to whom, settings, due date | Database |
+| Time on lessons | For each student and lesson: when they first opened it, working time, times away | Database |
 | Student work | Answers, attempts (with the time of each), grades, place in the lesson, how many times it was sent back for corrections | Database |
 | Comments and messages | Teacher comments, student–teacher conversations | Database |
 | Images | Pictures in lessons | File storage |
@@ -361,7 +373,8 @@ Which part of the system delivers each group of requirements:
 | REQ-8.1 (subjects, grades) | Lesson details in the database (3.1) |
 | REQ-9.1 to 9.4 (languages, direction) | Languages and direction (2.4) |
 | REQ-10.1 to 10.4, 10.7 (privacy, class-code alerts) | Permissions (4.3), Israel region and backups (3.3, 7.1) |
-| REQ-10.8 (terms of use) | Terms of use (2.12) |
+| REQ-10.8 (terms of use) | Terms of use (2.12, 2.13) |
+| REQ-5.33 (time on lessons), REQ-4.29 (word explanations), REQ-9.5 (class language) | 2.13 |
 | REQ-5.34 (sent-back count), REQ-5.33 groundwork (answer times) | Sent-back count and answer times (2.12) |
 | REQ-11.1 to 11.3 (platform, hosting, size) | Screen size (2.5), hosting (7) |
 | REQ-12.4 to 12.6, 12.8 (test site, user switching, test data, students-only address) | Test site (7.3) |

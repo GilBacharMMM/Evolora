@@ -9,6 +9,7 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `admin.mjs` | System admin tasks (D-47): make someone a teacher or system admin (and put teachers in a school, D-69), take the role away, list everyone with their role, add schools and list them, give a course to a whole class. | REQ-2.1, 2.2, 5.7 |
 | `load-terms.mjs` | Checks the terms of use in the `terms` folder (Hebrew, Arabic and English, same version) and puts them on the test site. With `--agree-test-users`, marks every test user except Test Student 7 as agreed to that version (D-75). | REQ-10.8 |
 | `test-terms.mjs` | End-to-end test of the terms of use: anyone can read them, nobody can fake agreeing, agreeing is saved, and a new version needs agreeing again. | REQ-10.8 |
+| `test-time.mjs` | End-to-end test of time on lessons and time away (counting, limits, "away a lot", the red flag, the class number) and of the class language. | REQ-5.33, 9.5 |
 | `test-sent-back.mjs` | End-to-end test of the sent-back count: per lesson, per course, and the warning at the default number and at a number the teacher changes. | REQ-5.34 |
 | `set-teacher-passwords.mjs` | Gives the test teachers their own password (kept on this computer, never on GitHub), so the students-only test address can't be used to sign in as a teacher. Then rebuild and publish the test site. | REQ-12.8, D-71 |
 | `reset-test-site.mjs` | Fills or resets the test site with the standard test data: test users, the test class with its class code, the demo lessons, and the demo courses given to the whole class. It prints the test class code. Test site only. | REQ-12.6 |
@@ -61,6 +62,7 @@ node tools/test-audio.mjs
 node tools/test-drag.mjs
 node tools/test-terms.mjs
 node tools/test-sent-back.mjs
+node tools/test-time.mjs
 ```
 
 The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.

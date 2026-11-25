@@ -51,7 +51,8 @@
       "failed": "משהו השתבש וההצטרפות לא הצליחה. אפשר לנסות שוב."
     },
     "lessonsToDo_two": "{{count}} שיעורים לעשות",
-    "lessonsToDo_many": "{{count}} שיעורים לעשות"
+    "lessonsToDo_many": "{{count}} שיעורים לעשות",
+    "classLanguage": "השפה נקבעה על ידי הכיתה"
   },
   "teacher": {
     "lessons": "השיעורים באבולורה",
@@ -181,7 +182,16 @@
     "sentBackBad": "מספר מ-1 עד 100.",
     "sentBackSave": "שמירה",
     "sentBackSaved": "נשמר",
-    "sentBackFailed": "לא הצליח. נסו שוב."
+    "sentBackFailed": "לא הצליח. נסו שוב.",
+    "awayTitle": "אזהרה על יציאות מהשיעור",
+    "awayExplain": "תלמיד שיוצא משיעור (ללשונית אחרת, או בלי לגעת במחשב 2 דקות) יותר פעמים מהמספר הזה יקבל סימן בלוח הכיתה, ותקבלו דגל אדום.",
+    "awayLabel": "להזהיר אחרי יותר מ- (יציאות בשיעור אחד):",
+    "classLanguageTitle": "שפת הכיתה",
+    "classLanguageExplain": "אפשר לקבוע שפה לכיתה. אם התלמידים חייבים להשתמש בה, הם יראו את אבולורה בשפה הזאת בתוך הכיתה ובשיעורים שלה, ובשאר המקומות בשפה שבחרו.",
+    "classLanguageLabel": "שפה:",
+    "classLanguageNone": "אין (כל תלמיד בשפה שבחר)",
+    "classLanguageMust": "התלמידים חייבים להשתמש בה בתוך הכיתה",
+    "classLanguageMay": "התלמידים יכולים לבחור שפה"
   },
   "lessonType": {
     "teaching": "הקניה",
@@ -416,7 +426,18 @@
     "sentBackCourse_one": "הוחזר לתיקון בקורס: פעם אחת",
     "sentBackCourse_other": "הוחזר לתיקון בקורס: {{count}} פעמים",
     "sentBackWarning_one": "הוחזר לתיקון פעם אחת",
-    "sentBackWarning_other": "הוחזר לתיקון {{count}} פעמים"
+    "sentBackWarning_other": "הוחזר לתיקון {{count}} פעמים",
+    "awayALot": "יצא/ה הרבה",
+    "flagAway_one": "יצא/ה מהשיעור פעם אחת",
+    "flagAway_other": "יצא/ה מהשיעור {{count}} פעמים",
+    "minutes_one": "דקה",
+    "minutes_other": "{{count}} דקות",
+    "hoursMinutes": "{{hours}} שע׳ {{minutes}} דק׳",
+    "timeTotal": "זמן כולל: {{time}}",
+    "timeNet": "זמן נטו: {{time}}",
+    "timesAway_one": "יצא/ה פעם אחת",
+    "timesAway_other": "יצא/ה {{count}} פעמים",
+    "timeAway": "זמן מחוץ לשיעור: {{time}}"
   },
   "library": {
     "search": "חיפוש לפי כותרת",

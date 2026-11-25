@@ -16,6 +16,7 @@ import { getStorage } from 'firebase-admin/storage'
 import { randomUUID } from 'node:crypto'
 import { answerCheckAgain, answerMain, isFinished, judge, lessonFinished, lessonGrade, receives, sendBackForCorrections, teacherScore } from './check.js'
 import { averageGrade, coursePosition, dueFor, lateGrade, lessonCell, levelSuggestions, median, notMastered, sentBackLimit, sentBackTotals, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
+import { applyTimeReport, awayALot, awayLimit, timeSummary, validReport } from './time.js'
 import { CLASS_COLORS, WAIT_MS, afterWrong, makeCode, normalizeCode, validateCode, waitLeft } from './classcode.js'
 
 // "public" lets the website reach the service; every call still checks who is signed in.
@@ -24,6 +25,31 @@ initializeApp()
 const db = getFirestore()
 
 const progressId = (uid, lessonId) => `${uid}__${lessonId}`
+
+// Terms of use (REQ-10.8, D-75, D-76): every request is refused until the person has agreed to the
+// current version, except agreeing itself. When no terms are loaded, nobody is asked.
+let termsCache = { at: 0, version: null }
+async function currentTermsVersion() {
+  if (Date.now() - termsCache.at < 60 * 1000) return termsCache.version
+  const snap = await db.doc('terms/current').get()
+  termsCache = { at: Date.now(), version: snap.exists ? snap.data().version : null }
+  return termsCache.version
+}
+async function requireTerms(auth) {
+  if (!auth) return
+  const version = await currentTermsVersion()
+  if (!version) return
+  const user = await db.doc(`users/${auth.uid}`).get()
+  if (user.data()?.termsAccepted?.version !== version) throw new HttpsError('failed-precondition', 'terms')
+}
+function onCallAgreed(optionsOrFn, maybeFn) {
+  const fn = maybeFn || optionsOrFn
+  const wrapped = async (request) => {
+    await requireTerms(request.auth)
+    return fn(request)
+  }
+  return maybeFn ? onCall(optionsOrFn, wrapped) : onCall(wrapped)
+}
 
 // The student's level for a lesson (REQ-5.18, 6.10): their level in the classes the lesson is
 // given to (the highest, if several); level 2 when the teacher hasn't set one. Teachers: all (3).
@@ -81,7 +107,7 @@ function lastAutoQuestionId(topic, maxLevel = 3) {
   return auto.length ? auto[auto.length - 1].id : null
 }
 
-export const answer = onCall({ enforceAppCheck: false }, async (request) => {
+export const answer = onCallAgreed({ enforceAppCheck: false }, async (request) => {
   const { lessonId, questionId, value, checkAgain } = request.data || {}
   if (typeof lessonId !== 'string' || typeof questionId !== 'string') throw new HttpsError('invalid-argument', 'Missing lesson or question.')
   const lessonRef = db.doc(`lessons/${lessonId}`)
@@ -188,7 +214,7 @@ export const answer = onCall({ enforceAppCheck: false }, async (request) => {
   return result
 })
 
-export const openTip = onCall(async (request) => {
+export const openTip = onCallAgreed(async (request) => {
   const { lessonId, questionId, tip } = request.data || {}
   if (typeof lessonId !== 'string' || typeof questionId !== 'string' || !Number.isInteger(tip)) throw new HttpsError('invalid-argument', 'Missing details.')
   const lessonSnap = await db.doc(`lessons/${lessonId}`).get()
@@ -204,7 +230,7 @@ export const openTip = onCall(async (request) => {
 
 // A lesson without questions is finished when the student reaches its end (D-55).
 // The lesson player asks for this; the service checks it again itself.
-export const finishLesson = onCall(async (request) => {
+export const finishLesson = onCallAgreed(async (request) => {
   const { lessonId } = request.data || {}
   if (typeof lessonId !== 'string') throw new HttpsError('invalid-argument', 'Missing lesson.')
   const lessonRef = db.doc(`lessons/${lessonId}`)
@@ -276,7 +302,7 @@ async function saveNewCode(classId, oldCode) {
   throw new HttpsError('internal', 'Could not make a code. Please try again.')
 }
 
-export const createClass = onCall(async (request) => {
+export const createClass = onCallAgreed(async (request) => {
   const me = await requireTeacher(request.auth)
   const name = typeof request.data?.name === 'string' ? request.data.name.trim().replace(/\s+/g, ' ') : ''
   if (!name || name.length > 80) throw new HttpsError('invalid-argument', 'class-name')
@@ -298,7 +324,7 @@ export const createClass = onCall(async (request) => {
 })
 
 // Results: joined | already | closed | checkCode | noClass | wait (with minutes).
-export const joinClass = onCall(async (request) => {
+export const joinClass = onCallAgreed(async (request) => {
   if (!request.auth) throw new HttpsError('unauthenticated', 'Sign in first.')
   const uid = request.auth.uid
   const attemptsRef = db.doc(`joinAttempts/${uid}`)
@@ -340,13 +366,13 @@ export const joinClass = onCall(async (request) => {
   return { result: 'joined', classId, className }
 })
 
-export const newClassCode = onCall(async (request) => {
+export const newClassCode = onCallAgreed(async (request) => {
   const { data } = await requireClassTeacher(request.auth, request.data?.classId)
   const code = await saveNewCode(request.data.classId, data.code || null)
   return { code }
 })
 
-export const setJoining = onCall(async (request) => {
+export const setJoining = onCallAgreed(async (request) => {
   const { ref } = await requireClassTeacher(request.auth, request.data?.classId)
   const open = request.data?.open === true
   await ref.update({ joiningOpen: open, updatedAt: FieldValue.serverTimestamp() })
@@ -355,7 +381,7 @@ export const setJoining = onCall(async (request) => {
 
 // The number of answers sent back for corrections, in one course, at which the dashboard warns
 // (REQ-5.34, D-75). Default 10.
-export const setSentBackLimit = onCall(async (request) => {
+export const setSentBackLimit = onCallAgreed(async (request) => {
   const { ref } = await requireClassTeacher(request.auth, request.data?.classId)
   const limit = request.data?.limit
   if (!Number.isInteger(limit) || limit < 1 || limit > 100) throw new HttpsError('invalid-argument', 'A number from 1 to 100.')
@@ -363,8 +389,28 @@ export const setSentBackLimit = onCall(async (request) => {
   return { limit }
 })
 
+// The number of times away in one lesson above which the student is "away a lot" (REQ-5.33, D-73).
+// Default 5.
+export const setAwayLimit = onCallAgreed(async (request) => {
+  const { ref } = await requireClassTeacher(request.auth, request.data?.classId)
+  const limit = request.data?.limit
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100) throw new HttpsError('invalid-argument', 'A number from 1 to 100.')
+  await ref.update({ awayWarnAt: limit, updatedAt: FieldValue.serverTimestamp() })
+  return { limit }
+})
+
+// The class language (REQ-9.5, D-76): Hebrew, Arabic, English or none, and whether students must
+// use it inside the class.
+export const setClassLanguage = onCallAgreed(async (request) => {
+  const { ref } = await requireClassTeacher(request.auth, request.data?.classId)
+  const { language, required } = request.data || {}
+  if (language !== null && !['he', 'ar', 'en'].includes(language)) throw new HttpsError('invalid-argument', 'he, ar, en or none.')
+  await ref.update({ language: language ? { code: language, required: required !== false } : FieldValue.delete(), updatedAt: FieldValue.serverTimestamp() })
+  return { language: language || null }
+})
+
 // The student no longer sees the class; their work is kept for the teacher (REQ-5.4).
-export const removeStudent = onCall(async (request) => {
+export const removeStudent = onCallAgreed(async (request) => {
   const { classId, studentId } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (typeof studentId !== 'string' || !studentId || studentId.includes('/')) throw new HttpsError('invalid-argument', 'Missing student.')
@@ -379,7 +425,7 @@ export const removeStudent = onCall(async (request) => {
 
 // Gives a course, or one or more lessons, to the whole class or to chosen students (REQ-5.7).
 // studentIds: null for the whole class (including students who join later), or a list.
-export const assign = onCall(async (request) => {
+export const assign = onCallAgreed(async (request) => {
   const { classId, courseId, lessonIds, studentIds, grades = 'usual', order = 'paired', due = null, afterDue = 'reduce', reduceBy = 10, redoCounts = false, minimumPerTopic = null, examStart = null, examEnd = null, examTimer = true, examLock = 'none' } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!['usual', 'show', 'hide'].includes(grades)) throw new HttpsError('invalid-argument', 'Grades: usual, show or hide.')
@@ -522,7 +568,7 @@ async function progressMap(pairs, examLessons = new Set()) {
   return out
 }
 
-export const classOverview = onCall(async (request) => {
+export const classOverview = onCallAgreed(async (request) => {
   const classId = request.data?.classId
   const { ref, data } = await requireClassTeacher(request.auth, classId)
   const [work, students] = await Promise.all([classWork(ref), classStudents(ref)])
@@ -535,6 +581,10 @@ export const classOverview = onCall(async (request) => {
   const exams = new Set(Object.keys(work.lessons).filter((l) => work.lessons[l].type === 'exam'))
   const progress = await progressMap(students.flatMap((s) => given[s.id].lessonIds.map((l) => [s.id, l])), exams)
   const p = (uid, l) => progress[progressId(uid, l)]
+  // Time on each lesson (REQ-5.33).
+  const timePairs = students.flatMap((s) => given[s.id].lessonIds.map((l) => progressId(s.id, l)))
+  const timeSnaps = timePairs.length ? await db.getAll(...timePairs.map((id) => db.doc(`lessonTime/${id}`))) : []
+  const lessonTimes = Object.fromEntries(timeSnaps.filter((x) => x.exists).map((x) => [x.id, x.data()]))
   const flags = flagSnap.docs
     .map((d) => {
       const f = d.data()
@@ -547,6 +597,7 @@ export const classOverview = onCall(async (request) => {
         questionId: f.questionId,
         topicName: f.topicName || null,
         kind: f.kind,
+        awayCount: f.awayCount ?? null,
         alsoMinimum: !!f.alsoMinimum,
         open: f.open !== false,
         createdAt: toMillis(f.createdAt),
@@ -566,6 +617,7 @@ export const classOverview = onCall(async (request) => {
 
   const now = Date.now()
   const warnAt = sentBackLimit(data)
+  const awayAt = awayLimit(data)
   // The assignment that sets a lesson's due date for a student (D-60): the latest one given to them
   // that includes the lesson and has a due date; otherwise the latest one that includes it.
   const ruleFor = (uid, l) => {
@@ -585,7 +637,7 @@ export const classOverview = onCall(async (request) => {
         if (due && !pr?.finished && now > due) pastDue = true
         const late = !!due && (finishedAt ? finishedAt > due : now > due)
         const cell = base.kind === 'grade' ? { ...base, percent: lateGrade(base.percent, rule, due, finishedAt) } : base
-        return [l, { ...cell, due, late, finishedAt, started: !!pr, sentBack: pr?.sentBack && !pr.sentBack.done ? pr.sentBack.mode : null, sentBackCount: pr?.sentBackCount || 0, waiting: waitingAnswers(pr).length, tips: Object.values(pr?.tipsOpened || {}).reduce((a, b) => a + b, 0) }]
+        return [l, { ...cell, due, late, finishedAt, started: !!pr, sentBack: pr?.sentBack && !pr.sentBack.done ? pr.sentBack.mode : null, sentBackCount: pr?.sentBackCount || 0, time: timeSummary(lessonTimes[progressId(s.id, l)], pr?.finished ? finishedAt : null), waiting: waitingAnswers(pr).length, tips: Object.values(pr?.tipsOpened || {}).reduce((a, b) => a + b, 0) }]
       }),
     )
     const positions = Object.fromEntries(mine.courseIds.map((c) => [c, coursePosition(work.courses.find((k) => k.courseId === c).order, (l) => p(s.id, l))]))
@@ -603,6 +655,8 @@ export const classOverview = onCall(async (request) => {
       average: averageGrade(Object.values(cells)),
       openFlags,
       sentBackTotals: sentBack.totals,
+      // Lessons in which the student was away more times than the class's number (REQ-5.33).
+      awayLessons: mine.lessonIds.filter((l) => awayALot(cells[l]?.time, awayAt)),
       sentBackWarnings: sentBack.warnings,
       lastWorked: times.length ? Math.max(...times) : null,
       status,
@@ -641,6 +695,7 @@ export const classOverview = onCall(async (request) => {
     color: data.color || '#0E6B73',
     teacherNames: data.teacherNames || [],
     sentBackWarnAt: warnAt,
+    awayWarnAt: awayAt,
     courses: work.courses.map((c) => ({ ...c, middle: middles[c.courseId] })),
     lessons: work.lessons,
     columns,
@@ -652,7 +707,7 @@ export const classOverview = onCall(async (request) => {
   }
 })
 
-export const teacherHome = onCall(async (request) => {
+export const teacherHome = onCallAgreed(async (request) => {
   await requireTeacher(request.auth)
   const classes = await db.collection('classes').where('teacherIds', 'array-contains', request.auth.uid).get()
   const out = []
@@ -694,7 +749,7 @@ export const teacherHome = onCall(async (request) => {
   return { classes: out, todo }
 })
 
-export const lessonResults = onCall(async (request) => {
+export const lessonResults = onCallAgreed(async (request) => {
   const { classId, lessonId } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
@@ -753,7 +808,7 @@ export const lessonResults = onCall(async (request) => {
   }
 })
 
-export const gradeAnswer = onCall(async (request) => {
+export const gradeAnswer = onCallAgreed(async (request) => {
   const { classId, lessonId, studentId, questionId, score, comment, markup, audioData } = request.data || {}
   await requireClassTeacher(request.auth, classId)
   if (![lessonId, studentId, questionId].every(validId)) throw new HttpsError('invalid-argument', 'Missing details.')
@@ -779,7 +834,7 @@ export const gradeAnswer = onCall(async (request) => {
   })
 })
 
-export const clearFlag = onCall(async (request) => {
+export const clearFlag = onCallAgreed(async (request) => {
   const { flagId, note } = request.data || {}
   if (!validId(flagId)) throw new HttpsError('invalid-argument', 'Missing flag.')
   const ref = db.doc(`flags/${flagId}`)
@@ -793,7 +848,7 @@ export const clearFlag = onCall(async (request) => {
 
 // Opens one lesson of a course given to the class early, for the whole class or chosen students
 // (REQ-5.20). It is open whatever comes before it (D-55).
-export const openEarly = onCall(async (request) => {
+export const openEarly = onCallAgreed(async (request) => {
   const { classId, lessonId, studentIds } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
@@ -812,7 +867,7 @@ export const openEarly = onCall(async (request) => {
   return { openingId: opening.id }
 })
 
-export const setLevel = onCall(async (request) => {
+export const setLevel = onCallAgreed(async (request) => {
   const { classId, studentId, level } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!validId(studentId) || ![1, 2, 3].includes(level)) throw new HttpsError('invalid-argument', 'Level 1 to 3.')
@@ -829,7 +884,7 @@ export const setLevel = onCall(async (request) => {
 //   addNote({ classId, studentId, text })                               a private teacher note
 //   studentDetails({ classId, studentId })                              not yet mastered, notes
 
-export const sendBack = onCall(async (request) => {
+export const sendBack = onCallAgreed(async (request) => {
   const { classId, lessonId, studentId, mode, questionIds, note, mustReturn = true } = request.data || {}
   await requireClassTeacher(request.auth, classId)
   if (![lessonId, studentId].every(validId) || !['review', 'corrections'].includes(mode)) throw new HttpsError('invalid-argument', 'Missing details.')
@@ -870,7 +925,7 @@ export const sendBack = onCall(async (request) => {
 })
 
 // "I've read the comments" (REQ-5.14, D-59): the lesson sent back for review is gone over.
-export const readComments = onCall(async (request) => {
+export const readComments = onCallAgreed(async (request) => {
   if (!request.auth) throw new HttpsError('unauthenticated', 'Sign in first.')
   const { lessonId } = request.data || {}
   if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
@@ -883,7 +938,7 @@ export const readComments = onCall(async (request) => {
 })
 
 // Private notes about a student, seen only by the class's teachers (REQ-5.28).
-export const addNote = onCall(async (request) => {
+export const addNote = onCallAgreed(async (request) => {
   const { classId, studentId, text } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   const body = typeof text === 'string' ? text.trim().slice(0, 5000) : ''
@@ -895,7 +950,7 @@ export const addNote = onCall(async (request) => {
 })
 
 // For the student page (REQ-5.28): the "not yet mastered" list (REQ-5.25) and the teacher notes.
-export const studentDetails = onCall(async (request) => {
+export const studentDetails = onCallAgreed(async (request) => {
   const { classId, studentId } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!validId(studentId)) throw new HttpsError('invalid-argument', 'Missing student.')
@@ -926,7 +981,7 @@ export const studentDetails = onCall(async (request) => {
 })
 
 // Changing a due date (REQ-5.9): for the whole class, or extended for one student.
-export const setDue = onCall(async (request) => {
+export const setDue = onCallAgreed(async (request) => {
   const { classId, assignmentId, due, studentId } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!validId(assignmentId) || (due !== null && (!Number.isFinite(due) || due < 0))) throw new HttpsError('invalid-argument', 'Due date.')
@@ -943,7 +998,7 @@ export const setDue = onCall(async (request) => {
 
 // Which questions this student doesn't receive, because they are above the student's level
 // (REQ-6.10). The lesson player leaves them out without saying so.
-export const lessonView = onCall(async (request) => {
+export const lessonView = onCallAgreed(async (request) => {
   const { lessonId } = request.data || {}
   if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
   const lessonRef = db.doc(`lessons/${lessonId}`)
@@ -966,7 +1021,7 @@ export const lessonView = onCall(async (request) => {
 
 // Trying a lesson as a teacher (REQ-5.32): answers are checked as for a student, but nothing is
 // saved; the website keeps the state. With show: true, the correct answer and full solution.
-export const tryAnswer = onCall(async (request) => {
+export const tryAnswer = onCallAgreed(async (request) => {
   await requireTeacher(request.auth)
   const { lessonId, questionId, value, checkAgain, before, show } = request.data || {}
   if (!validId(lessonId) || !validId(questionId)) throw new HttpsError('invalid-argument', 'Missing lesson or question.')
@@ -990,7 +1045,7 @@ export const tryAnswer = onCall(async (request) => {
 
 // Archiving a course in a class, or bringing it back (REQ-5.21). Students see it under
 // "Archived courses"; its lessons and grades stay.
-export const archiveCourse = onCall(async (request) => {
+export const archiveCourse = onCallAgreed(async (request) => {
   const { classId, courseId, archived } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!validId(courseId) || typeof archived !== 'boolean') throw new HttpsError('invalid-argument', 'Missing course.')
@@ -1004,7 +1059,7 @@ export const archiveCourse = onCall(async (request) => {
 
 // A teacher changes a student's interface language (REQ-9.6); it applies the next time the student
 // opens Evolora (the website reads the saved language when they sign in, REQ-9.4).
-export const setStudentLanguage = onCall(async (request) => {
+export const setStudentLanguage = onCallAgreed(async (request) => {
   const { classId, studentId, language } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!validId(studentId) || !['he', 'ar', 'en'].includes(language)) throw new HttpsError('invalid-argument', 'Language: he, ar or en.')
@@ -1016,7 +1071,7 @@ export const setStudentLanguage = onCall(async (request) => {
 
 // Co-teachers (REQ-5.5): a teacher of the class adds another teacher by email. The other teacher
 // must be on the staff list and have signed in once. All teachers of a class can do the same things.
-export const addTeacher = onCall(async (request) => {
+export const addTeacher = onCallAgreed(async (request) => {
   const { classId, email } = request.data || {}
   const { ref, data } = await requireClassTeacher(request.auth, classId)
   const key = typeof email === 'string' ? email.trim().toLowerCase() : ''
@@ -1066,7 +1121,7 @@ async function conversationSide(auth, classId, studentId) {
   return { from: 'student', studentId: auth.uid, studentName: await personName(auth) }
 }
 
-export const sendMessage = onCall(async (request) => {
+export const sendMessage = onCallAgreed(async (request) => {
   const { classId, studentId, text } = request.data || {}
   const body = typeof text === 'string' ? text.trim().slice(0, 5000) : ''
   if (!body) throw new HttpsError('invalid-argument', 'Write a message.')
@@ -1092,7 +1147,7 @@ export const sendMessage = onCall(async (request) => {
 })
 
 // Opening the conversation marks the other side's messages as read.
-export const markRead = onCall(async (request) => {
+export const markRead = onCallAgreed(async (request) => {
   const { classId, studentId } = request.data || {}
   const side = await conversationSide(request.auth, classId, studentId)
   const ref = db.doc(`conversations/${conversationId(classId, side.studentId)}`)
@@ -1103,7 +1158,7 @@ export const markRead = onCall(async (request) => {
 // Redo a finished lesson (REQ-6.5). If the teacher allowed it when giving the lesson ("redo
 // counts", REQ-5.9), the latest redo's grade replaces the old one, even if lower; otherwise the
 // redo is practice only and the earlier grade is kept. Earlier answers are kept in `redos`.
-export const startRedo = onCall(async (request) => {
+export const startRedo = onCallAgreed(async (request) => {
   const { lessonId } = request.data || {}
   if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
   const lessonSnap = await db.doc(`lessons/${lessonId}`).get()
@@ -1176,7 +1231,7 @@ function examValue(q, value) {
   return null
 }
 
-export const examSave = onCall(async (request) => {
+export const examSave = onCallAgreed(async (request) => {
   const { lessonId, questionId, value } = request.data || {}
   if (!validId(lessonId) || !validId(questionId)) throw new HttpsError('invalid-argument', 'Missing details.')
   const lessonRef = db.doc(`lessons/${lessonId}`)
@@ -1241,7 +1296,7 @@ async function submitExam(uid, lessonId, lesson, classIds, studentName) {
   return true
 }
 
-export const examSubmit = onCall(async (request) => {
+export const examSubmit = onCallAgreed(async (request) => {
   const { lessonId } = request.data || {}
   if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
   const lesson = (await db.doc(`lessons/${lessonId}`).get()).data()
@@ -1270,7 +1325,7 @@ async function submitExpired(classId, work, students) {
   }
 }
 
-export const releaseResults = onCall(async (request) => {
+export const releaseResults = onCallAgreed(async (request) => {
   const { classId, lessonId } = request.data || {}
   const { ref } = await requireClassTeacher(request.auth, classId)
   if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
@@ -1287,7 +1342,7 @@ export const releaseResults = onCall(async (request) => {
   return { released: n }
 })
 
-export const allowRetake = onCall(async (request) => {
+export const allowRetake = onCallAgreed(async (request) => {
   const { classId, lessonId, studentId } = request.data || {}
   await requireClassTeacher(request.auth, classId)
   if (!validId(lessonId) || !validId(studentId)) throw new HttpsError('invalid-argument', 'Missing details.')
@@ -1303,7 +1358,7 @@ export const allowRetake = onCall(async (request) => {
 })
 
 // Removing a co-teacher from a class (REQ-5.5, D-62). A class always keeps at least one teacher.
-export const removeTeacher = onCall(async (request) => {
+export const removeTeacher = onCallAgreed(async (request) => {
   const { classId, teacherId } = request.data || {}
   const { ref, data } = await requireClassTeacher(request.auth, classId)
   const ids = data.teacherIds || []
@@ -1374,4 +1429,58 @@ export const acceptTerms = onCall(async (request) => {
   if (request.data?.version !== version) throw new HttpsError('failed-precondition', 'old-version')
   await db.doc(`users/${request.auth.uid}`).set({ termsAccepted: { version, at: FieldValue.serverTimestamp() } }, { merge: true })
   return { version }
+})
+
+// Time on a lesson and time away (REQ-5.33, D-73, D-76). The student's browser reports about every
+// 20 seconds while the lesson is open and not finished: working time since the last report, times
+// away, and whether the lesson was just opened again. Teachers trying a lesson aren't measured.
+// More times away than the class's number gives the class's teachers a red flag, once per lesson.
+export const lessonTime = onCallAgreed(async (request) => {
+  if (!request.auth) throw new HttpsError('unauthenticated', 'Sign in first.')
+  const { lessonId } = request.data || {}
+  if (!validId(lessonId) || !validReport(request.data)) throw new HttpsError('invalid-argument', 'Missing details.')
+  const lessonSnap = await db.doc(`lessons/${lessonId}`).get()
+  if (!lessonSnap.exists) throw new HttpsError('not-found', 'No such lesson.')
+  const lesson = lessonSnap.data()
+  const classIds = await access(request.auth, lesson)
+  if (!classIds.length) return { counted: false }
+  const uid = request.auth.uid
+  const id = progressId(uid, lessonId)
+  const progress = await db.doc(`progress/${id}`).get()
+  if (progress.exists && progress.data().finished) return { counted: false }
+  const classSnaps = await db.getAll(...classIds.map((c) => db.doc(`classes/${c}`)))
+  const ref = db.doc(`lessonTime/${id}`)
+  const toFlag = []
+  const next = await db.runTransaction(async (tx) => {
+    toFlag.length = 0
+    const prev = await tx.get(ref)
+    const n = applyTimeReport(prev.exists ? prev.data() : null, request.data, Date.now())
+    for (const c of classSnaps) {
+      if (!c.exists || n.flaggedFor.includes(c.id)) continue
+      if (n.awayCount > awayLimit(c.data())) toFlag.push(c.id)
+    }
+    n.flaggedFor = [...n.flaggedFor, ...toFlag]
+    tx.set(ref, { uid, lessonId, classIds, ...n })
+    return n
+  })
+  if (toFlag.length) {
+    const user = await db.doc(`users/${uid}`).get()
+    const batch = db.batch()
+    for (const classId of toFlag) {
+      batch.set(db.collection('flags').doc(), {
+        classId,
+        uid,
+        studentName: user.exists ? user.data().name || '' : '',
+        lessonId,
+        lessonTitle: lesson.title,
+        questionId: null,
+        kind: 'awayALot',
+        awayCount: next.awayCount,
+        open: true,
+        createdAt: FieldValue.serverTimestamp(),
+      })
+    }
+    await batch.commit()
+  }
+  return { counted: true, awayCount: next.awayCount }
 })

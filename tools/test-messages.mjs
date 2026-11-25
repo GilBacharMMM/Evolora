@@ -10,6 +10,7 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { arrayRemove, collection, deleteDoc, doc, getDoc, getDocs, initializeFirestore, setDoc, updateDoc } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { ROOT, connect, finish, siteConfig, testPassword } from './lib/connect.mjs'
+import { agreeForTest } from './lib/test-helpers.mjs'
 
 setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
@@ -37,6 +38,8 @@ async function as(uid, fn) {
 const blocked = async (action) => { try { await action(); return false } catch { return true } }
 
 const loader = await connect('test')
+// Test Student 7 must have agreed to the terms of use to be served (D-76).
+const restoreTerms7 = await agreeForTest(loader.db, 'test-student-7')
 const ldb = loader.db
 async function cleanUp() {
   for (const m of (await getDocs(collection(ldb, 'conversations', CONVO, 'messages'))).docs) await deleteDoc(m.ref)
@@ -89,4 +92,5 @@ try {
 }
 
 console.log(`\n${count - failures} of ${count} message tests passed.`)
+await restoreTerms7()
 finish(failures ? 1 : 0)

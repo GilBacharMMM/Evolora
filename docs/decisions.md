@@ -844,3 +844,27 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 8. **The warning number** is set on **Class settings**, from 1 to 100, with a default of 10. The warning shows on the class dashboard under the course's progress: a ⚠ sign with the words "sent back N times". It shows as soon as a student's total in a course reaches the number.
 9. **For REQ-5.33 later:** every answer attempt now saves its time, so total and net time can be worked out in stage 2.
 **Affects:** REQ-10.8, REQ-5.34, REQ-5.33, docs/system-design.md 2.12 and 3.1, tools/README.md
+
+### D-76: Building time on lessons, word explanations, the class language, and strict terms of use
+**Date:** 2026-11-25 · **Status:** Decided by Claude, within the approved requirements (Gil asked for all four to be built; Gil can change any point)
+**Context:** Gil asked for the features that need no new decisions: REQ-5.33 (decided in D-73), REQ-4.29, REQ-9.5 and the server check that D-75 left for later.
+**Decision:**
+1. **Time on lessons (REQ-5.33), built early (it was stage 2).**
+   - **Measuring:** time is measured while a student has a lesson open and hasn't finished it. The browser checks every second whether the student is working, as D-73 defines it, and sends what it measured about every 20 seconds.
+   - **When it starts:** total time starts when the student first opens the lesson. Lessons started before today show only the time since then.
+   - **Leaving the lesson page:** going to another Evolora page and coming back, or closing the browser and opening the lesson again later, counts as one time away (a new sitting).
+   - **What counts as working:** clicking into the lesson's video counts as still working. While a video or audio plays, not touching anything is not "away".
+   - **Teachers:** teachers trying a lesson aren't measured.
+   - **Away a lot:** the class's number is set on **Class settings** (from 1 to 100, default 5). The red flag is raised once per lesson, when the count first goes above the number. The dashboard sign follows the current number.
+2. **Word explanations (REQ-4.29):**
+   - **In the lesson file:** write `[[word|explanation]]` on one line. The lesson check refuses one that is badly written and warns when the explanation is long.
+   - **On the screen:** the word gets a dotted underline. The explanation shows in a small window when the mouse moves over it, when it is tapped, or with the keyboard, and closes when the mouse moves away.
+   - **The circles lesson:** the cubit ("אמות") is explained this way instead of in brackets. The lesson was loaded again as a new version; students who had already started it keep the old version.
+3. **Class language (REQ-9.5):**
+   - **The setting:** on **Class settings**, choose none, Hebrew, Arabic or English, and whether students **must** use it inside the class or **may choose**.
+   - **"Must":** the class page, its course pages, and lessons given by that class are shown in the class language, and the language menu is locked there. Everywhere else, the student's own language comes back.
+   - **"May choose":** students keep their own language.
+   - **A lesson given by two classes:** it follows the first class that requires a language.
+4. **Strict terms of use (D-75, point 5):** the checking service now refuses every request from someone who hasn't agreed to the current version, except agreeing itself. As before, nobody is asked while no terms are loaded.
+**Note for the terms of use:** they say time on lessons will be measured "in a later version". It is now measured on the test site, so the wording should change when the real text is written.
+**Affects:** REQ-5.33, REQ-4.29, REQ-9.5, REQ-10.8, the lesson format and the teacher kit, docs/system-design.md 2.12 and 2.13

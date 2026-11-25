@@ -49,7 +49,8 @@
       "noClass": "No class has this code. Check it with your teacher.",
       "wait": "Too many wrong codes. Please wait {{minutes}} minutes, then try again.",
       "failed": "Something went wrong, and you didn't join. Please try again."
-    }
+    },
+    "classLanguage": "The class sets the language"
   },
   "teacher": {
     "lessons": "Lessons in Evolora",
@@ -175,7 +176,16 @@
     "sentBackBad": "A number from 1 to 100.",
     "sentBackSave": "Save",
     "sentBackSaved": "Saved",
-    "sentBackFailed": "Didn't work. Please try again."
+    "sentBackFailed": "Didn't work. Please try again.",
+    "awayTitle": "Warning for time away",
+    "awayExplain": "A student who leaves a lesson (another tab, or 2 minutes without touching the computer) more times than this number gets a sign on the class dashboard, and you get a red flag.",
+    "awayLabel": "Warn after more than (times away in one lesson):",
+    "classLanguageTitle": "Class language",
+    "classLanguageExplain": "You can set a language for the class. If students must use it, they see Evolora in that language inside the class and its lessons, and in their own language everywhere else.",
+    "classLanguageLabel": "Language:",
+    "classLanguageNone": "None (each student in their own language)",
+    "classLanguageMust": "Students must use it inside the class",
+    "classLanguageMay": "Students may choose their language"
   },
   "lessonType": {
     "teaching": "Teaching",
@@ -410,7 +420,18 @@
     "sentBackCourse_one": "Sent back for corrections in this course: once",
     "sentBackCourse_other": "Sent back for corrections in this course: {{count}} times",
     "sentBackWarning_one": "sent back once",
-    "sentBackWarning_other": "sent back {{count}} times"
+    "sentBackWarning_other": "sent back {{count}} times",
+    "awayALot": "away a lot",
+    "flagAway_one": "away from the lesson once",
+    "flagAway_other": "away from the lesson {{count}} times",
+    "minutes_one": "1 min",
+    "minutes_other": "{{count}} min",
+    "hoursMinutes": "{{hours}} h {{minutes}} min",
+    "timeTotal": "total time: {{time}}",
+    "timeNet": "net time: {{time}}",
+    "timesAway_one": "away once",
+    "timesAway_other": "away {{count}} times",
+    "timeAway": "time away: {{time}}"
   },
   "library": {
     "search": "Search by title",

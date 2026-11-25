@@ -141,6 +141,9 @@ Students must answer a question before they can see the rest of the lesson. Ther
 After the type, add the question's **level**, and `[EXTRA]` for extra practice questions:
 
 ```
+
+**Explanations of words** (REQ-4.29): instead of explaining a word in brackets inside a sentence, write `[[word|explanation]]`, for example `עשר [[אמות|אמה בתנ"ך היא בערך 45 ס"מ]]`. Students see the word underlined with dots and the explanation on hover or tap. One `|` per explanation, on one line, a sentence or two at most. Suggest this to the teacher when a sentence has an explanation in brackets.
+
 ## [QUESTION: number] [LEVEL 1]
 ## [QUESTION: multiple choice] [LEVEL 1] [EXTRA]
 ## [QUESTION: open] [LEVEL 3]

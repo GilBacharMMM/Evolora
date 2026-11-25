@@ -1,7 +1,7 @@
 import { Suspense, useState } from 'react'
 import { lazyFresh } from '../freshness'
 import { useTranslation } from 'react-i18next'
-import { LANGUAGES, type Language } from '../i18n'
+import { LANGUAGES, useForcedLanguage, type Language } from '../i18n'
 import { IS_TEST_SITE } from '../site'
 import { useSession } from '../session'
 import { navigate } from '../router'
@@ -15,6 +15,7 @@ export function Header() {
   const session = useSession()
   const [menuOpen, setMenuOpen] = useState(false)
   const user = session.user
+  const forced = useForcedLanguage()
 
   return (
     <header className="top-bar">
@@ -34,7 +35,7 @@ export function Header() {
             <path d="M3 12h18 M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9 M12 3c-2.5 2.7-3.8 5.7-3.8 9s1.3 6.3 3.8 9" />
           </svg>
           <span>{t('language')}</span>
-          <select value={i18n.language} onChange={(e) => session.chooseLanguage(e.target.value as Language)}>
+          <select value={i18n.language} disabled={!!forced} title={forced ? t('home.classLanguage') : undefined} onChange={(e) => session.chooseLanguage(e.target.value as Language)}>
             {Object.entries(LANGUAGES).map(([code, { label }]) => (
               <option key={code} value={code}>
                 {label}

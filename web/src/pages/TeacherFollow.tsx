@@ -20,7 +20,10 @@ import type { LessonType } from '../lesson/types'
 
 const call = <T,>(name: string, data: unknown) => httpsCallable<unknown, T>(functions, name)(data).then((r) => r.data)
 
-export type Cell = { kind: 'notDone' | 'pending' | 'grade' | 'doneNoGrade'; percent: number | null; started: boolean; waiting: number; tips: number; sentBack?: 'review' | 'corrections' | null; sentBackCount?: number; due?: number | null; late?: boolean }
+export type Cell = { kind: 'notDone' | 'pending' | 'grade' | 'doneNoGrade'; percent: number | null; started: boolean; waiting: number; tips: number; sentBack?: 'review' | 'corrections' | null; sentBackCount?: number; time?: LessonTime | null; due?: number | null; late?: boolean }
+
+// Time on a lesson (REQ-5.33).
+export type LessonTime = { totalMs: number; netMs: number; awayCount: number; awayMs: number }
 
 interface CourseInfo {
   courseId: string
@@ -46,6 +49,8 @@ interface StudentRow {
   // Answers sent back for corrections, per course, and the courses where it reached the class's number (REQ-5.34).
   sentBackTotals?: Record<string, number>
   sentBackWarnings?: string[]
+  // Lessons in which the student was away a lot (REQ-5.33).
+  awayLessons?: string[]
   lastWorked: number | null
   status: 'red' | 'orange' | 'yellow' | 'green'
   star: boolean
@@ -61,7 +66,8 @@ export interface Flag {
   lessonTitle: string
   questionId: string
   topicName: string | null
-  kind: 'checkAgainWrong' | 'minimumNotReached' | 'examWrong'
+  kind: 'checkAgainWrong' | 'minimumNotReached' | 'examWrong' | 'awayALot'
+  awayCount?: number | null
   alsoMinimum: boolean
   open: boolean
   createdAt: number | null
@@ -74,6 +80,7 @@ export interface Overview {
   color: string
   teacherNames: string[]
   sentBackWarnAt?: number
+  awayWarnAt?: number
   courses: CourseInfo[]
   lessons: Record<string, { title: string; type: LessonType; language: string }>
   columns: string[]
@@ -239,6 +246,7 @@ export function ClassDashboard({ classId }: { classId: string }) {
                     <button type="button" className="link-button" dir="auto" onClick={() => navigate(`/teacher/class/${classId}/student/${s.id}`)}>
                       {s.name}
                     </button>
+                    {(s.awayLessons?.length ?? 0) > 0 && <AwaySign titles={s.awayLessons!.map((l) => data.lessons[l]?.title || l)} />}
                   </td>
                   <td>
                     <LevelControl classId={classId} studentId={s.id} level={s.level} name={s.name} onChange={reload} />
@@ -262,6 +270,42 @@ export function ClassDashboard({ classId }: { classId: string }) {
       <p className="muted small-note">{t('follow.statusExplain')}</p>
       <OpenFlags classId={classId} flags={data.flags.filter((f) => f.open)} onCleared={reload} />
     </main>
+  )
+}
+
+// "Away a lot" (REQ-5.33, D-73): a sign and words next to the student's name.
+function AwaySign({ titles }: { titles: string[] }) {
+  const { t } = useTranslation()
+  return (
+    <span className="away-sign" role="note" title={titles.join(' · ')}>
+      <span aria-hidden="true">⏸</span> {t('follow.awayALot')}
+    </span>
+  )
+}
+
+// Minutes, or hours and minutes.
+function duration(ms: number, t: (k: string, o?: Record<string, unknown>) => string): string {
+  const minutes = Math.round(ms / 60000)
+  if (minutes < 60) return t('follow.minutes', { count: minutes })
+  return t('follow.hoursMinutes', { hours: Math.floor(minutes / 60), minutes: minutes % 60 })
+}
+
+// Time on one lesson (REQ-5.33): total, net, times away and time away.
+function TimeLine({ time, awayALot }: { time: LessonTime; awayALot: boolean }) {
+  const { t } = useTranslation()
+  return (
+    <span className="muted time-line">
+      {t('follow.timeTotal', { time: duration(time.totalMs, t) })} · {t('follow.timeNet', { time: duration(time.netMs, t) })} ·{' '}
+      {t('follow.timesAway', { count: time.awayCount })} · {t('follow.timeAway', { time: duration(time.awayMs, t) })}
+      {awayALot && (
+        <>
+          {' '}
+          <span className="away-sign">
+            <span aria-hidden="true">⏸</span> {t('follow.awayALot')}
+          </span>
+        </>
+      )}
+    </span>
   )
 }
 
@@ -363,6 +407,7 @@ export function LevelControl({ classId, studentId, level, name, onChange }: { cl
 
 function flagText(f: Flag, t: (k: string, o?: Record<string, unknown>) => string) {
   if (f.kind === 'examWrong') return t('follow.flagExam', { question: f.questionId })
+  if (f.kind === 'awayALot') return t('follow.flagAway', { count: f.awayCount ?? 0 })
   return f.kind === 'checkAgainWrong' ? t('follow.flagCheckAgain', { question: f.questionId }) : t('follow.flagMinimum', { topic: f.topicName || '' })
 }
 
@@ -588,6 +633,7 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
         {s.cells[l]?.sentBack && <span className="notes-chip">{t(`follow.sentBack.${s.cells[l].sentBack}`)}</span>}{' '}
         {(s.cells[l]?.sentBackCount ?? 0) > 0 && <span className="muted sent-back-count">{t('follow.sentBackTimes', { count: s.cells[l].sentBackCount })}</span>} <GradeCell cell={s.cells[l]} />
       </span>
+      {s.cells[l]?.time && <TimeLine time={s.cells[l].time!} awayALot={s.awayLessons?.includes(l) ?? false} />}
     </li>
   )
   return (
@@ -630,7 +676,7 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
                   {q.lessonTitle}
                 </button>
                 <span>
-                  {t('q.questionNumber', { number: q.number })}: <bdi className="muted">{q.prompt.replace(/[*_#$`]/g, '').slice(0, 140)}</bdi>
+                  {t('q.questionNumber', { number: q.number })}: <bdi className="muted">{q.prompt.replace(/\[\[([^[\]|]+)\|[^[\]]+\]\]/g, '$1').replace(/[*_#$`]/g, '').slice(0, 140)}</bdi>
                 </span>
               </span>
               {q.flagId && <ClearFlag flagId={q.flagId} onCleared={reloadAll} />}

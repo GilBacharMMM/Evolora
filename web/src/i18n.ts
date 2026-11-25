@@ -1,3 +1,4 @@
+import { useEffect, useSyncExternalStore } from 'react'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 import he from './locales/he.json'
@@ -45,13 +46,45 @@ function applyToDocument(lang: Language) {
   document.documentElement.dir = LANGUAGES[lang].dir
 }
 
+// A class can require its language (REQ-9.5, D-76): while the student is inside that class, the
+// class's language is shown and the language menu is locked; elsewhere their own choice comes back.
+let chosen: Language | null = null
+let forced: Language | null = null
+const forcedListeners = new Set<() => void>()
+
 export function setLanguage(lang: Language) {
   try {
     localStorage.setItem(STORAGE_KEY, lang)
   } catch {
     // Not saved, but the switch still works for this visit.
   }
-  void i18n.changeLanguage(lang)
+  chosen = lang
+  if (!forced) void i18n.changeLanguage(lang)
+}
+
+export function forceLanguage(lang: Language | null) {
+  if (forced === lang) return
+  forced = lang
+  void i18n.changeLanguage(lang ?? chosen ?? initial)
+  forcedListeners.forEach((f) => f())
+}
+
+export function useForcedLanguage(): Language | null {
+  return useSyncExternalStore(
+    (f) => {
+      forcedListeners.add(f)
+      return () => forcedListeners.delete(f)
+    },
+    () => forced,
+  )
+}
+
+// Pages inside a class call this with the class's required language, or null.
+export function useClassLanguage(lang: Language | null) {
+  useEffect(() => {
+    forceLanguage(lang)
+    return () => forceLanguage(null)
+  }, [lang])
 }
 
 const initial = savedLanguage()

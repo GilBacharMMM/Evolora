@@ -1,4 +1,6 @@
 import { useTranslation } from 'react-i18next'
+import { useClassLanguage } from '../i18n'
+import { requiredLanguage } from '../classwork'
 import { useSession } from '../session'
 import { Messages } from '../components/Messages'
 import { navigate } from '../router'
@@ -37,6 +39,7 @@ export function StudentClass({ classId }: { classId: string }) {
   const { t } = useTranslation()
   const { user } = useSession()
   const classes = useClasswork()
+  useClassLanguage(requiredLanguage(classes, { classId }))
   if (classes === null) return <main className="page narrow"><p className="loading">{t('common.loading')}</p></main>
   const c = classes.find((x) => x.id === classId)
   if (!c) return <NotInClass />
@@ -130,6 +133,7 @@ export function StudentClass({ classId }: { classId: string }) {
 export function StudentCourse({ classId, courseId }: { classId: string; courseId: string }) {
   const { t } = useTranslation()
   const classes = useClasswork()
+  useClassLanguage(requiredLanguage(classes, { classId }))
   if (classes === null) return <main className="page narrow"><p className="loading">{t('common.loading')}</p></main>
   const c = classes.find((x) => x.id === classId)
   const k = c?.courses.find((x) => x.courseId === courseId)

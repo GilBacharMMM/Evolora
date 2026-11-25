@@ -53,7 +53,8 @@
       "noClass": "لا يوجد صف بهذا الرمز. تحقق منه مع معلمك.",
       "wait": "رموز خاطئة كثيرة. انتظر {{minutes}} دقائق ثم حاول مرة أخرى.",
       "failed": "حدث خطأ ولم يتم الانضمام. حاول مرة أخرى."
-    }
+    },
+    "classLanguage": "حدد الصف اللغة"
   },
   "teacher": {
     "lessons": "الدروس في إيفولورا",
@@ -187,7 +188,16 @@
     "sentBackBad": "رقم من 1 إلى 100.",
     "sentBackSave": "حفظ",
     "sentBackSaved": "تم الحفظ",
-    "sentBackFailed": "لم ينجح. حاولوا مرة أخرى."
+    "sentBackFailed": "لم ينجح. حاولوا مرة أخرى.",
+    "awayTitle": "تنبيه عند الابتعاد عن الدرس",
+    "awayExplain": "الطالب الذي يبتعد عن الدرس (إلى علامة تبويب أخرى، أو دون لمس الحاسوب دقيقتين) أكثر من هذا العدد من المرات تظهر بجانبه علامة في لوحة الصف، وتحصلون على علم أحمر.",
+    "awayLabel": "التنبيه بعد أكثر من (مرات الابتعاد في درس واحد):",
+    "classLanguageTitle": "لغة الصف",
+    "classLanguageExplain": "يمكن تحديد لغة للصف. إذا كان على الطلاب استخدامها، فسيرون إيفولورا بهذه اللغة داخل الصف وفي دروسه، وفي باقي الأماكن باللغة التي اختاروها.",
+    "classLanguageLabel": "اللغة:",
+    "classLanguageNone": "لا شيء (كل طالب بلغته)",
+    "classLanguageMust": "على الطلاب استخدامها داخل الصف",
+    "classLanguageMay": "يمكن للطلاب اختيار اللغة"
   },
   "lessonType": {
     "teaching": "تعليم",
@@ -434,7 +444,30 @@
     "sentBackWarning_zero": "أُعيد للتصحيح 0 مرات",
     "sentBackWarning_two": "أُعيد للتصحيح مرتين",
     "sentBackWarning_few": "أُعيد للتصحيح {{count}} مرات",
-    "sentBackWarning_many": "أُعيد للتصحيح {{count}} مرة"
+    "sentBackWarning_many": "أُعيد للتصحيح {{count}} مرة",
+    "awayALot": "ابتعد كثيرًا",
+    "flagAway_zero": "ابتعد عن الدرس 0 مرة",
+    "flagAway_one": "ابتعد عن الدرس مرة واحدة",
+    "flagAway_two": "ابتعد عن الدرس مرتين",
+    "flagAway_few": "ابتعد عن الدرس {{count}} مرات",
+    "flagAway_many": "ابتعد عن الدرس {{count}} مرة",
+    "flagAway_other": "ابتعد عن الدرس {{count}} مرة",
+    "minutes_zero": "0 دقيقة",
+    "minutes_one": "دقيقة واحدة",
+    "minutes_two": "دقيقتان",
+    "minutes_few": "{{count}} دقائق",
+    "minutes_many": "{{count}} دقيقة",
+    "minutes_other": "{{count}} دقيقة",
+    "hoursMinutes": "{{hours}} س {{minutes}} د",
+    "timeTotal": "الوقت الكلي: {{time}}",
+    "timeNet": "الوقت الصافي: {{time}}",
+    "timesAway_zero": "لم يبتعد",
+    "timesAway_one": "ابتعد مرة واحدة",
+    "timesAway_two": "ابتعد مرتين",
+    "timesAway_few": "ابتعد {{count}} مرات",
+    "timesAway_many": "ابتعد {{count}} مرة",
+    "timesAway_other": "ابتعد {{count}} مرة",
+    "timeAway": "الوقت خارج الدرس: {{time}}"
   },
   "library": {
     "search": "البحث حسب العنوان",

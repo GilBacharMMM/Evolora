@@ -41,6 +41,8 @@ interface ClassData {
   code: string
   joiningOpen: boolean
   sentBackWarnAt: number
+  awayWarnAt: number
+  language: { code: string; required: boolean } | null
   students: StudentRow[]
   assignments: AssignmentRow[]
   openings: { id: string; lessonId: string; everyone: boolean; studentIds: string[] }[]
@@ -76,6 +78,8 @@ export function TeacherClass({ classId }: { classId: string }) {
         code: d.code || '',
         joiningOpen: d.joiningOpen !== false,
         sentBackWarnAt: Number.isInteger(d.sentBackWarnAt) ? d.sentBackWarnAt : 10,
+        awayWarnAt: Number.isInteger(d.awayWarnAt) ? d.awayWarnAt : 5,
+        language: d.language && d.language.code ? { code: d.language.code, required: d.language.required === true } : null,
         students: list.docs
           .map((s) => ({ id: s.id, name: s.data().name || '', email: s.data().email || '', removed: s.data().removed === true }))
           .sort((a, b) => a.name.localeCompare(b.name)),
@@ -131,7 +135,9 @@ export function TeacherClass({ classId }: { classId: string }) {
         <CodeBox classId={classId} code={data.code} joiningOpen={data.joiningOpen} onChange={load} />
       </section>
 
+      <ClassLanguage classId={classId} value={data.language} onChange={load} />
       <SentBackSetting classId={classId} value={data.sentBackWarnAt} onChange={load} />
+      <SentBackSetting classId={classId} value={data.awayWarnAt} onChange={load} kind="away" />
 
       <section className="card list-card-padded" aria-labelledby="students-title">
         <h2 id="students-title" className="section-title">
@@ -833,7 +839,9 @@ function Teachers({ classId, names, ids, onAdded }: { classId: string; names: st
 
 // The number of answers sent back for corrections, in one course, at which the class dashboard
 // warns (REQ-5.34, D-75). Default 10.
-function SentBackSetting({ classId, value, onChange }: { classId: string; value: number; onChange: () => Promise<void> }) {
+// The same box sets the number of times away in a lesson above which a student is "away a lot"
+// (REQ-5.33, D-73). Default 5.
+function SentBackSetting({ classId, value, onChange, kind = 'sentBack' }: { classId: string; value: number; onChange: () => Promise<void>; kind?: 'sentBack' | 'away' }) {
   const { t } = useTranslation()
   const [n, setN] = useState(String(value))
   const [busy, setBusy] = useState(false)
@@ -843,7 +851,7 @@ function SentBackSetting({ classId, value, onChange }: { classId: string; value:
     if (!Number.isInteger(limit) || limit < 1 || limit > 100) return setState('bad')
     setBusy(true)
     try {
-      await call('setSentBackLimit', { classId, limit })
+      await call(kind === 'away' ? 'setAwayLimit' : 'setSentBackLimit', { classId, limit })
       await onChange()
       setState('saved')
     } catch {
@@ -853,14 +861,14 @@ function SentBackSetting({ classId, value, onChange }: { classId: string; value:
     }
   }
   return (
-    <section className="card list-card-padded" aria-labelledby="sentback-title">
-      <h2 id="sentback-title" className="section-title">
-        {t('teacher.sentBackTitle')}
+    <section className="card list-card-padded" aria-labelledby={`${kind}-title`}>
+      <h2 id={`${kind}-title`} className="section-title">
+        {t(kind === 'away' ? 'teacher.awayTitle' : 'teacher.sentBackTitle')}
       </h2>
-      <p className="muted small-note">{t('teacher.sentBackExplain')}</p>
+      <p className="muted small-note">{t(kind === 'away' ? 'teacher.awayExplain' : 'teacher.sentBackExplain')}</p>
       <div className="inline-form">
         <label>
-          <span>{t('teacher.sentBackLabel')} </span>
+          <span>{t(kind === 'away' ? 'teacher.awayLabel' : 'teacher.sentBackLabel')} </span>
           <input type="number" min={1} max={100} value={n} onChange={(e) => { setN(e.target.value); setState('idle') }} className="number-input" />
         </label>
         <button type="button" className="button secondary" disabled={busy || n === String(value)} onClick={() => void save()}>
@@ -868,6 +876,67 @@ function SentBackSetting({ classId, value, onChange }: { classId: string; value:
         </button>
         {state === 'saved' && <span className="notice good" role="status">{t('teacher.sentBackSaved')}</span>}
         {state === 'bad' && <span className="error" role="alert">{t('teacher.sentBackBad')}</span>}
+        {state === 'failed' && <span className="error" role="alert">{t('teacher.sentBackFailed')}</span>}
+      </div>
+    </section>
+  )
+}
+
+// The class language (REQ-9.5, D-76): none, or Hebrew, Arabic or English; students must use it
+// inside the class, or may choose their own.
+function ClassLanguage({ classId, value, onChange }: { classId: string; value: { code: string; required: boolean } | null; onChange: () => Promise<void> }) {
+  const { t } = useTranslation()
+  const [code, setCode] = useState(value?.code || '')
+  const [required, setRequired] = useState(value?.required ?? true)
+  const [busy, setBusy] = useState(false)
+  const [state, setState] = useState<'idle' | 'saved' | 'failed'>('idle')
+  const changed = code !== (value?.code || '') || (!!code && required !== (value?.required ?? true))
+  async function save() {
+    setBusy(true)
+    try {
+      await call('setClassLanguage', { classId, language: code || null, required })
+      await onChange()
+      setState('saved')
+    } catch {
+      setState('failed')
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <section className="card list-card-padded" aria-labelledby="class-language-title">
+      <h2 id="class-language-title" className="section-title">
+        {t('teacher.classLanguageTitle')}
+      </h2>
+      <p className="muted small-note">{t('teacher.classLanguageExplain')}</p>
+      <div className="inline-form">
+        <label>
+          <span>{t('teacher.classLanguageLabel')} </span>
+          <select value={code} onChange={(e) => { setCode(e.target.value); setState('idle') }}>
+            <option value="">{t('teacher.classLanguageNone')}</option>
+            {(['he', 'ar', 'en'] as const).map((l) => (
+              <option key={l} value={l}>
+                {t(`library.lang.${l}`)}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      {code && (
+        <fieldset className="radio-group">
+          <label>
+            <input type="radio" name="class-language-required" checked={required} onChange={() => { setRequired(true); setState('idle') }} /> {t('teacher.classLanguageMust')}
+          </label>
+          <label>
+            <input type="radio" name="class-language-required" checked={!required} onChange={() => { setRequired(false); setState('idle') }} /> {t('teacher.classLanguageMay')}
+          </label>
+        </fieldset>
+      )}
+      <div className="inline-form">
+        <button type="button" className="button secondary" disabled={busy || !changed} onClick={() => void save()}>
+          {t('teacher.sentBackSave')}
+        </button>
+        {state === 'saved' && <span className="notice good" role="status">{t('teacher.sentBackSaved')}</span>}
         {state === 'failed' && <span className="error" role="alert">{t('teacher.sentBackFailed')}</span>}
       </div>
     </section>

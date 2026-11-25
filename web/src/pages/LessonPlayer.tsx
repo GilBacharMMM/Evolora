@@ -1,4 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { useClassLanguage } from '../i18n'
+import { requiredLanguage } from '../classwork'
 import { useTranslation } from 'react-i18next'
 import { doc, getDoc, onSnapshot } from 'firebase/firestore'
 import { httpsCallable } from 'firebase/functions'
@@ -16,6 +18,7 @@ import { QuestionCard } from '../lesson/QuestionCard'
 import { isFinished, type QuestionState } from '../lesson/answers'
 import type { Block, LessonVersion, Question } from '../lesson/types'
 import { TypeChip } from '../components/TypeChip'
+import { useLessonTime } from '../lessonTime'
 import { BackButton } from '../components/BackButton'
 
 // What the teacher did with an answer (REQ-5.12, 5.13, 5.15) and, when the student may see
@@ -115,6 +118,9 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   // Teachers always see grades; students only when the assignment shows them (REQ-5.22).
   const [showGrades, setShowGrades] = useState(role !== 'student')
   const [examInfo, setExamInfo] = useState<{ end: number | null; timer: boolean } | null>(null)
+  // A lesson given by a class that requires its language is shown in that language (REQ-9.5).
+  const [classLanguage, setClassLanguage] = useState<'he' | 'ar' | 'en' | null>(null)
+  useClassLanguage(classLanguage)
   useEffect(() => {
     if (role !== 'student' || !user) return
     let live = true
@@ -122,6 +128,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
       .then((c) => {
         if (!live) return
         const a = lessonAccess(c, lessonId)
+        setClassLanguage(requiredLanguage(c, { lessonId }))
         setShowGrades(a.showGrades)
         if (a.exam) setExamInfo({ end: a.exam.end && Date.now() < a.exam.end ? a.exam.end : null, timer: a.exam.timer })
         setGate(a.access === 'locked' && a.lockedByExam ? 'lockedByExam' : a.access === 'locked' && a.lockedByDue ? 'lockedByDue' : a.access === 'locked' && a.lockedByNotes ? 'lockedByNotes' : a.access)
@@ -215,6 +222,9 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const visible = stop === -1 ? shown : shown.slice(0, stop + 1)
   const finished = lesson !== null && stop === -1
   const activeTopic = visible.length ? (visible[visible.length - 1] as Item & { topic?: number }).topic : undefined
+
+  // Time on the lesson and time away (REQ-5.33): measured for students until the lesson is finished.
+  useLessonTime(lessonId, role === 'student' && gate === 'open' && progress !== null && !progress.finished)
 
   // Reaching the end of a lesson without questions marks it finished (D-55); lessons with
   // questions are marked by the checking service with the last answer.

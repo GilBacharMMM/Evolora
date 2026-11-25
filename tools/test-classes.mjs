@@ -13,7 +13,7 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { arrayRemove, collection, deleteDoc, doc, getDoc, getDocs, initializeFirestore, query, setDoc, updateDoc, where } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { ROOT, connect, finish, siteConfig, testPassword } from './lib/connect.mjs'
-import { answerWithRecording, soloTeacher } from './lib/test-helpers.mjs'
+import { answerWithRecording, soloTeacher, agreeForTest } from './lib/test-helpers.mjs'
 import { ALPHABET, checkCharacter, makeCode } from '../functions/classcode.js'
 
 setLogLevel('silent')
@@ -54,6 +54,8 @@ async function visibleAssignments(db, classId, uid) {
 }
 
 const loader = await connect('test')
+// Test Student 7 must have agreed to the terms of use to be served (D-76).
+const restoreTerms7 = await agreeForTest(loader.db, 'test-student-7')
 const ldb = loader.db
 const S = { four: 'test-student-4', five: 'test-student-5', six: 'test-student-6', seven: 'test-student-7', three: 'test-student-3' }
 for (const uid of Object.values(S)) await deleteDoc(doc(ldb, 'joinAttempts', uid))
@@ -205,4 +207,5 @@ try {
 }
 
 console.log(`\n${count - failures} of ${count} class tests passed.`)
+await restoreTerms7()
 finish(failures ? 1 : 0)

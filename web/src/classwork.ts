@@ -56,6 +56,8 @@ export interface SingleWork extends WorkLesson {
 }
 
 export interface ClassWork {
+  // The class's language, and whether students must use it inside the class (REQ-9.5)
+  language?: { code: 'he' | 'ar' | 'en'; required: boolean } | null
   // An exam locks all of Evolora right now (REQ-5.23): messages are hidden too.
   lockedAll?: boolean
   // A new message from the class's teachers (REQ-5.16)
@@ -261,7 +263,8 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
         }
         const convo = await getDoc(doc(db, 'conversations', `${classId}__${uid}`)).catch(() => null)
         const unreadMessage = !!convo?.exists() && convo.data().unreadByStudent === true
-        return { unreadMessage, id: classId, name: data.name, teacherNames: data.teacherNames || [], color: data.color || '#0E6B73', courses, singles }
+        const lang = data.language && ['he', 'ar', 'en'].includes(data.language.code) ? { code: data.language.code, required: data.language.required === true } : null
+        return { language: lang, unreadMessage, id: classId, name: data.name, teacherNames: data.teacherNames || [], color: data.color || '#0E6B73', courses, singles }
       } catch {
         return null
       }
@@ -271,6 +274,15 @@ export async function loadClasswork(uid: string, classIds: string[]): Promise<Cl
   lockForNotes(list)
   lockForExam(list)
   return list
+}
+
+// The language a class requires (REQ-9.5), for a class page, or for a lesson given by a class
+// that requires one (the first such class).
+export function requiredLanguage(classes: ClassWork[] | null, where: { classId?: string; lessonId?: string }): 'he' | 'ar' | 'en' | null {
+  if (!classes) return null
+  const gives = (c: ClassWork, l: string) => [...c.courses.flatMap((k) => k.items.flatMap((it) => [it, ...it.practice])), ...c.singles].some((x) => x.lessonId === l)
+  const c = classes.find((x) => x.language?.required && (where.classId ? x.id === where.classId : where.lessonId ? gives(x, where.lessonId) : false))
+  return c?.language?.code ?? null
 }
 
 function allLessons(classes: ClassWork[]): WorkLesson[] {

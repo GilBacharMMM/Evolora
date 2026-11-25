@@ -1,6 +1,6 @@
 // Small helpers shared by the end-to-end tests.
 
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { deleteField, doc, getDoc, setDoc, updateDoc } from 'firebase/firestore'
 import { getStorage, ref, uploadBytes } from 'firebase/storage'
 
 // Answers an audio question (REQ-6.6) with a tiny stand-in recording, the way the website does:
@@ -19,4 +19,15 @@ export async function soloTeacher(ldb, classId) {
   const keep = before.teacherIds.indexOf('test-teacher-1')
   await updateDoc(ref_, { teacherIds: ['test-teacher-1'], teacherNames: [before.teacherNames[keep] || 'Test Teacher 1'] })
   return () => updateDoc(ref_, { teacherIds: before.teacherIds, teacherNames: before.teacherNames })
+}
+
+// Test Student 7 hasn't agreed to the terms of use (D-75), and the checking service refuses work
+// until they do (D-76). Tests that use them agree for them, and put it back afterwards.
+export async function agreeForTest(ldb, uid) {
+  const terms = await getDoc(doc(ldb, 'terms', 'current'))
+  if (!terms.exists()) return async () => {}
+  const userRef = doc(ldb, 'users', uid)
+  const before = (await getDoc(userRef)).data()?.termsAccepted ?? null
+  await setDoc(userRef, { termsAccepted: { version: terms.data().version, at: Date.now(), by: 'test' } }, { merge: true })
+  return () => setDoc(userRef, { termsAccepted: before ?? deleteField() }, { merge: true })
 }

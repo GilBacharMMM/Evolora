@@ -12,6 +12,7 @@ import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
 import { collection, deleteDoc, doc, getDoc, getDocs, initializeFirestore, query, where } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { ROOT, connect, finish, siteConfig, testPassword } from './lib/connect.mjs'
+import { agreeForTest } from './lib/test-helpers.mjs'
 
 setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
@@ -37,6 +38,8 @@ async function as(uid, fn) {
 
 // The loading program reads the answers, to know what is right and wrong.
 const loader = await connect('test')
+// Test Student 7 must have agreed to the terms of use to be served (D-76).
+const restoreTerms7 = await agreeForTest(loader.db, 'test-student-7')
 const lesson = (await getDoc(doc(loader.db, 'lessons', LESSON))).data()
 const version = (await getDoc(doc(loader.db, 'lessons', LESSON, 'versions', String(lesson.currentVersion)))).data()
 const secret = (await getDoc(doc(loader.db, 'lessons', LESSON, 'versions', String(lesson.currentVersion), 'secret', 'answers'))).data().questions
@@ -121,4 +124,5 @@ for (const uid of ['test-student-2', 'test-student-3', 'test-student-4']) await 
 for (const f of (await getDocs(query(collection(loader.db, 'flags'), where('lessonId', '==', LESSON)))).docs) await deleteDoc(f.ref)
 
 console.log(`\n${count - failures} of ${count} checking tests passed.`)
+await restoreTerms7()
 finish(failures ? 1 : 0)

@@ -11,6 +11,8 @@
 //   check-again questions and grading
 //   instructions, saved where students can never read them (D-17).
 
+// Explanations of words (REQ-4.29): "[[word|explanation]]" stays inside the text as written; the
+// lesson player shows it. The lesson check (tools/check-lesson.mjs) makes sure it is well formed.
 import fs from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'

@@ -41,6 +41,8 @@ REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-3.
 
 **Terms of use and sent-back count (2026-11-25):** REQ-10.8 terms of use (with a draft text, version 0.1) and REQ-5.34 the sent-back count with its warning are on the test site, waiting for Gil's checks (D-75). The real text of the terms still needs Gil's approval.
 
+**Built early, without new decisions (2026-11-25, D-76):** REQ-5.33 time on lessons and time away (stage 2), REQ-4.29 word explanations (stage 2), REQ-9.5 class language (later), and the checking service refusing work before the terms of use are agreed. On the test site, waiting for Gil's checks.
+
 **Priority 3 progress:** on the test site (2026-11-23): REQ-5.29 success rate per question, 4.9 library search, 5.21 archiving courses, 9.6 teacher changes a student's language, 5.5 co-teachers (D-62), 5.16 and 10.2 messages, 6.5 redo (D-63), marking up answers in 5.12 (D-64), 4.7 lesson versions (already worked since part 2; now checked by an automatic test), and 4.26 and 5.23 exams with time windows, timer and locks (D-65). Audio answers and comments (6.6, 5.13) added with Gil's choices (D-67). From stage 2, drag-and-drop questions (part of 4.12, D-70), at Gil's request. Still open in priority 3: email features (5.3, 5.31, 10.7), which need an email account.
 
 **Done when:** the demo lessons (Archimedes, circles, circles practice) are loaded, Gil assigns them to a real class, the students complete them, and Gil follows them on the dashboard and grades their open answers.

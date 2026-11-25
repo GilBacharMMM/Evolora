@@ -100,6 +100,13 @@ function checkLesson(target) {
   for (; i < lines.length; i++) {
     const text = lines[i]
     const n = i + 1
+    // Explanations of words (REQ-4.29): [[word|explanation]], on one line.
+    if ((text.match(/\[\[/g) || []).length !== (text.match(/\]\]/g) || []).length) err(n, 'A word explanation starts with "[[" but doesn\'t end with "]]" on the same line (or the other way round). Write it as [[word|explanation]].')
+    for (const m of text.matchAll(/\[\[(.*?)\]\]/g)) {
+      const parts = m[1].split('|')
+      if (parts.length !== 2 || !parts[0].trim() || !parts[1].trim()) err(n, `Word explanation "[[${m[1].slice(0, 40)}]]" must be written [[word|explanation]]: the word, one "|", then the explanation.`)
+      else if (parts[1].length > 300) warn(n, `The explanation of "${parts[0].trim()}" is long (${parts[1].length} characters); keep it to a sentence or two.`)
+    }
     if (/^# /.test(text)) {
       const t = text.match(/^# \[TOPIC\s*(\d+)\s*:\s*(.+)\]\s*$/)
       if (t) { startTopic(t[2].trim(), n); inNotes = false } else inNotes = true

@@ -72,6 +72,13 @@ service cloud.firestore {
       allow delete: if isLoader();
     }
 
+    // Time on each lesson (REQ-5.33): the student reads their own; teachers see it through the
+    // checking service; only the checking service writes it.
+    match /lessonTime/{id} {
+      allow read: if isLoader() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow write: if isLoader();
+    }
+
     // The terms of use (REQ-10.8): anyone can read them, even before signing in.
     match /terms/{id} {
       allow read: if true;

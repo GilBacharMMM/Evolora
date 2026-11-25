@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Ui } from './Blocks'
+import { setVideoPlaying } from '../lessonTime'
 
 // A YouTube video inside the lesson (REQ-4.23, D-32): YouTube's own player, in its
 // privacy-enhanced mode, playing only from the start time to the end time when they are set.
@@ -43,6 +44,8 @@ export function VideoPlayer({ youtubeId, title, source, start, end }: { youtubeI
   const { t } = useTranslation()
   const box = useRef<HTMLDivElement>(null)
   const [blocked, setBlocked] = useState(false)
+  // A playing video counts as working on the lesson (REQ-5.33).
+  const playId = useRef(Math.random().toString(36)).current
   const watch = `https://www.youtube.com/watch?v=${youtubeId}${start ? `&t=${start}s` : ''}`
 
   useEffect(() => {
@@ -61,6 +64,7 @@ export function VideoPlayer({ youtubeId, title, source, start, end }: { youtubeI
           videoId: youtubeId,
           playerVars,
           events: {
+            onStateChange: (e: { data: number }) => setVideoPlaying(playId, e.data === 1),
             // 101 and 150: the owner doesn't allow the video inside other websites.
             onError: (e: { data: number }) => {
               if (e.data === 101 || e.data === 150 || e.data === 100) setBlocked(true)
@@ -71,9 +75,10 @@ export function VideoPlayer({ youtubeId, title, source, start, end }: { youtubeI
       .catch(() => live && setBlocked(true))
     return () => {
       live = false
+      setVideoPlaying(playId, false)
       player?.destroy()
     }
-  }, [youtubeId, start, end])
+  }, [youtubeId, start, end, playId])
 
   return (
     <figure className="block-video">
