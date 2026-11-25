@@ -630,7 +630,17 @@ When sending back, the teacher marks either (Gil, D-68):
 
 In either case, a lesson the student is in the middle of isn't stopped.
 
+**Correcting an open answer (Gil, D-77):**
+- The student sees their last answer, with the teacher's marks and comment, under "Your last answer was:". It can't be edited.
+- Below it is an empty box: "Write a new answer, based on your teacher's corrections."
+- The student sends the new answer once, and it waits for the teacher's grade, as the first time.
+- On the grading page, the teacher sees both answers, one above the other: the last answer with its marks, which can't be changed any more, and the new answer, which the teacher marks up and grades.
+- If it still needs work, the teacher can send it back again; each time is counted (REQ-5.34).
+
 *Acceptance criteria:*
+- [ ] As a teacher, mark up and comment on an open answer, then send it back for corrections. As the student, the question shows "Your last answer was:" with the marks and comment, which can't be edited, and an empty box below.
+- [ ] As the student, send the new answer: it waits for grading, with no second attempt.
+- [ ] As the teacher, the grading page shows the last answer with its marks (not editable) above the new answer, which can be marked up and graded.
 - [ ] After a lesson is sent back for review, the student sees the comments, and new lessons are locked until they open them.
 - [ ] After questions are sent back for corrections, the student can answer those questions again, and the teacher sees the new answers to grade.
 
