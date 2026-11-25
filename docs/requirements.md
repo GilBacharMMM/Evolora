@@ -715,6 +715,7 @@ For one student in one class, the teacher sees (Gil, Q-34):
 - their progress in each course, and their grades
 - the "not yet mastered" list, with red flags to clear (REQ-5.25, 5.19)
 - how many help tips they opened (REQ-6.15)
+- how many times their answers were sent back for corrections (REQ-5.34), and, in stage 2, the time on each lesson and the time away (REQ-5.33)
 - their level, with − and + buttons, and the suggested change, if any (REQ-5.18)
 - a box to **message the student** (REQ-5.16)
 - **teacher notes**: private notes about the student, seen only by the class's teachers, never by the student (for example, "talked with the parents; needs more time on fractions")
@@ -757,6 +758,40 @@ This is different from REQ-4.6, which is about a lesson's creator previewing it 
 - [ ] Leave in the middle and press "Try the lesson" again: it starts from the beginning.
 - [ ] On any question, press **Skip**: the lesson moves on. Press **Show answer**: the correct answer and the full solution appear.
 - [ ] Signed in as a student, the lesson has no Skip or Show answer buttons.
+
+**REQ-5.33: Time on each lesson, and time away** (Stage 2; Gil, Q-44)
+For each student and each lesson, Evolora measures:
+- **Total time**: from the moment the student started the lesson to the moment they finished it, in real-world time, even when it took several sittings.
+- **Net time**: only the time the student was actually working. The counter stops when the student is **away** and starts again when they come back.
+
+The student counts as **away** when:
+- the Evolora tab is not the one in front (another tab, or another app, is in front), or the browser is closed or minimised, or the computer is closed or asleep; or
+- there has been no mouse, keyboard or touch screen use for **2 minutes**. While a video or audio in the lesson is playing, the student is not away for this reason (only while the tab is in front).
+
+Evolora also counts the **times away** (every time, however short) and the **time away** in each lesson. A student who keeps wandering off is not well concentrated, so the teacher should see it (Gil).
+
+- **Where the teacher sees it:** on the student page (REQ-5.28), for each lesson: total time, net time, times away and time away. On the class dashboard (REQ-5.10), a small sign next to a student who was **away a lot** in a lesson.
+- **Away a lot:** more times away in one lesson than a number the teacher sets for the class; the default is **5**. Being away a lot also gives the teacher a **red flag** for that student and lesson, cleared like any red flag (REQ-5.19).
+- Evolora can't know what the student did while away (which tab or app), and doesn't try to.
+- Students are told about this in a general note in the terms of use (Gil).
+
+*Acceptance criteria:*
+- [ ] As a student, work on a lesson for 5 minutes, close the laptop for 10 minutes, then finish it in 5 more minutes. As the teacher, the student page shows a total time of about 20 minutes and a net time of about 10 minutes.
+- [ ] As a student, switch to another tab 3 times during a lesson, for a few seconds each time: the student page shows 3 times away.
+- [ ] As a student, leave the lesson open without touching anything for 3 minutes: that counts as one time away, and the net time grows by only about 2 minutes.
+- [ ] As a student, watch a 4-minute video in the lesson without touching anything: no time away is counted.
+- [ ] As a student, leave the tab 6 times in one lesson (default number 5): the class dashboard shows the "away a lot" sign and a red flag for that student.
+- [ ] As the teacher, change the number to 10 for the class: the same student no longer gets the sign for a new lesson with 6 times away.
+
+**REQ-5.34: Count of answers sent back for corrections** (Priority 2: should have; Gil, Q-45)
+For each student, Evolora counts how many times the teacher sent their answers back for corrections (REQ-5.14). A high number shows a problem, so the teacher should notice it.
+- **Student page** (REQ-5.28): the count for each lesson and the total for each course.
+- **Class dashboard** (REQ-5.10): the total per course, and a warning sign when it reaches a number the teacher sets for the class; the default is **10** in one course.
+
+*Acceptance criteria:*
+- [ ] As a teacher, send a student's answers back for corrections twice in one lesson and once in another lesson of the same course: the student page shows 2 and 1, and a course total of 3.
+- [ ] With the default number (10), the warning sign appears on the class dashboard when the student reaches 10 in one course, not before.
+- [ ] As the teacher, change the number to 3 for the class: the warning sign appears for that student at once.
 
 **REQ-5.17: Google Classroom connection** (Priority: Later)
 Import class lists from Google Classroom, and possibly post assignments and grades back to it. See the advice in the open questions summary.
@@ -1142,10 +1177,7 @@ The test site can be filled with a standard set of test data with one command, b
 
 ### Still open
 
-| # | Question | Notes |
-|---|---|---|
-| Q-44 | **Idea from Gil (2026-11-25), not yet a requirement:** the teacher's dashboard shows, for each student and lesson, how long the student spent on it: **total time** (from starting the lesson to finishing it, in real-world time, even across several sittings) and **net time** (only the time the student was actually working: the counter stops when they leave the computer or switch away, and starts again when they come back). Can Evolora also tell how much of the time the lesson was in front of the student, and not another tab or app? | Claude's answer: yes, partly. Evolora can know when its own tab is hidden or not in use (another tab or app is in front) and when there has been no mouse, keyboard or touch for a few minutes. It cannot know *what else* the student was doing. To decide with Gil: priority, how many idle minutes stop the counter, whether students are told that time is measured, and whether "time away" is shown to the teacher. |
-| Q-45 | **Idea from Gil (2026-11-25), not yet a requirement:** for each student, a counter of how many times the teacher sent an answer back for corrections (REQ-5.14). A high number signals a problem, so the teacher should notice it. | To decide with Gil: is it shown on the class dashboard (a column, or a warning colour above some number), on the student page (REQ-5.28), or both? Is it counted per lesson, per course or overall? Does a high number raise a red flag (REQ-5.19)? Should the student see it? |
+No open questions right now (2026-11-25).
 
 ### Answered (2026-11-20)
 
@@ -1173,6 +1205,8 @@ The test site can be filled with a standard set of test data with one command, b
 | Q-37 | Notifications | Inside Evolora, plus an optional daily email. (REQ-5.31) |
 | Q-42 | Priority of teacher tries a lesson | Priority 2: should have (Gil, 2026-11-23). (REQ-5.32) |
 | Q-43 | Shortcuts while trying | Like a student, plus Skip and Show answer buttons. (REQ-5.32) |
+| Q-44 | Time on lesson | Total and net time, times away and time away. Away = tab not in front, or no use for 2 minutes (a playing video counts as use); every time away counts; "away a lot" above a number the teacher sets (default 5) gives a sign and a red flag; stage 2 (Gil, 2026-11-25). (REQ-5.33) |
+| Q-45 | Sent back for corrections | Counted per lesson and per course; warning above a number the teacher sets (default 10 in a course); priority 2 (Gil, 2026-11-25). (REQ-5.34) |
 | Q-38 | Level suggestions | Average of the last 4 weeks, after at least 5 graded lessons. (REQ-5.18) |
 | Q-39 | Exporting grades | The school uses Smart School; a CSV download is enough. (REQ-5.11) |
 | Q-40 | Devices | Chromebooks and Windows and Mac laptops, in Google Chrome only; other browsers (Edge, Safari) are blocked for now with a "please use Chrome" message; phones much later, maybe never. Level suggestions confirmed. (REQ-11.1, 5.18) |

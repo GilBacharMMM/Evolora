@@ -53,6 +53,7 @@ REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-3.
 | REQ-5.9 | Due dates and assignment settings |
 | REQ-5.22 | Hiding grades from students |
 | REQ-5.14, 5.15 | Send back for corrections; teacher changes grades |
+| REQ-5.34 | Count of answers sent back for corrections, with a warning |
 | REQ-5.25, 5.28 | "Not yet mastered" list; student page with teacher notes |
 | REQ-6.13 | Going back to finished lessons |
 | REQ-5.32 | Teacher tries a lesson before and after giving it, with Skip and Show answer |
@@ -92,6 +93,7 @@ Each AI item first gets a cost estimate for Gil's approval.
 | REQ-5.17 | Google Classroom connection |
 | REQ-6.7 | Public courses without a teacher |
 | REQ-9.5 | Class language setting |
+| REQ-5.33 | Time on each lesson (total and net), times away, "away a lot" sign and red flag |
 | REQ-7.6 | Teacher sees a student's answered lesson, with the AI conversations |
 | REQ-7.7 | AI summary of a student's difficulties on the student card |
 | REQ-4.27 | Teachers send comments to the lesson's creator; email and suggestions inbox |

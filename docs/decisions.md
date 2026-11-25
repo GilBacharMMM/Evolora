@@ -810,3 +810,14 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 1. A lesson taken out of a course stays open to classes that already had it, so no student loses their work (Claude's suggestion, for Gil to confirm).
 **Reason:** Teachers expect a course to be one thing: when it grows, their classes get the new part.
 **Affects:** REQ-4.10, tools/load.mjs
+
+### D-73: Time on lesson, time away, and the sent-back count
+**Date:** 2026-11-25 · **Status:** Decided · **Decided by:** Gil
+**Context:** Teachers want to notice students who aren't concentrating, or who keep needing corrections.
+**Decision:**
+- REQ-5.33 (stage 2): total and net time per lesson. The student is away when the Evolora tab isn't in front, or after 2 minutes without mouse, keyboard or touch (a playing video counts as use). Every time away is counted. Above a number the teacher sets (default 5), the teacher sees a sign and gets a red flag. Students are told in the terms of use.
+- REQ-5.34 (priority 2): count of answers sent back for corrections, per lesson and per course, with a warning above a number the teacher sets (default 10 in a course).
+
+**Options considered:** count every switch away, or only those over 10 seconds (Gil: every switch); a warning sign only, or also a red flag (Gil: also a red flag); the sent-back count in total only, or per lesson and per course (per lesson and per course).
+**Reason:** A student who keeps wandering off is not well concentrated, and many corrections show a problem; the teacher should see both.
+**Affects:** REQ-5.33, REQ-5.34, REQ-5.10, REQ-5.28
