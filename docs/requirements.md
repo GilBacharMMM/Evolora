@@ -1251,7 +1251,9 @@ The test site can be filled with a standard set of test data with one command, b
 
 ### Still open
 
-No open questions right now (2026-11-25).
+| # | Question | Notes |
+|---|---|---|
+| Q-47 | Suggested level changes (REQ-5.18): when is a student's average "well above or below what fits their level"? | Gil: to be decided later (D-61, point 3). Until then only the 10% rule is built: after 5 graded lessons in 4 weeks, the weakest 10% of the class are suggested level 1 and the strongest 10% level 3. |
 
 ### Answered (2026-11-20)
 

@@ -690,7 +690,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-5.8, REQ-5.9, REQ-5.10, REQ-6.1, D-55, D-57
 
 ### D-61: Points the requirements leave open in levels, random order and trying lessons
-**Date:** 2026-11-23 · **Status:** Points 1, 2, 4, 5 and 6 approved by Gil (2026-11-25); point 3 waiting for Gil · **Decided by:** Claude, while building REQ-4.18, 5.18, 6.10, 4.19, 4.15 and 5.32
+**Date:** 2026-11-23 · **Status:** Points 1, 2, 4, 5 and 6 approved by Gil (2026-11-25); point 3 to be decided later (Gil: TBD); the 10% rule stays as built until then · **Decided by:** Claude, while building REQ-4.18, 5.18, 6.10, 4.19, 4.15 and 5.32
 **Decision:**
 1. **A question without a level counts as level 1**; a student without a level set is at level 2 (REQ-5.18). A student in two classes that both have the lesson gets their higher level.
 2. **Lowering a student's level** doesn't take away questions they already answered; it applies from the next question (REQ-5.18).
