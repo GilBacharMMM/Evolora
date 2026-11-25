@@ -96,17 +96,21 @@ function ImageBlock({ block }: { block: Extract<Block, { type: 'image' }> }) {
     }
   }, [block.storagePath])
 
+  // The picture's description for screen readers: the words only, without their explanations.
+  const plainCaption = block.caption.replace(/\[\[([^|\]]+)\|[^\]]*\]\]/g, '$1')
+
   return (
     <figure className="block-image">
       {url ? (
-        <img src={url} alt={block.caption} loading="lazy" />
+        <img src={url} alt={plainCaption} loading="lazy" />
       ) : (
-        <div className="image-missing" role="img" aria-label={block.caption}>
+        <div className="image-missing" role="img" aria-label={plainCaption}>
           {block.storagePath && !failed ? t('lesson.imageLoading') : t('lesson.imageNotYet')}
         </div>
       )}
       <figcaption>
-        <span>{block.caption}</span>
+        {/* A caption can explain a word, like the rest of the lesson (REQ-4.29). */}
+        <Markdown text={block.caption} inline />
         {/* A small "Source" note; clicking it shows where the image comes from (REQ-4.15). */}
         {block.source && (
           <details className="image-source">
