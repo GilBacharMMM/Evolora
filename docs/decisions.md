@@ -821,3 +821,11 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Options considered:** count every switch away, or only those over 10 seconds (Gil: every switch); a warning sign only, or also a red flag (Gil: also a red flag); the sent-back count in total only, or per lesson and per course (per lesson and per course).
 **Reason:** A student who keeps wandering off is not well concentrated, and many corrections show a problem; the teacher should see both.
 **Affects:** REQ-5.33, REQ-5.34, REQ-5.10, REQ-5.28
+
+### D-74: Terms of use
+**Date:** 2026-11-25 · **Status:** Decided · **Decided by:** Gil
+**Context:** The pilot records minors' answers, grades and audio recordings, and in stage 2 their time on lessons and AI conversations. Students must be told.
+**Options considered:** who writes the text (Claude drafts and Gil approves, with a lawyer's check; or Gil or a lawyer writes it); agreeing once with "I agree", or only a link; parents' approval in the app, a letter from the school, or nothing for now; priority 1, 2 or stage 2.
+**Decision:** Claude drafts the terms in Hebrew, Arabic and English, Gil approves them, and a lawyer checks them before use beyond the pilot. Everyone presses "I agree" at first sign-in and again when the terms change, and a link is on every page. For the pilot, the school sends parents a letter (Claude drafts it). Priority 1.
+**Reason:** Real students shouldn't start before they know what is recorded; a letter to parents is enough for the pilot (D-13), and full compliance comes before wider use (REQ-10.6).
+**Affects:** REQ-10.8, REQ-5.33, REQ-6.6, REQ-10.5

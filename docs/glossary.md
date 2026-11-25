@@ -20,7 +20,7 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Trying a lesson** | A teacher going through a lesson as a student would, with extra Skip and Show answer buttons, without anything being recorded (REQ-5.32). Not the same as a creator's preview (REQ-4.6). | agreed |
 | **Net time / total time** | Total time: from starting a lesson to finishing it, in real-world time. Net time: only the time the student was working, not away (REQ-5.33). | agreed |
 | **Away** | The Evolora tab is not in front, or there has been no mouse, keyboard or touch use for 2 minutes (REQ-5.33). | agreed |
-| **Terms of use** | The short text everyone agrees to on first sign-in, saying what Evolora records, who sees it and how long it is kept (REQ-10.8). | proposed |
+| **Terms of use** | The short text everyone agrees to on first sign-in, saying what Evolora records, who sees it and how long it is kept (REQ-10.8). | agreed |
 | **Why it's right** | A short explanation the creator writes for a question, shown to the student after a correct answer (REQ-4.28). | agreed |
 | **Suggestions inbox** | The place in Evolora where a creator sees the comments teachers sent about their lessons (REQ-4.27). | agreed |
 | **Topic** | A part of a lesson about one subject (for example, "the area of a circle"), with a minimum number of questions every student must answer before moving on. The creator sets a default minimum; the teacher can change it when assigning. In Hebrew: נושא. | proposed |

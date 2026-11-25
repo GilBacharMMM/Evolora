@@ -1057,7 +1057,7 @@ The alert says who tried (their Google account), how many times and when. In sta
 - [ ] On the test site, a test student enters 11 wrong codes; the system admin sees an alert naming that student.
 - [ ] With made-up numbers on the test site (an average of 20 wrong codes a week, then 45 in one week), the system admin gets the weekly alert.
 
-**REQ-10.8: Terms of use** (Priority 1: must have; Claude's suggestion, Gil to confirm, Q-46)
+**REQ-10.8: Terms of use** (Priority 1: must have; Gil, Q-46)
 Evolora has short **terms of use**, written in plain language in Hebrew, Arabic and English, that say what Evolora records about students and teachers, who can see it, and how long it is kept. They include, as each feature arrives:
 - **Answers and grades**: every answer, attempt, hint and solution seen, and every grade and teacher comment. Only the student and their class's teachers see them (REQ-10.3).
 - **Audio recordings** (Gil, 2026-11-25): students' recorded answers (REQ-6.6) and teachers' recorded comments (REQ-5.13). Only the student and their class's teachers can listen to them. They are kept until the end of the school year and then deleted, or turned into text and deleted sooner (REQ-10.5).
@@ -1199,9 +1199,7 @@ The test site can be filled with a standard set of test data with one command, b
 
 ### Still open
 
-| # | Question | Claude's suggestion (written into REQ-10.8 until Gil decides) |
-|---|---|---|
-| Q-46 | Terms of use (REQ-10.8): who writes the text, how people agree, what about parents, and what priority? | Claude drafts and Gil approves, with a lawyer's check before wider use; "I agree" once at first sign-in and again when the terms change; a letter to parents from the school for the pilot; priority 1, since the pilot already records minors' answers and grades. |
+No open questions right now (2026-11-25).
 
 ### Answered (2026-11-20)
 
@@ -1231,6 +1229,7 @@ The test site can be filled with a standard set of test data with one command, b
 | Q-43 | Shortcuts while trying | Like a student, plus Skip and Show answer buttons. (REQ-5.32) |
 | Q-44 | Time on lesson | Total and net time, times away and time away. Away = tab not in front, or no use for 2 minutes (a playing video counts as use); every time away counts; "away a lot" above a number the teacher sets (default 5) gives a sign and a red flag; stage 2 (Gil, 2026-11-25). (REQ-5.33) |
 | Q-45 | Sent back for corrections | Counted per lesson and per course; warning above a number the teacher sets (default 10 in a course); priority 2 (Gil, 2026-11-25). (REQ-5.34) |
+| Q-46 | Terms of use | Claude drafts, Gil approves, a lawyer checks before wider use; "I agree" at first sign-in and when the terms change; a letter to parents from the school for the pilot; priority 1 (Gil, 2026-11-25). (REQ-10.8) |
 | Q-38 | Level suggestions | Average of the last 4 weeks, after at least 5 graded lessons. (REQ-5.18) |
 | Q-39 | Exporting grades | The school uses Smart School; a CSV download is enough. (REQ-5.11) |
 | Q-40 | Devices | Chromebooks and Windows and Mac laptops, in Google Chrome only; other browsers (Edge, Safari) are blocked for now with a "please use Chrome" message; phones much later, maybe never. Level suggestions confirmed. (REQ-11.1, 5.18) |
