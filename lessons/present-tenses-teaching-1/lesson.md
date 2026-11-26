@@ -131,6 +131,54 @@ Look at the verbs: "Emma **plays**" and "Emma **is reading**". Which one tells u
 - title: Simple Present Vs. Present Progressive – Grammar & Verb Tenses
 - source: Ellii (formerly ESL Library)
 
+> 🟦 Claude: I couldn't watch the video, so these two questions ask about what it teaches (when to use each tense), not about details only the video shows. Please check that they fit the video.
+
+## [QUESTION: multiple choice] [LEVEL 1] [NEW: suggested by Claude]
+
+After watching the video: we use the **Present Simple** for...
+
+- (✔) habits, routines and facts
+- things happening right now
+- things that happened yesterday
+- things that will happen tomorrow
+
+- Hint: Think of "every day", "usually" and "always". Which tense goes with them?
+- Solution: Habits, routines and facts. For example: "I brush my teeth every morning" and "The sun rises in the east."
+- Why it's right: Correct. Things that happen again and again, and things that are always true, use the Present Simple.
+- Tip: What is a routine? | Something you do regularly, in the same way, like eating breakfast every morning.
+
+### Check-again question [LEVEL 1]
+
+Which sentence is about a habit?
+
+- (✔) I play the piano every afternoon.
+- I am playing the piano now.
+- Look! She is playing the piano.
+- At the moment, they are playing the piano.
+
+## [QUESTION: multiple choice] [LEVEL 1] [NEW: suggested by Claude]
+
+After watching the video: we use the **Present Progressive** for...
+
+- (✔) actions happening now, or for a short time
+- facts that are always true
+- things we do every day
+- things we never do
+
+- Hint: Think of "now", "right now" and "at the moment". Which tense goes with them?
+- Solution: Actions happening now, or for a short time. For example: "I am eating breakfast now."
+- Why it's right: Correct. The Present Progressive (am/is/are + verb-ing) is for actions in progress now, or temporary situations.
+- Tip: What is a temporary situation? | Something that is true only for a short time, like "This week, I am staying with my grandmother."
+
+### Check-again question [LEVEL 1]
+
+Which sentence is about something happening now?
+
+- (✔) Listen! The birds are singing.
+- Birds sing in the morning.
+- Birds have wings.
+- Birds usually sing in spring.
+
 ## [TABLE]
 
 | Present Simple | Present Progressive |
