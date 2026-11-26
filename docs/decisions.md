@@ -910,6 +910,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 - Then `- Hint:`, `- Solution:` and `- Why it's right:`, as in other questions.
 - One question uses one kind; the lesson check refuses a mix.
 **Reason:** one way of checking for all questions that have several parts (drag-and-drop and fill-in-the-blanks), so students and teachers learn it once.
+6. **Added 2026-11-26 (Gil):** fill-in-the-blanks and drag-and-drop questions count toward a topic's minimum (REQ-4.21), like multiple choice and number questions.
 **Affects:** new REQ-4.30, the lesson format, the lesson check, the lesson reader, the teacher kit, the Archimedes teaching lesson (three demo questions)
 
 ### D-79: Teachers' names on lessons only with their agreement

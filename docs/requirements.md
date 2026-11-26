@@ -296,6 +296,7 @@ Every lesson has a type, and students always see it marked on the lesson ("Teach
 A creator can divide a lesson into **topics** (for example, in the circles lesson: what a circle is, the circumference, the number π, the area). Every student must answer at least a **minimum number of questions correctly** in each topic before moving on to the next one, whatever their student level (REQ-6.10). A student who reaches the minimum moves on (Gil, Q-24). The details (Gil, Q-26):
 - The creator marks some questions in a topic as **extra practice**. Extra practice questions are asked, in order, only until the student reaches the minimum; students who have reached it skip them. All other questions, including challenge questions at levels 2 and 3, are always asked.
 - A correct answer to a check-again question counts toward the minimum.
+- Multiple choice, number, drag-and-drop and fill-in-the-blanks questions all count; a drag-and-drop or fill-in-the-blanks question counts as correct when it ends right, on any attempt (Gil, 2026-11-26).
 - Open and audio questions don't count, because the teacher grades them later.
 - If a student runs out of extra practice questions without reaching the minimum, they continue to the next topic, and the teacher gets a red flag.
 - Extra practice questions have a hint and a full solution, but they don't need a check-again question: the next extra practice question plays that part.
