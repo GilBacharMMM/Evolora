@@ -20,10 +20,11 @@ Evolora helps students learn on their own, guided by teachers. Creators build le
 The first users are 5 teachers and about 120 seventh-grade students at Gil's school, using Chromebooks and the school's Google accounts.
 
 **REQ-1.1: Open and shared** (Priority 2: should have)
-Every lesson in Evolora can be used by any teacher and copied and edited by any creator. The creator's name always stays attached to their work. Lessons are shared under the **CC BY-SA 4.0** licence (the Wikipedia licence). The software code is open source under the **AGPL-3.0** licence (a GNU licence for websites).
+Every lesson in Evolora can be used by any teacher and copied and edited by any creator. The creator's name always stays attached to their work. A creator's real name is shown only if they agree; Gil asks each pilot teacher before their first lesson is loaded. A teacher who doesn't agree is shown as "מורה אנונימי/ת" ("anonymous teacher" in English lessons), because lesson files are public on GitHub (Gil, D-79). Lessons are shared under the **CC BY-SA 4.0** licence (the Wikipedia licence). The software code is open source under the **AGPL-3.0** licence (a GNU licence for websites).
 
 *Acceptance criteria:*
 - [ ] Every lesson shows the name of its creator, and of the original creator if it is a copy.
+- [ ] A lesson by a teacher who didn't agree to be named shows "מורה אנונימי/ת" as its creator, and their name appears nowhere in the lesson file.
 - [ ] Every lesson shows that it is shared under CC BY-SA 4.0.
 - [ ] Before publishing a lesson for the first time, the creator is told that it will be shared under this licence.
 

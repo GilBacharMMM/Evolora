@@ -60,7 +60,7 @@ title: <course title>
 language: he
 subject: <subject>
 grade: <grade>
-creator: <the teacher's full name>
+creator: <the teacher's full name, or מורה אנונימי/ת>
 licence: CC BY-SA 4.0
 ---
 
@@ -90,7 +90,7 @@ title: <lesson title, in the lesson's language>
 language: he            (he = Hebrew, ar = Arabic, en = English)
 subject: <subject>
 grade: <grade, 7 to 12>
-creator: <the teacher's full name>
+creator: <the teacher's full name, or מורה אנונימי/ת>
 licence: CC BY-SA 4.0
 type: teaching lesson   (or: practice lesson, or: exam)
 minimum questions per topic: 3 (default; the teacher can change it when assigning)
@@ -225,6 +225,8 @@ Every image block has a `caption` that describes the image for students. Put ima
 When you draw an SVG, check how it looks (for example, by opening it in a browser and taking a screenshot) before using it. Hebrew and Arabic labels need `direction="rtl"`.
 
 ## Accuracy, safety and privacy
+
+- **The creator line:** ask the teacher whether they agree to have their name on the lesson, because lesson files are public. If they don't, write `creator: מורה אנונימי/ת` (`Anonymous teacher` in English lessons), and don't put their name anywhere else in the file.
 - **Check facts.** If you are not sure a fact in the teacher's material is correct, say so in a 🟦 comment and explain why. Don't change facts silently.
 - **Don't invent links or sources.** Only use video and website links that the teacher gave you or that you checked exist. If you can, check a YouTube link's title and channel.
 - **Age-appropriate content** for students aged 12 to 18.

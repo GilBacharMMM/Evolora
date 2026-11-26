@@ -8,7 +8,7 @@ Pilot teachers write lessons with the **lesson-writing kit** in [teacher-kit](te
 
 **Folder names** (Gil, 2026-11-22): each lesson folder is named `<topic>-teaching`, `<topic>-practice` or `<topic>-exam`, matching the lesson's type, in lowercase English with dashes. Lessons on the same topic share the topic part, so they sit together: for example `circles-teaching`, `circles-practice`, `circles-exam`. A second lesson of the same type gets a number: `circles-practice-2`. The lesson check refuses a folder whose name doesn't match its type.
 
-The top of the file has the lesson details (title, language, subject, grade, creator, licence, type: teaching lesson, practice lesson or exam, REQ-4.20, and the default minimum questions per topic, REQ-4.21).
+The top of the file has the lesson details (title, language, subject, grade, creator, licence, type: teaching lesson, practice lesson or exam, REQ-4.20, and the default minimum questions per topic, REQ-4.21). The creator is the teacher's real name only if the teacher agreed to be named; otherwise `creator: מורה אנונימי/ת` (`Anonymous teacher` in English lessons), because lesson files are public (D-79).
 
 A heading like `# [TOPIC 2: name]` starts a new topic (REQ-4.21). Every block after it, until the next topic, belongs to that topic.
 

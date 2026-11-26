@@ -911,3 +911,10 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 - One question uses one kind; the lesson check refuses a mix.
 **Reason:** one way of checking for all questions that have several parts (drag-and-drop and fill-in-the-blanks), so students and teachers learn it once.
 **Affects:** new REQ-4.30, the lesson format, the lesson check, the lesson reader, the teacher kit, the Archimedes teaching lesson (three demo questions)
+
+### D-79: Teachers' names on lessons only with their agreement
+**Date:** 2026-11-26 · **Status:** Decided · **Decided by:** Gil
+**Context:** Lesson files are public on GitHub, and each one names its creator. Gil doesn't mind being named, but other teachers might.
+**Options considered:** always the teacher's name; initials; the name only with agreement, otherwise "anonymous teacher".
+**Decision:** Gil asks each pilot teacher whether they agree to be named. If they agree, their full name is the creator. If not, the creator is "מורה אנונימי/ת" ("Anonymous teacher" in English lessons), and their name appears nowhere in the lesson file. The same goes for any other personal details (CLAUDE.md rule 7).
+**Affects:** REQ-1.1, lessons/README.md, the teacher kit
