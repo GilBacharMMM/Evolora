@@ -2,11 +2,11 @@
 
 > **⚠️ בבדיקה, לא סופי · Under research, not final · قيد البحث، غير نهائي**
 >
-> מסמך מחקר בעבודה. הוא לא מייצג החלטה, התחייבות או עמדה רשמית, ואינו ייעוץ משפטי. חלק מהפרטים הם השערות שעדיין לא אומתו מול משרד החינוך.
+> מסמך מחקר בעבודה. הוא לא מייצג החלטה, התחייבות או עמדה רשמית, ואינו ייעוץ משפטי. חלק מהפרטים הם השערות שעדיין לא אומתו מול משרד החינוך. **המסמך נכתב על סמך תחקיר של בינה מלאכותית (AI) בלבד, ואין להסתמך עליו בשום צורה חוקית או משפטית.**
 >
-> *Work-in-progress research. It is not a decision, a commitment, an official position or legal advice. Some details are unverified guesses.*
+> *Work-in-progress research. It is not a decision, a commitment, an official position or legal advice. Some details are unverified guesses.* ***This document is based solely on research done by AI, and must not be relied on in any legal way.***
 >
-> وثيقة بحث قيد العمل. لا تمثّل قرارًا أو التزامًا أو موقفًا رسميًا، وليست استشارة قانونية. بعض التفاصيل تخمينات لم يتم التحقق منها بعد.
+> وثيقة بحث قيد العمل. لا تمثّل قرارًا أو التزامًا أو موقفًا رسميًا، وليست استشارة قانونية. بعض التفاصيل تخمينات لم يتم التحقق منها بعد. **أُعدّت هذه الوثيقة استنادًا إلى بحث أجراه الذكاء الاصطناعي (AI) فقط، ولا يجوز الاعتماد عليها بأي شكل قانوني.**
 
 **טיוטת מחקר 0.1 · 26 בנובמבר 2026 · נכתב ע"י Claude בעבור גיל · מסמך מעקב**
 
@@ -416,8 +416,8 @@
 
 > **⚠️ בבדיקה, לא סופי · Under research, not final · قيد البحث، غير نهائي**
 >
-> מסמך מחקר בעבודה. הוא לא מייצג החלטה, התחייבות או עמדה רשמית, ואינו ייעוץ משפטי. חלק מהפרטים הם השערות שעדיין לא אומתו מול משרד החינוך.
+> מסמך מחקר בעבודה. הוא לא מייצג החלטה, התחייבות או עמדה רשמית, ואינו ייעוץ משפטי. חלק מהפרטים הם השערות שעדיין לא אומתו מול משרד החינוך. **המסמך נכתב על סמך תחקיר של בינה מלאכותית (AI) בלבד, ואין להסתמך עליו בשום צורה חוקית או משפטית.**
 >
-> *Work-in-progress research. It is not a decision, a commitment, an official position or legal advice. Some details are unverified guesses.*
+> *Work-in-progress research. It is not a decision, a commitment, an official position or legal advice. Some details are unverified guesses.* ***This document is based solely on research done by AI, and must not be relied on in any legal way.***
 >
-> وثيقة بحث قيد العمل. لا تمثّل قرارًا أو التزامًا أو موقفًا رسميًا، وليست استشارة قانونية. بعض التفاصيل تخمينات لم يتم التحقق منها بعد.
+> وثيقة بحث قيد العمل. لا تمثّل قرارًا أو التزامًا أو موقفًا رسميًا، وليست استشارة قانونية. بعض التفاصيل تخمينات لم يتم التحقق منها بعد. **أُعدّت هذه الوثيقة استنادًا إلى بحث أجراه الذكاء الاصطناعي (AI) فقط، ولا يجوز الاعتماد عليها بأي شكل قانوني.**
