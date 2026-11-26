@@ -803,7 +803,15 @@ export const lessonResults = onCallAgreed(async (request) => {
           { attempts: st.attempts || [], result: st.result, score: st.score, graded: !!st.graded, changedByTeacher: !!st.changedByTeacher, teacherComment: st.teacherComment || null, markup: st.markup || null, teacherAudio: st.teacherAudio || null, audioUrl: st.audioUrl || null, checkAgain: st.checkAgain ? { result: st.checkAgain.result } : null },
         ]),
       )
-      return { id: s.id, name: s.name, cell: lessonCell(pr), states, submitted: !!pr?.submitted, released: !!pr?.released, sentBack: pr?.sentBack || null, earlier: Object.fromEntries(Object.entries(pr?.history || {}).map(([q, h]) => [q, h.length])) }
+      return { id: s.id, name: s.name, cell: lessonCell(pr), states, submitted: !!pr?.submitted, released: !!pr?.released, sentBack: pr?.sentBack || null, earlier: Object.fromEntries(Object.entries(pr?.history || {}).map(([q, h]) => [q, h.length])),
+        // The last answer before it was sent back for corrections, with the teacher's marks (D-77).
+        previous: Object.fromEntries(
+          Object.entries(pr?.history || {}).map(([q, h]) => {
+            const last = h[h.length - 1] || {}
+            return [q, { answer: last.attempts?.length ? String(last.attempts[last.attempts.length - 1]) : '', markup: last.markup || null, teacherComment: last.teacherComment || null, teacherAudio: last.teacherAudio || null, audioUrl: last.audioUrl || null, score: last.score ?? null }]
+          }),
+        ),
+      }
     }),
   }
 })

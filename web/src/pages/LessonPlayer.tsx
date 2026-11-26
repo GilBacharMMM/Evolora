@@ -23,7 +23,42 @@ import { BackButton } from '../components/BackButton'
 
 // What the teacher did with an answer (REQ-5.12, 5.13, 5.15) and, when the student may see
 // grades (REQ-5.22, D-59), the question's marks.
-type Graded = QuestionState & { graded?: boolean; changedByTeacher?: boolean; teacherComment?: string | null; markup?: string | null; teacherAudio?: string | null }
+type Graded = QuestionState & { graded?: boolean; changedByTeacher?: boolean; teacherComment?: string | null; markup?: string | null; teacherAudio?: string | null; audioUrl?: string | null }
+
+// An open or audio answer sent back for corrections (REQ-5.14, D-77): the student sees their last
+// answer with the teacher's marks and comment, which can't be edited, and then writes a new one.
+function PreviousAnswer({ state }: { state: Graded }) {
+  const { t } = useTranslation()
+  const answer = String(state.attempts?.[state.attempts.length - 1] ?? '')
+  return (
+    <div className="previous-answer" role="note">
+      <span className="teacher-note-title">
+        <Ui>{t('lesson.lastAnswer')}</Ui>
+      </span>
+      {state.audioUrl ? (
+        <audio controls src={state.audioUrl} aria-label={t('lesson.lastAnswer')} />
+      ) : state.markup ? (
+        <MarkedAnswer original={answer} markup={state.markup} />
+      ) : (
+        <div className="marked-answer" dir="auto">
+          {answer}
+        </div>
+      )}
+      {state.teacherAudio && <audio controls src={state.teacherAudio} aria-label={t('audio.teacherComment')} />}
+      {state.teacherComment && (
+        <>
+          <span className="teacher-note-title">
+            <Ui>{t('lesson.teacherComment')}</Ui>
+          </span>
+          <p dir="auto">{state.teacherComment}</p>
+        </>
+      )}
+      <p className="previous-answer-next">
+        <Ui>{t('lesson.writeNewAnswer')}</Ui>
+      </p>
+    </div>
+  )
+}
 
 function TeacherNote({ state, showGrades }: { state: Graded | undefined; showGrades: boolean }) {
   const { t } = useTranslation()
@@ -74,6 +109,8 @@ type Item ={ kind: 'topic'; number: number; name: string } | { kind: 'block'; bl
 interface Progress {
   version?: number
   questions?: Record<string, QuestionState>
+  // Earlier answers, kept when questions are sent back for corrections (REQ-5.14)
+  history?: Record<string, Graded[]>
   topics?: Record<string, { correct: number; flagged?: boolean }>
   grade?: { percent: number | null; pending: boolean; points: number; outOf: number }
   finished?: boolean
@@ -222,6 +259,13 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const visible = stop === -1 ? shown : shown.slice(0, stop + 1)
   const finished = lesson !== null && stop === -1
   const activeTopic = visible.length ? (visible[visible.length - 1] as Item & { topic?: number }).topic : undefined
+
+  // An open answer sent back for corrections: the last one, with the teacher's marks, above the new box (D-77).
+  const previousFor = (q: Question) => {
+    const h = progress?.history?.[q.id]
+    if (trying || !h?.length || states[q.id]?.result || (q.kind !== 'open' && q.kind !== 'audio')) return null
+    return <PreviousAnswer state={h[h.length - 1]} />
+  }
 
   // Time on the lesson and time away (REQ-5.33): measured for students until the lesson is finished.
   useLessonTime(lessonId, role === 'student' && gate === 'open' && progress !== null && !progress.finished)
@@ -377,6 +421,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
                   trying={trying}
                   label={t('q.questionNumber', { number: numbers[it.block.id] })}
                   onState={(s) => setLocal((l) => ({ ...l, [(it.block as Question).id]: s }))}
+                  beforeAnswer={previousFor(it.block)}
                 />
               )}
               {trying && !isFinished(states[it.block.id]) && (

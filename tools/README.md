@@ -9,6 +9,7 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `admin.mjs` | System admin tasks (D-47): make someone a teacher or system admin (and put teachers in a school, D-69), take the role away, list everyone with their role, add schools and list them, give a course to a whole class. | REQ-2.1, 2.2, 5.7 |
 | `load-terms.mjs` | Checks the terms of use in the `terms` folder (Hebrew, Arabic and English, same version) and puts them on the test site. With `--agree-test-users`, marks every test user except Test Student 7 as agreed to that version (D-75). | REQ-10.8 |
 | `test-terms.mjs` | End-to-end test of the terms of use: anyone can read them, nobody can fake agreeing, agreeing is saved, and a new version needs agreeing again. | REQ-10.8 |
+| `test-corrections.mjs` | End-to-end test of correcting an open answer that was sent back: the last answer kept with its marks and comment, the new answer sent once, both on the grading page, and each sending back counted. | REQ-5.14, D-77 |
 | `test-time.mjs` | End-to-end test of time on lessons and time away (counting, limits, "away a lot", the red flag, the class number) and of the class language. | REQ-5.33, 9.5 |
 | `test-sent-back.mjs` | End-to-end test of the sent-back count: per lesson, per course, and the warning at the default number and at a number the teacher changes. | REQ-5.34 |
 | `fill-student-5.mjs` | Test Student 5 finishes the Archimedes and circles teaching lessons with random answers (right first time, on the 2nd attempt, or wrong), through the checking service, so written and audio answers wait for grading. The reset runs it too. | REQ-12.6 |
@@ -66,6 +67,7 @@ node tools/test-terms.mjs
 node tools/test-sent-back.mjs
 node tools/test-time.mjs
 node tools/test-student-5.mjs
+node tools/test-corrections.mjs
 ```
 
 The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.

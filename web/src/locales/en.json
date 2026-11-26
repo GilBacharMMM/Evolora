@@ -235,7 +235,9 @@
     "redo": "Redo the lesson",
     "redoConfirm": "Start the lesson again from the beginning? Your earlier answers are kept for your teacher.",
     "redoCounts": "You are redoing this lesson. The grade of this redo will replace the earlier one.",
-    "redoPractice": "You are redoing this lesson for practice. Your earlier grade stays."
+    "redoPractice": "You are redoing this lesson for practice. Your earlier grade stays.",
+    "lastAnswer": "Your last answer was:",
+    "writeNewAnswer": "Write a new answer, based on your teacher's corrections."
   },
   "test": {
     "switchUser": "Switch user",
@@ -433,7 +435,10 @@
     "timesAway_other": "away {{count}} times",
     "timeAway": "time away: {{time}}",
     "laterTry": "later attempt",
-    "flagDrag": "Drag-and-drop question {{question}}: every attempt failed"
+    "flagDrag": "Drag-and-drop question {{question}}: every attempt failed",
+    "previousAnswer": "The last answer (sent back for corrections)",
+    "previousComment": "Comment",
+    "newAnswer": "The new answer, to mark up and grade:"
   },
   "library": {
     "search": "Search by title",

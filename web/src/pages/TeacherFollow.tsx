@@ -9,6 +9,7 @@ import { Markdown } from '../lesson/Rich'
 import { ClassTabs } from '../components/ClassTabs'
 import { Messages } from '../components/Messages'
 import { TrackChangesBox } from '../components/TrackChangesBox'
+import { MarkedAnswer } from '../components/MarkedAnswer'
 import { Recorder, blobToBase64 } from '../components/Recorder'
 import { hasMarkup } from '../markup'
 import type { LessonType } from '../lesson/types'
@@ -886,6 +887,8 @@ interface Results {
     submitted?: boolean
     released?: boolean
     earlier: Record<string, number>
+    // The last answer before it was sent back for corrections (D-77)
+    previous?: Record<string, { answer: string; markup: string | null; teacherComment: string | null; teacherAudio: string | null; audioUrl: string | null; score: number | null }>
   }[]
 }
 
@@ -916,6 +919,32 @@ function AnswerMark({ st }: { st: AnswerState | undefined }) {
   if (st.result === 'correct2') return <span className="answer-mark half">½ {t('follow.secondTry')}</span>
   if (st.result === 'correct3') return <span className="answer-mark half">¼ {t('follow.laterTry')}</span>
   return <span className="answer-mark wrong">✗ {t('follow.wrong')}</span>
+}
+
+// The last answer before it was sent back for corrections, with its marks and comment; it can't be
+// changed any more (REQ-5.14, D-77). The new answer below is the one to mark up and grade.
+function PreviousOnGrading({ prev }: { prev: { answer: string; markup: string | null; teacherComment: string | null; teacherAudio: string | null; audioUrl: string | null; score: number | null } }) {
+  const { t } = useTranslation()
+  return (
+    <div className="previous-answer">
+      <span className="feedback-subtitle">
+        {t('follow.previousAnswer')}
+        {prev.score != null ? ` · ${Math.round(prev.score * 100)}%` : ''}
+      </span>
+      {prev.audioUrl ? (
+        <audio controls src={prev.audioUrl} aria-label={t('follow.previousAnswer')} />
+      ) : prev.markup ? (
+        <MarkedAnswer original={prev.answer} markup={prev.markup} />
+      ) : (
+        <div className="marked-answer" dir="auto">
+          {prev.answer}
+        </div>
+      )}
+      {prev.teacherAudio && <audio controls src={prev.teacherAudio} aria-label={t('audio.teacherComment')} />}
+      {prev.teacherComment && <p className="muted" dir="auto">{t('follow.previousComment')}: {prev.teacherComment}</p>}
+      <span className="feedback-subtitle">{t('follow.newAnswer')}</span>
+    </div>
+  )
 }
 
 // Which questions are hard for the class (REQ-5.29): of the students who answered, how many got it
@@ -1486,6 +1515,7 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
             {t('follow.nextStudent')} <span aria-hidden="true">{sideNext}</span>
           </button>
         </div>
+        {students[pos.s]?.previous?.[q.id] && <PreviousOnGrading prev={students[pos.s].previous![q.id]} />}
         {q.kind === 'audio' ? (
           current?.audioUrl ? <audio key={current.audioUrl} controls src={current.audioUrl} aria-label={t('audio.studentAnswer')} /> : <p className="muted">—</p>
         ) : (

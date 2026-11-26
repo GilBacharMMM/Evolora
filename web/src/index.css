@@ -2719,3 +2719,18 @@ details.image-source summary {
 .track-box .mark-added {
   font-weight: 400;
 }
+
+/* An answer sent back for corrections (REQ-5.14, D-77) */
+.previous-answer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-block: 0.5rem 0.75rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: var(--teal-light);
+}
+.previous-answer-next {
+  margin: 0.25rem 0 0;
+  font-weight: 700;
+}
