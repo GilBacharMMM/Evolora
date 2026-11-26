@@ -81,6 +81,15 @@ function SolvedExample({ markdown }: { markdown: string }) {
   )
 }
 
+// A picture that belongs to a question (D-82): shown with the question text, and left out
+// with the question when it is above the student's level. (A drag-and-drop board is shown by
+// the drag-and-drop question itself.)
+type QuestionPicture = { file: string; caption: string; source: string; storagePath: string | null }
+export function QuestionImage({ q }: { q: { kind: string; image?: QuestionPicture | null } }) {
+  if (!q.image || q.kind === 'drag') return null
+  return <ImageBlock block={{ ...q.image, type: 'image' }} />
+}
+
 function ImageBlock({ block }: { block: Extract<Block, { type: 'image' }> }) {
   const { t } = useTranslation()
   const [url, setUrl] = useState<string | null>(null)

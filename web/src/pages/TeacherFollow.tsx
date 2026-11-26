@@ -6,6 +6,7 @@ import { navigate } from '../router'
 import { BackButton } from '../components/BackButton'
 import { TypeChip } from '../components/TypeChip'
 import { Markdown } from '../lesson/Rich'
+import { QuestionImage } from '../lesson/Blocks'
 import { ClassTabs } from '../components/ClassTabs'
 import { Messages } from '../components/Messages'
 import { TrackChangesBox } from '../components/TrackChangesBox'
@@ -855,6 +856,7 @@ interface QuestionInfo {
   topic: number
   topicName: string | null
   gradingInstructions: string | null
+  image?: { file: string; caption: string; source: string; storagePath: string | null } | null
   choices: { id: string; text: string }[]
   unit: string | null
 }
@@ -1500,6 +1502,7 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
           <bdi>{data.title}</bdi> · {t('q.questionNumber', { number: data.questions.findIndex((x) => x.id === q.id) + 1 })}
         </p>
         <Markdown text={q.prompt} />
+        <QuestionImage q={q} />
         {q.gradingInstructions && (
           <div className="grading-instructions">
             <span className="feedback-subtitle">{t('follow.instructions')}</span>

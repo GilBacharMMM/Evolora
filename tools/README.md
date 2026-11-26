@@ -4,7 +4,7 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 
 | Tool | What it does | Requirement |
 |---|---|---|
-| `check-lesson.mjs` | Checks a lesson file before it is loaded: the lesson details, that every block is a known type, image files and sources, video sources, question answers, hints, solutions, check-again questions, levels, exam rules, and that every topic has enough questions. It lists errors (the lesson can't be loaded) and warnings (worth fixing). | REQ-4.24 |
+| `check-lesson.mjs` | Checks a lesson file before it is loaded: the lesson details and the folder name (always numbered from 1, D-81), that every block is a known type, image files and sources (also pictures inside questions, with a warning for a picture written right after a question, D-82), video sources, question answers, hints, solutions, check-again questions, levels, exam rules, and that every topic has enough questions. It lists errors (the lesson can't be loaded) and warnings (worth fixing). | REQ-4.24 |
 | `load.mjs` | The loading program: runs the lesson check, then loads lessons and courses into a site. A course brings its lessons with it. An unchanged lesson is skipped; a changed one is saved as a new version. | REQ-4.24, 4.10 |
 | `admin.mjs` | System admin tasks (D-47): make someone a teacher or system admin (and put teachers in a school, D-69), take the role away, list everyone with their role, add schools and list them, give a course to a whole class. | REQ-2.1, 2.2, 5.7 |
 | `load-terms.mjs` | Checks the terms of use in the `terms` folder (Hebrew, Arabic and English, same version) and puts them on the test site. With `--agree-test-users`, marks every test user except Test Student 7 as agreed to that version (D-75). | REQ-10.8 |

@@ -9,7 +9,7 @@ import { db, functions } from '../site'
 import { lessonAccess, loadClasswork } from '../classwork'
 import { useSession } from '../session'
 import { navigate } from '../router'
-import { BlockView, Ui } from '../lesson/Blocks'
+import { BlockView, QuestionImage, Ui } from '../lesson/Blocks'
 import { Markdown } from '../lesson/Rich'
 import { MarkedAnswer } from '../components/MarkedAnswer'
 import { ExamPlayer } from './ExamPlayer'
@@ -593,6 +593,7 @@ function ShownAnswer({ q, state, label }: { q: Question; state: TryState; label:
     <section className="block-question answered">
       <span className="block-label">{label}</span>
       <Markdown text={q.prompt} />
+      <QuestionImage q={q} />
       {state.tryShown === 'skipped' ? (
         <p className="muted">
           <Ui>{t('lesson.skipped')}</Ui>
@@ -627,6 +628,7 @@ function AudioQuestion({ q, state, lessonId, label, trying, uid, onState }: { q:
         <Ui>{label}</Ui>
       </span>
       <Markdown text={q.prompt} />
+      <QuestionImage q={q} />
       {!sent ? (
         <>
           <Recorder onReady={setBlob} disabled={busy} />

@@ -220,6 +220,8 @@ Every image must have clear rights, because lessons are shared openly. Allowed s
 - **An open source** such as Wikimedia Commons, with a licence that allows sharing: `- source: <author>, <link to the original>, <licence>`
 - **Never** use an image copied from the internet without permission, even if the teacher already has it in their document. Suggest replacing it with a similar AI-generated image or a diagram you draw.
 
+**A picture that belongs to a question goes inside the question**, never as an `[IMAGE]` block after it: write `- file:`, `- caption:` and `- source:` lines in the question, right after the question text. Students then see the picture with the question, before answering, and a student who doesn't get the question (its level is above theirs) doesn't see the picture either. An `[IMAGE]` block after a question shows only after the student answers (the lesson check warns about it).
+
 Every image block has a `caption` that describes the image for students. Put image files in the `images/` folder, as PNG, JPG or SVG, each preferably under 1 MB.
 
 When you draw an SVG, check how it looks (for example, by opening it in a browser and taking a screenshot) before using it. Hebrew and Arabic labels need `direction="rtl"`.
@@ -249,7 +251,7 @@ Before the lesson is sent to Gil, check every item:
 5. Every multiple choice question has exactly one choice marked `(✔)` (or several, if the question says "choose all that apply").
 6. Every number question has `Answer` and `Unit`, and you checked the answer twice.
 7. Every open and audio question has grading instructions.
-8. Every image file exists in `images/`, and every image block has a caption and an allowed source.
+8. Every image file exists in `images/`, and every image block has a caption and an allowed source. Every picture that belongs to a question is inside the question, not in an image block after it.
 9. Every video has a link, title and source; the questions about it come right after it.
 10. No `[NEW: suggested by Claude]` tags are left, and no 🟦 questions to the teacher are left unanswered. (Notes addressed to Gil may stay.)
 11. No real students' personal details anywhere.

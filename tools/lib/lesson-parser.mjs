@@ -271,8 +271,10 @@ export function parseLesson(target) {
           const bKind = bl ? blanksKind(bl.brackets, words).kind : null
           const blankOptions = bKind === 'choice' ? bl.brackets.map((b, i) => choiceOptions(b).map((o) => o.text).sort((x, y) => x.localeCompare(y)).map((text, n) => ({ id: `o${i + 1}-${n + 1}`, text }))) : null
           const wordCards = bKind === 'words' ? [...words, ...wordList(body.fields['extra words'])].sort((x, y) => x.localeCompare(y)).map((text, n) => ({ id: `k${n + 1}`, text })) : null
-          const dragImage = kind === 'drag' && body.fields.file ? { type: 'image', file: body.fields.file, caption: body.fields.caption || '', source: body.fields.source || '', storagePath: null } : null
-          if (dragImage) images.push({ block: dragImage, localPath: path.join(dir, body.fields.file) })
+          // The drag-and-drop board, or a picture that belongs to the question (D-82): shown with the
+          // question, and left out with it when the question is above the student's level.
+          const qImage = body.fields.file ? { type: 'image', file: body.fields.file, caption: body.fields.caption || '', source: body.fields.source || '', storagePath: null } : null
+          if (qImage) images.push({ block: qImage, localPath: path.join(dir, body.fields.file) })
           const q = {
             type: 'question',
             id,
@@ -284,7 +286,8 @@ export function parseLesson(target) {
             multipleCorrect: choices.filter((c) => c.correct).length > 1,
             unit: body.fields.unit || null,
             tips: body.tips,
-            ...(kind === 'drag' ? { image: dragImage, spots: body.spots.map((sp) => ({ x: sp.x, y: sp.y })), cards } : {}),
+            ...(qImage ? { image: qImage } : {}),
+            ...(kind === 'drag' ? { spots: body.spots.map((sp) => ({ x: sp.x, y: sp.y })), cards } : {}),
             ...(kind === 'blanks' ? { blanksKind: bKind, blanks: bl.brackets.map((_, i) => (blankOptions ? { options: blankOptions[i] } : {})), ...(wordCards ? { cards: wordCards } : {}) } : {}),
           }
           secret[id] = {

@@ -138,6 +138,17 @@ function checkLesson(target) {
     warn(0, 'The lesson has no topics ("# [TOPIC 1: name]"), so it is treated as one topic.')
   }
 
+  // A picture right after a question is shown only once the question is answered, and stays
+  // visible even when the question is above the student's level. A picture that belongs to a
+  // question goes inside the question (D-82).
+  if (!isExam) {
+    blocks.forEach((b, i) => {
+      if (b.type === 'IMAGE' && i > 0 && blocks[i - 1].type.startsWith('QUESTION')) {
+        warn(b.n, 'This picture comes right after a question, so students see it only after answering. If it belongs to the question, write its "- file:", "- caption:" and "- source:" lines inside the question instead (D-82).')
+      }
+    })
+  }
+
   let newTags = 0
   let tipCount = 0
   let noTips = 0
@@ -225,6 +236,18 @@ function checkLesson(target) {
       }
       tipCount += tips.length
     } else if (!isExam) noTips++
+
+    // A picture inside a question (D-82): shown with the question, hidden with it.
+    if (b.type !== 'QUESTION: drag and drop' && (fields.file || fields.caption || fields.source)) {
+      if (!fields.file) err(b.n, 'Question picture: the "- file:" line is missing.')
+      else if (!fs.existsSync(path.join(dir, fields.file.value))) err(fields.file.n, `Question picture: the file "${fields.file.value}" doesn't exist.`)
+      if (!fields.caption || !fields.caption.value) err(b.n, 'Question picture: the "- caption:" line is missing.')
+      const src = fields.source ? fields.source.value : ''
+      if (!src) err(b.n, 'Question picture: the "- source:" line is missing (REQ-4.15).')
+      else if (!/^own work/i.test(src) && !/^AI-generated/i.test(src) && !(/https?:\/\//.test(src) && /(licen[cs]e|public domain|CC[ -]|creative commons)/i.test(src))) {
+        err(fields.source.n, `Question picture: the source "${src}" must be "own work", "AI-generated (...)", or an author with a link and a licence (REQ-4.15).`)
+      }
+    }
 
     // Drag and drop (REQ-4.12, D-70): an image with spots; each spot names the card that belongs there.
     if (b.type === 'QUESTION: drag and drop') {

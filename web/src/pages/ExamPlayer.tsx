@@ -6,7 +6,7 @@ import { httpsCallable } from 'firebase/functions'
 import { db, functions } from '../site'
 import { navigate } from '../router'
 import { shuffle } from '../shuffle'
-import { BlockView, Ui } from '../lesson/Blocks'
+import { BlockView, QuestionImage, Ui } from '../lesson/Blocks'
 import { Markdown } from '../lesson/Rich'
 import { BackButton } from '../components/BackButton'
 import { TypeChip } from '../components/TypeChip'
@@ -131,6 +131,7 @@ export function ExamPlayer({
                   <Ui>{t('q.questionNumber', { number: number(b.id) })}</Ui>
                 </span>
                 <Markdown text={b.prompt} />
+                <QuestionImage q={b} />
                 {submitted ? (
                   <ExamAnswerView q={b} given={answers[b.id]} result={result && result !== 'hidden' ? result.questions[b.id] : undefined} />
                 ) : (

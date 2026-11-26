@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { httpsCallable } from 'firebase/functions'
 import { functions } from '../site'
 import { Markdown } from './Rich'
-import { Ui } from './Blocks'
+import { QuestionImage, Ui } from './Blocks'
 import type { Question } from './types'
 import { isFinished, looksLikeNumber, type CheckAgainState, type QuestionState } from './answers'
 
@@ -215,6 +215,7 @@ export function QuestionCard({
     <section className={`block-question${isFinished(st) ? ' answered' : ''}`} aria-label={label}>
       <Ui className="block-label">{label}</Ui>
       <Markdown text={q.prompt} className="question-prompt" />
+      <QuestionImage q={q} />
       {beforeAnswer}
 
       {(q.kind === 'choice' || q.kind === 'number') && (

@@ -485,6 +485,17 @@ Fill-in-the-blanks questions can be used in every type of lesson: teaching lesso
 - [ ] Fail every attempt: the solution shows every right word, and the teacher sees a red flag on the class dashboard.
 - [ ] In an exam with this question, 3 of 4 blanks right gives 75% of the question's marks, shown only when the exam ends.
 
+**REQ-4.31: A picture that belongs to a question** (Priority 2: should have; Gil, D-82)
+A question can have its own picture. The student sees it together with the question, under the question text, before answering. If the question is above the student's level (REQ-6.10), the student doesn't see the question or its picture. The picture has a caption and a source, like every image (REQ-4.15). The teacher also sees it when trying the lesson and on the grading page, and students see it in exams.
+
+A picture written as its own image block right after a question is shown only after the question is answered, so the lesson check warns about it: a picture that belongs to a question is written inside the question.
+
+*Acceptance criteria:*
+- [ ] As a level 1 student, in the Archimedes practice lesson (archimedes-density-practice-1), the iceberg picture shows under the iceberg question before you answer it.
+- [ ] As a level 3 student, the ship picture shows under the ship question before you answer it.
+- [ ] As a level 1 or level 2 student, neither the ship question nor the ship picture appears.
+- [ ] As a teacher, the grading page of the iceberg question shows the picture.
+
 ## 5. Class management (teachers)
 
 **REQ-5.1: Create a class** (Priority 1: must have)

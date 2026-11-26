@@ -784,6 +784,7 @@ export const lessonResults = onCallAgreed(async (request) => {
           topic: topic.number,
           topicName: topic.name || null,
           gradingInstructions: secret[b.id]?.gradingInstructions || null,
+          image: b.kind !== 'drag' && b.image ? b.image : null,
         })
       }
     }
