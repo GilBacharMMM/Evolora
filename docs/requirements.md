@@ -1316,6 +1316,7 @@ The test site can be filled with a standard set of test data with one command, b
 | # | Question | Notes |
 |---|---|---|
 | Q-47 | Suggested level changes (REQ-5.18): when is a student's average "well above or below what fits their level"? | Gil: to be decided later (D-61, point 3). Until then only the 10% rule is built: after 5 graded lessons in 4 weeks, the weakest 10% of the class are suggested level 1 and the strongest 10% level 3. |
+| Q-48 | Parents' letter (REQ-10.8): a notice, or a consent form? | Gil is asking the school (2026-11-26): did parents sign the Ministry's general consent for digital tools in the parents' portal, and how does the school treat a tool the Ministry hasn't approved? Voice recordings may need parents' consent (research, docs/moe-approval-steps.he.md section 7.1). |
 
 ### Answered (2026-11-20)
 
