@@ -26,7 +26,7 @@ status: draft 1 (converted by Claude on 2026-11-26 from the worksheet in Gil's W
 
 **A Day at School**
 
-Tom usually walks to school. Today, he is riding his bike to school. His friend Emma plays basketball every morning. Right now, she is reading a book in the classroom. Their teacher usually writes on the board. At the moment, she is talking to the students.
+Tom usually walks to school. Today, he is riding his bike to school. His friend Emma plays [[basketball|Hebrew: כדורסל · Arabic: كرة السلة]] every morning. Right now, she is reading a book in the [[classroom|Hebrew: כיתה · Arabic: غرفة الصف]]. Their teacher usually writes on the [[board|Hebrew: לוח · Arabic: اللوح]]. At the moment, she is talking to the students.
 
 ## [QUESTION: open] [LEVEL 1]
 
