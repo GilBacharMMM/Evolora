@@ -812,6 +812,8 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Limit:** the full address is not hidden. A student who opens https://evolora-test.web.app could switch to a teacher there. Share only the students-only address with the student.
 **Affects:** REQ-12.5, new REQ-12.8, docs/system-design.md 7.3, tools/README.md, the test tools
 
+**Closed (2026-11-26, Gil):** Gil closed the students-only address; it shows "Site not found". Deploys must leave it closed; it can be opened again by deploying it.
+
 ### D-72: Lessons added to a course reach the classes that have it
 **Date:** 2026-11-25 · **Status:** Decided · **Decided by:** Gil
 **Context:** Two practice lessons were added to the density course after it had been given to the test class. The students saw them in the course list but couldn't open them, because a course is given to a class with the lessons it had at that moment.
