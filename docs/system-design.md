@@ -322,7 +322,13 @@ There are two levels of testing.
 Before anything goes to the test site, Claude runs automatic tests:
 - **Permission tests**: try to break the rules in section 4.3, for example a student trying to read another student's grades. These must all be blocked.
 - **Grading tests**: check every scoring case in REQ-6.3, due-date penalties and redo rules.
-- **Screen tests**: a robot opens Chrome and goes through the main flows: a student taking the Archimedes lesson, and a teacher grading it. They run in all three languages.
+- **Screen tests** (`tests/screens`, D-80): a robot opens Google Chrome at a Chromebook size (1366 by 768) on the test site and goes through the main flows, in Hebrew, Arabic and English:
+  1. a student goes through the Archimedes teaching lesson: right, wrong then right, wrong twice and a check-again question, fill in the blanks, an open answer, a reload (the lesson opens where the student stopped), and a number question in the practice lesson
+  2. the terms of use come first for a student who hasn't agreed yet
+  3. a student joins the test class with its class code, after a mistyped code shows "check the code"
+  4. a teacher opens the class dashboard, sees a student's finished work, grades an open answer with a comment, and sees the grade in the grade table
+
+  On every screen it visits, the robot checks: no text in another language, apart from lesson content and names (REQ-9.1); the page direction (REQ-9.2); no errors in the browser's console; no sideways scrolling (REQ-11.1); and no status shown by colour alone (REQ-12.3). It saves a screenshot of each screen and writes a short report (`tests/screens/out/report.html`).
 
 ### 8.2 Acceptance checks (Gil)
 Gil checks each requirement's acceptance criteria on the test site. For each feature, Claude tells Gil:

@@ -284,7 +284,8 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
 
   // Coming back to a lesson: scroll to where the student stopped (REQ-6.2).
   useEffect(() => {
-    if (scrolled.current || !lesson || progress === null) return
+    // Wait until the questions are on the page: while the lesson is still being checked, it shows "Loading".
+    if (scrolled.current || !lesson || progress === null || gate === 'checking') return
     scrolled.current = true
     if (Object.keys(progress.questions || {}).length === 0) return
     // Sent back for review: stay at the top, where the teacher's note is (REQ-5.14).
@@ -293,7 +294,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
       const cards = document.querySelectorAll('.block-question')
       cards[cards.length - 1]?.scrollIntoView({ block: 'center' })
     })
-  }, [lesson, progress])
+  }, [lesson, progress, gate])
 
   if (gate === 'locked' || gate === 'lockedByNotes' || gate === 'lockedByDue' || gate === 'lockedByExam' || gate === 'notGiven') {
     return (

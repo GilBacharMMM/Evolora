@@ -30,6 +30,7 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `test-audio.mjs` | End-to-end test of recorded answers and audio comments: saving into the student's own folder only, sound files only, size limit, sending, who can listen, and the teacher's recorded comment. Cleans up after itself. | REQ-6.6, 5.13 |
 | `test-blanks.mjs` | End-to-end test of fill-in-the-blanks questions: nothing secret reaches students, forgiving typed checking, marks and locking, attempts, the red flag, and credit per blank in exams. | REQ-4.30, D-78 |
 | `test-drag.mjs` | End-to-end test of drag-and-drop questions: what students can read holds no answers, every place needs a card, attempts by the number of cards, right cards marked and locked, the hint, grades of full, half and a quarter, the red flag when every attempt fails, and a teacher trying it. | REQ-4.12, D-70 |
+| `lib/screen-test-data.mjs` | Used by the screen tests: puts only the test data they use into a known state, and puts the test users' languages and class settings back afterwards (D-80). | system-design 8.1 |
 | `test-permissions.mjs` | Automatic permission tests: signs in as test users and checks that what must be blocked is blocked (for example, a student reading the correct answers). | REQ-3.4, 10.1, 10.3 |
 
 `check-lesson.mjs` also checks course files (`courses/<name>.md`): every listed lesson must exist, have the matching type (teaching, practice or exam), and pass the lesson check.
@@ -70,6 +71,15 @@ node tools/test-sent-back.mjs
 node tools/test-time.mjs
 node tools/test-student-5.mjs
 node tools/test-corrections.mjs
+```
+
+**Screen tests (system-design 8.1, D-80).** A robot opens Google Chrome at a Chromebook size and goes through the main flows on the test site in Hebrew, Arabic and English: a student going through the Archimedes lesson, the terms of use coming first, joining a class with its code, and a teacher grading an open answer. On every screen it checks for text in the wrong language, the page direction, console errors, sideways scrolling and statuses shown only by colour (REQ-9.1, 9.2, 11.1, 12.3). They live in `tests/screens` (run `npm install` there once; they need Google Chrome on this computer). The report with screenshots is `tests/screens/out/report.html`. A run takes about 15 minutes.
+
+```
+cd tests/screens
+npm test               (all three languages)
+npm test -- en         (one language)
+npm test -- --show     (watch the robot in a Chrome window)
 ```
 
 The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.

@@ -918,3 +918,12 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Options considered:** always the teacher's name; initials; the name only with agreement, otherwise "anonymous teacher".
 **Decision:** Gil asks each pilot teacher whether they agree to be named. If they agree, their full name is the creator. If not, the creator is "מורה אנונימי/ת" ("Anonymous teacher" in English lessons), and their name appears nowhere in the lesson file. The same goes for any other personal details (CLAUDE.md rule 7).
 **Affects:** REQ-1.1, lessons/README.md, the teacher kit
+
+### D-80: How the automatic screen tests run
+**Date:** 2026-11-26 · **Status:** Proposed · **Decided by:** Claude
+**Context:** system-design 8.1 promises screen tests: a robot goes through the main flows in Chrome, in all three languages. They need a tool, and known test data.
+**Options considered:** the test data: a full reset of the test site before every run (simple, but it removes the class and messages Gil keeps on the test site as Test Teacher 2), or resetting only what the tests use. The tool: Playwright, the most common robot for Chrome, using the Chrome installed on the computer, or a separate test browser.
+**Decision:** Playwright with the installed Google Chrome, in its own folder (`tests/screens`), so the website itself doesn't change. Before each run, the tests reset only what they use: Test Student 1's Archimedes work, Test Student 7 (not agreed to the terms, in no class), Test Student 5's finished work, and joining on in the test class. Afterwards they put back the test users' languages and the class settings, and Test Student 7 as before. The tests run against the published test site, so a fix is seen by the tests only after the test site is published again.
+**Reason:** Gil's own data on the test site stays, and the tests check exactly what pilot teachers and students will use.
+**Affects:** system-design 8.1, tools/README.md
+
