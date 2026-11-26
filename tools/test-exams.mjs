@@ -45,7 +45,8 @@ const v = String(lesson.currentVersion)
 const version = (await getDoc(doc(ldb, 'lessons', EXAM, 'versions', v))).data()
 const secret = (await getDoc(doc(ldb, 'lessons', EXAM, 'versions', v, 'secret', 'answers'))).data().questions
 const questions = version.topics.flatMap((t) => t.blocks.filter((b) => b.type === 'question'))
-const right = (q) => (q.kind === 'choice' ? secret[q.id].correct : q.kind === 'number' ? String(secret[q.id].answer) : 'π is the circumference divided by the diameter.')
+// Fill in the blanks (REQ-4.30): 3 of the 4 blanks right, to check credit per blank (D-78).
+const right = (q) => (q.kind === 'blanks' ? secret[q.id].correct.map((c, i) => (i === 3 ? 'טעות' : String(c).split('|')[0])) : q.kind === 'choice' ? secret[q.id].correct : q.kind === 'number' ? String(secret[q.id].answer) : 'π is the circumference divided by the diameter.')
 const STUDENTS = ['test-student-1', 'test-student-3', 'test-student-4', 'test-student-5']
 
 async function cleanUp() {
@@ -101,6 +102,8 @@ try {
   })
   await as('test-student-1', async ({ db }) => {
     const res = (await getDoc(doc(db, 'examResults', `test-student-1__${EXAM}`))).data()
+    const blanksQ = questions.find((q) => q.kind === 'blanks')
+    check('fill in the blanks in an exam: 3 of 4 blanks right gives 75% of the question, shown after release (REQ-4.30)', !!blanksQ && res.questions[blanksQ.id]?.score === 0.75 && res.questions[blanksQ.id]?.result === 'partial' && res.questions[blanksQ.id]?.correct?.blanks?.length === 4, JSON.stringify(blanksQ && res.questions[blanksQ.id]))
     check('after release, the student sees the grade, the correct answers and the solutions', res.released && res.grade && Object.values(res.questions).some((st) => st.result === 'wrong' && st.correct && st.solution))
   })
 

@@ -13,11 +13,12 @@
 
 // Explanations of words (REQ-4.29): "[[word|explanation]]" stays inside the text as written; the
 // lesson player shows it. The lesson check (tools/check-lesson.mjs) makes sure it is well formed.
+import { blanksKind, choiceOptions, readBlanks, typedAnswers, wordList } from './blanks.mjs'
 import fs from 'node:fs'
 import path from 'node:path'
 import crypto from 'node:crypto'
 
-const FIELD = /^- (Hint|Solution|Why it['’]s right|Answer|Unit|Grading instructions|Tip|Spot|Extra card|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
+const FIELD = /^- (Hint|Solution|Why it['’]s right|Answer|Unit|Grading instructions|Tip|Spot|Extra card|Words|Extra words|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
 const LATEX = /\\[a-zA-Z]+|\^|_\{/
 const WORDS = /[֐-׿؀-ۿA-Za-z]{2,}/
 const TYPE_KEYS = {
@@ -31,6 +32,7 @@ const QUESTION_KINDS = {
   'QUESTION: open': 'open',
   'QUESTION: audio': 'audio',
   'QUESTION: drag and drop': 'drag',
+  'QUESTION: fill in the blanks': 'blanks',
 }
 
 const stripNew = (s) => s.replace(/\[NEW[^\]]*\]\s*/g, '').trim()
@@ -262,6 +264,13 @@ export function parseLesson(target) {
           // the right card for each spot is kept with the secret answers.
           const cardTexts = kind === 'drag' ? [...new Set([...body.spots.map((sp) => sp.card), ...body.extraCards])].sort((a, b) => a.localeCompare(b)) : []
           const cards = cardTexts.map((text, n) => ({ id: `k${n + 1}`, text }))
+          // Fill in the blanks (REQ-4.30, D-78): the blanks in the text, and their kind. The words to choose
+          // from and the word cards are in alphabetical order; the right ones are kept with the secret answers.
+          const bl = kind === 'blanks' ? readBlanks(body.text) : null
+          const words = kind === 'blanks' ? wordList(body.fields.words) : []
+          const bKind = bl ? blanksKind(bl.brackets, words).kind : null
+          const blankOptions = bKind === 'choice' ? bl.brackets.map((b, i) => choiceOptions(b).map((o) => o.text).sort((x, y) => x.localeCompare(y)).map((text, n) => ({ id: `o${i + 1}-${n + 1}`, text }))) : null
+          const wordCards = bKind === 'words' ? [...words, ...wordList(body.fields['extra words'])].sort((x, y) => x.localeCompare(y)).map((text, n) => ({ id: `k${n + 1}`, text })) : null
           const dragImage = kind === 'drag' && body.fields.file ? { type: 'image', file: body.fields.file, caption: body.fields.caption || '', source: body.fields.source || '', storagePath: null } : null
           if (dragImage) images.push({ block: dragImage, localPath: path.join(dir, body.fields.file) })
           const q = {
@@ -270,15 +279,25 @@ export function parseLesson(target) {
             kind,
             level,
             extra: b.tags.includes('EXTRA'),
-            prompt: body.text,
+            prompt: bl ? bl.text : body.text,
             choices: choices.map(({ id: cid, text }) => ({ id: cid, text })),
             multipleCorrect: choices.filter((c) => c.correct).length > 1,
             unit: body.fields.unit || null,
             tips: body.tips,
             ...(kind === 'drag' ? { image: dragImage, spots: body.spots.map((sp) => ({ x: sp.x, y: sp.y })), cards } : {}),
+            ...(kind === 'blanks' ? { blanksKind: bKind, blanks: bl.brackets.map((_, i) => (blankOptions ? { options: blankOptions[i] } : {})), ...(wordCards ? { cards: wordCards } : {}) } : {}),
           }
           secret[id] = {
-            correct: kind === 'drag' ? body.spots.map((sp) => cards.find((c) => c.text === sp.card)?.id) : choices.filter((c) => c.correct).map((c) => c.id),
+            correct:
+              kind === 'drag'
+                ? body.spots.map((sp) => cards.find((c) => c.text === sp.card)?.id)
+                : kind === 'blanks'
+                  ? bKind === 'typed'
+                    ? bl.brackets.map((b) => typedAnswers(b).join('|')) // one text per blank: right answers joined by |
+                    : bKind === 'choice'
+                      ? bl.brackets.map((b, i) => blankOptions[i].find((o) => o.text === choiceOptions(b).find((c) => c.correct).text).id)
+                      : words
+                  : choices.filter((c) => c.correct).map((c) => c.id),
             answer: kind === 'number' ? numberValue(body.fields.answer) : null,
             hint: body.fields.hint || null,
             solution: body.fields.solution || null,

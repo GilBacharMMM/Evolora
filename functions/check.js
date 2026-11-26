@@ -3,7 +3,8 @@
 //
 // Each question's state, saved in the student's progress:
 //   attempts: the answers given so far
-//   result:   null (not finished) | 'correct1' | 'correct2' | 'wrong' | 'pending' (open question)
+//   result:   null (not finished) | 'correct1' | 'correct2' | 'correct3' (drag and drop, a later
+//             attempt) | 'wrong' | 'pending' (open question)
 //   score:    1 (correct on the 1st attempt), 0.5 (on the 2nd), 0 (two wrong), null (waiting for the teacher)
 //   graded, teacherComment: an open answer the teacher graded (score 0 to 1), with an optional comment (REQ-5.12, 5.13)
 //   hint, solution, correct, whyRight: shown to the student only once earned
@@ -54,8 +55,9 @@ export function judge(kind, secret, value) {
   return 'invalid'
 }
 
-function correctAnswerFor(kind, secret) {
+function correctAnswerFor(kind, secret, q) {
   if (kind === 'drag') return { cards: secret.correct }
+  if (kind === 'blanks') return { blanks: blankTexts(q, secret) }
   return kind === 'number' ? { number: secret.answer } : { choices: secret.correct }
 }
 
@@ -74,6 +76,9 @@ export function answerMain(state, q, s, value, pickCheckAgain) {
     st.score = null
     return { state: st, reply: { result: 'pending' }, countsCorrect: false }
   }
+
+  if (q.kind === 'drag') return answerDrag(st, q, s, value)
+  if (q.kind === 'blanks') return answerBlanks(st, q, s, value)
 
   const ok = judge(q.kind, s, value)
   if (ok === 'invalid') return { invalid: true }
@@ -108,6 +113,110 @@ export function answerMain(state, q, s, value, pickCheckAgain) {
     }
   }
   return { state: st, reply: { result: 'wrong', solution: st.solution, correct: st.correct, checkAgain: st.checkAgain?.question || null }, countsCorrect: false }
+}
+
+// Drag and drop (REQ-4.12, D-70, changed by Gil 2026-11-25).
+// Attempts: the number of cards (extra cards included) minus 2, never fewer than 2.
+export function dragAttempts(q) {
+  return Math.max(2, (q.cards || []).length - 2)
+}
+const DRAG_SCORES = [1, 0.5, 0.25]
+
+// After each attempt every placed card is marked right or wrong; right cards stay locked on their
+// spots, wrong ones go back to the pile. Right on the 1st attempt: full marks; 2nd: half; any later
+// one: a quarter. When every attempt fails: 0, the full solution with the right card on every spot,
+// and a red flag for the class's teachers (no check-again question). The right card of a spot is
+// told only when the card placed there is right, or after the last attempt (D-17).
+function answerDrag(st, q, s, value) {
+  const correct = s.correct || []
+  const cardIds = new Set((q.cards || []).map((c) => c.id))
+  if (!Array.isArray(value) || value.length !== correct.length || !value.every((v) => typeof v === 'string' && cardIds.has(v))) return { invalid: true }
+  if (new Set(value).size !== value.length) return { invalid: true }
+  return answerParts(st, q, s, value, (v, i) => v === correct[i], dragAttempts(q), 'dragWrong', 'drag')
+}
+
+// Fill in the blanks (REQ-4.30, D-78): checked in lessons like drag and drop (D-70). Attempts: the
+// number of blanks minus 2 (word list: the number of cards minus 2), never fewer than 2.
+export function blanksAttempts(q) {
+  return Math.max(2, (q.blanksKind === 'words' ? (q.cards || []).length : (q.blanks || []).length) - 2)
+}
+
+// Typed blanks: extra spaces, nikud and punctuation don't matter; a typo does.
+export function normalizeTyped(text) {
+  return String(text ?? '')
+    .normalize('NFC')
+    .replace(/[\u0591-\u05C7]/g, '')
+    .replace(/[\p{P}]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase()
+}
+
+// A typed blank's right answers: kept as one text, separated by |.
+const typedList = (c) => (Array.isArray(c) ? c : String(c ?? '').split('|')).map((a) => a.trim()).filter(Boolean)
+
+export function blankIsRight(q, s, i, v) {
+  if (q.blanksKind === 'typed') return typedList(s.correct?.[i]).some((a) => normalizeTyped(a) === normalizeTyped(v)) && normalizeTyped(v) !== ''
+  if (q.blanksKind === 'choice') return v === s.correct?.[i]
+  return (q.cards || []).find((c) => c.id === v)?.text === s.correct?.[i]
+}
+
+// A full answer to a blanks question: one value per blank, each of the right sort.
+export function validBlanks(q, value, { allowEmpty = false } = {}) {
+  const n = (q.blanks || []).length
+  if (!Array.isArray(value) || value.length !== n) return false
+  if (q.blanksKind === 'typed') return value.every((v) => typeof v === 'string' && v.length <= 200 && (allowEmpty || v.trim()))
+  if (q.blanksKind === 'choice') return value.every((v, i) => (allowEmpty && v === '') || (q.blanks[i].options || []).some((o) => o.id === v))
+  const ids = new Set((q.cards || []).map((c) => c.id))
+  const used = value.filter((v) => v !== '')
+  return value.every((v) => (allowEmpty && v === '') || ids.has(v)) && new Set(used).size === used.length
+}
+
+// The right word in every blank, as the student sees it in the solution.
+function blankTexts(q, s) {
+  return (s.correct || []).map((c, i) => (q.blanksKind === 'typed' ? typedList(c)[0] : q.blanksKind === 'choice' ? q.blanks[i].options.find((o) => o.id === c)?.text || '' : c))
+}
+
+function answerBlanks(st, q, s, value) {
+  if (!validBlanks(q, value)) return { invalid: true }
+  const clean = q.blanksKind === 'typed' ? value.map((v) => v.trim()) : value
+  return answerParts(st, q, s, clean, (v, i) => blankIsRight(q, s, i, v), blanksAttempts(q), 'blanksWrong', 'blanks')
+}
+
+// Questions with several parts (drag and drop, fill in the blanks; D-70, D-78): after each attempt
+// every part is marked right or wrong; right parts stay locked, wrong ones are emptied. Right on the
+// 1st attempt: full marks; 2nd: half; any later one: a quarter. When every attempt fails: 0, the full
+// solution and a red flag (no check-again question). What is right is told only part by part, or
+// after the last attempt (D-17).
+function answerParts(st, q, s, value, isRight, allowed, flagKind, kind) {
+  const correct = s.correct || []
+  const locked = st.locked || correct.map(() => null)
+  // A locked card can't be moved: what was right stays right.
+  if (locked.some((card, i) => card && value[i] !== card)) return { invalid: true }
+  st.attempts.push(value)
+  const attempt = st.attempts.length
+  const marks = value.map((v, i) => isRight(v, i))
+  st.marks = marks
+  st.locked = value.map((v, i) => (marks[i] ? v : null))
+  st.attemptsAllowed = allowed
+
+  if (marks.every(Boolean)) {
+    st.result = attempt === 1 ? 'correct1' : attempt === 2 ? 'correct2' : 'correct3'
+    st.score = DRAG_SCORES[Math.min(attempt, 3) - 1]
+    if (s.whyRight) st.whyRight = s.whyRight
+    else st.solution = s.solution || null
+    return { state: st, reply: { result: 'correct', attempt, marks, whyRight: st.whyRight || null, solution: st.solution || null }, countsCorrect: true }
+  }
+  if (attempt < st.attemptsAllowed) {
+    // The hint after the first wrong attempt, and it stays.
+    st.hint = s.hint || null
+    return { state: st, reply: { result: 'tryAgain', marks, hint: st.hint, attemptsLeft: st.attemptsAllowed - attempt }, countsCorrect: false }
+  }
+  st.result = 'wrong'
+  st.score = 0
+  st.solution = s.solution || null
+  st.correct = correctAnswerFor(kind, s, q)
+  return { state: st, reply: { result: 'wrong', marks, solution: st.solution, correct: st.correct, checkAgain: null }, countsCorrect: false, flag: true, flagKind }
 }
 
 // One answer to the check-again question (REQ-4.17): 2 attempts; it never changes the grade;
@@ -228,7 +337,7 @@ export function teacherScore(state, score, comment, markup) {
   return { state: st }
 }
 
-const isCorrect = (r) => r === 'correct1' || r === 'correct2'
+const isCorrect = (r) => r === 'correct1' || r === 'correct2' || r === 'correct3'
 
 // Questions sent back for corrections (REQ-5.14): they can be answered again, with 2 attempts as
 // new. The earlier answers go to `history`; topic counts of right answers go down so extra
@@ -253,4 +362,15 @@ export function sendBackForCorrections(progress, questionIds, topicOf) {
     sent.push(id)
   }
   return { questions, topics, history, sent }
+}
+
+// An exam's fill-in-the-blanks answer (REQ-4.30, D-78): one attempt; the share of blanks that are
+// right. Blanks left empty are wrong.
+export function examBlanks(q, s, given) {
+  const n = (q.blanks || []).length
+  if (!n) return { score: 0, marks: [] }
+  const value = Array.isArray(given) ? given : []
+  const marks = Array.from({ length: n }, (_, i) => typeof value[i] === 'string' && value[i] !== '' && blankIsRight(q, s, i, value[i]))
+  const right = marks.filter(Boolean).length
+  return { score: Math.round((right / n) * 1000) / 1000, marks, correct: correctAnswerFor('blanks', s, q) }
 }

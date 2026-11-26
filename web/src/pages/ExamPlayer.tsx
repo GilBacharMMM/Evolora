@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { BlanksText, WordBank, blankAnswerTexts } from '../components/BlanksQuestion'
 import { useTranslation } from 'react-i18next'
 import { doc, getDoc } from 'firebase/firestore'
 import { httpsCallable } from 'firebase/functions'
@@ -13,7 +14,7 @@ import type { LessonVersion, Question } from '../lesson/types'
 
 interface ExamResult {
   released: boolean
-  questions: Record<string, { attempts: unknown[]; result: string; score: number | null; solution?: string | null; correct?: { choices?: string[]; number?: number }; graded?: boolean; teacherComment?: string | null }>
+  questions: Record<string, { attempts: unknown[]; result: string; score: number | null; solution?: string | null; correct?: { choices?: string[]; number?: number; blanks?: string[] }; graded?: boolean; teacherComment?: string | null }>
   grade: { percent: number | null; pending: boolean }
 }
 
@@ -185,6 +186,7 @@ export function ExamPlayer({
 
 function ExamInput({ q, uid, value, onChange }: { q: Question; uid: string; value: unknown; onChange: (v: unknown, now?: boolean) => void }) {
   const { t } = useTranslation()
+  if (q.kind === 'blanks') return <ExamBlanks q={q} uid={uid} value={value} onChange={onChange} />
   if (q.kind === 'choice') {
     const chosen = Array.isArray(value) ? (value as string[]) : []
     return (
@@ -226,12 +228,40 @@ function ExamInput({ q, uid, value, onChange }: { q: Question; uid: string; valu
   )
 }
 
+// Fill in the blanks in an exam (REQ-4.30, D-78): one attempt, nothing marked until the results.
+function ExamBlanks({ q, uid, value, onChange }: { q: Question; uid: string; value: unknown; onChange: (v: unknown, now?: boolean) => void }) {
+  const { t } = useTranslation()
+  const n = (q.blanks || []).length
+  const values = Array.from({ length: n }, (_, i) => (Array.isArray(value) ? String((value as string[])[i] ?? '') : ''))
+  const [picked, setPicked] = useState<string | null>(null)
+  const set = (i: number, v: string) => {
+    const next = values.map((x, k) => (k === i ? v : q.blanksKind === 'words' && x === v ? '' : x))
+    setPicked(null)
+    onChange(next, q.blanksKind !== 'typed')
+  }
+  return (
+    <>
+      <BlanksText q={q} uid={uid} values={values} picked={picked} onChange={set} onBlankClick={(i) => (picked ? set(i, picked) : values[i] && set(i, ''))} />
+      {q.blanksKind === 'words' && (
+        <>
+          <p className="muted small-note">
+            <Ui>{t('blanks.howToWords')}</Ui>
+          </p>
+          <WordBank q={q} uid={uid} values={values} picked={picked} onPick={setPicked} />
+        </>
+      )}
+    </>
+  )
+}
+
 // After submitting: the student's answer, and once the results are released, right or wrong,
 // the correct answer and the full solution (REQ-4.26).
 function ExamAnswerView({ q, given, result }: { q: Question; given: unknown; result?: ExamResult['questions'][string] }) {
   const { t } = useTranslation()
   const text = (v: unknown) =>
-    q.kind === 'choice' ? (Array.isArray(v) ? (v as string[]).map((id) => q.choices.find((c) => c.id === id)?.text || '').join(' · ') : '') : String(v ?? '')
+    q.kind === 'blanks'
+      ? blankAnswerTexts(q, v).map((w, i) => `${i + 1}: ${w || '—'}`).join(' · ')
+      : q.kind === 'choice' ? (Array.isArray(v) ? (v as string[]).map((id) => q.choices.find((c) => c.id === id)?.text || '').join(' · ') : '') : String(v ?? '')
   return (
     <div className="exam-answer">
       <p>
@@ -243,14 +273,21 @@ function ExamAnswerView({ q, given, result }: { q: Question; given: unknown; res
             <Ui>
               {result.result === 'correct1'
                 ? t('q.correct')
-                : result.result === 'pending'
+                : result.result === 'partial'
+                  ? t('lesson.marks', { percent: Math.round((result.score ?? 0) * 100) })
+                  : result.result === 'pending'
                   ? result.graded
                     ? t('lesson.marks', { percent: Math.round((result.score ?? 0) * 100) })
                     : t('q.savedForTeacher')
                   : t('exam.wrong')}
             </Ui>
           </span>
-          {result.result === 'wrong' && result.correct && (
+          {result.correct?.blanks && result.result !== 'correct1' && (
+            <p className="correct-line">
+              <Ui>{t('q.theCorrectAnswer')}</Ui> <bdi>{result.correct.blanks.map((w, i) => `${i + 1}: ${w}`).join(' · ')}</bdi>
+            </p>
+          )}
+          {result.result === 'wrong' && result.correct && !result.correct.blanks && (
             <p className="correct-line">
               <Ui>{t('q.theCorrectAnswer')}</Ui> <bdi>{result.correct.number !== undefined ? `${result.correct.number}${q.unit ? ' ' + q.unit : ''}` : text(result.correct.choices)}</bdi>
             </p>

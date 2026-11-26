@@ -13,7 +13,7 @@ export interface CheckAgainState {
 
 export interface QuestionState {
   attempts: unknown[]
-  result: null | 'correct1' | 'correct2' | 'wrong' | 'pending'
+  result: null | 'correct1' | 'correct2' | 'correct3' | 'wrong' | 'pending'
   score: number | null
   hint?: string | null
   solution?: string | null

@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { BlanksQuestion } from '../components/BlanksQuestion'
 import { useClassLanguage } from '../i18n'
 import { requiredLanguage } from '../classwork'
 import { useTranslation } from 'react-i18next'
@@ -23,7 +24,42 @@ import { BackButton } from '../components/BackButton'
 
 // What the teacher did with an answer (REQ-5.12, 5.13, 5.15) and, when the student may see
 // grades (REQ-5.22, D-59), the question's marks.
-type Graded = QuestionState & { graded?: boolean; changedByTeacher?: boolean; teacherComment?: string | null; markup?: string | null; teacherAudio?: string | null }
+type Graded = QuestionState & { graded?: boolean; changedByTeacher?: boolean; teacherComment?: string | null; markup?: string | null; teacherAudio?: string | null; audioUrl?: string | null }
+
+// An open or audio answer sent back for corrections (REQ-5.14, D-77): the student sees their last
+// answer with the teacher's marks and comment, which can't be edited, and then writes a new one.
+function PreviousAnswer({ state }: { state: Graded }) {
+  const { t } = useTranslation()
+  const answer = String(state.attempts?.[state.attempts.length - 1] ?? '')
+  return (
+    <div className="previous-answer" role="note">
+      <span className="teacher-note-title">
+        <Ui>{t('lesson.lastAnswer')}</Ui>
+      </span>
+      {state.audioUrl ? (
+        <audio controls src={state.audioUrl} aria-label={t('lesson.lastAnswer')} />
+      ) : state.markup ? (
+        <MarkedAnswer original={answer} markup={state.markup} />
+      ) : (
+        <div className="marked-answer" dir="auto">
+          {answer}
+        </div>
+      )}
+      {state.teacherAudio && <audio controls src={state.teacherAudio} aria-label={t('audio.teacherComment')} />}
+      {state.teacherComment && (
+        <>
+          <span className="teacher-note-title">
+            <Ui>{t('lesson.teacherComment')}</Ui>
+          </span>
+          <p dir="auto">{state.teacherComment}</p>
+        </>
+      )}
+      <p className="previous-answer-next">
+        <Ui>{t('lesson.writeNewAnswer')}</Ui>
+      </p>
+    </div>
+  )
+}
 
 function TeacherNote({ state, showGrades }: { state: Graded | undefined; showGrades: boolean }) {
   const { t } = useTranslation()
@@ -74,6 +110,8 @@ type Item ={ kind: 'topic'; number: number; name: string } | { kind: 'block'; bl
 interface Progress {
   version?: number
   questions?: Record<string, QuestionState>
+  // Earlier answers, kept when questions are sent back for corrections (REQ-5.14)
+  history?: Record<string, Graded[]>
   topics?: Record<string, { correct: number; flagged?: boolean }>
   grade?: { percent: number | null; pending: boolean; points: number; outOf: number }
   finished?: boolean
@@ -196,7 +234,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const tryCorrect = useMemo(() => {
     const out: Record<number, number> = {}
     if (!trying || !lesson) return out
-    const right = (r?: string | null) => r === 'correct1' || r === 'correct2'
+    const right = (r?: string | null) => r === 'correct1' || r === 'correct2' || r === 'correct3'
     for (const topic of lesson.topics) for (const b of topic.blocks) if (b.type === 'question') out[topic.number] = (out[topic.number] || 0) + (right(states[b.id]?.result) ? 1 : 0) + (right(states[b.id]?.checkAgain?.result) ? 1 : 0)
     return out
   }, [trying, lesson, states])
@@ -222,6 +260,13 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const visible = stop === -1 ? shown : shown.slice(0, stop + 1)
   const finished = lesson !== null && stop === -1
   const activeTopic = visible.length ? (visible[visible.length - 1] as Item & { topic?: number }).topic : undefined
+
+  // An open answer sent back for corrections: the last one, with the teacher's marks, above the new box (D-77).
+  const previousFor = (q: Question) => {
+    const h = progress?.history?.[q.id]
+    if (trying || !h?.length || states[q.id]?.result || (q.kind !== 'open' && q.kind !== 'audio')) return null
+    return <PreviousAnswer state={h[h.length - 1]} />
+  }
 
   // Time on the lesson and time away (REQ-5.33): measured for students until the lesson is finished.
   useLessonTime(lessonId, role === 'student' && gate === 'open' && progress !== null && !progress.finished)
@@ -347,7 +392,17 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
               </h2>
             ) : it.block.type === 'question' ? (
               <>
-              {it.block.kind === 'drag' && !(states[it.block.id] as TryState | undefined)?.tryShown ? (
+              {it.block.kind === 'blanks' && !(states[it.block.id] as TryState | undefined)?.tryShown ? (
+                <BlanksQuestion
+                  q={it.block}
+                  state={states[it.block.id]}
+                  lessonId={lessonId}
+                  trying={trying}
+                  uid={user?.uid || ''}
+                  label={t('q.questionNumber', { number: numbers[it.block.id] })}
+                  onState={(st) => setLocal((l) => ({ ...l, [(it.block as Question).id]: st }))}
+                />
+              ) : it.block.kind === 'drag' && !(states[it.block.id] as TryState | undefined)?.tryShown ? (
                 <DragQuestion
                   q={it.block}
                   state={states[it.block.id]}
@@ -377,6 +432,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
                   trying={trying}
                   label={t('q.questionNumber', { number: numbers[it.block.id] })}
                   onState={(s) => setLocal((l) => ({ ...l, [(it.block as Question).id]: s }))}
+                  beforeAnswer={previousFor(it.block)}
                 />
               )}
               {trying && !isFinished(states[it.block.id]) && (
@@ -497,7 +553,7 @@ function shuffledState(st: QuestionState | undefined, uid: string): QuestionStat
 }
 
 // Trying a lesson (REQ-5.32): Skip and Show answer, only for the teacher.
-type TryState = QuestionState & { tryShown?: 'skipped' | 'shown'; tryCorrect?: { choices?: string[]; number?: number; cards?: string[] } | null; trySolution?: string | null }
+type TryState = QuestionState & { tryShown?: 'skipped' | 'shown'; tryCorrect?: { choices?: string[]; number?: number; cards?: string[]; blanks?: string[] } | null; trySolution?: string | null }
 
 function TryButtons({ lessonId, q, onDone }: { lessonId: string; q: Question; onDone: (s: TryState) => void }) {
   const { t } = useTranslation()
@@ -531,7 +587,7 @@ function ShownAnswer({ q, state, label }: { q: Question; state: TryState; label:
   const { t } = useTranslation()
   const correct = state.tryCorrect
   const cardText = (id: string) => (q.cards || []).find((k) => k.id === id)?.text || ''
-  const text = correct?.cards ? correct.cards.map((id, i) => `${i + 1}: ${cardText(id)}`).join(' · ') : correct?.number !== undefined ? `${correct.number}${q.unit ? ' ' + q.unit : ''}` :(correct?.choices || []).map((id) => q.choices.find((c) => c.id === id)?.text || '').join(' · ')
+  const text = correct?.blanks ? correct.blanks.map((w: string, i: number) => `${i + 1}: ${w}`).join(' · ') : correct?.cards ? correct.cards.map((id, i) => `${i + 1}: ${cardText(id)}`).join(' · ') : correct?.number !== undefined ? `${correct.number}${q.unit ? ' ' + q.unit : ''}` :(correct?.choices || []).map((id) => q.choices.find((c) => c.id === id)?.text || '').join(' · ')
   return (
     <section className="block-question answered">
       <span className="block-label">{label}</span>

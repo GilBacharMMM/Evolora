@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useState, type FormEvent, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { httpsCallable } from 'firebase/functions'
 import { functions } from '../site'
@@ -162,6 +162,7 @@ export function QuestionCard({
   onState,
   label,
   trying = false,
+  beforeAnswer = null,
 }: {
   q: Question
   state: QuestionState | undefined
@@ -170,6 +171,8 @@ export function QuestionCard({
   label: string
   // A teacher trying the lesson (REQ-5.32): checked the same way, nothing saved.
   trying?: boolean
+  // Shown between the question and the answer box: the last answer sent back for corrections (D-77).
+  beforeAnswer?: ReactNode
 }) {
   const { t } = useTranslation()
   const [tipsOpen, setTipsOpen] = useState(false)
@@ -212,6 +215,7 @@ export function QuestionCard({
     <section className={`block-question${isFinished(st) ? ' answered' : ''}`} aria-label={label}>
       <Ui className="block-label">{label}</Ui>
       <Markdown text={q.prompt} className="question-prompt" />
+      {beforeAnswer}
 
       {(q.kind === 'choice' || q.kind === 'number') && (
         <AnswerForm

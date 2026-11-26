@@ -8,9 +8,10 @@ import { TypeChip } from '../components/TypeChip'
 import { Markdown } from '../lesson/Rich'
 import { ClassTabs } from '../components/ClassTabs'
 import { Messages } from '../components/Messages'
+import { TrackChangesBox } from '../components/TrackChangesBox'
 import { MarkedAnswer } from '../components/MarkedAnswer'
 import { Recorder, blobToBase64 } from '../components/Recorder'
-import { HIGHLIGHT_END, HIGHLIGHT_START, hasMarkup } from '../markup'
+import { hasMarkup } from '../markup'
 import type { LessonType } from '../lesson/types'
 
 // The teacher's screens for following a class (stage 1, part 4, system-design 2.7):
@@ -66,7 +67,7 @@ export interface Flag {
   lessonTitle: string
   questionId: string
   topicName: string | null
-  kind: 'checkAgainWrong' | 'minimumNotReached' | 'examWrong' | 'awayALot'
+  kind: 'checkAgainWrong' | 'minimumNotReached' | 'examWrong' | 'awayALot' | 'dragWrong' | 'blanksWrong'
   awayCount?: number | null
   alsoMinimum: boolean
   open: boolean
@@ -407,6 +408,8 @@ export function LevelControl({ classId, studentId, level, name, onChange }: { cl
 
 function flagText(f: Flag, t: (k: string, o?: Record<string, unknown>) => string) {
   if (f.kind === 'examWrong') return t('follow.flagExam', { question: f.questionId })
+  if (f.kind === 'blanksWrong') return t('follow.flagBlanks', { question: f.questionId })
+  if (f.kind === 'dragWrong') return t('follow.flagDrag', { question: f.questionId })
   if (f.kind === 'awayALot') return t('follow.flagAway', { count: f.awayCount ?? 0 })
   return f.kind === 'checkAgainWrong' ? t('follow.flagCheckAgain', { question: f.questionId }) : t('follow.flagMinimum', { topic: f.topicName || '' })
 }
@@ -885,6 +888,8 @@ interface Results {
     submitted?: boolean
     released?: boolean
     earlier: Record<string, number>
+    // The last answer before it was sent back for corrections (D-77)
+    previous?: Record<string, { answer: string; markup: string | null; teacherComment: string | null; teacherAudio: string | null; audioUrl: string | null; score: number | null }>
   }[]
 }
 
@@ -913,43 +918,33 @@ function AnswerMark({ st }: { st: AnswerState | undefined }) {
   }
   if (st.result === 'correct1') return <span className="answer-mark right">✓ {t('follow.right')}</span>
   if (st.result === 'correct2') return <span className="answer-mark half">½ {t('follow.secondTry')}</span>
+  if (st.result === 'correct3') return <span className="answer-mark half">¼ {t('follow.laterTry')}</span>
+  if (st.result === 'partial') return <span className="answer-mark half">{Math.round((st.score ?? 0) * 100)}% {t('follow.partBlanks')}</span>
   return <span className="answer-mark wrong">✗ {t('follow.wrong')}</span>
 }
 
-// Marking up a written answer (REQ-5.12, D-64): the teacher edits a copy of it, and can
-// highlight the selected text. A preview shows what the student will see.
-function MarkupBox({ original, value, onChange }: { original: string; value: string; onChange: (v: string) => void }) {
+// The last answer before it was sent back for corrections, with its marks and comment; it can't be
+// changed any more (REQ-5.14, D-77). The new answer below is the one to mark up and grade.
+function PreviousOnGrading({ prev }: { prev: { answer: string; markup: string | null; teacherComment: string | null; teacherAudio: string | null; audioUrl: string | null; score: number | null } }) {
   const { t } = useTranslation()
-  const [open, setOpen] = useState(!!value)
-  const box = useRef<HTMLTextAreaElement>(null)
-  if (!open) {
-    return (
-      <button type="button" className="link-button" onClick={() => { onChange(value || original); setOpen(true) }}>
-        {t('markup.start')}
-      </button>
-    )
-  }
-  const highlight = () => {
-    const el = box.current
-    if (!el || el.selectionStart === el.selectionEnd) return
-    const { selectionStart: a, selectionEnd: b } = el
-    onChange(value.slice(0, a) + HIGHLIGHT_START + value.slice(a, b) + HIGHLIGHT_END + value.slice(b))
-  }
   return (
-    <div className="markup-box">
-      <span className="feedback-subtitle">{t('markup.title')}</span>
-      <p className="muted small-note">{t('markup.explain')}</p>
-      <textarea ref={box} value={value} onChange={(e) => onChange(e.target.value)} rows={5} dir="auto" aria-label={t('markup.title')} />
-      <div className="button-row">
-        <button type="button" className="button secondary small" onClick={highlight}>
-          {t('markup.highlight')}
-        </button>
-        <button type="button" className="button secondary small" onClick={() => { onChange(''); setOpen(false) }}>
-          {t('markup.remove')}
-        </button>
-      </div>
-      <span className="feedback-subtitle">{t('markup.preview')}</span>
-      <MarkedAnswer original={original} markup={value} />
+    <div className="previous-answer">
+      <span className="feedback-subtitle">
+        {t('follow.previousAnswer')}
+        {prev.score != null ? ` · ${Math.round(prev.score * 100)}%` : ''}
+      </span>
+      {prev.audioUrl ? (
+        <audio controls src={prev.audioUrl} aria-label={t('follow.previousAnswer')} />
+      ) : prev.markup ? (
+        <MarkedAnswer original={prev.answer} markup={prev.markup} />
+      ) : (
+        <div className="marked-answer" dir="auto">
+          {prev.answer}
+        </div>
+      )}
+      {prev.teacherAudio && <audio controls src={prev.teacherAudio} aria-label={t('audio.teacherComment')} />}
+      {prev.teacherComment && <p className="muted" dir="auto">{t('follow.previousComment')}: {prev.teacherComment}</p>}
+      <span className="feedback-subtitle">{t('follow.newAnswer')}</span>
     </div>
   )
 }
@@ -966,7 +961,8 @@ function SuccessRate({ states }: { states: AnswerState[] }) {
     return <span className="small-note">{t('follow.rateOpen', { percent: Math.round((graded.reduce((a, st) => a + (st.score || 0), 0) / graded.length) * 100), n: graded.length })}</span>
   }
   const first = states.filter((st) => st.result === 'correct1').length
-  const second = states.filter((st) => st.result === 'correct2').length
+  // A drag-and-drop question answered right on a later attempt counts with the second (D-70).
+  const second = states.filter((st) => st.result === 'correct2' || st.result === 'correct3').length
   return (
     <span className="rate">
       <span>{t('follow.rateFirst', { percent: pct(first) })}</span>
@@ -1521,12 +1517,18 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
             {t('follow.nextStudent')} <span aria-hidden="true">{sideNext}</span>
           </button>
         </div>
+        {students[pos.s]?.previous?.[q.id] && <PreviousOnGrading prev={students[pos.s].previous![q.id]} />}
         {q.kind === 'audio' ? (
           current?.audioUrl ? <audio key={current.audioUrl} controls src={current.audioUrl} aria-label={t('audio.studentAnswer')} /> : <p className="muted">—</p>
         ) : (
-          <div className="student-answer" dir="auto">
-            {answer}
-          </div>
+          q.kind === 'open' && answer ? (
+            // The answer itself is where the teacher marks, with track changes (REQ-5.12, D-64).
+            <TrackChangesBox key={`${student.id}-${q.id}`} original={answer} value={markup} onChange={setMarkup} />
+          ) : (
+            <div className="student-answer" dir="auto">
+              {answer}
+            </div>
+          )
         )}
         <div className="grading-nav">
           <button type="button" className="button secondary small" onClick={() => move(-1, 0)} disabled={!canMove(-1, 0)}>
@@ -1565,7 +1567,6 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
             <span className="feedback-subtitle">{t('follow.comment')}</span>
             <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={4} dir="auto" maxLength={5000} />
           </label>
-          {q.kind === 'open' && <MarkupBox original={answer} value={markup} onChange={setMarkup} />}
           <div className="markup-box">
             <span className="feedback-subtitle">{t('audio.commentTitle')}</span>
             {current?.teacherAudio && !removeAudio && !audioBlob && (

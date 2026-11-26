@@ -2668,3 +2668,118 @@ details.image-source summary {
   flex-direction: column;
   gap: 0.35rem;
 }
+
+/* Drag and drop after each attempt (D-70, changed by Gil) */
+.drag-spot.locked {
+  cursor: default;
+  opacity: 1;
+}
+.drag-spot.ghost {
+  opacity: 0.75;
+  text-decoration: line-through;
+}
+.drag-spot.solution {
+  outline: 3px solid #0e6b73;
+}
+
+/* Marking up in place, with track changes (REQ-5.12, D-64) */
+.track-wrap {
+  position: relative;
+}
+.track-box {
+  min-height: 5em;
+  cursor: text;
+  outline: none;
+}
+.track-box:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgb(14 107 115 / 0.15);
+}
+.track-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-block-start: 0.35rem;
+}
+.highlight-tool {
+  position: absolute;
+  z-index: 20;
+  transform: translate(-50%, calc(-100% - 6px));
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--sun);
+  border-radius: 6px;
+  background: var(--sun-light);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+}
+.track-box .mark-added {
+  font-weight: 400;
+}
+
+/* An answer sent back for corrections (REQ-5.14, D-77) */
+.previous-answer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-block: 0.5rem 0.75rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  background: var(--teal-light);
+}
+.previous-answer-next {
+  margin: 0.25rem 0 0;
+  font-weight: 700;
+}
+
+/* Fill in the blanks (REQ-4.30, D-78) */
+.blanks-text {
+  white-space: pre-wrap;
+  line-height: 2.3;
+  font-size: 1.05rem;
+}
+.blank {
+  margin-inline: 0.2rem;
+  border: 2px solid var(--teal);
+  border-radius: 8px;
+  padding: 0.1rem 0.45rem;
+  font: inherit;
+  background: var(--white);
+  vertical-align: baseline;
+}
+.blank.right {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+.blank.wrong {
+  border-color: #9c2f2f;
+  background: #fde4e1;
+}
+.blank-slot {
+  min-width: 4.5rem;
+  border-style: dashed;
+  cursor: pointer;
+  font-weight: 700;
+}
+.blank-slot.filled {
+  border-style: solid;
+  background: var(--teal-light);
+}
+.blank-slot.right {
+  background: var(--green-light);
+}
+.blank-empty {
+  color: var(--slate);
+  font-weight: 400;
+}
+.blank-mark {
+  font-weight: 700;
+  margin-inline-end: 0.2rem;
+}
+
+.blank-group {
+  white-space: nowrap;
+}

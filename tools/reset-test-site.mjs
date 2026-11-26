@@ -25,6 +25,7 @@ import { ROOT, connect, finish, importAccounts, siteConfig, testPassword } from 
 import { loadAll } from './load.mjs'
 import { addSchool, openCourseToClass, setStaff } from './admin.mjs'
 import { agreeTestUsers, readTermsFiles, saveTerms } from './load-terms.mjs'
+import { fillStudent5 } from './fill-student-5.mjs'
 import { makeCode } from '../functions/classcode.js'
 
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
@@ -122,6 +123,9 @@ async function main() {
   if (terms.problems.length) throw new Error(`The terms files need fixing: ${terms.problems.join(' ')}`)
   const { version } = await saveTerms(db, terms.parsed)
   await agreeTestUsers(db, version)
+
+  console.log('7. Test Student 5 finishes two lessons with random answers, ready for grading (REQ-12.6)...')
+  for (const line of await fillStudent5(db)) console.log(`   ${line}`)
 
   console.log(`\nThe test site is reset to the standard test data. Test class code: ${classCode}`)
 }

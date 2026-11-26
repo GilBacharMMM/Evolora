@@ -235,7 +235,9 @@
     "redo": "Redo the lesson",
     "redoConfirm": "Start the lesson again from the beginning? Your earlier answers are kept for your teacher.",
     "redoCounts": "You are redoing this lesson. The grade of this redo will replace the earlier one.",
-    "redoPractice": "You are redoing this lesson for practice. Your earlier grade stays."
+    "redoPractice": "You are redoing this lesson for practice. Your earlier grade stays.",
+    "lastAnswer": "Your last answer was:",
+    "writeNewAnswer": "Write a new answer, based on your teacher's corrections."
   },
   "test": {
     "switchUser": "Switch user",
@@ -431,7 +433,14 @@
     "timeNet": "net time: {{time}}",
     "timesAway_one": "away once",
     "timesAway_other": "away {{count}} times",
-    "timeAway": "time away: {{time}}"
+    "timeAway": "time away: {{time}}",
+    "laterTry": "later attempt",
+    "flagDrag": "Drag-and-drop question {{question}}: every attempt failed",
+    "previousAnswer": "The last answer (sent back for corrections)",
+    "previousComment": "Comment",
+    "newAnswer": "The new answer, to mark up and grade:",
+    "partBlanks": "of the blanks right",
+    "flagBlanks": "Fill-in-the-blanks question {{question}}: every attempt failed"
   },
   "library": {
     "search": "Search by title",
@@ -464,12 +473,15 @@
     "start": "Mark up the answer",
     "title": "Marked-up answer",
     "explain": "Edit the student's words: what you remove is crossed out, what you add appears in your colour. Select words and press \"Highlight\" to mark them.",
-    "highlight": "Highlight the selected words",
+    "highlight": "Highlight",
     "remove": "Remove the mark-up",
     "preview": "What the student will see:",
     "removed": "removed by the teacher",
     "added": "added by the teacher",
-    "studentTitle": "Your answer, marked up by your teacher:"
+    "studentTitle": "Your answer, marked up by your teacher:",
+    "inPlaceLabel": "Student's answer, which you can mark up",
+    "inPlaceHelp": "Click into the answer and type: deleted text stays, crossed out, and what you add shows in purple. Select words to highlight them. Ctrl+Z undoes.",
+    "undoAll": "Undo all changes"
   },
   "exam": {
     "title": "Exam",
@@ -523,7 +535,14 @@
     "howTo": "Drag each card to its place on the picture, or click a card and then click its place.",
     "fillAll": "Put a card on every place first.",
     "spotEmpty": "Place {{n}}, empty",
-    "spotWith": "Place {{n}}: {{card}}"
+    "spotWith": "Place {{n}}: {{card}}",
+    "attemptsLeft_one": "1 attempt left.",
+    "attemptsLeft_other": "{{count}} attempts left.",
+    "someWrong_one": "1 card was in the wrong place (marked red) and went back to the pile. The right cards (green) stay.",
+    "someWrong_other": "{{count}} cards were in the wrong place (marked red) and went back to the pile. The right cards (green) stay.",
+    "markRight": "right",
+    "markWrong": "wrong",
+    "correctLater": "Correct, on a later attempt!"
   },
   "terms": {
     "link": "Terms of use",
@@ -534,5 +553,12 @@
     "version": "Version {{version}}",
     "failed": "Couldn't save. Please try again.",
     "none": "The terms of use haven't been published yet."
+  },
+  "blanks": {
+    "blank": "Blank {{n}}",
+    "fillAll": "Fill in every blank first.",
+    "howToWords": "Drag each word to its place in the text, or click a word and then the blank.",
+    "someWrong_one": "1 blank was wrong (marked red) and was emptied. The right ones (green) stay.",
+    "someWrong_other": "{{count}} blanks were wrong (marked red) and were emptied. The right ones (green) stay."
   }
 }

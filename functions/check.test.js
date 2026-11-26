@@ -209,18 +209,104 @@ test('a comment without a grade is saved, and the grade stays (D-68)', async () 
   assert.equal(teacherScore(open, undefined).invalid, true, 'a missing grade must be null, not left out')
 })
 
-test('drag and drop (REQ-4.12, D-70): right only when every spot has its card; 2 attempts like multiple choice', async () => {
-  const { answerMain, judge } = await import('./check.js')
-  const secret = { correct: ['k2', 'k1', 'k4'], hint: 'H', solution: 'S', checkAgain: [] }
-  assert.equal(judge('drag', secret, ['k2', 'k1', 'k4']), true)
-  assert.equal(judge('drag', secret, ['k2', 'k4', 'k1']), false)
-  assert.equal(judge('drag', secret, ['k2', 'k1']), 'invalid', 'every spot needs a card')
-  const q = { id: 'q9', kind: 'drag' }
-  const first = answerMain(undefined, q, secret, ['k1', 'k2', 'k4'], () => null)
-  assert.equal(first.reply.result, 'tryAgain')
-  assert.equal(first.reply.hint, 'H')
-  const second = answerMain(first.state, q, secret, ['k1', 'k2', 'k4'], () => null)
-  assert.equal(second.reply.result, 'wrong')
-  assert.deepEqual(second.reply.correct, { cards: ['k2', 'k1', 'k4'] })
-  assert.equal(answerMain(undefined, q, secret, ['k2', 'k1', 'k4'], () => null).state.score, 1)
+test('drag and drop (REQ-4.12, D-70 as changed by Gil): attempts by number of cards, marks, locked cards, grades, red flag', async () => {
+  const { answerMain, judge, dragAttempts } = await import('./check.js')
+  const secret = { correct: ['k2', 'k1', 'k4', 'k5'], hint: 'H', solution: 'S', whyRight: 'W' }
+  const cards = (n) => Array.from({ length: n }, (_, i) => ({ id: `k${i + 1}`, text: `c${i + 1}` }))
+  const q = { id: 'q9', kind: 'drag', cards: cards(5) }
+  const pick = () => null
+  assert.equal(judge('drag', secret, ['k2', 'k1', 'k4', 'k5']), true)
+
+  // Attempts: cards minus 2, never fewer than 2.
+  assert.equal(dragAttempts(q), 3, '4 spots and 1 extra card: 3 attempts')
+  assert.equal(dragAttempts({ cards: cards(4) }), 2)
+  assert.equal(dragAttempts({ cards: cards(2) }), 2)
+  assert.equal(dragAttempts({ cards: cards(8) }), 6)
+
+  // First attempt with one card wrong: marks, the right cards locked, the hint.
+  const a1 = answerMain(undefined, q, secret, ['k2', 'k1', 'k3', 'k5'], pick)
+  assert.equal(a1.reply.result, 'tryAgain')
+  assert.deepEqual(a1.reply.marks, [true, true, false, true])
+  assert.deepEqual(a1.state.locked, ['k2', 'k1', null, 'k5'])
+  assert.equal(a1.reply.hint, 'H')
+  assert.equal(a1.reply.attemptsLeft, 2)
+  assert.equal(a1.state.correct, undefined, 'the right places are not told before the last attempt (D-17)')
+  assert.equal(answerMain(a1.state, q, secret, ['k1', 'k2', 'k4', 'k5'], pick).invalid, true, 'locked cards cannot be moved')
+  assert.equal(answerMain(undefined, q, secret, ['k2', 'k2', 'k4', 'k5'], pick).invalid, true, 'a card is used once')
+  assert.equal(answerMain(undefined, q, secret, ['k2', 'k1', 'k4'], pick).invalid, true, 'every spot needs a card')
+  assert.equal(answerMain(undefined, q, secret, ['k2', 'k1', 'k4', 'k9'], pick).invalid, true, 'only real cards')
+
+  // Grades: full, half, a quarter.
+  assert.equal(answerMain(undefined, q, secret, ['k2', 'k1', 'k4', 'k5'], pick).state.score, 1)
+  const second = answerMain(a1.state, q, secret, ['k2', 'k1', 'k4', 'k5'], pick)
+  assert.equal(second.state.result, 'correct2')
+  assert.equal(second.state.score, 0.5)
+  const a2 = answerMain(a1.state, q, secret, ['k2', 'k1', 'k3', 'k5'], pick)
+  assert.equal(a2.reply.result, 'tryAgain')
+  const third = answerMain(a2.state, q, secret, ['k2', 'k1', 'k4', 'k5'], pick)
+  assert.equal(third.state.result, 'correct3')
+  assert.equal(third.state.score, 0.25)
+  assert.equal(third.countsCorrect, true)
+
+  // Every attempt fails: 0, the solution with every card, a red flag, no check-again question.
+  const last = answerMain(a2.state, q, secret, ['k2', 'k1', 'k3', 'k5'], pick)
+  assert.equal(last.reply.result, 'wrong')
+  assert.equal(last.state.score, 0)
+  assert.deepEqual(last.reply.correct, { cards: ['k2', 'k1', 'k4', 'k5'] })
+  assert.equal(last.reply.checkAgain, null)
+  assert.equal(last.flag, true)
+  assert.equal(last.flagKind, 'dragWrong')
+
+  // An extra card can be left out (k3 here) and the answer is still right; with 4 cards, 2 attempts.
+  const small = { id: 'q8', kind: 'drag', cards: cards(4) }
+  const s2 = { correct: ['k1', 'k2'], hint: null, solution: 'S' }
+  const w1 = answerMain(undefined, small, s2, ['k2', 'k1'], pick)
+  assert.deepEqual(w1.state.locked, [null, null])
+  assert.equal(answerMain(w1.state, small, s2, ['k3', 'k4'], pick).reply.result, 'wrong', 'the 2nd wrong attempt is the last')
+})
+
+test('fill in the blanks (REQ-4.30, D-78): typed, choice and word list; attempts, locking, exam credit', async () => {
+  const { answerMain, blanksAttempts, normalizeTyped, examBlanks } = await import('./check.js')
+  const pick = () => null
+  // Typed: spaces, nikud and punctuation ignored; typos wrong; more than one right answer.
+  assert.equal(normalizeTyped('  זָהָב. '), 'זהב')
+  const typed = { id: 'q1', kind: 'blanks', blanksKind: 'typed', blanks: [{}, {}, {}, {}] }
+  const ts = { correct: [['זהב', 'הזהב'], ['משקל'], ['צפיפות'], ['נפח']], hint: 'H', solution: 'S' }
+  assert.equal(blanksAttempts(typed), 2, '4 blanks: 2 attempts')
+  assert.equal(answerMain(undefined, typed, ts, ['הזהב', 'משקל', 'צפיפות', 'נפח '], pick).state.score, 1)
+  assert.equal(answerMain(undefined, typed, ts, ['זהב ', 'משקל', 'צפיפות', 'נפח'], pick).state.score, 1)
+  const t1 = answerMain(undefined, typed, ts, ['זהבב', 'משקל', 'צפיפות', 'נפח'], pick)
+  assert.equal(t1.reply.result, 'tryAgain', 'a typo is wrong')
+  assert.deepEqual(t1.reply.marks, [false, true, true, true])
+  assert.deepEqual(t1.state.locked, [null, 'משקל', 'צפיפות', 'נפח'])
+  assert.equal(t1.reply.hint, 'H')
+  assert.equal(answerMain(undefined, typed, ts, ['', 'משקל', 'צפיפות', 'נפח'], pick).invalid, true, 'every blank needs an answer')
+  const t2 = answerMain(t1.state, typed, ts, ['כסף', 'משקל', 'צפיפות', 'נפח'], pick)
+  assert.equal(t2.reply.result, 'wrong')
+  assert.deepEqual(t2.reply.correct, { blanks: ['זהב', 'משקל', 'צפיפות', 'נפח'] })
+  assert.equal(t2.flagKind, 'blanksWrong')
+  assert.equal(answerMain(t1.state, typed, ts, ['זהב', 'משקל', 'צפיפות', 'נפח'], pick).state.score, 0.5)
+
+  // Choice: only the option ids of that blank.
+  const choice = { id: 'q2', kind: 'blanks', blanksKind: 'choice', blanks: [{ options: [{ id: 'o1-1' }, { id: 'o1-2' }] }, { options: [{ id: 'o2-1' }, { id: 'o2-2' }] }] }
+  const cs = { correct: ['o1-2', 'o2-1'] }
+  assert.equal(answerMain(undefined, choice, cs, ['o1-2', 'o2-1'], pick).state.score, 1)
+  assert.equal(answerMain(undefined, choice, cs, ['o2-1', 'o2-1'], pick).invalid, true)
+
+  // Word list: attempts from the cards; each card once; checked by the word.
+  const words = { id: 'q3', kind: 'blanks', blanksKind: 'words', blanks: [{}, {}, {}, {}], cards: ['זהב', 'משקל', 'נפח', 'צבע', 'צפיפות'].map((text, n) => ({ id: `k${n + 1}`, text })) }
+  const ws = { correct: ['זהב', 'משקל', 'צפיפות', 'נפח'] }
+  assert.equal(blanksAttempts(words), 3, '4 words and 1 extra card: 3 attempts')
+  assert.equal(answerMain(undefined, words, ws, ['k1', 'k1', 'k5', 'k3'], pick).invalid, true, 'a card is used once')
+  const w1 = answerMain(undefined, words, ws, ['k1', 'k2', 'k4', 'k3'], pick)
+  assert.deepEqual(w1.reply.marks, [true, true, false, true])
+  const w2 = answerMain(w1.state, words, ws, ['k1', 'k2', 'k3', 'k3'], pick)
+  assert.equal(w2.invalid, true)
+  const w3 = answerMain(answerMain(w1.state, words, ws, ['k1', 'k2', 'k4', 'k3'], pick).state, words, ws, ['k1', 'k2', 'k5', 'k3'], pick)
+  assert.equal(w3.state.result, 'correct3')
+  assert.equal(w3.state.score, 0.25)
+
+  // Exams: one attempt, credit per blank.
+  assert.equal(examBlanks(typed, ts, ['זהב', 'משקל', 'צפיפות', 'מסה']).score, 0.75)
+  assert.equal(examBlanks(typed, ts, ['', '', '', '']).score, 0)
 })

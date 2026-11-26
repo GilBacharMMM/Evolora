@@ -9,8 +9,11 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `admin.mjs` | System admin tasks (D-47): make someone a teacher or system admin (and put teachers in a school, D-69), take the role away, list everyone with their role, add schools and list them, give a course to a whole class. | REQ-2.1, 2.2, 5.7 |
 | `load-terms.mjs` | Checks the terms of use in the `terms` folder (Hebrew, Arabic and English, same version) and puts them on the test site. With `--agree-test-users`, marks every test user except Test Student 7 as agreed to that version (D-75). | REQ-10.8 |
 | `test-terms.mjs` | End-to-end test of the terms of use: anyone can read them, nobody can fake agreeing, agreeing is saved, and a new version needs agreeing again. | REQ-10.8 |
+| `test-corrections.mjs` | End-to-end test of correcting an open answer that was sent back: the last answer kept with its marks and comment, the new answer sent once, both on the grading page, and each sending back counted. | REQ-5.14, D-77 |
 | `test-time.mjs` | End-to-end test of time on lessons and time away (counting, limits, "away a lot", the red flag, the class number) and of the class language. | REQ-5.33, 9.5 |
 | `test-sent-back.mjs` | End-to-end test of the sent-back count: per lesson, per course, and the warning at the default number and at a number the teacher changes. | REQ-5.34 |
+| `fill-student-5.mjs` | Test Student 5 finishes the Archimedes and circles teaching lessons with random answers (right first time, on the 2nd attempt, or wrong), through the checking service, so written and audio answers wait for grading. The reset runs it too. | REQ-12.6 |
+| `test-student-5.mjs` | End-to-end test of Test Student 5's ready-made work: both lessons finished, answers waiting for the teacher, different after each filling. | REQ-12.6 |
 | `set-teacher-passwords.mjs` | Gives the test teachers their own password (kept on this computer, never on GitHub), so the students-only test address can't be used to sign in as a teacher. Then rebuild and publish the test site. | REQ-12.8, D-71 |
 | `reset-test-site.mjs` | Fills or resets the test site with the standard test data: test users, the test class with its class code, the demo lessons, and the demo courses given to the whole class. It prints the test class code. Test site only. | REQ-12.6 |
 | `test-checking.mjs` | End-to-end test of the checking service: answers real questions as test students (right, wrong, check-again, numbers, letters) and checks the scores and red flags. | REQ-4.16, 4.17, 4.22, 6.3 |
@@ -25,7 +28,8 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `test-versions.mjs` | End-to-end test of lesson versions: a student who started keeps their version; a student who starts after a change gets the new one. Adds a changed version for a moment and puts the lesson back. | REQ-4.7 |
 | `test-exams.mjs` | End-to-end test of exams with the demo exam: saving and changing answers, no lesson-style answers, submitting, results hidden until released, the same questions for every level, opening early, red flags, the time window closing and submitting by itself, and allowing a retake. Takes about a minute (it waits for a window to end). Cleans up after itself. | REQ-4.26, 5.23 |
 | `test-audio.mjs` | End-to-end test of recorded answers and audio comments: saving into the student's own folder only, sound files only, size limit, sending, who can listen, and the teacher's recorded comment. Cleans up after itself. | REQ-6.6, 5.13 |
-| `test-drag.mjs` | End-to-end test of drag-and-drop questions: what students can read holds no answers, every place needs a card, two attempts with a hint, and a teacher trying it. | REQ-4.12 |
+| `test-blanks.mjs` | End-to-end test of fill-in-the-blanks questions: nothing secret reaches students, forgiving typed checking, marks and locking, attempts, the red flag, and credit per blank in exams. | REQ-4.30, D-78 |
+| `test-drag.mjs` | End-to-end test of drag-and-drop questions: what students can read holds no answers, every place needs a card, attempts by the number of cards, right cards marked and locked, the hint, grades of full, half and a quarter, the red flag when every attempt fails, and a teacher trying it. | REQ-4.12, D-70 |
 | `test-permissions.mjs` | Automatic permission tests: signs in as test users and checks that what must be blocked is blocked (for example, a student reading the correct answers). | REQ-3.4, 10.1, 10.3 |
 
 `check-lesson.mjs` also checks course files (`courses/<name>.md`): every listed lesson must exist, have the matching type (teaching, practice or exam), and pass the lesson check.
@@ -60,9 +64,12 @@ node tools/test-versions.mjs
 node tools/test-exams.mjs
 node tools/test-audio.mjs
 node tools/test-drag.mjs
+node tools/test-blanks.mjs
 node tools/test-terms.mjs
 node tools/test-sent-back.mjs
 node tools/test-time.mjs
+node tools/test-student-5.mjs
+node tools/test-corrections.mjs
 ```
 
 The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.
@@ -73,4 +80,4 @@ The programs other than the lesson check need the Firebase library: run `npm ins
 
 When a teacher sends a lesson (REQ-4.25), Claude runs the check first and tells Gil what, if anything, needs fixing. Whenever the lesson file format changes, the check is updated together with `lessons/README.md`, the teacher kit (working rule 6 in `CLAUDE.md`) and the lesson reader in `tools/lib/lesson-parser.mjs`.
 
-**Publishing the test site's two addresses (REQ-12.8, D-71).** In the `web` folder, run `npm run build:test` (the full test site, with the test teachers' password from `%USERPROFILE%\.evolora\evolora-test-teachers.json`) and `npm run build:students` (the students-only address). Then `firebase deploy --only hosting --project evolora-test` publishes both: https://evolora-test.web.app and https://evolora-test-students.web.app.
+**Publishing the test site (REQ-12.8, D-71).** In the `web` folder, run `npm run build:test` (with the test teachers' password from `%USERPROFILE%.evoloraevolora-test-teachers.json`), then `firebase deploy --only hosting:full,functions,firestore:rules --project evolora-test`. The students-only address (evolora-test-students.web.app) is closed at Gil's request: never publish the "students" target or a bare `--only hosting`, because that would open it again.

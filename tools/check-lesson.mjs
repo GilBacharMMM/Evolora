@@ -4,17 +4,18 @@
 // Usage: node tools/check-lesson.mjs <lesson folder or lesson.md> [more ...]
 // Exit code: 0 when there are no errors (warnings are allowed), 1 otherwise.
 
+import { blanksKind, readBlanks, wordList } from './lib/blanks.mjs'
 import fs from 'node:fs'
 import path from 'node:path'
 
 const BLOCK_TYPES = new Set([
   'TEXT', 'NOTE BOX', 'IMAGE', 'TABLE', 'FORMULA', 'VIDEO', 'AUDIO', 'SIMULATION',
   'LINK LIST', 'SOLVED EXAMPLE', 'QUOTE',
-  'QUESTION: multiple choice', 'QUESTION: number', 'QUESTION: open', 'QUESTION: audio', 'QUESTION: drag and drop',
+  'QUESTION: multiple choice', 'QUESTION: number', 'QUESTION: open', 'QUESTION: audio', 'QUESTION: drag and drop', 'QUESTION: fill in the blanks',
 ])
 const LESSON_TYPES = ['teaching lesson', 'practice lesson', 'exam']
 const LANGUAGES = ['he', 'ar', 'en']
-const FIELD = /^- (Hint|Solution|Why it's right|Answer|Unit|Grading instructions|Tip|Spot|Extra card|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
+const FIELD = /^- (Hint|Solution|Why it's right|Answer|Unit|Grading instructions|Tip|Spot|Extra card|Words|Extra words|file|caption|source|link|title|start|end|intro text|instructions for the student):\s*(.*)$/i
 const NUMBER = /^-?\d+(\.\d+)?$/
 const TIME = /^\d{1,2}:\d{2}(:\d{2})?$/
 
@@ -143,7 +144,9 @@ function checkLesson(target) {
   for (const b of blocks) {
     const { fields, choices, tips, spots, extraCards } = fieldsOf(b.lines)
     const isQuestion = b.type.startsWith('QUESTION')
-    const isAuto = b.type === 'QUESTION: multiple choice' || b.type === 'QUESTION: number' || b.type === 'QUESTION: drag and drop'
+    const isAuto = b.type === 'QUESTION: multiple choice' || b.type === 'QUESTION: number' || b.type === 'QUESTION: drag and drop' || b.type === 'QUESTION: fill in the blanks'
+    // Questions with several parts (drag and drop, fill in the blanks) have no check-again question (D-70, D-78).
+    const multiPart = b.type === 'QUESTION: drag and drop' || b.type === 'QUESTION: fill in the blanks'
     const levelTag = b.tags.find((t) => /^LEVEL\s*\d$/.test(t))
     const level = levelTag ? Number(levelTag.replace(/\D/g, '')) : null
     const isExtra = b.tags.includes('EXTRA')
@@ -244,6 +247,15 @@ function checkLesson(target) {
       if (b.checkAgain.length) err(b.checkAgain[0].n, 'Drag-and-drop questions have no check-again question yet (D-70).')
     }
 
+    // Fill in the blanks (REQ-4.30, D-78): blanks of one kind only.
+    if (b.type === 'QUESTION: fill in the blanks') {
+      const text = []
+      for (const l of b.lines) { if (l.text.startsWith('- ') || l.text.startsWith('>')) break; text.push(l.text) }
+      const { brackets } = readBlanks(text.join('\n'))
+      for (const problem of blanksKind(brackets, wordList(fields.words?.value)).problems) err(b.n, problem)
+      if (b.checkAgain.length) err(b.checkAgain[0].n, 'Fill-in-the-blanks questions have no check-again question (D-78).')
+    }
+
     if (b.type === 'QUESTION: open' || b.type === 'QUESTION: audio') {
       if (!fields['grading instructions']) err(b.n, `The ${what} has no grading instructions.`)
     }
@@ -257,7 +269,7 @@ function checkLesson(target) {
         if (!fields.hint) err(b.n, `The ${what} has no hint (REQ-4.16).`)
         if (!fields.solution) err(b.n, `The ${what} has no full solution (REQ-4.16).`)
         if (!fields["why it's right"]) noWhy++
-        if (!isExtra && b.checkAgain.length === 0 && b.type !== 'QUESTION: drag and drop') err(b.n, `The ${what} has no check-again question (REQ-4.17).`)
+        if (!isExtra && b.checkAgain.length === 0 && !multiPart) err(b.n, `The ${what} has no check-again question (REQ-4.17).`)
       }
       for (const ca of b.checkAgain) {
         const caf = fieldsOf(ca.lines)
@@ -266,7 +278,7 @@ function checkLesson(target) {
         if (ca.tags.some((t) => t.startsWith('NEW'))) newTags++
       }
       b.topic.autoQuestions++
-      if ((level === 1 || isExam) && b.type !== 'QUESTION: drag and drop') { if (isExtra) b.topic.extra++; else b.topic.level1++ }
+      if ((level === 1 || isExam) && !multiPart) { if (isExtra) b.topic.extra++; else b.topic.level1++ }
     }
   }
 
