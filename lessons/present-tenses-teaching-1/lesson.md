@@ -125,6 +125,12 @@ Look at the verbs: "Emma **plays**" and "Emma **is reading**". Which one tells u
 
 # [TOPIC 2: When do we use each tense?]
 
+## [VIDEO]
+
+- link: https://www.youtube.com/watch?v=4_tLjSQtthw
+- title: Simple Present Vs. Present Progressive – Grammar & Verb Tenses
+- source: Ellii (formerly ESL Library)
+
 ## [TABLE]
 
 | Present Simple | Present Progressive |
