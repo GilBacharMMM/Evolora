@@ -11,6 +11,8 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `test-terms.mjs` | End-to-end test of the terms of use: anyone can read them, nobody can fake agreeing, agreeing is saved, and a new version needs agreeing again. | REQ-10.8 |
 | `test-time.mjs` | End-to-end test of time on lessons and time away (counting, limits, "away a lot", the red flag, the class number) and of the class language. | REQ-5.33, 9.5 |
 | `test-sent-back.mjs` | End-to-end test of the sent-back count: per lesson, per course, and the warning at the default number and at a number the teacher changes. | REQ-5.34 |
+| `fill-student-5.mjs` | Test Student 5 finishes the Archimedes and circles teaching lessons with random answers (right first time, on the 2nd attempt, or wrong), through the checking service, so written and audio answers wait for grading. The reset runs it too. | REQ-12.6 |
+| `test-student-5.mjs` | End-to-end test of Test Student 5's ready-made work: both lessons finished, answers waiting for the teacher, different after each filling. | REQ-12.6 |
 | `set-teacher-passwords.mjs` | Gives the test teachers their own password (kept on this computer, never on GitHub), so the students-only test address can't be used to sign in as a teacher. Then rebuild and publish the test site. | REQ-12.8, D-71 |
 | `reset-test-site.mjs` | Fills or resets the test site with the standard test data: test users, the test class with its class code, the demo lessons, and the demo courses given to the whole class. It prints the test class code. Test site only. | REQ-12.6 |
 | `test-checking.mjs` | End-to-end test of the checking service: answers real questions as test students (right, wrong, check-again, numbers, letters) and checks the scores and red flags. | REQ-4.16, 4.17, 4.22, 6.3 |
@@ -63,6 +65,7 @@ node tools/test-drag.mjs
 node tools/test-terms.mjs
 node tools/test-sent-back.mjs
 node tools/test-time.mjs
+node tools/test-student-5.mjs
 ```
 
 The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.

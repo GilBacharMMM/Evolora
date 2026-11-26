@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { markupSegments } from '../markup'
+import { segmentsFor } from '../markup'
 
 // A written answer as the teacher marked it up (REQ-5.12): the student's words, crossed out where
 // the teacher changed them, the teacher's words in the teacher's colour, and highlighted parts.
@@ -8,7 +8,7 @@ export function MarkedAnswer({ original, markup }: { original: string; markup: s
   const { t } = useTranslation()
   return (
     <div className="marked-answer" dir="auto">
-      {markupSegments(original, markup).map((s, i) => {
+      {segmentsFor(original, markup).map((s, i) => {
         const cls = s.highlight ? 'mark-highlight' : undefined
         if (s.kind === 'removed') {
           return (

@@ -466,12 +466,15 @@
     "start": "Mark up the answer",
     "title": "Marked-up answer",
     "explain": "Edit the student's words: what you remove is crossed out, what you add appears in your colour. Select words and press \"Highlight\" to mark them.",
-    "highlight": "Highlight the selected words",
+    "highlight": "Highlight",
     "remove": "Remove the mark-up",
     "preview": "What the student will see:",
     "removed": "removed by the teacher",
     "added": "added by the teacher",
-    "studentTitle": "Your answer, marked up by your teacher:"
+    "studentTitle": "Your answer, marked up by your teacher:",
+    "inPlaceLabel": "Student's answer, which you can mark up",
+    "inPlaceHelp": "Click into the answer and type: deleted text stays, crossed out, and what you add shows in purple. Select words to highlight them. Ctrl+Z undoes.",
+    "undoAll": "Undo all changes"
   },
   "exam": {
     "title": "Exam",

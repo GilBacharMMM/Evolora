@@ -8,9 +8,9 @@ import { TypeChip } from '../components/TypeChip'
 import { Markdown } from '../lesson/Rich'
 import { ClassTabs } from '../components/ClassTabs'
 import { Messages } from '../components/Messages'
-import { MarkedAnswer } from '../components/MarkedAnswer'
+import { TrackChangesBox } from '../components/TrackChangesBox'
 import { Recorder, blobToBase64 } from '../components/Recorder'
-import { HIGHLIGHT_END, HIGHLIGHT_START, hasMarkup } from '../markup'
+import { hasMarkup } from '../markup'
 import type { LessonType } from '../lesson/types'
 
 // The teacher's screens for following a class (stage 1, part 4, system-design 2.7):
@@ -918,44 +918,6 @@ function AnswerMark({ st }: { st: AnswerState | undefined }) {
   return <span className="answer-mark wrong">✗ {t('follow.wrong')}</span>
 }
 
-// Marking up a written answer (REQ-5.12, D-64): the teacher edits a copy of it, and can
-// highlight the selected text. A preview shows what the student will see.
-function MarkupBox({ original, value, onChange }: { original: string; value: string; onChange: (v: string) => void }) {
-  const { t } = useTranslation()
-  const [open, setOpen] = useState(!!value)
-  const box = useRef<HTMLTextAreaElement>(null)
-  if (!open) {
-    return (
-      <button type="button" className="link-button" onClick={() => { onChange(value || original); setOpen(true) }}>
-        {t('markup.start')}
-      </button>
-    )
-  }
-  const highlight = () => {
-    const el = box.current
-    if (!el || el.selectionStart === el.selectionEnd) return
-    const { selectionStart: a, selectionEnd: b } = el
-    onChange(value.slice(0, a) + HIGHLIGHT_START + value.slice(a, b) + HIGHLIGHT_END + value.slice(b))
-  }
-  return (
-    <div className="markup-box">
-      <span className="feedback-subtitle">{t('markup.title')}</span>
-      <p className="muted small-note">{t('markup.explain')}</p>
-      <textarea ref={box} value={value} onChange={(e) => onChange(e.target.value)} rows={5} dir="auto" aria-label={t('markup.title')} />
-      <div className="button-row">
-        <button type="button" className="button secondary small" onClick={highlight}>
-          {t('markup.highlight')}
-        </button>
-        <button type="button" className="button secondary small" onClick={() => { onChange(''); setOpen(false) }}>
-          {t('markup.remove')}
-        </button>
-      </div>
-      <span className="feedback-subtitle">{t('markup.preview')}</span>
-      <MarkedAnswer original={original} markup={value} />
-    </div>
-  )
-}
-
 // Which questions are hard for the class (REQ-5.29): of the students who answered, how many got it
 // right on the 1st attempt, on the 2nd, and not at all. Open answers: the average of graded ones.
 function SuccessRate({ states }: { states: AnswerState[] }) {
@@ -1527,9 +1489,14 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
         {q.kind === 'audio' ? (
           current?.audioUrl ? <audio key={current.audioUrl} controls src={current.audioUrl} aria-label={t('audio.studentAnswer')} /> : <p className="muted">—</p>
         ) : (
-          <div className="student-answer" dir="auto">
-            {answer}
-          </div>
+          q.kind === 'open' && answer ? (
+            // The answer itself is where the teacher marks, with track changes (REQ-5.12, D-64).
+            <TrackChangesBox key={`${student.id}-${q.id}`} original={answer} value={markup} onChange={setMarkup} />
+          ) : (
+            <div className="student-answer" dir="auto">
+              {answer}
+            </div>
+          )
         )}
         <div className="grading-nav">
           <button type="button" className="button secondary small" onClick={() => move(-1, 0)} disabled={!canMove(-1, 0)}>
@@ -1568,7 +1535,6 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
             <span className="feedback-subtitle">{t('follow.comment')}</span>
             <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={4} dir="auto" maxLength={5000} />
           </label>
-          {q.kind === 'open' && <MarkupBox original={answer} value={markup} onChange={setMarkup} />}
           <div className="markup-box">
             <span className="feedback-subtitle">{t('audio.commentTitle')}</span>
             {current?.teacherAudio && !removeAudio && !audioBlob && (
