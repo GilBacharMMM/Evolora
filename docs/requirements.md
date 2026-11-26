@@ -455,6 +455,35 @@ A creator can mark a word or term in the lesson text and attach a short explanat
 - [ ] Moving the mouse away closes the window.
 - [ ] A creator can add an explanation to a word in the lesson file (and in stage 2, in the lesson builder).
 
+**REQ-4.30: Fill-in-the-blanks questions** (Priority 2: should have; Gil, D-78)
+The student sees a text with missing words (blanks) and fills each blank with a word or two. There are three kinds; one question uses one kind:
+- **Typed:** the student types into each blank.
+- **Choose in each blank:** each blank has a dropdown list of words, in random order.
+- **Word list:** the words are shown as cards below the text, in random order. The student drags a card into a blank, or clicks a card and then a blank, as in drag-and-drop questions (REQ-4.12). Each card is used once. The writer may add extra cards that fit nowhere.
+
+**Checking typed blanks:** extra spaces, nikud and punctuation are ignored. The writer may give more than one right answer for a blank (for example "זהב" or "הזהב"). A typing mistake counts as wrong.
+
+**In teaching and practice lessons**, checking works like drag-and-drop (D-70):
+- The answer is right only when every blank is right.
+- Attempts: the number of blanks minus 2 (for the word list: the number of cards, extra cards included, minus 2), and never fewer than 2.
+- After each attempt, each blank gets a green outline if it's right and a red outline if it's wrong. Right blanks are locked; wrong ones are emptied, to fill again.
+- The hint shows after the first wrong attempt.
+- Grades: full marks on the first attempt, half on the second, a quarter on a later one, 0 if every attempt fails.
+- If every attempt fails, the solution shows the right word in every blank, and the teacher gets a red flag. There is no check-again question.
+
+**In exams:** one attempt. The grade is the share of blanks that are right (3 of 4 right gives 75% of the question's marks). As with every exam question, nothing shows as right or wrong until the exam ends.
+
+Fill-in-the-blanks questions can be used in every type of lesson: teaching lessons, practice lessons and exams, and any type added later.
+
+*Acceptance criteria:*
+- [ ] As a student, in the Archimedes teaching lesson, answer the three demo questions (typed, choose in each blank, word list) about the crown.
+- [ ] Typed: "הזהב" and "זהב " are accepted where the writer allowed them; "זהבב" is wrong.
+- [ ] The dropdown words and the word-list cards are in a different order for different students.
+- [ ] Fill one blank wrongly: it gets a red outline and empties, the right blanks get a green outline and stay, and the hint shows.
+- [ ] The crown question with 4 blanks gives 2 attempts; a word list with 4 words and 1 extra card gives 3.
+- [ ] Fail every attempt: the solution shows every right word, and the teacher sees a red flag on the class dashboard.
+- [ ] In an exam with this question, 3 of 4 blanks right gives 75% of the question's marks, shown only when the exam ends.
+
 ## 5. Class management (teachers)
 
 **REQ-5.1: Create a class** (Priority 1: must have)

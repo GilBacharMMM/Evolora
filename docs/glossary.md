@@ -51,6 +51,8 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Subject / grade level** | Tags on each lesson, such as "Science" and "Grade 7". Grades 7 to 12 are supported. | proposed |
 | **Edit mode** | A mode any teacher (or creator) can switch on to create and edit lessons and courses. Stage 2. | proposed |
 | **Lesson version** | A saved state of a lesson. When a creator changes a lesson, students who already started it finish the version they started; new students get the new version. | proposed |
+| **Fill-in-the-blanks question** | A question where the student completes a text with missing words: by typing, by choosing in each blank, or by placing words from a list (REQ-4.30). | agreed |
+| **Blank** | A missing word in a fill-in-the-blanks question. | agreed |
 | **Drag-and-drop question** | A question where the student drags items from a bank of snippets onto an image, like a puzzle. | proposed |
 | **Lesson builder** | The screen where a creator builds and edits a lesson, block by block. Stage 2. | proposed |
 | **Image source** | Where an image comes from: own work, AI-generated, or another source (with author, link and licence). Shown to students under each image. | agreed |

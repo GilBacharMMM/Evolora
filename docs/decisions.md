@@ -890,3 +890,22 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 3. **Attempts:** the new answer is sent once and waits for the grade, as the first time (Gil: "Sent once, as today"). The teacher can send it back again; each time is counted (REQ-5.34).
 **Reason:** the student must see the corrections while fixing the answer, and must write the fix themselves.
 **Affects:** REQ-5.14, REQ-5.12, D-59
+
+### D-78: Fill-in-the-blanks questions
+**Date:** 2026-11-26 · **Status:** Decided · **Decided by:** Gil (the three kinds and all choices); the lesson-file format by Claude
+**Context:** Gil asked for a new question type, with three kinds: typed blanks, a choice in each blank, and a list of words to place.
+**Options considered and decisions (Gil):**
+1. **Typed blanks:** forgiving (spaces, nikud and punctuation ignored), with extra right answers allowed. Not chosen: exact match only; small typos allowed.
+2. **Lessons:** checked like drag-and-drop (D-70): green and red marking of each blank after every attempt; right blanks lock; attempts are blanks (or cards) minus 2, at least 2; full, half, then a quarter; failing every attempt gives the solution and a red flag. Not chosen: like multiple choice; partial credit per blank.
+3. **Word list:** cards placed by dragging or clicking, each used once, extra cards allowed. Not chosen: no extras; a dropdown in each blank.
+4. **Where:** every type of lesson, exams included. In exams: one attempt, credit per blank. Not chosen: all or nothing.
+5. **Priority 2**, built after the work in progress.
+**Lesson file format (Claude):**
+- `## [QUESTION: fill in the blanks]`, then the text. A blank is 3 or more underscores, written right after the text before it (for example `ה____`).
+- **Typed:** right after the blank, the right answer in square brackets: `____ [זהב]`; more right answers are separated by `|`: `____ [זהב | הזהב]`.
+- **Choose in each blank:** the words in square brackets, separated by commas, with `*` before the right one: `____ [*זהב, כסף, אלומיניום]`.
+- **Word list:** the blanks have no brackets, and a line after the text lists the right words in the order of the blanks: `- Words: זהב, משקל, צפיפות, נפח`. Extra cards: `- Extra words: מסה, צבע`.
+- Then `- Hint:`, `- Solution:` and `- Why it's right:`, as in other questions.
+- One question uses one kind; the lesson check refuses a mix.
+**Reason:** one way of checking for all questions that have several parts (drag-and-drop and fill-in-the-blanks), so students and teachers learn it once.
+**Affects:** new REQ-4.30, the lesson format, the lesson check, the lesson reader, the teacher kit, the Archimedes teaching lesson (three demo questions)
