@@ -36,11 +36,11 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 `check-lesson.mjs` also checks course files (`courses/<name>.md`): every listed lesson must exist, have the matching type (teaching, practice or exam), and pass the lesson check.
 
 ```
-node tools/check-lesson.mjs lessons/circles-teaching
+node tools/check-lesson.mjs lessons/circles-teaching-1
 node tools/check-lesson.mjs courses/circles-demo.md
 
 node tools/load.mjs courses/circles-demo.md               (loads the course and its lessons into the test site)
-node tools/load.mjs --skip-images lessons/circles-teaching (only while file storage isn't switched on)
+node tools/load.mjs --skip-images lessons/circles-teaching-1 (only while file storage isn't switched on)
 
 node tools/admin.mjs add-school ort-rehovot "Ort Rehovot"
 node tools/admin.mjs add-teacher someone@gmail.com "Name" --school ort-rehovot

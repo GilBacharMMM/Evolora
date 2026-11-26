@@ -1373,7 +1373,7 @@ The test site can be filled with a standard set of test data with one command, b
 | Q-10 | School approval before the pilot? | Not needed for now. (D-13) |
 | Q-11 | First lesson? | "Density: Archimedes and his discovery", in the lessons_drafts folder. |
 | Q-12 | Image rights? | All images in the Archimedes lesson are AI-generated, except the Renaissance woodcut from Wikimedia Commons. Every image must record its source, like Wikipedia. (REQ-4.15, D-20) |
-| Q-13 | Questions inside the lesson? | Yes: add questions during the lesson, move the simulation and the videos into the lesson itself, and develop the lesson together in an Evolora lesson file (now lessons/archimedes-density-teaching). |
+| Q-13 | Questions inside the lesson? | Yes: add questions during the lesson, move the simulation and the videos into the lesson itself, and develop the lesson together in an Evolora lesson file (now lessons/archimedes-density-teaching-1). |
 | D-Q1 | First admin's school account? | School Google sign-in needs Ministry of Education approval, so the pilot uses regular Google accounts instead. (REQ-3.2, D-19) |
 | D-Q2 | Separate test site? | Approved. Created as Firebase project evolora-test. (REQ-12.4, D-18) |
 | D-Q3 | Email invites? | Approved: a free email service sending from noreply@evoloraedu.org (Milestone B). |

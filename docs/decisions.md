@@ -927,3 +927,12 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Reason:** Gil's own data on the test site stays, and the tests check exactly what pilot teachers and students will use.
 **Affects:** system-design 8.1, tools/README.md
 
+
+### D-81: Lesson folders are always numbered from 1
+**Date:** 2026-11-26 · **Status:** Decided · **Decided by:** Gil
+**Context:** Lesson folder names are the lesson ids. Until now only a second lesson of the same type got a number, so the density course had `archimedes-density-practice` and `archimedes-density-practice-2`. Gil: "always start naming from practice-1".
+**Options considered:** number only when there are two or more lessons of a type on the topic; number every practice lesson from 1; number every lesson from 1 (teaching lessons, practice lessons and exams).
+**Decision:** every lesson folder ends with its type and a number, starting from 1, even when it is the only one of its type on the topic: `<topic>-teaching-1`, `<topic>-practice-1`, `<topic>-practice-2`, `<topic>-exam-1`. The lesson check refuses a folder without the number. The existing lessons were renamed: `archimedes-density-teaching-1`, `archimedes-density-practice-1`, `circles-teaching-1`, `circles-practice-1`, `circles-exam-1` (`archimedes-density-practice-2` kept its name).
+**On the test site:** the renamed lessons were loaded under their new names, and the test class's two courses now point to them. The lessons under the old names were removed. The only student work in them was Test Student 5's ready-made work (and its red flags), which was filled again in the renamed lessons. No other class used these lessons, so nothing Gil keeps there (as Test Teacher 2 or with Gil's own accounts) was touched. A few test sound recordings of Test Student 5 under the old names stay in file storage, unused (the loading program can't remove them).
+**Reason:** a lesson never has to be renamed when a second one of its type is added, and all lessons follow one pattern.
+**Affects:** lessons/README.md, the teacher kit (lesson-rules-for-claude.md), the lesson check, the demo courses, the tests

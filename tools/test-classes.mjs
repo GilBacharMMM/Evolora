@@ -100,21 +100,21 @@ try {
   console.log('Giving lessons (REQ-5.7)')
   await as('test-teacher-2', async ({ call }) => {
     await call('assign', { classId, courseId: 'circles-demo', studentIds: null })
-    await call('assign', { classId, lessonIds: ['archimedes-density-teaching'], studentIds: [S.seven] })
+    await call('assign', { classId, lessonIds: ['archimedes-density-teaching-1'], studentIds: [S.seven] })
     check('the teacher gives a course to the whole class and a lesson to one student', true)
     let bad = false
-    try { await call('assign', { classId, lessonIds: ['archimedes-density-teaching'], studentIds: ['test-student-1'] }) } catch { bad = true }
+    try { await call('assign', { classId, lessonIds: ['archimedes-density-teaching-1'], studentIds: ['test-student-1'] }) } catch { bad = true }
     check('a student who is not in the class cannot be chosen', bad)
   })
   check("Test Teacher 1 cannot give lessons in Test Teacher 2's class", await as('test-teacher-1', ({ call }) => refused(() => call('assign', { classId, courseId: 'circles-demo', studentIds: null }))))
   await as(S.seven, async ({ db }) => {
     const a = await visibleAssignments(db, classId, S.seven)
-    check('the chosen student sees the course and the lesson given only to them', a.some((x) => x.courseId === 'circles-demo') && a.some((x) => x.lessonIds.includes('archimedes-density-teaching') && !x.everyone))
-    check('the chosen student can read that lesson', (await getDoc(doc(db, 'lessons', 'archimedes-density-teaching'))).exists())
+    check('the chosen student sees the course and the lesson given only to them', a.some((x) => x.courseId === 'circles-demo') && a.some((x) => x.lessonIds.includes('archimedes-density-teaching-1') && !x.everyone))
+    check('the chosen student can read that lesson', (await getDoc(doc(db, 'lessons', 'archimedes-density-teaching-1'))).exists())
   })
   await as(S.six, async ({ db }) => {
     const a = await visibleAssignments(db, classId, S.six)
-    check('another student sees the course but not the lesson given to someone else', a.some((x) => x.courseId === 'circles-demo') && !a.some((x) => x.lessonIds.includes('archimedes-density-teaching')))
+    check('another student sees the course but not the lesson given to someone else', a.some((x) => x.courseId === 'circles-demo') && !a.some((x) => x.lessonIds.includes('archimedes-density-teaching-1')))
   })
   await as(S.five, async ({ db, call }) => {
     check('Test Student 5 joins after the lessons were given', (await call('joinClass', { code })).result === 'joined')
@@ -153,20 +153,20 @@ try {
   await deleteDoc(doc(ldb, 'joinAttempts', S.three))
 
   console.log('Finishing a lesson (D-55), and removing a student (REQ-5.4)')
-  const lesson = (await getDoc(doc(ldb, 'lessons', 'circles-teaching'))).data()
-  const version = (await getDoc(doc(ldb, 'lessons', 'circles-teaching', 'versions', String(lesson.currentVersion)))).data()
-  const secret = (await getDoc(doc(ldb, 'lessons', 'circles-teaching', 'versions', String(lesson.currentVersion), 'secret', 'answers'))).data().questions
-  for (const uid of [S.seven]) await deleteDoc(doc(ldb, 'progress', `${uid}__circles-teaching`))
+  const lesson = (await getDoc(doc(ldb, 'lessons', 'circles-teaching-1'))).data()
+  const version = (await getDoc(doc(ldb, 'lessons', 'circles-teaching-1', 'versions', String(lesson.currentVersion)))).data()
+  const secret = (await getDoc(doc(ldb, 'lessons', 'circles-teaching-1', 'versions', String(lesson.currentVersion), 'secret', 'answers'))).data().questions
+  for (const uid of [S.seven]) await deleteDoc(doc(ldb, 'progress', `${uid}__circles-teaching-1`))
   await as(S.seven, async ({ db, call, app }) => {
     const questions = version.topics.flatMap((t) => t.blocks.filter((b) => b.type === 'question'))
-    const first = await call('finishLesson', { lessonId: 'circles-teaching' })
+    const first = await call('finishLesson', { lessonId: 'circles-teaching-1' })
     check('a lesson with unanswered questions is not marked finished', first.finished === false)
     for (const q of questions) {
-      if (q.kind === 'audio') { await answerWithRecording(app, call, S.seven, 'circles-teaching', q.id).catch(notMine); continue }
+      if (q.kind === 'audio') { await answerWithRecording(app, call, S.seven, 'circles-teaching-1', q.id).catch(notMine); continue }
       const value = q.kind === 'choice' || q.kind === 'drag' ? secret[q.id].correct : q.kind === 'number' ? String(secret[q.id].answer) : 'My answer for the test.'
-      await call('answer', { lessonId: 'circles-teaching', questionId: q.id, value }).catch(notMine)
+      await call('answer', { lessonId: 'circles-teaching-1', questionId: q.id, value }).catch(notMine)
     }
-    const p = (await getDoc(doc(db, 'progress', `${S.seven}__circles-teaching`))).data()
+    const p = (await getDoc(doc(db, 'progress', `${S.seven}__circles-teaching-1`))).data()
     check('after the last answer the lesson is marked finished', p.finished === true)
   })
   await as('test-teacher-2', async ({ db, call }) => {
@@ -175,7 +175,7 @@ try {
     check('the teacher still has the removed student, marked as removed', s.exists() && s.data().removed === true)
     const o = await call('classOverview', { classId })
     check("the removed student's page stays open to the teacher", (o.removedStudents || []).some((r) => r.id === S.seven) && !o.students.some((r) => r.id === S.seven))
-    check("the removed student's work is kept for the teacher", (await getDoc(doc(db, 'progress', `${S.seven}__circles-teaching`))).exists())
+    check("the removed student's work is kept for the teacher", (await getDoc(doc(db, 'progress', `${S.seven}__circles-teaching-1`))).exists())
   })
   await as(S.seven, async ({ db, call }) => {
     const m = await getDoc(doc(db, 'memberships', S.seven))
@@ -183,7 +183,7 @@ try {
     let blocked = false
     try { await getDoc(doc(db, 'classes', classId)) } catch { blocked = true }
     check('the removed student can no longer read the class', blocked)
-    check('the removed student can no longer answer its lessons', await refused(() => call('answer', { lessonId: 'archimedes-density-teaching', questionId: 'x', value: ['c1'] })))
+    check('the removed student can no longer answer its lessons', await refused(() => call('answer', { lessonId: 'archimedes-density-teaching-1', questionId: 'x', value: ['c1'] })))
     check('the student cannot remove themselves from a class (only the teacher)', await refused(() => call('removeStudent', { classId: 'test-class', studentId: S.seven })))
   })
 } catch (e) {
@@ -199,7 +199,7 @@ try {
     for (const l of (await getDocs(collection(ldb, 'lessons'))).docs) if ((l.data().classIds || []).includes(classId)) await updateDoc(l.ref, { classIds: arrayRemove(classId) })
     for (const c of (await getDocs(collection(ldb, 'courses'))).docs) if ((c.data().classIds || []).includes(classId)) await updateDoc(c.ref, { classIds: arrayRemove(classId) })
   }
-  await deleteDoc(doc(ldb, 'progress', `${S.seven}__circles-teaching`))
+  await deleteDoc(doc(ldb, 'progress', `${S.seven}__circles-teaching-1`))
   for (const uid of Object.values(S)) await deleteDoc(doc(ldb, 'joinAttempts', uid))
   // Test Student 4 was in the test class before; make sure that is unchanged.
   const m4 = await getDoc(doc(ldb, 'memberships', S.four))

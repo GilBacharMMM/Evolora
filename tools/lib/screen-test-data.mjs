@@ -13,7 +13,7 @@ import { connect } from './connect.mjs'
 import { fillStudent5 } from '../fill-student-5.mjs'
 
 export const CLASS_ID = 'test-class'
-export const LESSONS = ['archimedes-density-teaching', 'archimedes-density-practice']
+export const LESSONS = ['archimedes-density-teaching-1', 'archimedes-density-practice-1']
 
 let conn
 export async function db() {

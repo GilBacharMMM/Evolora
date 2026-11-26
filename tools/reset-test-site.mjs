@@ -30,7 +30,7 @@ import { makeCode } from '../functions/classcode.js'
 
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const CLASS_ID = 'test-class'
-const LESSONS_AND_COURSES = ['courses/density-demo.md', 'courses/circles-demo.md', 'lessons/circles-exam']
+const LESSONS_AND_COURSES = ['courses/density-demo.md', 'courses/circles-demo.md', 'lessons/circles-exam-1']
 
 async function deleteAll(db, ...pathSegments) {
   const snap = await getDocs(collection(db, ...pathSegments))

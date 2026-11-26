@@ -20,7 +20,7 @@ import { ROOT, connect, finish, siteConfig, testPassword } from './lib/connect.m
 import { answerWithRecording } from './lib/test-helpers.mjs'
 
 const STUDENT = 'test-student-5'
-export const STUDENT_5_LESSONS = ['archimedes-density-teaching', 'circles-teaching']
+export const STUDENT_5_LESSONS = ['archimedes-density-teaching-1', 'circles-teaching-1']
 const LOREM = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
   'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',

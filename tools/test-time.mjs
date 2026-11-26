@@ -19,7 +19,7 @@ const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-
 const config = siteConfig('test')
 const CLASS = 'test-class'
 const STUDENT = 'test-student-5'
-const LESSON = 'circles-practice'
+const LESSON = 'circles-practice-1'
 let failures = 0
 let count = 0
 

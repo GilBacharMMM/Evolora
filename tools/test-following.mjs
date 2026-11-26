@@ -46,7 +46,7 @@ async function refused(action) {
 
 const loader = await connect('test')
 const ldb = loader.db
-const LESSONS = ['circles-teaching', 'archimedes-density-teaching', 'circles-practice']
+const LESSONS = ['circles-teaching-1', 'archimedes-density-teaching-1', 'circles-practice-1']
 const STUDENTS = ['test-student-1', 'test-student-2', 'test-student-3', 'test-student-4', 'test-student-5', 'test-student-6']
 
 async function lessonData(lessonId) {
@@ -67,7 +67,7 @@ async function cleanUp() {
 
 const restoreTeachers = await soloTeacher(ldb, CLASS)
 await cleanUp()
-const circles = await lessonData('circles-teaching')
+const circles = await lessonData('circles-teaching-1')
 let openLesson = null
 for (const l of LESSONS) {
   const d = await lessonData(l)
@@ -81,20 +81,20 @@ try {
   const wrong = (q, s) => [q.choices.find((c) => !s.correct.includes(c.id)).id]
   await as('test-student-2', async ({ call }) => {
     const s = circles.secret[choiceQ.id]
-    await call('answer', { lessonId: 'circles-teaching', questionId: choiceQ.id, value: wrong(choiceQ, s) })
-    const b = await call('answer', { lessonId: 'circles-teaching', questionId: choiceQ.id, value: wrong(choiceQ, s) })
+    await call('answer', { lessonId: 'circles-teaching-1', questionId: choiceQ.id, value: wrong(choiceQ, s) })
+    const b = await call('answer', { lessonId: 'circles-teaching-1', questionId: choiceQ.id, value: wrong(choiceQ, s) })
     const ca = s.checkAgain.find((c) => c.id === b.reply.checkAgain.id)
     const caWrong = ca.kind === 'number' ? String(ca.answer + 5) : [ca.choices.find((c) => !ca.correct.includes(c.id)).id]
-    await call('answer', { lessonId: 'circles-teaching', questionId: choiceQ.id, checkAgain: true, value: caWrong })
-    await call('answer', { lessonId: 'circles-teaching', questionId: choiceQ.id, checkAgain: true, value: caWrong })
+    await call('answer', { lessonId: 'circles-teaching-1', questionId: choiceQ.id, checkAgain: true, value: caWrong })
+    await call('answer', { lessonId: 'circles-teaching-1', questionId: choiceQ.id, checkAgain: true, value: caWrong })
   })
   check('there is an open question to grade in a demo lesson', !!openLesson)
   await as('test-student-3', ({ call }) => call('answer', { lessonId: openLesson.lessonId, questionId: openLesson.q.id, value: 'Because the density of gold is higher.' }))
   await as('test-student-4', async ({ call, app }) => {
     for (const q of circles.questions) {
-      if (q.kind === 'audio') { await answerWithRecording(app, call, 'test-student-4', 'circles-teaching', q.id).catch(notMine); continue }
+      if (q.kind === 'audio') { await answerWithRecording(app, call, 'test-student-4', 'circles-teaching-1', q.id).catch(notMine); continue }
       const value = q.kind === 'choice' || q.kind === 'drag' ? circles.secret[q.id].correct : q.kind === 'number' ? String(circles.secret[q.id].answer) : 'My answer.'
-      await call('answer', { lessonId: 'circles-teaching', questionId: q.id, value }).catch(notMine)
+      await call('answer', { lessonId: 'circles-teaching-1', questionId: q.id, value }).catch(notMine)
     }
   })
 
@@ -116,10 +116,10 @@ try {
     check('the student with an open red flag shows red', row('test-student-2').status === 'red' && row('test-student-2').openFlags === 1)
     check('the flag says which question caused it', o.flags.some((f) => f.uid === 'test-student-2' && f.questionId === choiceQ.id && f.open))
     const p4 = row('test-student-4').positions['circles-demo']
-    check('the progress map shows Test Student 4 finished the first circles lesson', p4 && p4.done === 1 && p4.current === 'circles-practice', JSON.stringify(p4))
+    check('the progress map shows Test Student 4 finished the first circles lesson', p4 && p4.done === 1 && p4.current === 'circles-practice-1', JSON.stringify(p4))
     const p2 = row('test-student-2').positions['circles-demo']
-    check('and Test Student 2 still working on it', p2.done === 0 && p2.current === 'circles-teaching' && p2.working === true)
-    check('a lesson not finished shows "not done" (0)', row('test-student-1').cells['circles-teaching'].kind === 'notDone')
+    check('and Test Student 2 still working on it', p2.done === 0 && p2.current === 'circles-teaching-1' && p2.working === true)
+    check('a lesson not finished shows "not done" (0)', row('test-student-1').cells['circles-teaching-1'].kind === 'notDone')
     check('an answer waiting for the teacher shows as pending, not 0', ['pending', 'notDone'].includes(row('test-student-3').cells[openLesson.lessonId].kind) && row('test-student-3').cells[openLesson.lessonId].waiting === 1)
     const lines = o.csv.replace(/^﻿/, '').trim().split('\r\n')
     check('the CSV file has a header and a row per student, a column per lesson', lines.length === 7 && lines[0].match(/("[^"]*"|[^,]+)/g).length === 3 + o.columns.length && o.columns.length === o.courses.reduce((n, c) => n + c.order.length, 0), `${lines.length} lines, ${o.columns.length} columns`)
@@ -141,7 +141,7 @@ try {
     const q = r.questions.find((x) => x.id === openLesson.q.id)
     check('the lesson results have the question, its grading instructions and the answer', !!q && q.gradingInstructions === (openLesson.secret[q.id].gradingInstructions || null) && r.students.find((s) => s.id === 'test-student-3').states[q.id].attempts[0].startsWith('Because'))
     check('a grade above full marks is refused', await refused(() => call('gradeAnswer', { classId: CLASS, lessonId: openLesson.lessonId, studentId: 'test-student-3', questionId: q.id, score: 1.5 })))
-    const changed = await call('gradeAnswer', { classId: CLASS, lessonId: 'circles-teaching', studentId: 'test-student-2', questionId: choiceQ.id, score: 1 })
+    const changed = await call('gradeAnswer', { classId: CLASS, lessonId: 'circles-teaching-1', studentId: 'test-student-2', questionId: choiceQ.id, score: 1 })
     check('an automatically checked answer can be changed by the teacher, and is marked so (REQ-5.15)', changed.state.changedByTeacher === true && changed.state.score === 1)
     const g = await call('gradeAnswer', { classId: CLASS, lessonId: openLesson.lessonId, studentId: 'test-student-3', questionId: q.id, score: 0.5, comment: 'Good start. What about the volume?', markup: 'Because the ⟦density⟧ of gold is higher.' })
     check('"half" saves half the marks, with the comment', g.state.score === 0.5 && g.state.teacherComment === 'Good start. What about the volume?')
@@ -171,10 +171,10 @@ try {
 
   console.log('Opening a lesson early (REQ-5.20)')
   await as('test-teacher-1', async ({ call }) => {
-    await call('openEarly', { classId: CLASS, lessonId: 'circles-practice', studentIds: ['test-student-5', 'test-student-6'] })
+    await call('openEarly', { classId: CLASS, lessonId: 'circles-practice-1', studentIds: ['test-student-5', 'test-student-6'] })
     check('a lesson outside the class\'s courses cannot be opened early', await refused(() => call('openEarly', { classId: CLASS, lessonId: 'no-such-lesson', studentIds: null })))
   })
-  const sees = (uid) => as(uid, async ({ db }) => (await getDocs(query(collection(db, 'classes', CLASS, 'openings'), where('studentIds', 'array-contains', uid)))).docs.some((d) => d.data().lessonId === 'circles-practice'))
+  const sees = (uid) => as(uid, async ({ db }) => (await getDocs(query(collection(db, 'classes', CLASS, 'openings'), where('studentIds', 'array-contains', uid)))).docs.some((d) => d.data().lessonId === 'circles-practice-1'))
   check('the 2 chosen students see the lesson opened for them', (await sees('test-student-5')) && (await sees('test-student-6')))
   check('other students do not', !(await sees('test-student-1')))
 } catch (e) {

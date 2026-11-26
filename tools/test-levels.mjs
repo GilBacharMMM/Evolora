@@ -18,7 +18,7 @@ const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-
 const config = siteConfig('test')
 // The first density practice lesson has questions at levels 1, 2 and 3 (they moved there from the
 // Archimedes teaching lesson).
-const LESSON = 'archimedes-density-practice'
+const LESSON = 'archimedes-density-practice-1'
 let failures = 0
 let count = 0
 

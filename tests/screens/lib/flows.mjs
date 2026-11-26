@@ -3,8 +3,8 @@
 
 import { expect, goTo, openSite, signInAs, tr, trStart } from './helpers.mjs'
 
-const TEACHING = 'archimedes-density-teaching'
-const PRACTICE = 'archimedes-density-practice'
+const TEACHING = 'archimedes-density-teaching-1'
+const PRACTICE = 'archimedes-density-practice-1'
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 function question(page, lang, n) {

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// End-to-end test of exams (REQ-4.26, 5.23) on the test site, with the demo exam circles-exam.
-// Run after loading it (node tools/load.mjs lessons/circles-exam). Cleans up after itself.
+// End-to-end test of exams (REQ-4.26, 5.23) on the test site, with the demo exam circles-exam-1.
+// Run after loading it (node tools/load.mjs lessons/circles-exam-1). Cleans up after itself.
 //
 //   node tools/test-exams.mjs
 
@@ -16,7 +16,7 @@ setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const config = siteConfig('test')
 const CLASS = 'test-class'
-const EXAM = 'circles-exam'
+const EXAM = 'circles-exam-1'
 let failures = 0
 let count = 0
 

@@ -16,7 +16,7 @@ import { ROOT, connect, finish, siteConfig, testPassword } from './lib/connect.m
 setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const config = siteConfig('test')
-const LESSON = 'circles-practice'
+const LESSON = 'circles-practice-1'
 let failures = 0
 let count = 0
 

@@ -81,11 +81,12 @@ function checkLesson(target) {
   if (meta.licence && meta.licence !== 'CC BY-SA 4.0') err(1, `Lesson details: licence must be "CC BY-SA 4.0" (found "${meta.licence}").`)
   if (meta.type && !LESSON_TYPES.includes(meta.type)) err(1, `Lesson details: type must be one of: ${LESSON_TYPES.join(', ')} (found "${meta.type}").`)
   const isExam = meta.type === 'exam'
-  // Folder name convention (Gil, 2026-11-22): <topic>-teaching, <topic>-practice or <topic>-exam, optionally -2, -3...
+  // Folder name convention (Gil, 2026-11-22, D-81): <topic>-teaching-<n>, <topic>-practice-<n> or <topic>-exam-<n>,
+  // always numbered from 1, even when the lesson is the only one of its type on the topic.
   const folder = path.basename(dir)
   const suffix = { 'teaching lesson': 'teaching', 'practice lesson': 'practice', exam: 'exam' }[meta.type]
-  if (suffix && !new RegExp('^[a-z0-9]+(-[a-z0-9]+)*-' + suffix + '(-[0-9]+)?$').test(folder)) {
-    err(0, `The folder name "${folder}" must be <topic>-${suffix} in lowercase English with dashes (for example circles-${suffix}), to match the lesson's type.`)
+  if (suffix && !new RegExp('^[a-z0-9]+(-[a-z0-9]+)*-' + suffix + '-[1-9][0-9]*$').test(folder)) {
+    err(0, `The folder name "${folder}" must be <topic>-${suffix}-<number> in lowercase English with dashes, numbered from 1 (for example circles-${suffix}-1, circles-${suffix}-2), to match the lesson's type.`)
   }
   const minimum = parseInt(meta['minimum questions per topic'] || '', 10)
   if (!isExam && !(minimum >= 1)) err(1, 'Lesson details: "minimum questions per topic" is missing or not a number.')

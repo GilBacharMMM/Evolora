@@ -19,7 +19,7 @@ setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const config = siteConfig('test')
 const CLASS = 'test-class'
-const LESSON = 'circles-teaching'
+const LESSON = 'circles-teaching-1'
 // Questions above a student's level are refused (REQ-6.10); tests that answer a whole lesson skip them.
 const notMine = (e) => { if (e.code !== 'functions/failed-precondition') throw e }
 let failures = 0
@@ -58,7 +58,7 @@ const right = (q) => (q.kind === 'choice' || q.kind === 'drag' ? secret[q.id].co
 const PEOPLE = ['test-student-2', 'test-student-4', 'test-student-6']
 
 async function cleanUp() {
-  for (const uid of PEOPLE) for (const l of [LESSON, 'circles-practice', 'archimedes-density-teaching']) await deleteDoc(doc(ldb, 'progress', `${uid}__${l}`))
+  for (const uid of PEOPLE) for (const l of [LESSON, 'circles-practice-1', 'archimedes-density-teaching-1']) await deleteDoc(doc(ldb, 'progress', `${uid}__${l}`))
   for (const f of (await getDocs(query(collection(ldb, 'flags'), where('classId', '==', CLASS)))).docs) await deleteDoc(f.ref)
   for (const n of (await getDocs(collection(ldb, 'classes', CLASS, 'notes'))).docs) await deleteDoc(n.ref)
   for (const a of (await getDocs(collection(ldb, 'classes', CLASS, 'assignments'))).docs) if (a.data().createdBy !== 'evolora-loader') await deleteDoc(a.ref)
@@ -71,8 +71,8 @@ try {
 
   console.log('Students see grades, or not (REQ-5.22)')
   await as('test-teacher-1', async ({ call }) => {
-    await call('assign', { classId: CLASS, lessonIds: ['circles-practice'], studentIds: ['test-student-6'], grades: 'hide' })
-    check('a wrong grades setting is refused', await refused(() => call('assign', { classId: CLASS, lessonIds: ['circles-practice'], studentIds: null, grades: 'maybe' })))
+    await call('assign', { classId: CLASS, lessonIds: ['circles-practice-1'], studentIds: ['test-student-6'], grades: 'hide' })
+    check('a wrong grades setting is refused', await refused(() => call('assign', { classId: CLASS, lessonIds: ['circles-practice-1'], studentIds: null, grades: 'maybe' })))
   })
   await as('test-student-6', async ({ db }) => {
     const mine = await getDocs(query(collection(db, 'classes', CLASS, 'assignments'), where('studentIds', 'array-contains', 'test-student-6')))

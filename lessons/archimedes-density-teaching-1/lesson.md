@@ -7,7 +7,7 @@ creator: גיל בכר
 licence: CC BY-SA 4.0
 type: teaching lesson
 minimum questions per topic: 1 (default; the teacher can change it when assigning)
-status: draft 2 (Claude, 2026-11-24: the practice questions at the end moved to the practice lesson archimedes-density-practice; topic 3 removed and its summary, links and video moved to the end of topic 2. For Gil's review)
+status: draft 2 (Claude, 2026-11-24: the practice questions at the end moved to the practice lesson archimedes-density-practice-1; topic 3 removed and its summary, links and video moved to the end of topic 2. For Gil's review)
 ---
 
 # [TOPIC 1: המלך, הכתר והצפיפות]

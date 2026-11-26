@@ -15,7 +15,7 @@ import { ROOT, connect, finish, siteConfig, testPassword } from './lib/connect.m
 setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const config = siteConfig('test')
-const LESSON = 'archimedes-density-teaching'
+const LESSON = 'archimedes-density-teaching-1'
 const PEOPLE = ['test-student-1', 'test-student-2', 'test-student-3']
 let failures = 0
 let count = 0

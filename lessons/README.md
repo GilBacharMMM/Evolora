@@ -6,7 +6,7 @@ Pilot teachers write lessons with the **lesson-writing kit** in [teacher-kit](te
 
 ## How a lesson file is written
 
-**Folder names** (Gil, 2026-11-22): each lesson folder is named `<topic>-teaching`, `<topic>-practice` or `<topic>-exam`, matching the lesson's type, in lowercase English with dashes. Lessons on the same topic share the topic part, so they sit together: for example `circles-teaching`, `circles-practice`, `circles-exam`. A second lesson of the same type gets a number: `circles-practice-2`. The lesson check refuses a folder whose name doesn't match its type.
+**Folder names** (Gil, 2026-11-22 and 2026-11-26, D-81): each lesson folder is named `<topic>-teaching-<number>`, `<topic>-practice-<number>` or `<topic>-exam-<number>`, matching the lesson's type, in lowercase English with dashes. **Numbering always starts from 1**, even when the lesson is the only one of its type on the topic: for example `circles-teaching-1`, `circles-practice-1`, `circles-practice-2`, `circles-exam-1`. Lessons on the same topic share the topic part, so they sit together. The lesson check refuses a folder whose name doesn't match its type or has no number.
 
 The top of the file has the lesson details (title, language, subject, grade, creator, licence, type: teaching lesson, practice lesson or exam, REQ-4.20, and the default minimum questions per topic, REQ-4.21). The creator is the teacher's real name only if the teacher agreed to be named; otherwise `creator: מורה אנונימי/ת` (`Anonymous teacher` in English lessons), because lesson files are public (D-79).
 
@@ -64,13 +64,13 @@ creator: <name>
 licence: CC BY-SA 4.0
 ---
 
-1. [TEACHING] circles-teaching
-   - [PRACTICE] circles-practice
+1. [TEACHING] circles-teaching-1
+   - [PRACTICE] circles-practice-1
    - [PRACTICE] circles-practice-2
-2. [TEACHING] triangles-teaching
-3. [TEACHING] triangle-area-teaching
-   - [PRACTICE] triangle-area-practice
-4. [EXAM] circles-and-triangles-exam
+2. [TEACHING] triangles-teaching-1
+3. [TEACHING] triangle-area-teaching-1
+   - [PRACTICE] triangle-area-practice-1
+4. [EXAM] circles-and-triangles-exam-1
 ```
 
 An exam is listed as its own numbered line, as in line 4. Each listed lesson must exist as its own lesson folder, with `type: teaching lesson`, `type: practice lesson` or `type: exam` at the top. The teacher chooses the course order (one after another, paired or any order) when assigning the course (REQ-5.8), so it is not written in the file.

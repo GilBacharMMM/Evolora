@@ -17,7 +17,7 @@ setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const config = siteConfig('test')
 const CLASS = 'test-class'
-const LESSON = 'circles-teaching'
+const LESSON = 'circles-teaching-1'
 let failures = 0
 let count = 0
 
@@ -108,10 +108,10 @@ try {
   }))
 
   console.log('Minimum questions per topic, set when giving (REQ-4.21, 5.9)')
-  const practiceDefault = (await getDoc(doc(ldb, 'lessons', 'circles-practice'))).data().minimumPerTopic
-  check("before: the lesson's default", (await as('test-student-6', ({ call }) => call('lessonView', { lessonId: 'circles-practice' }))).minimum === practiceDefault)
-  await as('test-teacher-1', ({ call }) => call('assign', { classId: CLASS, lessonIds: ['circles-practice'], studentIds: ['test-student-6'], minimumPerTopic: 1 }))
-  check("after the teacher sets 1, the student's lesson asks for 1 per topic", (await as('test-student-6', ({ call }) => call('lessonView', { lessonId: 'circles-practice' }))).minimum === 1)
+  const practiceDefault = (await getDoc(doc(ldb, 'lessons', 'circles-practice-1'))).data().minimumPerTopic
+  check("before: the lesson's default", (await as('test-student-6', ({ call }) => call('lessonView', { lessonId: 'circles-practice-1' }))).minimum === practiceDefault)
+  await as('test-teacher-1', ({ call }) => call('assign', { classId: CLASS, lessonIds: ['circles-practice-1'], studentIds: ['test-student-6'], minimumPerTopic: 1 }))
+  check("after the teacher sets 1, the student's lesson asks for 1 per topic", (await as('test-student-6', ({ call }) => call('lessonView', { lessonId: 'circles-practice-1' }))).minimum === 1)
 } catch (e) {
   check('the test ran to the end', false, e.message)
 } finally {

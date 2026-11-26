@@ -67,7 +67,7 @@ try {
   await updateDoc(doc(ldb, 'users', WHO), { termsAccepted: deleteField() })
   await as(WHO, async ({ db, call }) => {
     let refusedWork = false
-    try { await call('lessonView', { lessonId: 'circles-teaching' }) } catch (e) { refusedWork = e.code === 'functions/failed-precondition' && e.message.startsWith('terms') }
+    try { await call('lessonView', { lessonId: 'circles-teaching-1' }) } catch (e) { refusedWork = e.code === 'functions/failed-precondition' && e.message.startsWith('terms') }
     check("before agreeing, the checking service refuses the student's work (D-76)", refusedWork)
     let blocked = false
     try { await setDoc(doc(db, 'users', WHO), { termsAccepted: { version: termsBefore.version } }, { merge: true }) } catch { blocked = true }
@@ -80,7 +80,7 @@ try {
     check('agreeing to a version that is not the current one is refused', wrongRefused)
     const r = await call('acceptTerms', { version: termsBefore.version })
     check('"I agree" is accepted', r.version === termsBefore.version)
-    const view = await call('lessonView', { lessonId: 'circles-teaching' })
+    const view = await call('lessonView', { lessonId: 'circles-teaching-1' })
     check('after agreeing, the same request works', Array.isArray(view.hidden))
   })
   const saved = (await getDoc(doc(ldb, 'users', WHO))).data().termsAccepted
