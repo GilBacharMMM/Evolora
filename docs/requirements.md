@@ -1278,6 +1278,8 @@ On the test site only, Gil can switch between made-up test users (for example, "
 **REQ-12.8: Students-only test address** (Priority 1: foundation)
 A second address for the test site lets a student test Evolora and look for bugs without being able to act as a teacher (D-71). It shows the same test data, but its "Switch user" list has only the test students, and it has no Google sign-in. It opens in Hebrew, whatever the browser's language; the language can still be changed.
 
+**Closed (Gil, 2026-11-26):** the students-only test address is closed and shows "Site not found". Deploying to the test site must leave it closed (deploy only the full address). To open it again, Claude deploys it again, at Gil's request.
+
 *Acceptance criteria:*
 - [ ] At https://evolora-test-students.web.app, in a browser that has never opened it (for example, an English one), the page is in Hebrew.
 - [ ] At https://evolora-test-students.web.app, the sign-in page lists Test Student 1 to 7 and no teachers, and has no "Sign in with Google" button.
