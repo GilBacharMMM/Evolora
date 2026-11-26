@@ -131,6 +131,10 @@ Look at the verbs: "Emma **plays**" and "Emma **is reading**". Which one tells u
 - title: Simple Present Vs. Present Progressive – Grammar & Verb Tenses
 - source: Ellii (formerly ESL Library)
 
+## [NOTE BOX]
+
+**Two names, one tense:** "Present Simple" and "Simple Present" are the same tense; the video says "Simple Present". In the same way, the Present Progressive is also called the **Present Continuous**. You may see any of these names.
+
 > 🟦 Claude: I couldn't watch the video, so these two questions ask about what it teaches (when to use each tense), not about details only the video shows. Please check that they fit the video.
 
 ## [QUESTION: multiple choice] [LEVEL 1] [NEW: suggested by Claude]
