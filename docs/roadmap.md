@@ -62,6 +62,7 @@ REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-2.
 | REQ-5.25, 5.28 | "Not yet mastered" list; student page with teacher notes |
 | REQ-6.13 | Going back to finished lessons |
 | REQ-5.32 | Teacher tries a lesson before and after giving it, with Skip and Show answer |
+| REQ-4.30 | Fill-in-the-blanks questions: typed, choose in each blank, or a word list (D-78) |
 
 ### Priority 3: later
 
