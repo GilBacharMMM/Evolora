@@ -1301,6 +1301,11 @@ A second address for the test site lets a student test Evolora and look for bugs
 **REQ-12.6: Ready-made test data** (Priority 1: foundation)
 The test site can be filled with a standard set of test data with one command, by Claude: test teachers, test students, a test class, the Archimedes lesson with its two practice lessons, the circles lesson and the circles practice lesson, with their two demo courses (`courses/circles-demo.md`, `courses/density-demo.md`). It can be reset to that state at any time.
 
+**Two teachers, two subjects (Gil, 2026-11-26):**
+- Test Teacher 1 is shown as **"Math and Science teacher"** and teaches the test class "Test Class 7A" (test students 1 to 6), in Hebrew, with the density and circles courses.
+- Test Teacher 2 is shown as **"English teacher"** and teaches a second test class, "Test English 7A" (test students 1 to 3), whose class language is English (REQ-9.5), with the English course (`courses/english-present-tenses.md`).
+- So test students 1 to 3 are in both classes, and see Math and Science in Hebrew and English in English.
+
 **Test Student 5 comes with finished work (Gil, 2026-11-25):** after every reset, Test Student 5 has finished the Archimedes teaching lesson and the circles teaching lesson, so Gil can try grading without filling in answers first.
 - The answers are chosen at random on each reset: some right on the first attempt, some on the second, some wrong.
 - Written answers are filler text ("lorem ipsum"); the audio answer is a short test recording.
@@ -1311,6 +1316,9 @@ The test site can be filled with a standard set of test data with one command, b
 - [ ] After a reset, Test Teacher 1 sees Test Student 5's written and audio answers in the Archimedes and circles teaching lessons waiting to be graded, and the class dashboard shows Test Student 5 has finished both lessons.
 - [ ] After a second reset, Test Student 5's answers are different.
 - [ ] The test students include at least one student at each level (1, 2 and 3), so REQ-6.10 can be checked.
+- [ ] After a reset, the "Switch user" list shows "Math and Science teacher" and "English teacher".
+- [ ] As Test Student 1, the home page shows two classes: Test Class 7A in Hebrew, and Test English 7A, whose pages and English lessons are in English.
+- [ ] As the English teacher, the class Test English 7A has test students 1 to 3 and the English course.
 
 ## 13. Out of scope for now
 
