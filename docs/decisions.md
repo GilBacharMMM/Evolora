@@ -110,7 +110,7 @@ Entry format:
 **Affects:** REQ-4.3
 
 ### D-9: MVP in two milestones
-**Date:** 2026-11-20 · **Status:** Proposed · **Decided by:** awaiting Gil
+**Date:** 2026-11-20 · **Status:** Replaced by the parts plan (docs/roadmap.md); approved by Gil (2026-11-26) · **Decided by:** Gil
 **Context:** Gil wants real students using Evolora in 2 to 4 weeks, but the full MVP is large.
 **Options considered:**
 1. Build the full MVP, then start: risks missing the date.
