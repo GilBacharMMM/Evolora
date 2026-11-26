@@ -26,6 +26,7 @@ Evolora is teaching software. It helps teachers create lessons and manage their 
 | `docs/roadmap.md` | What goes into each version, starting with the MVP |
 | `docs/glossary.md` | Agreed meaning of the terms we use |
 | `docs/setup-google-cloud.md` | Steps Gil does personally in Google Cloud (accounts, payment, sign-in) |
+| `docs/moe-approval-steps.he.md` | Research and tracking: steps to get Ministry of Education approval, connect to school Google accounts and Classroom, ISO 27001 and penetration tests (in Hebrew, at Gil's request) |
 | `lessons/README.md` | The lesson file format |
 | `lessons/teacher-kit/` | What pilot teachers use to write lessons with Claude Code: the rules for Claude and a guide in Hebrew (REQ-4.25) |
 
