@@ -32,7 +32,7 @@ export type Block =
 export interface Question {
   type: 'question'
   id: string
-  kind: 'choice' | 'number' | 'open' | 'audio' | 'drag'
+  kind: 'choice' | 'number' | 'open' | 'audio' | 'drag' | 'blanks'
   level: number | null
   extra: boolean
   prompt: string
@@ -44,6 +44,9 @@ export interface Question {
   image?: { file: string; caption: string; source: string; storagePath: string | null } | null
   spots?: { x: number; y: number }[]
   cards?: { id: string; text: string }[]
+  // Fill in the blanks (REQ-4.30, D-78): the kind, and per blank the words to choose from (dropdown).
+  blanksKind?: 'typed' | 'choice' | 'words'
+  blanks?: { options?: { id: string; text: string }[] }[]
 }
 
 export interface Topic {

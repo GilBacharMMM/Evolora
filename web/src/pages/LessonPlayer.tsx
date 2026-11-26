@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
+import { BlanksQuestion } from '../components/BlanksQuestion'
 import { useClassLanguage } from '../i18n'
 import { requiredLanguage } from '../classwork'
 import { useTranslation } from 'react-i18next'
@@ -391,7 +392,17 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
               </h2>
             ) : it.block.type === 'question' ? (
               <>
-              {it.block.kind === 'drag' && !(states[it.block.id] as TryState | undefined)?.tryShown ? (
+              {it.block.kind === 'blanks' && !(states[it.block.id] as TryState | undefined)?.tryShown ? (
+                <BlanksQuestion
+                  q={it.block}
+                  state={states[it.block.id]}
+                  lessonId={lessonId}
+                  trying={trying}
+                  uid={user?.uid || ''}
+                  label={t('q.questionNumber', { number: numbers[it.block.id] })}
+                  onState={(st) => setLocal((l) => ({ ...l, [(it.block as Question).id]: st }))}
+                />
+              ) : it.block.kind === 'drag' && !(states[it.block.id] as TryState | undefined)?.tryShown ? (
                 <DragQuestion
                   q={it.block}
                   state={states[it.block.id]}
@@ -542,7 +553,7 @@ function shuffledState(st: QuestionState | undefined, uid: string): QuestionStat
 }
 
 // Trying a lesson (REQ-5.32): Skip and Show answer, only for the teacher.
-type TryState = QuestionState & { tryShown?: 'skipped' | 'shown'; tryCorrect?: { choices?: string[]; number?: number; cards?: string[] } | null; trySolution?: string | null }
+type TryState = QuestionState & { tryShown?: 'skipped' | 'shown'; tryCorrect?: { choices?: string[]; number?: number; cards?: string[]; blanks?: string[] } | null; trySolution?: string | null }
 
 function TryButtons({ lessonId, q, onDone }: { lessonId: string; q: Question; onDone: (s: TryState) => void }) {
   const { t } = useTranslation()
@@ -576,7 +587,7 @@ function ShownAnswer({ q, state, label }: { q: Question; state: TryState; label:
   const { t } = useTranslation()
   const correct = state.tryCorrect
   const cardText = (id: string) => (q.cards || []).find((k) => k.id === id)?.text || ''
-  const text = correct?.cards ? correct.cards.map((id, i) => `${i + 1}: ${cardText(id)}`).join(' · ') : correct?.number !== undefined ? `${correct.number}${q.unit ? ' ' + q.unit : ''}` :(correct?.choices || []).map((id) => q.choices.find((c) => c.id === id)?.text || '').join(' · ')
+  const text = correct?.blanks ? correct.blanks.map((w: string, i: number) => `${i + 1}: ${w}`).join(' · ') : correct?.cards ? correct.cards.map((id, i) => `${i + 1}: ${cardText(id)}`).join(' · ') : correct?.number !== undefined ? `${correct.number}${q.unit ? ' ' + q.unit : ''}` :(correct?.choices || []).map((id) => q.choices.find((c) => c.id === id)?.text || '').join(' · ')
   return (
     <section className="block-question answered">
       <span className="block-label">{label}</span>

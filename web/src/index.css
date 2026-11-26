@@ -2734,3 +2734,52 @@ details.image-source summary {
   margin: 0.25rem 0 0;
   font-weight: 700;
 }
+
+/* Fill in the blanks (REQ-4.30, D-78) */
+.blanks-text {
+  white-space: pre-wrap;
+  line-height: 2.3;
+  font-size: 1.05rem;
+}
+.blank {
+  margin-inline: 0.2rem;
+  border: 2px solid var(--teal);
+  border-radius: 8px;
+  padding: 0.1rem 0.45rem;
+  font: inherit;
+  background: var(--white);
+  vertical-align: baseline;
+}
+.blank.right {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+.blank.wrong {
+  border-color: #9c2f2f;
+  background: #fde4e1;
+}
+.blank-slot {
+  min-width: 4.5rem;
+  border-style: dashed;
+  cursor: pointer;
+  font-weight: 700;
+}
+.blank-slot.filled {
+  border-style: solid;
+  background: var(--teal-light);
+}
+.blank-slot.right {
+  background: var(--green-light);
+}
+.blank-empty {
+  color: var(--slate);
+  font-weight: 400;
+}
+.blank-mark {
+  font-weight: 700;
+  margin-inline-end: 0.2rem;
+}
+
+.blank-group {
+  white-space: nowrap;
+}

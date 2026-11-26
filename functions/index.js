@@ -14,7 +14,7 @@ import { setGlobalOptions } from 'firebase-functions/v2'
 import { onSchedule } from 'firebase-functions/v2/scheduler'
 import { getStorage } from 'firebase-admin/storage'
 import { randomUUID } from 'node:crypto'
-import { answerCheckAgain, answerMain, isFinished, judge, lessonFinished, lessonGrade, receives, sendBackForCorrections, teacherScore } from './check.js'
+import { answerCheckAgain, answerMain, isFinished, judge, lessonFinished, lessonGrade, receives, sendBackForCorrections, teacherScore, examBlanks, validBlanks } from './check.js'
 import { averageGrade, coursePosition, dueFor, lateGrade, lessonCell, levelSuggestions, median, notMastered, sentBackLimit, sentBackTotals, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
 import { applyTimeReport, awayALot, awayLimit, timeSummary, validReport } from './time.js'
 import { CLASS_COLORS, WAIT_MS, afterWrong, makeCode, normalizeCode, validateCode, waitLeft } from './classcode.js'
@@ -1042,7 +1042,7 @@ export const tryAnswer = onCallAgreed(async (request) => {
   if (!found) throw new HttpsError('not-found', 'No such question.')
   const secret = sSnap.data().questions[questionId] || {}
   if (show) {
-    const correct = found.q.kind === 'number' ? { number: secret.answer } : found.q.kind === 'choice' ? { choices: secret.correct } : found.q.kind === 'drag' ? { cards: secret.correct } : null
+    const correct = found.q.kind === 'number' ? { number: secret.answer } : found.q.kind === 'choice' ? { choices: secret.correct } : found.q.kind === 'drag' ? { cards: secret.correct } : found.q.kind === 'blanks' ? { blanks: (secret.correct || []).map((c, i) => (found.q.blanksKind === 'typed' ? String(c).split('|')[0].trim() : found.q.blanksKind === 'choice' ? found.q.blanks[i].options.find((o) => o.id === c)?.text || '' : c)) } : null
     return { correct, solution: secret.solution || null, gradingInstructions: secret.gradingInstructions || null }
   }
   const state = before && typeof before === 'object' ? before : undefined
@@ -1234,6 +1234,7 @@ async function examWindow(uid, classIds, lessonId, now = Date.now()) {
 }
 
 function examValue(q, value) {
+  if (q.kind === 'blanks') return validBlanks(q, value, { allowEmpty: true }) ? value.map((v) => String(v).slice(0, 200)) : null
   if (q.kind === 'choice') return Array.isArray(value) && value.every((v) => typeof v === 'string') ? value.slice(0, 20) : null
   if (q.kind === 'number' || q.kind === 'open') return typeof value === 'string' ? value.slice(0, 20000) : null
   return null
@@ -1282,6 +1283,13 @@ async function submitExam(uid, lessonId, lesson, classIds, studentName) {
       const given = answers[b.id]
       if (b.kind === 'open') {
         questions[b.id] = given && given.trim() ? { attempts: [given.trim()], result: 'pending', score: null } : { attempts: [], result: 'wrong', score: 0 }
+        continue
+      }
+      if (b.kind === 'blanks') {
+        // Credit for each right blank (D-78).
+        const r = examBlanks(b, secret[b.id] || {}, given)
+        questions[b.id] = { attempts: given === undefined ? [] : [given], result: r.score === 1 ? 'correct1' : r.score > 0 ? 'partial' : 'wrong', score: r.score, marks: r.marks, solution: secret[b.id]?.solution || null, correct: r.correct }
+        if (r.score < 1 && (b.level ?? 1) === 1) flags.push({ questionId: b.id, topicNumber: topic.number, topicName: topic.name || null })
         continue
       }
       const ok = given === undefined ? false : judge(b.kind, secret[b.id] || {}, given)

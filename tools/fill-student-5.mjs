@@ -112,6 +112,31 @@ export async function fillStudent5(ldb) {
             }
             if (plan !== 'wrong') last = await send(s.correct)
             count[plan]++
+          } else if (q.kind === 'blanks') {
+            // Fill in the blanks (REQ-4.30): wrong attempts keep the locked blanks and get one blank wrong.
+            const plan = outcome()
+            const allowed = Math.max(2, (q.blanksKind === 'words' ? q.cards.length : q.blanks.length) - 2)
+            const rightAt = (i) => (q.blanksKind === 'typed' ? String(s.correct[i]).split('|')[0] : q.blanksKind === 'choice' ? s.correct[i] : q.cards.find((c) => c.text === s.correct[i]).id)
+            const right = q.blanks.map((_, i) => rightAt(i))
+            const wrongAt = (i, value) => {
+              if (q.blanksKind === 'typed') return 'טעות'
+              if (q.blanksKind === 'choice') return q.blanks[i].options.find((o) => o.id !== s.correct[i]).id
+              const used = new Set(value.filter(Boolean))
+              return q.cards.find((c) => c.text !== s.correct[i] && !used.has(c.id))?.id
+            }
+            const wrongTries = plan === 'first' ? 0 : plan === 'second' ? 1 : allowed
+            let state
+            for (let k = 0; k < wrongTries; k++) {
+              const value = right.map((r, i) => (state?.locked?.[i] ? state.locked[i] : null))
+              const free = value.map((v, i) => (v ? null : i)).filter((i) => i !== null)
+              const bad = free[Math.floor(Math.random() * free.length)]
+              free.forEach((i) => (value[i] = i === bad ? null : right[i]))
+              value[bad] = wrongAt(bad, value)
+              last = await send(value)
+              state = last.state
+            }
+            if (plan !== 'wrong') last = await send(right)
+            count[plan]++
           } else {
             const plan = outcome()
             if (plan === 'first') last = await send(rightValue(q.kind, s))

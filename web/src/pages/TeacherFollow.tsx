@@ -67,7 +67,7 @@ export interface Flag {
   lessonTitle: string
   questionId: string
   topicName: string | null
-  kind: 'checkAgainWrong' | 'minimumNotReached' | 'examWrong' | 'awayALot' | 'dragWrong'
+  kind: 'checkAgainWrong' | 'minimumNotReached' | 'examWrong' | 'awayALot' | 'dragWrong' | 'blanksWrong'
   awayCount?: number | null
   alsoMinimum: boolean
   open: boolean
@@ -408,6 +408,7 @@ export function LevelControl({ classId, studentId, level, name, onChange }: { cl
 
 function flagText(f: Flag, t: (k: string, o?: Record<string, unknown>) => string) {
   if (f.kind === 'examWrong') return t('follow.flagExam', { question: f.questionId })
+  if (f.kind === 'blanksWrong') return t('follow.flagBlanks', { question: f.questionId })
   if (f.kind === 'dragWrong') return t('follow.flagDrag', { question: f.questionId })
   if (f.kind === 'awayALot') return t('follow.flagAway', { count: f.awayCount ?? 0 })
   return f.kind === 'checkAgainWrong' ? t('follow.flagCheckAgain', { question: f.questionId }) : t('follow.flagMinimum', { topic: f.topicName || '' })
@@ -918,6 +919,7 @@ function AnswerMark({ st }: { st: AnswerState | undefined }) {
   if (st.result === 'correct1') return <span className="answer-mark right">✓ {t('follow.right')}</span>
   if (st.result === 'correct2') return <span className="answer-mark half">½ {t('follow.secondTry')}</span>
   if (st.result === 'correct3') return <span className="answer-mark half">¼ {t('follow.laterTry')}</span>
+  if (st.result === 'partial') return <span className="answer-mark half">{Math.round((st.score ?? 0) * 100)}% {t('follow.partBlanks')}</span>
   return <span className="answer-mark wrong">✗ {t('follow.wrong')}</span>
 }
 

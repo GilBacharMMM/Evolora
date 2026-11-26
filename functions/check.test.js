@@ -264,3 +264,49 @@ test('drag and drop (REQ-4.12, D-70 as changed by Gil): attempts by number of ca
   assert.deepEqual(w1.state.locked, [null, null])
   assert.equal(answerMain(w1.state, small, s2, ['k3', 'k4'], pick).reply.result, 'wrong', 'the 2nd wrong attempt is the last')
 })
+
+test('fill in the blanks (REQ-4.30, D-78): typed, choice and word list; attempts, locking, exam credit', async () => {
+  const { answerMain, blanksAttempts, normalizeTyped, examBlanks } = await import('./check.js')
+  const pick = () => null
+  // Typed: spaces, nikud and punctuation ignored; typos wrong; more than one right answer.
+  assert.equal(normalizeTyped('  זָהָב. '), 'זהב')
+  const typed = { id: 'q1', kind: 'blanks', blanksKind: 'typed', blanks: [{}, {}, {}, {}] }
+  const ts = { correct: [['זהב', 'הזהב'], ['משקל'], ['צפיפות'], ['נפח']], hint: 'H', solution: 'S' }
+  assert.equal(blanksAttempts(typed), 2, '4 blanks: 2 attempts')
+  assert.equal(answerMain(undefined, typed, ts, ['הזהב', 'משקל', 'צפיפות', 'נפח '], pick).state.score, 1)
+  assert.equal(answerMain(undefined, typed, ts, ['זהב ', 'משקל', 'צפיפות', 'נפח'], pick).state.score, 1)
+  const t1 = answerMain(undefined, typed, ts, ['זהבב', 'משקל', 'צפיפות', 'נפח'], pick)
+  assert.equal(t1.reply.result, 'tryAgain', 'a typo is wrong')
+  assert.deepEqual(t1.reply.marks, [false, true, true, true])
+  assert.deepEqual(t1.state.locked, [null, 'משקל', 'צפיפות', 'נפח'])
+  assert.equal(t1.reply.hint, 'H')
+  assert.equal(answerMain(undefined, typed, ts, ['', 'משקל', 'צפיפות', 'נפח'], pick).invalid, true, 'every blank needs an answer')
+  const t2 = answerMain(t1.state, typed, ts, ['כסף', 'משקל', 'צפיפות', 'נפח'], pick)
+  assert.equal(t2.reply.result, 'wrong')
+  assert.deepEqual(t2.reply.correct, { blanks: ['זהב', 'משקל', 'צפיפות', 'נפח'] })
+  assert.equal(t2.flagKind, 'blanksWrong')
+  assert.equal(answerMain(t1.state, typed, ts, ['זהב', 'משקל', 'צפיפות', 'נפח'], pick).state.score, 0.5)
+
+  // Choice: only the option ids of that blank.
+  const choice = { id: 'q2', kind: 'blanks', blanksKind: 'choice', blanks: [{ options: [{ id: 'o1-1' }, { id: 'o1-2' }] }, { options: [{ id: 'o2-1' }, { id: 'o2-2' }] }] }
+  const cs = { correct: ['o1-2', 'o2-1'] }
+  assert.equal(answerMain(undefined, choice, cs, ['o1-2', 'o2-1'], pick).state.score, 1)
+  assert.equal(answerMain(undefined, choice, cs, ['o2-1', 'o2-1'], pick).invalid, true)
+
+  // Word list: attempts from the cards; each card once; checked by the word.
+  const words = { id: 'q3', kind: 'blanks', blanksKind: 'words', blanks: [{}, {}, {}, {}], cards: ['זהב', 'משקל', 'נפח', 'צבע', 'צפיפות'].map((text, n) => ({ id: `k${n + 1}`, text })) }
+  const ws = { correct: ['זהב', 'משקל', 'צפיפות', 'נפח'] }
+  assert.equal(blanksAttempts(words), 3, '4 words and 1 extra card: 3 attempts')
+  assert.equal(answerMain(undefined, words, ws, ['k1', 'k1', 'k5', 'k3'], pick).invalid, true, 'a card is used once')
+  const w1 = answerMain(undefined, words, ws, ['k1', 'k2', 'k4', 'k3'], pick)
+  assert.deepEqual(w1.reply.marks, [true, true, false, true])
+  const w2 = answerMain(w1.state, words, ws, ['k1', 'k2', 'k3', 'k3'], pick)
+  assert.equal(w2.invalid, true)
+  const w3 = answerMain(answerMain(w1.state, words, ws, ['k1', 'k2', 'k4', 'k3'], pick).state, words, ws, ['k1', 'k2', 'k5', 'k3'], pick)
+  assert.equal(w3.state.result, 'correct3')
+  assert.equal(w3.state.score, 0.25)
+
+  // Exams: one attempt, credit per blank.
+  assert.equal(examBlanks(typed, ts, ['זהב', 'משקל', 'צפיפות', 'מסה']).score, 0.75)
+  assert.equal(examBlanks(typed, ts, ['', '', '', '']).score, 0)
+})
