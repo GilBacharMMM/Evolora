@@ -1,8 +1,12 @@
 # Evolora: הדרך לאישור משרד החינוך ולחיבור למערכות שלו
 
-> **⚠️ בבדיקה, לא סופי · Under research, not final**
+> **⚠️ בבדיקה, לא סופי · Under research, not final · قيد البحث، غير نهائي**
+>
 > מסמך מחקר בעבודה. הוא לא מייצג החלטה, התחייבות או עמדה רשמית, ואינו ייעוץ משפטי. חלק מהפרטים הם השערות שעדיין לא אומתו מול משרד החינוך.
+>
 > *Work-in-progress research. It is not a decision, a commitment, an official position or legal advice. Some details are unverified guesses.*
+>
+> وثيقة بحث قيد العمل. لا تمثّل قرارًا أو التزامًا أو موقفًا رسميًا، وليست استشارة قانونية. بعض التفاصيل تخمينات لم يتم التحقق منها بعد.
 
 **טיוטת מחקר 0.1 · 26 בנובמבר 2026 · נכתב ע"י Claude בעבור גיל · מסמך מעקב**
 
@@ -407,3 +411,13 @@
 - Google, אימות הרשאות רגישות: https://developers.google.com/identity/protocols/oauth2/production-readiness/sensitive-scope-verification
 - Google, מתי אין צורך באימות: https://support.google.com/cloud/answer/13464323
 - מכון התקנים, ISO 27001: https://www.sii.org.il/he/iso-27001
+
+---
+
+> **⚠️ בבדיקה, לא סופי · Under research, not final · قيد البحث، غير نهائي**
+>
+> מסמך מחקר בעבודה. הוא לא מייצג החלטה, התחייבות או עמדה רשמית, ואינו ייעוץ משפטי. חלק מהפרטים הם השערות שעדיין לא אומתו מול משרד החינוך.
+>
+> *Work-in-progress research. It is not a decision, a commitment, an official position or legal advice. Some details are unverified guesses.*
+>
+> وثيقة بحث قيد العمل. لا تمثّل قرارًا أو التزامًا أو موقفًا رسميًا، وليست استشارة قانونية. بعض التفاصيل تخمينات لم يتم التحقق منها بعد.
