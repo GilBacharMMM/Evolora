@@ -16,9 +16,7 @@ status: draft 1 (converted by Claude on 2026-11-26 from the worksheet in Gil's W
 
 > 🟦 Claude: **2. Question types, as you approved:** A, F and G are open answers that the teacher grades. B is multiple choice (Present Simple or Present Progressive). C is fill-in-the-blanks with a choice in each blank, and D is fill-in-the-blanks with typed answers, two sentences per question, as your sentences come in pairs.
 
-> 🟦 Claude: **3. Part E changed a little.** Evolora has no question type that checks a whole typed sentence automatically. So the student sees the wrong sentence and types the corrected word into a blank, for example "She ____ tennis every Monday." (plays). If you prefer whole sentences graded by the teacher, I'll turn Part E into open answers.
-
-> 🟦 Claude: **4. Added by me**, marked [NEW: suggested by Claude]: the hints, solutions, "Why it's right" lines, check-again questions and tips, plus a few extra practice questions. Questions from your worksheet have no NEW tag on the question itself.
+> 🟦 Claude: **3. Added by me**, marked [NEW: suggested by Claude]: the hints, solutions, "Why it's right" lines, check-again questions and tips, plus a few extra practice questions. Questions from your worksheet have no NEW tag on the question itself.
 
 # [TOPIC 1: Reading and identifying the tense]
 
