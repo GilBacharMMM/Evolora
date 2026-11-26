@@ -879,3 +879,14 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 4. **Strict terms of use (D-75, point 5):** the checking service now refuses every request from someone who hasn't agreed to the current version, except agreeing itself. As before, nobody is asked while no terms are loaded.
 **Note for the terms of use:** they say time on lessons will be measured "in a later version". It is now measured on the test site, so the wording should change when the real text is written.
 **Affects:** REQ-5.33, REQ-4.29, REQ-9.5, REQ-10.8, the lesson format and the teacher kit, docs/system-design.md 2.12 and 2.13
+
+### D-77: Correcting an open answer that was sent back
+**Date:** 2026-11-25 · **Status:** Decided · **Decided by:** Gil
+**Context:** When an open answer was sent back for corrections, the student got an empty box, and no longer saw the teacher's marks and comment under the question.
+**Options considered:** the box starts with the student's last answer, with the marks shown above; the box holds the marked-up answer, to accept or reject each mark; an empty box with the marks shown above.
+**Decision:**
+1. **The student** sees "Your last answer was:" with the teacher's marks and comment, not editable, and below it an empty box for a new answer based on the corrections.
+2. **The teacher** sees both answers on the grading page, one above the other: the last one with its marks, no longer editable, and the new one, which the teacher marks up and grades.
+3. **Attempts:** the new answer is sent once and waits for the grade, as the first time (Gil: "Sent once, as today"). The teacher can send it back again; each time is counted (REQ-5.34).
+**Reason:** the student must see the corrections while fixing the answer, and must write the fix themselves.
+**Affects:** REQ-5.14, REQ-5.12, D-59
