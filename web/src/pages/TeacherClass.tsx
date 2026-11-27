@@ -756,7 +756,7 @@ function DueLine({ classId, assignment, students, nameOf, onChanged }: { classId
           <button type="button" className="button secondary small" onClick={() => setOpen(false)}>
             {t('teacher.cancel')}
           </button>
-          {failed && <span className="notice">{t('teacher.actionFailed')}</span>}
+          {failed && <span className="notice" role="alert">{t('teacher.actionFailed')}</span>}
         </span>
       )}
     </span>

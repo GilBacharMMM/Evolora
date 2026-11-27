@@ -216,7 +216,7 @@ a:hover {
 }
 
 .account-role {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--slate);
 }
 
@@ -236,7 +236,7 @@ a:hover {
 
 .account-popup p {
   margin-block: 0 10px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* Buttons */
@@ -484,7 +484,7 @@ a:hover {
 }
 
 .switch-role {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--slate);
 }
 
@@ -597,7 +597,7 @@ a:hover {
 
 .type-chip {
   display: inline-block;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   border-radius: 999px;
   padding-block: 1px;
@@ -670,7 +670,7 @@ a:hover {
 }
 
 .data-table th {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--slate);
   font-weight: 500;
 }
@@ -722,14 +722,14 @@ a:hover {
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--slate);
 }
 
 .lesson-credit {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--slate);
 }
 
@@ -788,7 +788,7 @@ a:hover {
 
 .block-label {
   display: block;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--teal-dark);
   margin-block-end: 6px;
@@ -878,7 +878,7 @@ figcaption {
 }
 
 .image-source {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--slate);
 }
 
@@ -915,7 +915,7 @@ figcaption {
 }
 
 .video-source {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .block-question {
@@ -972,7 +972,7 @@ figcaption {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--ink-2);
 }
 
@@ -1051,7 +1051,7 @@ figcaption {
 
 .part-note {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--slate);
 }
 
@@ -1117,7 +1117,7 @@ figcaption {
 
 .student-email {
   margin-inline-start: 12px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* Part 2: answering questions */
@@ -1180,7 +1180,7 @@ figcaption {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 14px;
+  font-size: 15px;
   color: var(--ink-2);
 }
 
@@ -1195,7 +1195,7 @@ figcaption {
 
 .right-mark {
   margin-inline-start: auto;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--green);
 }
@@ -1320,7 +1320,7 @@ figcaption {
 }
 
 .feedback-subtitle {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--ink-2);
 }
@@ -1367,7 +1367,7 @@ figcaption {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   border-radius: 999px;
   padding-block: 2px;
@@ -1420,7 +1420,7 @@ figcaption {
 }
 
 .row-note {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .class-section {
@@ -1451,7 +1451,7 @@ figcaption {
 
 .course-chip {
   display: inline-block;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   border-radius: 999px;
   padding-block: 1px;
@@ -1646,7 +1646,7 @@ figcaption {
 }
 
 .given-to {
-  font-size: 14px;
+  font-size: 15px;
   margin-inline-start: auto;
 }
 
@@ -1749,7 +1749,7 @@ figcaption {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   border-radius: 999px;
   padding-block: 2px;
@@ -1819,7 +1819,7 @@ figcaption {
 }
 
 .small-note {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .flag-count {
@@ -1888,7 +1888,7 @@ figcaption {
 }
 
 .map-text {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--ink-2);
 }
 
@@ -1934,7 +1934,7 @@ figcaption {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .clear-form input,
@@ -1949,7 +1949,7 @@ figcaption {
 
 .grade-chip {
   display: inline-block;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   border-radius: 8px;
   padding-inline: 8px;
@@ -1973,7 +1973,7 @@ figcaption {
 }
 
 .answer-mark {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -2117,7 +2117,7 @@ figcaption {
 
 .teacher-note-title {
   font-weight: 700;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* Priority 2: grades for students, sending back, student page (REQ-5.22, 5.14, 5.15, 5.28, 5.25) */
@@ -2156,7 +2156,7 @@ figcaption {
 
 .notes-chip {
   display: inline-block;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   border-radius: 999px;
   padding-block: 1px;
@@ -2171,7 +2171,7 @@ figcaption {
 }
 
 .row-grade {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--teal-dark);
 }
@@ -2212,7 +2212,7 @@ figcaption {
 
 /* Course orders and due dates (REQ-5.8, 5.9) */
 .due-chip {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--ink-2);
 }
@@ -2283,7 +2283,7 @@ details.image-source summary {
 
 .suggestion {
   display: block;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--sun-text);
 }
@@ -2298,7 +2298,7 @@ details.image-source summary {
 .rate {
   display: flex;
   flex-direction: column;
-  font-size: 13px;
+  font-size: 15px;
   white-space: nowrap;
 }
 
@@ -2314,7 +2314,7 @@ details.image-source summary {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .library-filters input,
@@ -2375,7 +2375,7 @@ details.image-source summary {
 }
 
 .message-meta {
-  font-size: 12px;
+  font-size: 15px;
   color: var(--slate);
 }
 
@@ -2592,7 +2592,7 @@ details.image-source summary {
 .site-footer {
   text-align: center;
   padding: 1.5rem 1rem 2rem;
-  font-size: 0.9rem;
+  font-size: 15px;
 }
 .site-footer a {
   color: var(--muted, #52606d);
@@ -2606,12 +2606,12 @@ details.image-source summary {
   border-radius: 999px;
   background: #fdecc8;
   color: #7a4b00;
-  font-size: 0.85rem;
+  font-size: 15px;
   font-weight: 600;
   white-space: nowrap;
 }
 .sent-back-count {
-  font-size: 0.85rem;
+  font-size: 15px;
 }
 
 /* Time on lessons and time away (REQ-5.33) */
@@ -2622,13 +2622,13 @@ details.image-source summary {
   border-radius: 999px;
   background: #fde2e1;
   color: #8a1c17;
-  font-size: 0.8rem;
+  font-size: 15px;
   font-weight: 600;
   white-space: nowrap;
 }
 .time-line {
   display: block;
-  font-size: 0.85rem;
+  font-size: 15px;
   margin-block-start: 0.15rem;
 }
 
@@ -2652,7 +2652,7 @@ details.image-source summary {
   border-radius: 6px;
   background: #1f2933;
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 15px;
   font-weight: normal;
   line-height: 1.45;
   white-space: normal;
@@ -2711,7 +2711,7 @@ details.image-source summary {
   border-radius: 6px;
   background: var(--sun-light);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);

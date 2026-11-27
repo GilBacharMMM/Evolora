@@ -17,7 +17,7 @@ import path from 'node:path'
 import { BROWSERS } from './lib/browsers.mjs'
 import { Screens, OUT } from './lib/checks.mjs'
 import { StepFailed, StepFailedGoOn } from './lib/helpers.mjs'
-import { joinClass, studentLesson, teacherGrades, termsFirst } from './lib/flows.mjs'
+import { joinClass, publicPages, studentLesson, teacherGrades, termsFirst } from './lib/flows.mjs'
 import { writeReport } from './lib/report.mjs'
 import * as data from '../../tools/lib/screen-test-data.mjs'
 
@@ -54,6 +54,7 @@ try {
       ['2. The terms of use come first for Test Student 7', termsFirst, async () => data.freshStudent7()],
       ['3. Test Student 7 joins the test class with its code', joinClass, null],
       ['4. A teacher grades Test Student 5\'s open answer', teacherGrades, async () => data.fillStudent5Work()],
+      ['5. The terms of use and the accessibility statement', publicPages, null],
     ]
     let page = null
     for (const [title, flow, prepare] of flows) {

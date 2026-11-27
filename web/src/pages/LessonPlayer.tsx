@@ -658,7 +658,7 @@ function AudioQuestion({ q, state, lessonId, label, trying, uid, onState }: { q:
             <Ui>{t('q.send')}</Ui>
           </button>
           {failed && (
-            <p className="answer-problem">
+            <p className="answer-problem" role="alert">
               <Ui>{t('q.problem.failed')}</Ui>
             </p>
           )}

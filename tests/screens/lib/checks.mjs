@@ -4,10 +4,12 @@
 // - no console errors
 // - no sideways scrolling at a Chromebook size (REQ-11.1)
 // - every status has a word, not only a colour (REQ-12.3)
+// - accessibility, WCAG 2.0 A and AA, text size, 200% and the keyboard (REQ-12.9, lib/accessibility.mjs)
 // Each screen also gets a screenshot.
 
 import fs from 'node:fs'
 import path from 'node:path'
+import { accessibilityProblems } from './accessibility.mjs'
 
 export const OUT = path.resolve(import.meta.dirname, '..', 'out')
 
@@ -136,6 +138,7 @@ export class Screens {
     const errors = [...new Set(page._errors || [])]
     page._errors = []
     if (errors.length) problems.push({ check: 'console', text: `Console errors: ${errors.join(' | ')}` })
+    problems.push(...(await accessibilityProblems(page)))
     this.count++
     const file = `${String(this.count).padStart(2, '0')}-${flow}-${name}.png`.replace(/[^\w.-]+/g, '-')
     await page.screenshot({ path: path.join(this.dir, file), fullPage: false })

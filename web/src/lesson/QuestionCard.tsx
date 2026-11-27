@@ -23,11 +23,12 @@ function problemOf(e: unknown): Problem {
   return 'failed'
 }
 
-function ProblemLine({ problem }: { problem: Problem }) {
+// The id lets the answer box point to its error message, so screen readers read it with the box (REQ-12.9).
+function ProblemLine({ problem, id }: { problem: Problem; id?: string }) {
   const { t } = useTranslation()
   if (!problem) return null
   return (
-    <p role="alert" className="answer-problem">
+    <p role="alert" className="answer-problem" id={id}>
       <Ui>{t(`q.problem.${problem}`)}</Ui>
     </p>
   )
@@ -134,6 +135,8 @@ function AnswerForm({
               autoComplete="off"
               disabled={finished || busy}
               value={finished ? String(lastAnswer ?? '') : typed}
+              aria-invalid={problem === 'notNumber' || undefined}
+              aria-describedby={problem ? `${name}-problem` : undefined}
               onChange={(e) => {
                 setProblem(null)
                 setTyped(e.target.value)
@@ -143,7 +146,7 @@ function AnswerForm({
           </span>
         </label>
       )}
-      <ProblemLine problem={problem} />
+      <ProblemLine problem={problem} id={`${name}-problem`} />
       {!finished && (
         <button type="submit" className="button primary check-button" disabled={busy}>
           <Ui>{busy ? t('q.checking') : t('q.check')}</Ui>
@@ -243,9 +246,17 @@ export function QuestionCard({
         <form className="open-answer" onSubmit={sendOpen}>
           <label>
             <Ui>{t('lesson.yourAnswer')}</Ui>
-            <textarea rows={4} dir="auto" disabled={mainFinished || busy} value={mainFinished ? String(lastMain ?? '') : openText} onChange={(e) => setOpenText(e.target.value)} />
+            <textarea
+              rows={4}
+              dir="auto"
+              disabled={mainFinished || busy}
+              value={mainFinished ? String(lastMain ?? '') : openText}
+              onChange={(e) => setOpenText(e.target.value)}
+              aria-invalid={problem === 'emptyAnswer' || undefined}
+              aria-describedby={problem ? `${q.id}-open-problem` : undefined}
+            />
           </label>
-          <ProblemLine problem={problem} />
+          <ProblemLine problem={problem} id={`${q.id}-open-problem`} />
           {!mainFinished && (
             <button type="submit" className="button primary check-button" disabled={busy}>
               <Ui>{t('q.send')}</Ui>

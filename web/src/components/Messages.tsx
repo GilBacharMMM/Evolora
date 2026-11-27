@@ -87,7 +87,7 @@ export function Messages({ classId, studentId, asTeacher }: { classId: string; s
         <button type="submit" className="button primary" disabled={busy || !text.trim()}>
           {t('messages.send')}
         </button>
-        {failed && <p className="notice">{t('teacher.actionFailed')}</p>}
+        {failed && <p className="notice" role="alert">{t('teacher.actionFailed')}</p>}
       </form>
     </section>
   )

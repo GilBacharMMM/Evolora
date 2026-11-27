@@ -269,3 +269,21 @@ export async function teacherGrades({ page, lang, screens, step }) {
     await screens.check(page, F, 'grade-table')
   })
 }
+
+// 5. The pages anyone can open, signed in or not: the terms of use (REQ-10.8) and the
+// accessibility statement (REQ-12.10), reached from the links at the bottom of the page.
+export async function publicPages({ page, lang, screens, step }) {
+  const F = 'public'
+  await step('the "Terms of use" link at the bottom opens the terms', async () => {
+    await openSite(page)
+    await page.locator('.site-footer a[href="/terms"]').click()
+    await page.locator('.terms-text').waitFor()
+    await screens.check(page, F, 'terms')
+  })
+  await step('the "Accessibility" link at the bottom opens the accessibility statement', async () => {
+    await page.locator('.site-footer a[href="/accessibility"]').click()
+    await page.locator('.terms-text h2').first().waitFor()
+    expect((await page.locator('.site-footer a[href="/accessibility"]').innerText()) === tr(lang, 'accessibility.link'), 'The link is not in the page language')
+    await screens.check(page, F, 'accessibility')
+  })
+}

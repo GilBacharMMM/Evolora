@@ -489,7 +489,7 @@ function ClearFlag({ flagId, onCleared }: { flagId: string; onCleared: () => Pro
           {t('teacher.cancel')}
         </button>
       </div>
-      {failed && <p className="notice">{t('teacher.actionFailed')}</p>}
+      {failed && <p className="notice" role="alert">{t('teacher.actionFailed')}</p>}
     </form>
   )
 }
@@ -651,7 +651,7 @@ export function StudentPage({ classId, studentId }: { classId: string; studentId
         <h1 className="page-title" dir="auto">
           {s.name}
         </h1>
-        {removed && <p className="notice">{t('follow.removedStudent')}</p>}
+        {removed && <p className="notice" role="status">{t('follow.removedStudent')}</p>}
         <div className="student-facts">
           <StatusBadge status={s.status} star={s.star} />
           <span>
@@ -829,7 +829,7 @@ function TeacherNotes({ classId, studentId, notes, onAdded }: { classId: string;
         <button type="submit" className="button primary" disabled={busy || !text.trim()}>
           {t('follow.addNote')}
         </button>
-        {failed && <p className="notice">{t('teacher.actionFailed')}</p>}
+        {failed && <p className="notice" role="alert">{t('teacher.actionFailed')}</p>}
       </form>
       <ul className="flag-list">
         {notes.map((n) => (
@@ -1197,7 +1197,7 @@ function ScoreEditor({ classId, lessonId, student, questionId, number, onDone }:
           {t('teacher.cancel')}
         </button>
       </div>
-      {problem && <p className="notice">{problem}</p>}
+      {problem && <p className="notice" role="alert">{problem}</p>}
     </section>
   )
 }
@@ -1279,7 +1279,7 @@ function SendBackForm({ classId, lessonId, student, questions, onDone }: { class
             {t('teacher.cancel')}
           </button>
         </div>
-        {problem && <p className="notice">{problem}</p>}
+        {problem && <p className="notice" role="alert">{problem}</p>}
       </form>
     </section>
   )

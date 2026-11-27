@@ -233,7 +233,7 @@ export function BlanksQuestion({ q, state: raw, lessonId, label, uid, trying, on
             <Ui>{busy ? t('q.checking') : t('q.check')}</Ui>
           </button>
           {problem && (
-            <p className="answer-problem">
+            <p className="answer-problem" role="alert">
               <Ui>{problem}</Ui>
             </p>
           )}

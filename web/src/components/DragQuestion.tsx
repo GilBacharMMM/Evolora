@@ -172,7 +172,7 @@ export function DragQuestion({ q, state: rawState, lessonId, label, uid, trying,
             <Ui>{busy ? t('q.checking') : t('q.check')}</Ui>
           </button>
           {problem && (
-            <p className="answer-problem">
+            <p className="answer-problem" role="alert">
               <Ui>{problem}</Ui>
             </p>
           )}
