@@ -27,6 +27,7 @@ export type Route =
   | { name: 'teacherClass'; classId: string }
   | { name: 'teacherGrades'; classId: string }
   | { name: 'teacherManage'; classId: string }
+  | { name: 'teacherCourses'; classId: string }
   | { name: 'teacherStudent'; classId: string; studentId: string }
   | { name: 'teacherLesson'; classId: string; lessonId: string }
   | { name: 'teacherGrading'; classId: string; lessonId: string }
@@ -45,11 +46,12 @@ export function matchRoute(path: string): Route {
   if (/^\/teacher\/lessons\/?$/.test(path)) return { name: 'library' }
   const cls = path.match(/^\/teacher\/class\/([\w-]+)\/?$/)
   if (cls) return { name: 'teacherClass', classId: cls[1] }
-  const sub = path.match(/^\/teacher\/class\/([\w-]+)\/(grades|manage|student|lesson)(?:\/([\w-]+))?(\/grade)?\/?$/)
+  const sub = path.match(/^\/teacher\/class\/([\w-]+)\/(grades|manage|courses|student|lesson)(?:\/([\w-]+))?(\/grade)?\/?$/)
   if (sub) {
     const [, classId, kind, id, grade] = sub
     if (kind === 'grades' && !id) return { name: 'teacherGrades', classId }
     if (kind === 'manage' && !id) return { name: 'teacherManage', classId }
+    if (kind === 'courses' && !id) return { name: 'teacherCourses', classId }
     if (kind === 'student' && id && !grade) return { name: 'teacherStudent', classId, studentId: id }
     if (kind === 'lesson' && id) return grade ? { name: 'teacherGrading', classId, lessonId: id } : { name: 'teacherLesson', classId, lessonId: id }
   }

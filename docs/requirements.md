@@ -900,6 +900,22 @@ For each student, Evolora counts how many times the teacher sent their answers b
 - [ ] With the default number (10), the warning sign appears on the class dashboard when the student reaches 10 in one course, not before.
 - [ ] As the teacher, change the number to 3 for the class: the warning sign appears for that student at once.
 
+**REQ-5.35: Courses in the class** (Priority 1: must have; Gil, 2026-11-27, D-91)
+A class page has a fourth tab, **"קורסים בכיתה"** (Courses in the class), next to the class dashboard, grades and class settings. It lists everything the class was given, so the teacher can find any lesson quickly:
+
+- Each course given to the class, by its title. Clicking a course opens or closes the list of its lessons, in the course's order, with each teaching lesson's practice lessons under it (REQ-4.10).
+- Lessons given one by one, not as part of a course, appear after the courses, in a group called **"שיעורים בודדים"** (Single lessons).
+- Courses the teacher archived for this class (REQ-5.7) appear at the bottom, under a closed line **"קורסים בארכיון"** that opens with a click.
+- Clicking a lesson opens it in the teacher's whole-lesson view (REQ-5.32, D-90): answers are not saved.
+- The settings of what was given (order, grades, due dates, archiving) stay on the class settings tab.
+
+*Acceptance criteria:*
+- [ ] As Test Teacher 1, open Test Class 7A: there are four tabs, the fourth called "קורסים בכיתה".
+- [ ] On that tab, both courses given to the class appear. Click "מדעים לכיתה ז'": its lessons appear in order, with the two density practice lessons under the Archimedes lesson.
+- [ ] Click a lesson: it opens with the "Trying the lesson" banner, and the whole lesson can be scrolled.
+- [ ] Give the class a single lesson (not a course): it appears under "שיעורים בודדים".
+- [ ] Archive a course for the class: it moves to "קורסים בארכיון" at the bottom.
+
 **REQ-5.17: Google Classroom connection** (Priority: Later)
 Import class lists from Google Classroom, and possibly post assignments and grades back to it. See the advice in the open questions summary.
 

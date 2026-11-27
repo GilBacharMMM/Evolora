@@ -2834,3 +2834,87 @@ details.image-source summary {
   gap: 0.5rem;
   margin-block: 1rem -0.5rem;
 }
+
+/* "Courses in the class" tab (REQ-5.35, D-91) */
+.class-courses {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.class-course {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding-inline: 16px;
+}
+.class-course > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 52px;
+  cursor: pointer;
+}
+.class-course-title {
+  font-weight: 700;
+  flex: 1;
+}
+.class-course-lessons,
+.class-course-practice {
+  list-style: none;
+  margin: 0;
+  padding-block-end: 12px;
+  padding-inline-start: 0;
+}
+.class-course-practice {
+  padding-block-end: 0;
+  padding-inline-start: 28px;
+}
+.class-course-lesson {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 44px;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  padding-inline: 8px;
+  font: inherit;
+  color: var(--ink);
+  text-align: start;
+  cursor: pointer;
+}
+.class-course-lesson:hover,
+.class-course-lesson:focus-visible {
+  background: #eef5f5;
+  color: var(--teal-dark);
+}
+.class-courses-archived > summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+.class-courses-archived .class-course {
+  margin-block-start: 0.75rem;
+}
+.class-course > summary {
+  list-style: none;
+}
+.class-course > summary::-webkit-details-marker {
+  display: none;
+}
+/* An arrow that shows the course opens: down when closed, up when open. */
+.class-course > summary::after {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-right: 2px solid var(--ink-2);
+  border-bottom: 2px solid var(--ink-2);
+  transform: translateY(-3px) rotate(45deg);
+  transition: transform 0.15s;
+}
+.class-course[open] > summary::after {
+  transform: translateY(2px) rotate(-135deg);
+}

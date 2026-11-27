@@ -15,6 +15,7 @@ import { AutoSignOut } from './autoSignOut'
 // so the home page opens quickly (REQ-12.1).
 const LessonPlayer = lazyFresh(() => import('./pages/LessonPlayer').then((m) => ({ default: m.LessonPlayer })))
 const TeacherClass = lazyFresh(() => import('./pages/TeacherClass').then((m) => ({ default: m.TeacherClass })))
+const TeacherCourses = lazyFresh(() => import('./pages/TeacherCourses').then((m) => ({ default: m.TeacherCourses })))
 const follow = () => import('./pages/TeacherFollow')
 const ClassDashboard = lazyFresh(() => follow().then((m) => ({ default: m.ClassDashboard })))
 const GradeTable = lazyFresh(() => follow().then((m) => ({ default: m.GradeTable })))
@@ -105,6 +106,7 @@ function Screens() {
     case 'teacherClass':
     case 'teacherGrades':
     case 'teacherManage':
+    case 'teacherCourses':
     case 'teacherStudent':
     case 'teacherLesson':
     case 'teacherGrading': {
@@ -117,6 +119,8 @@ function Screens() {
           <GradeTable key={key} classId={route.classId} />
         ) : route.name === 'teacherManage' ? (
           <TeacherClass key={key} classId={route.classId} />
+        ) : route.name === 'teacherCourses' ? (
+          <TeacherCourses key={key} classId={route.classId} />
         ) : route.name === 'teacherStudent' ? (
           <StudentPage key={key} classId={route.classId} studentId={route.studentId} />
         ) : route.name === 'teacherLesson' ? (

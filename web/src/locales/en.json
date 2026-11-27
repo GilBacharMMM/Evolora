@@ -315,6 +315,13 @@
     "dashboard": "Dashboard",
     "grades": "Grades",
     "manage": "Class settings",
+    "courses": "Courses in the class",
+    "coursesIntro": "Everything given to the class. Click a course to see its lessons, and a lesson to open it (answers are not saved).",
+    "singleLessons": "Single lessons",
+    "archivedCourses": "Archived courses",
+    "lessonCount_one": "1 lesson",
+    "lessonCount_other": "{{count}} lessons",
+    "nothingGiven": "Nothing has been given to the class yet.",
     "statusTitle": "Status",
     "status": {
       "red": "Red flag",

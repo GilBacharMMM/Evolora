@@ -1013,3 +1013,15 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** Option 2. Questions stay answerable as before (with Skip and Show answer). Every question is shown; extra practice questions and level 2 and 3 questions carry a small label.
 **Reason:** Teachers need to read a lesson quickly before giving it, and still be able to check what students go through.
 **Affects:** REQ-5.32, the lesson player
+
+### D-91: A "Courses in the class" tab
+**Date:** 2026-11-27 · **Status:** Decided · **Decided by:** Gil
+**Context:** A teacher could see what a class was given only on the class settings tab, as titles that can't be opened. Gil wants a fourth tab listing the class's courses, each opening to its lessons, each lesson opening in the teacher's view.
+**Options considered:**
+1. Clicking a lesson opens the lesson itself (teacher's whole-lesson view), the class's results for it, or both.
+2. Lessons given one by one: shown in their own group, or not shown.
+3. Archived courses: collapsed at the bottom, or hidden.
+4. The settings of what was given: stay on the class settings tab, or move to the new tab.
+**Decision:** The lesson itself; single lessons in a group "שיעורים בודדים"; archived courses collapsed at the bottom; settings stay where they are.
+**Reason:** The new tab is for finding and reading lessons quickly; settings and results already have their places.
+**Affects:** new REQ-5.35, the class page tabs
