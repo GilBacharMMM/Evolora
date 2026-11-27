@@ -36,6 +36,7 @@ fs.mkdirSync(OUT, { recursive: true })
 console.log('Preparing the test data...')
 const restoreClass = await data.prepareClass()
 const restoreLanguages = await data.rememberLanguages(USERS)
+const closeArchimedes = await data.openArchimedesEarly(['test-student-1'])
 const { code: classCode } = await data.classInfo()
 const titles = await data.contentTitles()
 
@@ -113,6 +114,7 @@ try {
   await data.freshStudentWork('test-student-1')
   await restoreLanguages()
   await restoreClass()
+  await closeArchimedes()
 }
 
 const file = writeReport(results, { classCode, seconds: Math.round((Date.now() - started) / 1000) })

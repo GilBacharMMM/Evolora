@@ -25,7 +25,9 @@ const ALLOWED_LATIN = [
   /\bEvolora\b/g,
   /\bGoogle( Chrome)?\b/g, // brand names, as in "Sign in with Google"
   /\bEnglish\b/g,
-  /\b(Ctrl|Alt|Shift|Enter|Esc|Tab)\b/g,
+  /\b(Ctrl|Alt|Shift|Enter|Esc|Tab|Cmd)\b/g,
+  // Names of browsers, systems and screen readers (the accessibility statement, REQ-12.10).
+  /\b(YouTube|ChromeVox|Chrome|Edge|Firefox|Safari|NVDA|Windows|VoiceOver)\b/g,
   /\bCSV\b/g, // the name of a file type
   /CC BY(-SA|-NC|-ND)*( \d\.\d)?/g,
   /[\w.+-]+@[\w-]+(\.[\w-]+)+/g, // email addresses
@@ -39,8 +41,8 @@ function inspect(lang) {
   out.scrollWidth = doc.scrollWidth
   out.clientWidth = doc.clientWidth
   // Lesson content, lesson and course titles (marked with their own language), people's answers and
-  // the test users' names are content, not interface text.
-  const CONTENT = 'article.lesson, [lang]:not(html), textarea, input, select option[value="en"], .switch-name, .account-name, .account-popup, .work-row .lesson-row-title, [contenteditable], code, .grading-answer, .answer-text, .track-changes'
+  // people's names (shown with dir="auto", as anything people type is) are content, not interface text.
+  const CONTENT = 'article.lesson, [lang]:not(html), textarea, input, select option[value="en"], .switch-name, .account-name, .account-popup, .work-row .lesson-row-title, [dir="auto"], [contenteditable], code, .grading-answer, .answer-text, .track-changes'
   const visible = (el) => {
     const r = el.getBoundingClientRect()
     const s = getComputedStyle(el)
@@ -133,7 +135,7 @@ export class Screens {
     if (info.dir !== expectedDir) problems.push({ check: 'direction', text: `The page direction is "${info.dir}", expected "${expectedDir}" (REQ-9.2).` })
     const withoutTitles = (t) => this.titles.reduce((acc, title) => acc.split(title).join(''), t)
     const foreignLetters = this.lang === 'en' ? /[֐-׿؀-ۿ]/ : /[A-Za-z]{2,}/
-    const foreign = [...new Set(info.foreign.filter((t) => foreignLetters.test(stripAllowed(withoutTitles(t)))))]
+    const foreign = [...new Set(info.foreign.filter((t) => foreignLetters.test(withoutTitles(stripAllowed(t)))))]
     if (foreign.length) problems.push({ check: 'translation', text: `Text not in ${this.lang}: ${foreign.map((t) => `"${t}"`).join(', ')} (REQ-9.1).` })
     if (info.scrollWidth > info.clientWidth + 1) problems.push({ check: 'width', text: `The page scrolls sideways: ${info.scrollWidth} pixels wide in a ${info.clientWidth}-pixel window (REQ-11.1).` })
     const colourOnly = [...new Set(info.colourOnly)]

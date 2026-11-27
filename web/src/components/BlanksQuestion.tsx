@@ -109,14 +109,13 @@ export function BlanksText({
 export function WordBank({ q, uid, values, picked, onPick }: { q: Question; uid: string; values: string[]; picked: string | null; onPick: (id: string | null) => void }) {
   if (q.blanksKind !== 'words') return null
   return (
-    <div className="drag-bank" role="list">
+    <div className="drag-bank" role="group">
       {shuffle(q.cards || [], `${uid}:${q.id}`).map((c) => {
         const used = values.includes(c.id)
         return (
           <button
             key={c.id}
             type="button"
-            role="listitem"
             className={`drag-card${picked === c.id ? ' picked' : ''}${used ? ' used' : ''}`}
             draggable={!used}
             aria-pressed={picked === c.id}

@@ -7,8 +7,10 @@
 // - Test Student 7: hasn't agreed to the terms of use and isn't in any class (as after a reset)
 // - Test Student 5: has finished the Archimedes and circles teaching lessons (tools/fill-student-5.mjs)
 // - the test class: joining on, no required class language
+// - the Archimedes teaching lesson opened early for the test students the tests use (REQ-5.20), since
+//   lessons before it in the course (the particle model lesson) would otherwise lock it; removed after
 
-import { collection, deleteDoc, deleteField, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore'
+import { collection, deleteDoc, deleteField, doc, getDoc, getDocs, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore'
 import { connect } from './connect.mjs'
 import { fillStudent5 } from '../fill-student-5.mjs'
 
@@ -132,4 +134,12 @@ export async function answerUpToOpen(uid, lessonId) {
   } finally {
     await deleteApp(app)
   }
+}
+
+// Opens the Archimedes teaching lesson early for these students, as a teacher can (REQ-5.20).
+// Returns a function that removes the opening again, so Gil's test class looks as before.
+export async function openArchimedesEarly(studentIds) {
+  const ref = doc(await db(), 'classes', CLASS_ID, 'openings', 'screen-tests-archimedes')
+  await setDoc(ref, { lessonId: LESSONS[0], everyone: false, studentIds, createdBy: 'test-teacher-1', createdAt: serverTimestamp() })
+  return async () => deleteDoc(ref)
 }

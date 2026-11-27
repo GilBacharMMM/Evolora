@@ -138,7 +138,7 @@ export function DragQuestion({ q, state: rawState, lessonId, label, uid, trying,
           <p className="muted small-note">
             <Ui>{t('drag.howTo')}</Ui> <Ui>{t('drag.attemptsLeft', { count: allowed - attemptsMade })}</Ui>
           </p>
-          <div className="drag-bank" role="list">
+          <div className="drag-bank" role="group">
             {cards
               .filter((c) => !locked.includes(c.id))
               .map((c) => {
@@ -147,7 +147,6 @@ export function DragQuestion({ q, state: rawState, lessonId, label, uid, trying,
                   <button
                     key={c.id}
                     type="button"
-                    role="listitem"
                     className={`drag-card${picked === c.id ? ' picked' : ''}${used ? ' used' : ''}`}
                     draggable={!used}
                     aria-pressed={picked === c.id}

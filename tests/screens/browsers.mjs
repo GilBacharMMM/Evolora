@@ -225,6 +225,7 @@ for (const name of names) {
 
 // 4 and 5, in English (the student's own language is put back at the end).
 const restoreLanguage = await data.rememberLanguages([STUDENT])
+const closeArchimedes = await data.openArchimedesEarly([STUDENT])
 await data.setLanguage(STUDENT, LANG)
 await data.freshStudentWork(STUDENT)
 try {
@@ -332,6 +333,7 @@ try {
 } finally {
   await data.freshStudentWork(STUDENT)
   await restoreLanguage()
+  await closeArchimedes()
 }
 
 console.log(`\n${count} checks, ${failures} failed.`)
