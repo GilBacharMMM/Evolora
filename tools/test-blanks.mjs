@@ -1,6 +1,8 @@
 #!/usr/bin/env node
-// End-to-end test of fill-in-the-blanks questions (REQ-4.30, D-78) with the three demo questions in
-// the Archimedes teaching lesson. Exams are tested in test-exams.mjs. Cleans up after itself.
+// End-to-end test of fill-in-the-blanks questions (REQ-4.30, D-78) with a test-only lesson
+// (tools/fixtures/blanks-test-teaching-1) that has one question of each kind. The test loads it, opens
+// it to the test class, and removes it at the end, so no student or teacher ever sees it.
+// Exams are tested in test-exams.mjs. Cleans up after itself.
 //
 //   node tools/test-blanks.mjs
 
@@ -8,14 +10,15 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { deleteApp, initializeApp, setLogLevel } from 'firebase/app'
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth'
-import { collection, deleteDoc, doc, getDoc, getDocs, initializeFirestore, query, where } from 'firebase/firestore'
+import { arrayUnion, collection, deleteDoc, doc, getDoc, getDocs, initializeFirestore, query, updateDoc, where } from 'firebase/firestore'
 import { getFunctions, httpsCallable } from 'firebase/functions'
 import { ROOT, connect, finish, siteConfig, testPassword } from './lib/connect.mjs'
+import { loadAll } from './load.mjs'
 
 setLogLevel('silent')
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
 const config = siteConfig('test')
-const LESSON = 'archimedes-density-teaching-1'
+const LESSON = 'blanks-test-teaching-1'
 const PEOPLE = ['test-student-1', 'test-student-2', 'test-student-3']
 let failures = 0
 let count = 0
@@ -33,7 +36,11 @@ async function as(uid, fn) {
   try { return await fn({ db, call }) } finally { await deleteApp(app) }
 }
 
-const { db: ldb } = await connect('test')
+const conn = await connect('test')
+const ldb = conn.db
+// The test-only lesson: loaded fresh, and opened to the test class so its students can answer it.
+await loadAll(conn, ['tools/fixtures/blanks-test-teaching-1'], { log: () => {} })
+await updateDoc(doc(ldb, 'lessons', LESSON), { classIds: arrayUnion('test-class') })
 const lesson = (await getDoc(doc(ldb, 'lessons', LESSON))).data()
 const v = String(lesson.currentVersion)
 const version = (await getDoc(doc(ldb, 'lessons', LESSON, 'versions', v))).data()
@@ -46,10 +53,18 @@ const cleanUp = async () => {
   for (const uid of PEOPLE) await deleteDoc(doc(ldb, 'progress', `${uid}__${LESSON}`))
   for (const f of (await getDocs(query(collection(ldb, 'flags'), where('kind', '==', 'blanksWrong')))).docs) if (PEOPLE.includes(f.data().uid)) await deleteDoc(f.ref)
 }
+// Removes the test-only lesson, with all its versions and answers.
+const removeLesson = async () => {
+  for (const ver of (await getDocs(collection(ldb, 'lessons', LESSON, 'versions'))).docs) {
+    for (const s of (await getDocs(collection(ver.ref, 'secret'))).docs) await deleteDoc(s.ref)
+    await deleteDoc(ver.ref)
+  }
+  await deleteDoc(doc(ldb, 'lessons', LESSON))
+}
 
 await cleanUp()
 try {
-  check('the Archimedes lesson has the three demo questions: typed, choose in each blank, word list', !!typed && !!choice && !!words)
+  check('the test lesson has one question of each kind: typed, choose in each blank, word list', !!typed && !!choice && !!words)
   check('what students can read holds no right answers', !JSON.stringify(blanks).includes('correct') && !JSON.stringify(blanks).includes('זהב | הזהב') && !JSON.stringify(typed).includes('משקל'))
   check('the word list has 4 blanks and 5 cards (one extra)', words.blanks.length === 4 && words.cards.length === 5)
 
@@ -94,6 +109,7 @@ try {
   check('the test ran to the end', false, e.message)
 } finally {
   await cleanUp()
+  await removeLesson()
 }
 console.log(`\n${count - failures} of ${count} fill-in-the-blanks tests passed.`)
 finish(failures ? 1 : 0)
