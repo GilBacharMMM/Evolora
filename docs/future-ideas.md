@@ -136,6 +136,20 @@
 
 ---
 
+## 8. A full lesson on floating and sinking (Gil, 2026-11-27)
+
+**Description:**
+- A teaching lesson of its own on floating and sinking, in the science course (מדעים לכיתה ז'), after the Archimedes lesson.
+- For now, the Archimedes lesson has a short note box ("צף או שוקע?") with the rule, so the practice lessons don't ask about material that wasn't taught. Gil: this is important.
+
+**Open questions:**
+1. What should the lesson cover beyond the rule: average density (ships, the tin box), floating in different liquids (salt water, the Dead Sea, the floating egg), the part under water (icebergs)?
+2. Should Gil write it (as with the particle model lesson), or should Claude draft it for Gil to edit?
+3. Should density practice 2 (Euclid, the tin box, the egg, the Dead Sea) move under the new lesson in the course, since most of its questions are about floating?
+4. Should topic 3 of density practice 1 (floating and sinking) also move to a practice lesson of the new lesson?
+
+---
+
 ## General questions
 1. Priority order among the six topics?
 2. Dependencies between topics (e.g. levels → tags → search)?
