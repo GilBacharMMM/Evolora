@@ -120,6 +120,21 @@ Each person sees only what their role and classes allow.
 
 So in this section, wherever a requirement says that "the creator writes" or "the creator sets" something (hints, levels, topics, video times and so on), in stage 1 this means it is written in the lesson file. The screens for creating and editing lessons inside Evolora (REQ-2.3, 4.1, the editing part of 4.2, the formula editor in 4.3, 4.6, 4.8) come in stage 2. Acceptance criteria that mention the lesson builder are checked in stage 2; in stage 1, the same check is done by Claude when loading the lesson file.
 
+**REQ-3.5: Automatic sign-out** (Priority 1: foundation; Gil, 2026-11-27, D-85)
+To meet the Ministry of Education's security standard (sections 4.1.6 and 4.1.7; see `docs/moe-approval-steps.he.md`, section 12.6), Evolora signs a person out:
+- after **30 minutes with no activity**: no typing, clicking or scrolling, and no video or audio playing in Evolora;
+- after **8 hours** in any case, even with activity.
+
+These are the standard's limits for sensitive data. Evolora holds students' answers, grades and voice recordings, so the stricter limits apply. Two minutes before an inactivity sign-out, Evolora shows a message in the person's language: "You will be signed out in 2 minutes", with a **"Stay signed in"** button. Nothing is lost: an answer being typed is saved as a draft first (REQ-12.2). After signing in again, the person returns to the same page.
+
+*Acceptance criteria:*
+- [ ] Leave Evolora open with no activity: after 28 minutes the warning appears, and after 30 minutes Evolora is at the sign-in page.
+- [ ] Pressing "Stay signed in" in the warning keeps the person signed in for another 30 minutes.
+- [ ] A student watching a 40-minute video in a lesson is not signed out while the video plays.
+- [ ] A half-typed open answer is still there after signing out and in again.
+- [ ] After 8 hours Evolora signs the person out, even if they were active the whole time.
+- [ ] On the test site, Claude can shorten both times for a demonstration, so Gil does not have to wait 30 minutes.
+
 **REQ-4.1: Create a lesson** (Priority: Later, stage 2; see D-33)
 In edit mode, a creator creates a lesson with a title, a short description, a lesson language (Hebrew, Arabic or English), a subject and a grade level.
 
