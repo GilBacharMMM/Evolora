@@ -1,5 +1,5 @@
 ---
-title: מדעים: צפיפות
+title: מדעים לכיתה ז'
 language: he
 subject: מדעים
 grade: 7
