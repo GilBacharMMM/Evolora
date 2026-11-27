@@ -1359,7 +1359,7 @@ A second address for the test site lets a student test Evolora and look for bugs
 - [ ] At https://evolora-test.web.app, everything works as before, including switching to Test Teacher 1 and 2.
 
 **REQ-12.6: Ready-made test data** (Priority 1: foundation)
-The test site can be filled with a standard set of test data with one command, by Claude: test teachers, test students, a test class, the Archimedes lesson with its two practice lessons, the circles lesson and the circles practice lesson, with their two demo courses (`courses/circles-demo.md`, `courses/density-demo.md`). It can be reset to that state at any time.
+The test site can be filled with a standard set of test data with one command, by Claude: test teachers, test students, a test class, the particle model lesson, the Archimedes lesson with its two practice lessons, the circles lesson and the circles practice lesson, with their two demo courses (`courses/circles-demo.md`, `courses/density-demo.md`). It can be reset to that state at any time.
 
 **Two teachers, two subjects (Gil, 2026-11-26):**
 - Test Teacher 1 is shown as **"Math and Science teacher"** and teaches the test class "Test Class 7A" (test students 1 to 6), in Hebrew, with the density and circles courses.
