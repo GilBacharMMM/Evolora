@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { auth } from './site'
 
-// Drafts (REQ-3.5, REQ-12.2, D-87): what a person has typed but not yet sent (an open answer,
+// Drafts (REQ-3.5, REQ-12.2, D-89): what a person has typed but not yet sent (an open answer,
 // a number, a message, a teacher's comment) is kept in this browser tab as they type, so an
 // automatic sign-out loses nothing: after signing in again, the text is back in its box.
 //

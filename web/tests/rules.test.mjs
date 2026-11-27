@@ -1,4 +1,4 @@
-// Tests of the browser check (REQ-11.1, D-84, D-86) and the automatic sign-out rules (REQ-3.5, D-85).
+// Tests of the browser check (REQ-11.1, D-84, D-88) and the automatic sign-out rules (REQ-3.5, D-85).
 // Run: npm test (in web/)
 
 import { test } from 'node:test'

@@ -1235,7 +1235,7 @@ Before Evolora is used beyond the pilot, it must meet Israeli privacy law and Mi
 ## 11. Platform, hosting and scale
 
 **REQ-11.1: Web app for Chromebooks and laptops** (Priority 1: foundation)
-Evolora is a website. It works on school Chromebooks and on Windows and Mac laptops and computers, in the latest versions of **Google Chrome, Microsoft Edge, Mozilla Firefox and Apple Safari** (Safari is on Mac only). This replaces "Chrome only" (Gil, 2026-11-27, D-84), so that Evolora meets the Ministry of Education's compatibility standard (at least three browsers; see `docs/moe-approval-steps.he.md`, section 12.6). Older browser versions, and browsers not on this list, show a short message, in the person's language, suggesting one of the four browsers. "Latest versions" means versions from about the last year, so a school computer that updates a little late still works (D-86). Phones are not supported yet; they may come later, if needed.
+Evolora is a website. It works on school Chromebooks and on Windows and Mac laptops and computers, in the latest versions of **Google Chrome, Microsoft Edge, Mozilla Firefox and Apple Safari** (Safari is on Mac only). This replaces "Chrome only" (Gil, 2026-11-27, D-84), so that Evolora meets the Ministry of Education's compatibility standard (at least three browsers; see `docs/moe-approval-steps.he.md`, section 12.6). Older browser versions, and browsers not on this list, show a short message, in the person's language, suggesting one of the four browsers. "Latest versions" means versions from about the last year, so a school computer that updates a little late still works (D-88). Phones are not supported yet; they may come later, if needed.
 
 *Acceptance criteria:*
 - [ ] Every screen works on a school Chromebook, at its normal screen size, without zooming.
@@ -1296,6 +1296,32 @@ Text is readable, colours are not the only way information is shown (status colo
 - [ ] Each status colour on the dashboard also shows a word or icon.
 - [ ] With "Select to speak" turned on, a student selects a paragraph of a Hebrew lesson on a Chromebook and hears it read aloud; the same works in Arabic and English.
 - [ ] The teachers' guide explains how to turn on "Select to speak".
+
+**REQ-12.9: Accessibility checks and fixes, level AA** (Priority 1: foundation; Gil, 2026-11-27, D-86)
+To meet the Ministry of Education's accessibility procedure (Israeli standard 5568, based on WCAG 2.0 levels A and AA; see `docs/moe-approval-steps.he.md`, section 12.8), every screen of Evolora is checked automatically for accessibility problems, in all four browsers (REQ-11.1), as part of the automatic tests. Everything the check finds is fixed, in particular:
+- **colour contrast:** text and buttons stand out clearly from their background (at least 4.5 to 1 for normal text);
+- **font size:** text is at least 15 pixels, and can be enlarged to 200% without anything being cut off or overlapping;
+- **keyboard use:** everything can be done with the keyboard alone, in a sensible order, the focused item is clearly marked, and the keyboard never gets stuck;
+- **labels:** every field and button has a name that a screen reader reads aloud;
+- **error messages:** a screen reader reads them aloud, and they say what to fix.
+
+No "accessibility toolbar" or plug-in is added; the fixes are in Evolora itself. Not yet included (later, separate decisions): image descriptions and audio transcripts in lessons, plural forms instead of slashes in Hebrew texts, the accessibility statement page, and a screen-reader check by a person.
+
+*Acceptance criteria:*
+- [ ] Claude gives Gil a short report, in plain language, listing every screen checked in each of the four browsers, with no remaining level A or AA problems.
+- [ ] Gil opens a lesson, answers a question and moves to the next one using only the keyboard (Tab, Enter, arrows), and always sees where he is.
+- [ ] Gil enlarges the page to 200% (Ctrl and +) on the lesson page and the teacher's class page: everything can still be read and used, and nothing overlaps.
+- [ ] Leaving a required field empty and pressing save shows an error message next to the field, and the Chromebook's screen reader (ChromeVox) reads it aloud.
+- [ ] If a later change brings back an accessibility problem, the automatic tests fail and say which screen.
+
+**REQ-12.10: Accessibility statement** (Priority 1: foundation; Gil, 2026-11-27, D-87)
+Evolora has an **accessibility statement** page in Hebrew, Arabic and English, as the Ministry of Education's accessibility procedure and Israeli law ask (see `docs/moe-approval-steps.he.md`, section 12.8). The text is in `terms/accessibility.he.md`, `terms/accessibility.ar.md` and `terms/accessibility.en.md`: Claude drafts it, Gil approves it, and Claude loads it, the same way as the terms of use (REQ-10.8). It says honestly how far Evolora meets the standard today, what is still being improved, known limits, how to use the computer's own accessibility tools, and how to contact the accessibility coordinator. The page shows in the person's language and can be opened **without signing in**. A link to it, **"Accessibility"**, is at the bottom of every page, next to "Terms of use", including the sign-in page and the "please use another browser" message. The statement is updated whenever the accessibility of Evolora changes (for example after REQ-12.9).
+
+*Acceptance criteria:*
+- [ ] Every page, including the sign-in page, has an "Accessibility" link at the bottom.
+- [ ] The link opens the statement in the page's language (Hebrew, Arabic or English), without signing in.
+- [ ] The statement shows the coordinator's name, email and reply time, and the date it was last updated.
+- [ ] The link can be reached and opened with the keyboard alone.
 
 **REQ-12.7: One design language** (Priority 1: foundation)
 All screens share one **design language** (in Hebrew: שפה עיצובית): colours, fonts, icons, spacing and the look of buttons and cards. Claude proposes it, with mockups Gil can click through, and Gil approves it before the screens are built (D-38).

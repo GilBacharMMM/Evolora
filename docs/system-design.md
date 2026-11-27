@@ -68,11 +68,11 @@ Videos, simulations and podcasts from other websites are shown inside the lesson
 ### 2.5 Screen size
 Screens are designed for a Chromebook screen (typically 11 to 14 inches) and work on larger screens too. Phones aren't supported.
 
-### 2.5.1 Browsers (REQ-11.1, D-84, D-86)
+### 2.5.1 Browsers (REQ-11.1, D-84, D-88)
 Evolora works in the latest versions of **Google Chrome, Microsoft Edge, Mozilla Firefox and Apple Safari**. When the website opens, it checks which browser it is in and which version:
 - Chrome and Edge say who they are in a list of names the browser gives. Other browsers built on the same engine as Chrome (Brave, Opera, Samsung Internet and others) give their own names, so they are not mistaken for Chrome.
 - Firefox and Safari are recognised by the description the browser gives of itself.
-- "Latest versions" means about a year back, so a school computer that updates a little late still works (D-86). Today (November 2026) that is Chrome and Edge 145 or newer, Firefox 153 or newer (153 is Firefox's long-term version that some schools use) and Safari 26 or newer. These numbers are raised once a year.
+- "Latest versions" means about a year back, so a school computer that updates a little late still works (D-88). Today (November 2026) that is Chrome and Edge 145 or newer, Firefox 153 or newer (153 is Firefox's long-term version that some schools use) and Safari 26 or newer. These numbers are raised once a year.
 
 Any other browser, or an older version, shows only a short message in the person's language, listing the four browsers with a link to each, and asking to update if they already use one. There is no way around this message, on the test site either: Claude's automatic tests run in the four real browsers (section 8.1).
 
@@ -201,12 +201,12 @@ The database is backed up automatically every day, and backups are kept for 7 da
 ### 4.1 Signing in
 People sign in with "Sign in with Google" (REQ-3.1). People use a regular Google account such as Gmail (REQ-3.2, D-19). A newly signed-in person is a student with no classes and can see nothing until they enter a class code (REQ-10.1). Which accounts may sign in is decided in one place, so switching to school accounts later (REQ-3.3) is a small change.
 
-### 4.1.1 Automatic sign-out (REQ-3.5, D-85, D-87)
+### 4.1.1 Automatic sign-out (REQ-3.5, D-85, D-89)
 The website signs a person out by itself:
 - **After 30 minutes with no activity.** Activity is typing, clicking, touching or scrolling in Evolora, and any video or audio playing in it (the same check as the time on lessons, section 2.13). Activity in one Evolora tab counts for all the person's Evolora tabs in that browser. A computer that was asleep or closed counts as no activity, so on opening it again after more than 30 minutes, the person is at the sign-in page.
 - **After 8 hours from signing in**, even with activity all the time. The 8 hours are counted by the person's own computer from the moment it saw the sign-in, so a computer whose clock is wrong still counts them correctly.
 - **The warning:** 2 minutes before an inactivity sign-out, a box in the middle of the screen says "You will be signed out in 2 minutes", with the time left and a **"Stay signed in"** button. Pressing it (or any typing, clicking or scrolling) counts as activity and closes the box. There is no warning before the 8-hour sign-out, since nothing can extend it; nothing is lost either way.
-- **Nothing is lost (D-87).** Whatever the person has typed and not yet sent (an open answer, a number, a message to the teacher, a teacher's private note) is kept as a **draft** as they type. Drafts are kept in that browser tab only, never on Evolora's servers. They are gone when the text is sent, when the tab or the browser is closed, and when the person signs out themselves. Each draft belongs to one person, so someone else signing in on the same computer never sees it. Just before an automatic sign-out, work that is waiting to be saved is saved first: an exam answer still being typed is sent, and on the grading page the grade and comment being written are saved (as when moving to the next answer, D-68).
+- **Nothing is lost (D-89).** Whatever the person has typed and not yet sent (an open answer, a number, a message to the teacher, a teacher's private note) is kept as a **draft** as they type. Drafts are kept in that browser tab only, never on Evolora's servers. They are gone when the text is sent, when the tab or the browser is closed, and when the person signs out themselves. Each draft belongs to one person, so someone else signing in on the same computer never sees it. Just before an automatic sign-out, work that is waiting to be saved is saved first: an exam answer still being typed is sent, and on the grading page the grade and comment being written are saved (as when moving to the next answer, D-68).
 - **The same page.** The address stays as it was, so after signing in again the person is back on the same page, with their drafts in their boxes. The sign-in page says why the person was signed out. If a different person signs in, they start at their home page, and the previous person's drafts are removed.
 - **On the test site only**, Claude can shorten both times for a demonstration (REQ-3.5): opening the test site once with `?signout-test=3,10` at the end of the address signs out after 3 minutes without activity (the shortest, since the warning still comes 2 minutes before) and 10 minutes in all. That browser remembers this until the test site is opened with `?signout-test=off`. The real site has no such setting.
 

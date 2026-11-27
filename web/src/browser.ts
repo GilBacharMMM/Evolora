@@ -9,7 +9,7 @@
 
 export type BrowserName = 'chrome' | 'edge' | 'firefox' | 'safari' | 'other'
 
-// The oldest version of each browser that Evolora lets in (D-86): about a year back (in
+// The oldest version of each browser that Evolora lets in (D-88): about a year back (in
 // November 2026 the newest are Chrome and Edge 158, Firefox 157 and Safari 27), so that a school
 // computer that updates a little late still works. Raised once a year.
 export const MIN_VERSION: Record<Exclude<BrowserName, 'other'>, number> = {
@@ -64,7 +64,7 @@ export function isSupported(b: BrowserInfo): boolean {
 }
 
 // The automatic screen tests run in branded Chrome and Edge, Firefox and WebKit, which all pass
-// this check, so the test site no longer needs a way around it (D-86).
+// this check, so the test site no longer needs a way around it (D-88).
 export function browserAllowed(): boolean {
   return isSupported(thisBrowser())
 }

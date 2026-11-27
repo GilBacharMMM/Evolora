@@ -970,7 +970,23 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Reason:** Evolora holds students' answers, grades and voice recordings, which are likely to count as sensitive data.
 **Affects:** new REQ-3.5
 
-### D-86: What "latest versions" of the four browsers means
+### D-86: Automatic accessibility checks and fixes, level AA
+**Date:** 2026-11-27 · **Status:** Decided · **Decided by:** Gil
+**Context:** Evolora has basic accessibility only (REQ-12.3). The Ministry of Education's accessibility procedure asks for Israeli standard 5568 (WCAG 2.0, levels A and AA), with no accessibility toolbars.
+**Options considered:** do everything in the Ministry procedure at once (checks, fixes, lesson content, Hebrew wording, statement, outside review); start with automatic checks of every screen and fixing what they find, and decide the rest later.
+**Decision:** start with automatic checks of every screen in all four browsers, as part of the automatic tests, and fix colour contrast, font size, keyboard use, labels and error messages. The rest is decided later.
+**Reason:** the checks catch most problems quickly, and keep them from coming back.
+**Affects:** new REQ-12.9; the automatic screen tests
+
+### D-87: An accessibility statement page in three languages
+**Date:** 2026-11-27 · **Status:** Decided (the text is a draft for Gil to approve; coordinator: Gil, reply within 5 working days) · **Decided by:** Gil
+**Context:** The Ministry of Education's accessibility procedure (sections 6.2 and 6.4) and regulation 35 ask every website to publish an accessibility statement, with a way to report problems and the accessibility coordinator's details.
+**Options considered:** one statement in Hebrew only; a statement in all three languages, linked from every page.
+**Decision:** a statement in Hebrew, Arabic and English, kept in the `terms` folder like the terms of use, shown without signing in, and linked from the bottom of every page. It says honestly that Evolora partly meets the standard today.
+**Reason:** Evolora serves Hebrew, Arabic and English speakers, and the statement must be easy to find.
+**Affects:** new REQ-12.10; `terms/accessibility.*.md`; the footer of every page
+
+### D-88: What "latest versions" of the four browsers means
 **Date:** 2026-11-27 · **Status:** Decided by Claude, for Gil to confirm · **Decided by:** Claude
 **Context:** REQ-11.1 asks for the latest versions of Chrome, Edge, Firefox and Safari, and a message for older versions. Browsers update every few weeks, and school computers often update a little late; some schools use Firefox's long-term version (ESR), which updates about once a year.
 **Options considered:** only the very newest version of each (school computers a few weeks behind would be blocked); versions from about the last year; no version check at all (the Ministry's standard speaks of latest versions).
@@ -978,7 +994,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Reason:** blocks really old browsers, which may lack what Evolora needs or no longer get security updates, without blocking a school computer that is a few weeks behind.
 **Affects:** REQ-11.1, system-design 2.5.1, `web/src/browser.ts`
 
-### D-87: Drafts are kept in the browser tab only
+### D-89: Drafts are kept in the browser tab only
 **Date:** 2026-11-27 · **Status:** Decided by Claude, for Gil to confirm · **Decided by:** Claude
 **Context:** REQ-3.5 says that nothing is lost at an automatic sign-out: an answer being typed is saved as a draft first. The draft has to be kept somewhere.
 **Options considered:** in the browser tab only (gone when the tab is closed); in the browser, kept even after it is closed; on Evolora's servers, so a draft would follow the student to another computer.
