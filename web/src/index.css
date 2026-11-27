@@ -2827,3 +2827,10 @@ details.image-source summary {
 .signed-out-notice {
   max-width: 440px;
 }
+
+/* Labels above a question in the teacher's whole-lesson view (D-90) */
+.question-labels {
+  display: flex;
+  gap: 0.5rem;
+  margin-block: 1rem -0.5rem;
+}

@@ -1001,3 +1001,15 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** in the browser tab only. A draft is gone when the text is sent, when the tab or the browser is closed, or when the person signs out themselves. Each draft belongs to one person, so another person signing in on the same computer never sees it. Exam answers are already saved on the server as the student types; just before an automatic sign-out, the last one is sent at once. On the grading page, the grade and comment being written are saved, as when moving to the next answer (D-68).
 **Reason:** covers what REQ-3.5 asks (signing out and in again, in the same place) and keeps half-written answers off shared school computers and off the servers. Drafts that follow the student to another computer can be added later if Gil wants them.
 **Affects:** REQ-3.5, system-design 4.1.1
+
+### D-90: Teachers see the whole lesson at once when trying it
+**Date:** 2026-11-27 · **Status:** Decided · **Decided by:** Gil
+**Context:** When a teacher tried a lesson (REQ-5.32), it worked exactly as for a student: each question blocked the rest of the lesson until it was answered or skipped. Gil wants teachers to see the whole lesson and scroll through it.
+**Options considered:**
+1. Whole lesson only; the step-by-step view only for students.
+2. Whole lesson by default, with a button to see it as a student.
+3. For each question, answerable as before, or everything (answer, hint, solution) open at once.
+4. Extra practice and higher-level questions: shown with labels, shown without labels, or hidden.
+**Decision:** Option 2. Questions stay answerable as before (with Skip and Show answer). Every question is shown; extra practice questions and level 2 and 3 questions carry a small label.
+**Reason:** Teachers need to read a lesson quickly before giving it, and still be able to check what students go through.
+**Affects:** REQ-5.32, the lesson player

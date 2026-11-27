@@ -133,6 +133,9 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const { user, role, classIds } = useSession()
   // Teachers try the lesson (REQ-5.32): checked as for a student, nothing saved.
   const trying = role !== 'student'
+  // A teacher sees the whole lesson at once, or chooses to see it step by step as a student (D-90).
+  const [asStudent, setAsStudent] = useState(false)
+  const whole = trying && !asStudent
   // Questions above the student's level are left out, without saying so (REQ-6.10).
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [minimumOverride, setMinimumOverride] = useState<number | null>(null)
@@ -251,14 +254,16 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   }, [lesson])
 
   // Extra practice questions are asked only until the topic's minimum is reached (REQ-4.21).
+  // In the whole lesson, the teacher sees every question (D-90).
   const skipped = (it: Item) =>
-    (it.kind === 'block' && it.block.type === 'question' && hidden.has(it.block.id)) ||
-    (it.kind === 'block' && it.block.type === 'question' && it.block.extra && !states[it.block.id] && minimum > 0 && topicCorrect(it.topic) >= minimum)
+    !whole &&
+    ((it.kind === 'block' && it.block.type === 'question' && hidden.has(it.block.id)) ||
+    (it.kind === 'block' && it.block.type === 'question' && it.block.extra && !states[it.block.id] && minimum > 0 && topicCorrect(it.topic) >= minimum))
 
   const shown = items.filter((it) => !skipped(it))
   const stop = shown.findIndex((it) => it.kind === 'block' && it.block.type === 'question' && !isFinished(states[(it.block as Question).id]))
-  const visible = stop === -1 ? shown : shown.slice(0, stop + 1)
-  const finished = lesson !== null && stop === -1
+  const visible = whole || stop === -1 ? shown : shown.slice(0, stop + 1)
+  const finished = lesson !== null && (whole || stop === -1)
   const activeTopic = visible.length ? (visible[visible.length - 1] as Item & { topic?: number }).topic : undefined
 
   // An open answer sent back for corrections: the last one, with the teacher's marks, above the new box (D-77).
@@ -343,7 +348,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
     <main className="page narrow">
       <div className="player-top">
         <BackButton />
-        {minimum > 0 && activeTopic !== undefined && !finished && (
+        {minimum > 0 && activeTopic !== undefined && !finished && !whole && (
           <div className="topic-progress" aria-live="polite">
             <span>
               {t('q.topicCorrect')}: {Math.min(topicCorrect(activeTopic), minimum)} / {minimum}
@@ -373,6 +378,18 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
         {trying && (
           <div className="try-banner" role="note">
             <Ui>{t('lesson.trying')}</Ui>
+            <button
+              type="button"
+              className="button secondary small"
+              onClick={() => {
+                // Switching between the whole lesson and the student's view starts the try again (D-90).
+                setLocal({})
+                setAsStudent((v) => !v)
+                window.scrollTo({ top: 0 })
+              }}
+            >
+              <Ui>{asStudent ? t('lesson.seeWhole') : t('lesson.seeAsStudent')}</Ui>
+            </button>
             <button type="button" className="button secondary small" onClick={() => setLocal({})}>
               <Ui>{t('lesson.tryAgain')}</Ui>
             </button>
@@ -393,6 +410,12 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
               </h2>
             ) : it.block.type === 'question' ? (
               <>
+              {whole && (it.block.extra || (it.block.level ?? 1) > 1) && (
+                <p className="question-labels">
+                  {it.block.extra && <span className="course-chip">{t('lesson.extraLabel')}</span>}
+                  {(it.block.level ?? 1) > 1 && <span className="course-chip">{t('lesson.levelLabel', { level: it.block.level })}</span>}
+                </p>
+              )}
               {it.block.kind === 'blanks' && !(states[it.block.id] as TryState | undefined)?.tryShown ? (
                 <BlanksQuestion
                   q={it.block}

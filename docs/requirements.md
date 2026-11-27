@@ -842,7 +842,11 @@ Besides seeing everything inside Evolora, each teacher can get one email a day w
 - [ ] A teacher with the email on gets one email a day listing the new items; with it off, no email arrives.
 
 **REQ-5.32: Teacher tries a lesson** (Priority 2: should have)
-A teacher can try any lesson or exam they can see, straight from the teacher screens: from the lesson list, from a course, and from a class's assigned lessons. This works both before the lesson is given to students and after. The teacher goes through the lesson exactly as a student would: questions block progress, wrong answers show the hint, then the solution and a check-again question, and help tips work. A clear banner says "Trying the lesson: answers are not saved".
+A teacher can try any lesson or exam they can see, straight from the teacher screens: from the lesson list, from a course, and from a class's assigned lessons. This works both before the lesson is given to students and after. A clear banner says "Trying the lesson: answers are not saved".
+
+- **The whole lesson at once** (Gil, 2026-11-27, D-90): the lesson opens with all its topics, material and questions on one page, so the teacher can scroll through it without answering anything. Questions can still be answered, in any order: they are checked as for a student, wrong answers show the hint, then the solution and a check-again question, and help tips work.
+- Every question is shown, including extra practice questions and questions above some students' level. Each of those has a small label ("Extra practice", "Level 2", "Level 3"), so the teacher knows which students will see it.
+- **See it as a student:** a button on the banner switches to the student's step-by-step view, where questions block progress exactly as they do for a student. Another button switches back to the whole lesson. Switching starts the try again from the beginning.
 
 - What the teacher does while trying is never recorded as a student's: it does not appear on any dashboard, grade table, grading page or CSV, and it does not change any student's level or the question success rates.
 - The teacher can leave at any moment and start again from the beginning.
@@ -852,8 +856,10 @@ A teacher can try any lesson or exam they can see, straight from the teacher scr
 This is different from REQ-4.6, which is about a lesson's creator previewing it while writing it inside Evolora (stage 2).
 
 *Acceptance criteria:*
-- [ ] As a teacher, open a lesson that is not yet given to any class and press "Try the lesson": it opens like the student's lesson, with the "Trying the lesson" banner.
+- [ ] As a teacher, open a lesson that is not yet given to any class and press "Try the lesson": it opens with the "Trying the lesson" banner, and you can scroll from the first topic to the end of the lesson without answering anything.
+- [ ] In the whole lesson, extra practice questions are labelled "Extra practice", and level 2 and 3 questions are labelled with their level.
 - [ ] Answer a question wrongly: the hint appears and you get a second attempt, as a student would.
+- [ ] Press "See it as a student": the lesson starts again from the beginning and stops at the first question, as it does for a student. Press "See the whole lesson": the whole lesson is back.
 - [ ] Give the same lesson to a class, then try it again from that class's page: it still works, and it is the same version the students see.
 - [ ] After trying, the class dashboard, grade table, grading page and CSV show nothing from your attempt.
 - [ ] Leave in the middle and press "Try the lesson" again: it starts from the beginning.
