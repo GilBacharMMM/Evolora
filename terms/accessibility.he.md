@@ -1,7 +1,7 @@
 version: 0.1
 title: הצהרת נגישות (טיוטה)
 
-<!-- Draft accessibility statement (REQ-12.10, D-87). Claude drafts, Gil approves. Fill in the parts in [brackets]. Hebrew without slash forms, as the Ministry's accessibility procedure asks. -->
+<!-- Draft accessibility statement (REQ-12.10, D-87). Claude drafts, Gil approves. Hebrew without slash forms, as the Ministry's accessibility procedure asks. -->
 
 ## המחויבות שלנו
 אנחנו רוצים שכל התלמידים והמורים יוכלו ללמוד וללמד באבולורה, כולל אנשים עם מוגבלות. אנחנו עובדים כדי שאבולורה תעמוד בתקן הישראלי ת"י 5568, שמבוסס על הנחיות WCAG 2.0 ברמה AA.
@@ -35,13 +35,13 @@ title: הצהרת נגישות (טיוטה)
 
 ## נתקלתם בבעיה? פנו אלינו
 אם משהו באבולורה לא נגיש לכם, נשמח לדעת ולתקן.
-- **רכז הנגישות:** [שם]
-- **דוא"ל:** [כתובת]
-- **זמן תגובה:** נחזור אליכם תוך [5] ימי עבודה.
+- **רכז הנגישות:** גיל בכר
+- **דוא"ל:** bachargil@gmail.com
+- **זמן תגובה:** נחזור אליכם תוך 5 ימי עבודה.
 
 כדאי לכתוב באיזה דף הייתה הבעיה, מה ניסיתם לעשות, ובאיזה מחשב, דפדפן ועזר השתמשתם.
 
 ## נגישות פיזית
 אבולורה היא שירות באינטרנט בלבד, ואין לה משרד או מקום לקבלת קהל.
 
-**עדכון אחרון:** [תאריך]
+**עדכון אחרון:** 27 בנובמבר 2026

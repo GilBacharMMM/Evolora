@@ -1,7 +1,7 @@
 version: 0.1
 title: Accessibility statement (DRAFT)
 
-<!-- Draft accessibility statement (REQ-12.10, D-87). Claude drafts, Gil approves. Fill in the parts in [brackets]. -->
+<!-- Draft accessibility statement (REQ-12.10, D-87). Claude drafts, Gil approves. -->
 
 ## Our commitment
 We want every student and teacher, including people with disabilities, to be able to learn and teach with Evolora. We are working so that Evolora meets the Israeli standard IS 5568, which is based on the WCAG 2.0 guidelines at level AA.
@@ -35,13 +35,13 @@ Supported browsers: Chrome, Edge, Firefox and Safari, latest versions.
 
 ## Found a problem? Contact us
 If something in Evolora is not accessible to you, we want to know and fix it.
-- **Accessibility coordinator:** [name]
-- **Email:** [address]
-- **Reply time:** we will reply within [5] working days.
+- **Accessibility coordinator:** Gil Bachar
+- **Email:** bachargil@gmail.com
+- **Reply time:** we will reply within 5 working days.
 
 It helps to tell us which page the problem was on, what you tried to do, and which computer, browser and tool you used.
 
 ## Physical accessibility
 Evolora is an online service only. It has no office or place that receives visitors.
 
-**Last updated:** [date]
+**Last updated:** 27 November 2026

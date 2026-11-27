@@ -979,7 +979,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** new REQ-12.9; the automatic screen tests
 
 ### D-87: An accessibility statement page in three languages
-**Date:** 2026-11-27 · **Status:** Decided (the text is a draft for Gil to approve; the coordinator's details are still missing) · **Decided by:** Gil
+**Date:** 2026-11-27 · **Status:** Decided (the text is a draft for Gil to approve; coordinator: Gil, reply within 5 working days) · **Decided by:** Gil
 **Context:** The Ministry of Education's accessibility procedure (sections 6.2 and 6.4) and regulation 35 ask every website to publish an accessibility statement, with a way to report problems and the accessibility coordinator's details.
 **Options considered:** one statement in Hebrew only; a statement in all three languages, linked from every page.
 **Decision:** a statement in Hebrew, Arabic and English, kept in the `terms` folder like the terms of use, shown without signing in, and linked from the bottom of every page. It says honestly that Evolora partly meets the standard today.
