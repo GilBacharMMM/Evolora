@@ -111,6 +111,8 @@ export class Screens {
       if (m.type() !== 'error' || /youtube|ytimg|googlevideo|phet\.colorado/.test(m.location()?.url || '')) return
       // A test computer's own network dropping for a moment isn't a problem in the app.
       if (/net::ERR_(INTERNET_DISCONNECTED|NETWORK_CHANGED|CONNECTION_RESET|QUIC)/.test(m.text())) return
+      // Firefox reports the embedded YouTube player's own messages against Evolora's page.
+      if (/youtube(-nocookie)?\.com/.test(m.text()) && /postMessage/.test(m.text())) return
       page._errors.push(m.text().slice(0, 300))
     })
     page.on('pageerror', (e) => {
@@ -120,7 +122,10 @@ export class Screens {
       if (/decodeAudioData/.test(text) && /audioBufferProperty/.test(text)) return
       // WebKit reports Firestore's open connection being cut, when the page moves on, as an
       // "access control" error; it is the browser leaving the page, not a problem in the app.
-      if (/firestore\.googleapis\.com\/.*\/channel/.test(text) && /access control/.test(text)) return
+      // The same happens to a request still on its way (the time on the lesson) when the page reloads.
+      if (/(firestore\.googleapis\.com\/.*\/channel|cloudfunctions\.net\/)/.test(text) && /access control/.test(text)) return
+      // Firefox: the embedded YouTube player reaching across to its own frame.
+      if (/Permission denied to access property "type"/.test(text)) return
       page._errors.push(`Page error: ${text.slice(0, 300)}`)
     })
   }
