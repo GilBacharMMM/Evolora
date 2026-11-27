@@ -1314,6 +1314,15 @@ No "accessibility toolbar" or plug-in is added; the fixes are in Evolora itself.
 - [ ] Leaving a required field empty and pressing save shows an error message next to the field, and the Chromebook's screen reader (ChromeVox) reads it aloud.
 - [ ] If a later change brings back an accessibility problem, the automatic tests fail and say which screen.
 
+**REQ-12.10: Accessibility statement** (Priority 1: foundation; Gil, 2026-11-27, D-87)
+Evolora has an **accessibility statement** page in Hebrew, Arabic and English, as the Ministry of Education's accessibility procedure and Israeli law ask (see `docs/moe-approval-steps.he.md`, section 12.8). The text is in `terms/accessibility.he.md`, `terms/accessibility.ar.md` and `terms/accessibility.en.md`: Claude drafts it, Gil approves it, and Claude loads it, the same way as the terms of use (REQ-10.8). It says honestly how far Evolora meets the standard today, what is still being improved, known limits, how to use the computer's own accessibility tools, and how to contact the accessibility coordinator. The page shows in the person's language and can be opened **without signing in**. A link to it, **"Accessibility"**, is at the bottom of every page, next to "Terms of use", including the sign-in page and the "please use another browser" message. The statement is updated whenever the accessibility of Evolora changes (for example after REQ-12.9).
+
+*Acceptance criteria:*
+- [ ] Every page, including the sign-in page, has an "Accessibility" link at the bottom.
+- [ ] The link opens the statement in the page's language (Hebrew, Arabic or English), without signing in.
+- [ ] The statement shows the coordinator's name, email and reply time, and the date it was last updated.
+- [ ] The link can be reached and opened with the keyboard alone.
+
 **REQ-12.7: One design language** (Priority 1: foundation)
 All screens share one **design language** (in Hebrew: שפה עיצובית): colours, fonts, icons, spacing and the look of buttons and cards. Claude proposes it, with mockups Gil can click through, and Gil approves it before the screens are built (D-38).
 
