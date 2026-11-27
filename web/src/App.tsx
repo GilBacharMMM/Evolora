@@ -9,6 +9,7 @@ import { SignIn } from './pages/SignIn'
 import { StudentHome } from './pages/StudentHome'
 import { LessonLibrary, TeacherHome } from './pages/TeacherHome'
 import { Footer, TermsGate, TermsPage } from './components/Terms'
+import { AutoSignOut } from './autoSignOut'
 
 // The lesson player, with its formula display, loads only when a lesson is opened,
 // so the home page opens quickly (REQ-12.1).
@@ -53,6 +54,12 @@ function OfflineBanner() {
       {t('common.offline')}
     </div>
   )
+}
+
+// Automatic sign-out while signed in (REQ-3.5).
+function SignOutTimer() {
+  const { state, user } = useSession()
+  return state === 'signedIn' && user ? <AutoSignOut key={user.uid} user={user} /> : null
 }
 
 function Message({ text }: { text: string }) {
@@ -159,6 +166,7 @@ export default function App() {
       <OfflineBanner />
       <Header />
       <Screens />
+      <SignOutTimer />
       <Footer />
     </SessionProvider>
   )

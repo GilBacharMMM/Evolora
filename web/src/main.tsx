@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './i18n'
 import './index.css'
 import App from './App.tsx'
-import { NotChrome } from './NotChrome'
+import { NotSupported } from './NotSupported'
 import { browserAllowed } from './browser'
 import { IS_TEST_SITE } from './site'
 
@@ -13,6 +13,6 @@ tidyAddress()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ErrorScreen>{browserAllowed(IS_TEST_SITE) ? <App /> : <NotChrome />}</ErrorScreen>
+    <ErrorScreen>{browserAllowed(IS_TEST_SITE) ? <App /> : <NotSupported />}</ErrorScreen>
   </StrictMode>,
 )

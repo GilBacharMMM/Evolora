@@ -1427,12 +1427,21 @@ async function recordingLink(path) {
   return privateLink(file)
 }
 
+// The kind of recording, read from its first bytes (REQ-11.1, D-84): Chrome, Edge and Firefox
+// record WebM, Safari records MP4 (which Evolora names .m4a, the usual name for sound only).
+export function audioFormat(data) {
+  if (data.length > 12 && data.toString('latin1', 4, 8) === 'ftyp') return { type: 'audio/mp4', ext: 'm4a' }
+  if (data.length > 4 && data.toString('latin1', 0, 4) === 'OggS') return { type: 'audio/ogg', ext: 'ogg' }
+  return { type: 'audio/webm', ext: 'webm' }
+}
+
 // Saves a teacher's recorded comment (REQ-5.13), sent as base64, and returns its private link.
 async function saveComment(studentId, lessonId, questionId, base64) {
   const data = Buffer.from(base64, 'base64')
   if (!data.length || data.length > 2 * 1024 * 1024) throw new HttpsError('invalid-argument', 'invalid-audio')
-  const file = getStorage().bucket().file(`comments/${studentId}/${lessonId}/${questionId}/${Date.now()}.webm`)
-  await file.save(data, { contentType: 'audio/webm', metadata: { metadata: { firebaseStorageDownloadTokens: randomUUID() } } })
+  const { type, ext } = audioFormat(data)
+  const file = getStorage().bucket().file(`comments/${studentId}/${lessonId}/${questionId}/${Date.now()}.${ext}`)
+  await file.save(data, { contentType: type, metadata: { metadata: { firebaseStorageDownloadTokens: randomUUID() } } })
   return privateLink(file)
 }
 

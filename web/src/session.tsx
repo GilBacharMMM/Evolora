@@ -5,6 +5,9 @@ import { httpsCallable } from 'firebase/functions'
 import { auth, db, functions } from './site'
 import { loadTerms, type Terms } from './terms'
 import i18n, { LANGUAGES, setLanguage, type Language } from './i18n'
+import { clearDrafts } from './drafts'
+import { forgetSignedOut, signedOutReason } from './autoSignOut'
+import { navigate } from './router'
 
 // Roles (REQ-2.1, 2.2): everyone who signs in is a student, unless the system admin
 // (Claude, D-47) has put their email address on the staff list.
@@ -89,6 +92,15 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         return
       }
       setState('loading')
+      // After an automatic sign-out (REQ-3.5) the same page opens again, unless someone else signed in.
+      const before = signedOutReason()
+      if (before) {
+        forgetSignedOut()
+        if (before.uid !== u.uid) {
+          clearDrafts()
+          navigate('/')
+        }
+      }
       let accepted: string | null = null
       try {
         accepted = await syncProfile(u)
@@ -130,7 +142,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   // Nobody is asked while no terms are loaded (D-75).
   const termsOk = !terms || agreed === terms.version
 
+  // Signing out oneself: the drafts kept in this tab go too (drafts.ts).
   const signOutNow = useCallback(async () => {
+    clearDrafts()
+    forgetSignedOut()
     await signOut(auth)
   }, [])
 

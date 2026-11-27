@@ -24,9 +24,16 @@
     "signInFailed": "Signing in didn't work. Please try again.",
     "signOut": "Sign out"
   },
-  "chrome": {
-    "message": "Evolora works in Google Chrome. Please open this page in Chrome.",
-    "download": "Download Google Chrome"
+  "autoSignOut": {
+    "warning": "You will be signed out in 2 minutes",
+    "why": "There has been no activity in Evolora for a while. What you have typed is kept.",
+    "stay": "Stay signed in",
+    "signedOutIdle": "You were signed out after 30 minutes without activity. Sign in again to go back to the same page; what you typed is still there.",
+    "signedOutMax": "You were signed out because 8 hours have passed since you signed in. Sign in again to go back to the same page; what you typed is still there."
+  },
+  "browser": {
+    "message": "Evolora works in the latest versions of Google Chrome, Microsoft Edge, Mozilla Firefox and Apple Safari. Please open this page in one of them.",
+    "update": "If you already use one of these browsers, please update it to the latest version."
   },
   "home": {
     "hello": "Hello, {{name}}",

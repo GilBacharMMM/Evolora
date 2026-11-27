@@ -6,6 +6,7 @@ import { Markdown } from './Rich'
 import { QuestionImage, Ui } from './Blocks'
 import type { Question } from './types'
 import { isFinished, looksLikeNumber, type CheckAgainState, type QuestionState } from './answers'
+import { useDraft } from '../drafts'
 
 export type { QuestionState }
 
@@ -43,6 +44,7 @@ function AnswerForm({
   lastAnswer,
   correctChoices,
   onSubmit,
+  draftKey,
 }: {
   kind: 'choice' | 'number'
   choices: { id: string; text: string }[]
@@ -53,10 +55,12 @@ function AnswerForm({
   lastAnswer: unknown
   correctChoices: string[] | null
   onSubmit: (value: unknown) => Promise<void>
+  // Where a half-typed number is kept (REQ-3.5, drafts.ts).
+  draftKey: string
 }) {
   const { t } = useTranslation()
   const [picked, setPicked] = useState<string[]>([])
-  const [typed, setTyped] = useState('')
+  const [typed, setTyped, clearTyped] = useDraft(kind === 'number' && !finished ? draftKey : null)
   const [busy, setBusy] = useState(false)
   const [problem, setProblem] = useState<Problem>(null)
   const shownPicked = finished && Array.isArray(lastAnswer) ? (lastAnswer as string[]) : picked
@@ -76,7 +80,7 @@ function AnswerForm({
     try {
       await onSubmit(value)
       setPicked([])
-      setTyped('')
+      clearTyped()
     } catch (err) {
       setProblem(problemOf(err))
     } finally {
@@ -177,7 +181,8 @@ export function QuestionCard({
   const { t } = useTranslation()
   const [tipsOpen, setTipsOpen] = useState(false)
   const [openTip, setOpenTip] = useState<number | null>(null)
-  const [openText, setOpenText] = useState('')
+  // A half-typed open answer is kept as a draft (REQ-3.5, REQ-12.2).
+  const [openText, setOpenText, clearOpenText] = useDraft(q.kind === 'open' && !state?.result ? `${lessonId}.${q.id}.open` : null)
   const [busy, setBusy] = useState(false)
   const [problem, setProblem] = useState<Problem>(null)
   const answer = httpsCallable<{ lessonId: string; questionId: string; value: unknown; checkAgain?: boolean; before?: QuestionState }, { state: QuestionState }>(
@@ -204,6 +209,7 @@ export function QuestionCard({
     setBusy(true)
     try {
       await send(openText)
+      clearOpenText()
     } catch (err) {
       setProblem(problemOf(err))
     } finally {
@@ -229,6 +235,7 @@ export function QuestionCard({
           lastAnswer={lastMain}
           correctChoices={q.kind === 'choice' ? (result === 'correct1' || result === 'correct2' ? (lastMain as string[]) : st?.correct?.choices || null) : null}
           onSubmit={(v) => send(v)}
+          draftKey={`${lessonId}.${q.id}.main`}
         />
       )}
 
@@ -292,7 +299,7 @@ export function QuestionCard({
         </div>
       )}
 
-      {ca && <CheckAgainCard ca={ca} onSubmit={(v) => send(v, true)} fallbackHint={st?.hint ?? null} />}
+      {ca && <CheckAgainCard ca={ca} onSubmit={(v) => send(v, true)} fallbackHint={st?.hint ?? null} draftKey={`${lessonId}.${q.id}.again`} />}
 
       {q.tips.length > 0 && (
         <div className="tips">
@@ -327,7 +334,7 @@ export function QuestionCard({
   )
 }
 
-function CheckAgainCard({ ca, onSubmit, fallbackHint }: { ca: CheckAgainState; onSubmit: (v: unknown) => Promise<void>; fallbackHint: string | null }) {
+function CheckAgainCard({ ca, onSubmit, fallbackHint, draftKey }: { ca: CheckAgainState; onSubmit: (v: unknown) => Promise<void>; fallbackHint: string | null; draftKey: string }) {
   const { t } = useTranslation()
   const q = ca.question
   const last = ca.attempts[ca.attempts.length - 1]
@@ -340,7 +347,7 @@ function CheckAgainCard({ ca, onSubmit, fallbackHint }: { ca: CheckAgainState; o
         <Ui>{t('q.checkAgainExplain')}</Ui>
       </p>
       <Markdown text={q.prompt} className="question-prompt" />
-      <AnswerForm kind={q.kind} choices={q.choices} multiple={q.multipleCorrect} unit={q.unit} name={q.id} finished={finished} lastAnswer={last} correctChoices={correctChoices} onSubmit={onSubmit} />
+      <AnswerForm kind={q.kind} choices={q.choices} multiple={q.multipleCorrect} unit={q.unit} name={q.id} finished={finished} lastAnswer={last} correctChoices={correctChoices} onSubmit={onSubmit} draftKey={draftKey} />
       {(ca.result === 'correct1' || ca.result === 'correct2') && (
         <div className="feedback correct" role="status">
           <Ui className="feedback-title">{t('q.correct')}</Ui>

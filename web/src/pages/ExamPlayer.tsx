@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useBeforeSignOut } from '../drafts'
 import { BlanksText, WordBank, blankAnswerTexts } from '../components/BlanksQuestion'
 import { useTranslation } from 'react-i18next'
 import { doc, getDoc } from 'firebase/firestore'
@@ -72,15 +73,26 @@ export function ExamPlayer({
     }
   }, [left, submitted, sending, lessonId])
 
+  // Answers typed but not yet sent (sent 1.2 seconds after the last key).
+  const waiting = useRef<Record<string, () => Promise<unknown>>>({})
+  // Before an automatic sign-out, they are sent at once (REQ-3.5).
+  useBeforeSignOut(() => Promise.all(Object.values(waiting.current).map((send) => send())))
+
   function change(q: Question, value: unknown, now = false) {
     setAnswers((a) => ({ ...a, [q.id]: value }))
     window.clearTimeout(timers.current[q.id])
-    const send = () =>
-      save({ lessonId, questionId: q.id, value })
+    const send = () => {
+      window.clearTimeout(timers.current[q.id])
+      delete waiting.current[q.id]
+      return save({ lessonId, questionId: q.id, value })
         .then(() => setProblem(null))
         .catch((e: { message?: string }) => setProblem(e.message === 'closed' ? t('exam.closed') : t('exam.notSaved')))
+    }
     if (now) void send()
-    else timers.current[q.id] = window.setTimeout(send, 1200)
+    else {
+      waiting.current[q.id] = send
+      timers.current[q.id] = window.setTimeout(send, 1200)
+    }
   }
 
   const questions = lesson.topics.flatMap((tp) => tp.blocks.filter((b): b is Question => b.type === 'question' && b.kind !== 'audio'))

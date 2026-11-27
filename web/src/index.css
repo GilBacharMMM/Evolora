@@ -2783,3 +2783,47 @@ details.image-source summary {
 .blank-group {
   white-space: nowrap;
 }
+
+/* The list of browsers on the "please use one of these browsers" screen (REQ-11.1) */
+.browser-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 20px;
+  font-size: 18px;
+}
+
+/* The automatic sign-out warning (REQ-3.5) */
+.signout-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.4);
+}
+.signout-warning {
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.signout-warning h2 {
+  margin: 0;
+}
+.signout-time {
+  margin: 0;
+  font-size: 28px;
+  font-variant-numeric: tabular-nums;
+}
+.signed-out-notice {
+  max-width: 440px;
+}

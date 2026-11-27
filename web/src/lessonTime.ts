@@ -14,7 +14,7 @@ export function setVideoPlaying(id: string, playing: boolean) {
   if (playing) playingVideos.add(id)
   else playingVideos.delete(id)
 }
-function mediaPlaying(): boolean {
+export function mediaPlaying(): boolean {
   if (playingVideos.size > 0) return true
   return Array.from(document.querySelectorAll('audio, video')).some((m) => !(m as HTMLMediaElement).paused)
 }

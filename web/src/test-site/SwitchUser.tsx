@@ -39,9 +39,12 @@ export function SwitchUser({ variant = 'menu' }: { variant?: 'menu' | 'list' }) 
     try {
       const password = role === 'teacher' ? __TEACHER_PASSWORD__ : testUsers.password
       if (!password) throw new Error('no password')
+      // Switching from one person to another opens the home page; signing in again after an
+      // automatic sign-out stays on the same page (REQ-3.5).
+      const switching = Boolean(auth.currentUser)
       await signInWithEmailAndPassword(auth, email, password)
       setOpen(false)
-      navigate('/')
+      if (switching) navigate('/')
     } catch {
       setError(true)
     } finally {

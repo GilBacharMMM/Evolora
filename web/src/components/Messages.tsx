@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { collection, onSnapshot, orderBy, query, type Timestamp } from 'firebase/firestore'
 import { httpsCallable } from 'firebase/functions'
 import { db, functions } from '../site'
+import { useDraft } from '../drafts'
 
 interface Message {
   id: string
@@ -17,7 +18,8 @@ interface Message {
 export function Messages({ classId, studentId, asTeacher }: { classId: string; studentId: string; asTeacher: boolean }) {
   const { t, i18n } = useTranslation()
   const [messages, setMessages] = useState<Message[] | null>(null)
-  const [text, setText] = useState('')
+  // A half-written message is kept as a draft (REQ-3.5).
+  const [text, setText, clearText] = useDraft(`message.${classId}.${studentId}`)
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
   const end = useRef<HTMLDivElement>(null)
@@ -73,7 +75,7 @@ export function Messages({ classId, studentId, asTeacher }: { classId: string; s
           setFailed(false)
           try {
             await httpsCallable(functions, 'sendMessage')({ classId, text, ...(asTeacher ? { studentId } : {}) })
-            setText('')
+            clearText()
           } catch {
             setFailed(true)
           } finally {

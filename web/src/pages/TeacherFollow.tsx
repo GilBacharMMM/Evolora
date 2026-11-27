@@ -12,6 +12,7 @@ import { Messages } from '../components/Messages'
 import { TrackChangesBox } from '../components/TrackChangesBox'
 import { MarkedAnswer } from '../components/MarkedAnswer'
 import { Recorder, blobToBase64 } from '../components/Recorder'
+import { useBeforeSignOut, useDraft } from '../drafts'
 import { hasMarkup } from '../markup'
 import type { LessonType } from '../lesson/types'
 
@@ -796,7 +797,8 @@ function LanguageChange({ classId, studentId }: { classId: string; studentId: st
 // Private teacher notes about a student: only the class's teachers see them (REQ-5.28).
 function TeacherNotes({ classId, studentId, notes, onAdded }: { classId: string; studentId: string; notes: Details['notes']; onAdded: () => Promise<void> }) {
   const { t, i18n } = useTranslation()
-  const [text, setText] = useState('')
+  // A half-written note is kept as a draft (REQ-3.5).
+  const [text, setText, clearText] = useDraft(`note.${classId}.${studentId}`)
   const [busy, setBusy] = useState(false)
   const [failed, setFailed] = useState(false)
   return (
@@ -814,7 +816,7 @@ function TeacherNotes({ classId, studentId, notes, onAdded }: { classId: string;
           setFailed(false)
           try {
             await call('addNote', { classId, studentId, text })
-            setText('')
+            clearText()
             await onAdded()
           } catch {
             setFailed(true)
@@ -1402,6 +1404,8 @@ export function GradingPage({ classId, lessonId }: { classId: string; lessonId: 
     },
     [classId, lessonId, setData, t],
   )
+  // Before an automatic sign-out, a grade or comment being written is saved (REQ-3.5).
+  useBeforeSignOut(() => persist(true))
 
   const move = useCallback(
     async (dq: number, ds: number) => {

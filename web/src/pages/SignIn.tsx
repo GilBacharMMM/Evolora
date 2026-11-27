@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { IS_TEST_SITE, STUDENTS_ONLY } from '../site'
 import { useSession } from '../session'
 import { Logo } from '../components/Logo'
+import { signedOutReason } from '../autoSignOut'
 
 const SwitchUser = IS_TEST_SITE ? lazyFresh(() => import('../test-site/SwitchUser').then((m) => ({ default: m.SwitchUser }))) : null
 
@@ -11,12 +12,19 @@ const SwitchUser = IS_TEST_SITE ? lazyFresh(() => import('../test-site/SwitchUse
 export function SignIn() {
   const { t } = useTranslation()
   const { signInWithGoogle, error } = useSession()
+  // Signed out automatically (REQ-3.5): say why, and that the same page opens again.
+  const out = signedOutReason()
   return (
     <main className="page signin">
       <section className="card signin-card">
         <Logo size={64} />
         <h1>{t('appName')}</h1>
         <p className="tagline">{t('tagline')}</p>
+        {out && (
+          <p className="notice signed-out-notice" role="status">
+            {t(out.reason === 'max' ? 'autoSignOut.signedOutMax' : 'autoSignOut.signedOutIdle')}
+          </p>
+        )}
         {STUDENTS_ONLY ? (
           <p className="muted">{t('test.studentsOnly')}</p>
         ) : (

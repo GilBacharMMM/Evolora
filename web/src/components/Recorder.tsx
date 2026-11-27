@@ -16,15 +16,34 @@ export function blobToBase64(blob: Blob): Promise<string> {
 // Recordings last up to 30 seconds (D-67).
 export const MAX_SECONDS = 30
 
+// The recording format (REQ-11.1, D-84). Chrome, Edge and Firefox record WebM with Opus sound;
+// Safari records MP4 with AAC sound. The latest versions of all four browsers play both, so a
+// recording made in one browser plays in any other.
+const FORMATS = ['audio/webm;codecs=opus', 'audio/mp4;codecs=mp4a.40.2', 'audio/mp4', 'audio/webm', 'audio/ogg;codecs=opus']
+
+export function recordingFormat(): string | undefined {
+  if (typeof MediaRecorder === 'undefined' || !MediaRecorder.isTypeSupported) return undefined
+  return FORMATS.find((f) => MediaRecorder.isTypeSupported(f))
+}
+
+// The file name ending and saved type that go with a recording's format.
+export function fileKind(type: string): { ext: string; contentType: string } {
+  const base = type.split(';')[0].trim().toLowerCase()
+  if (base === 'audio/mp4' || base === 'video/mp4' || base === 'audio/x-m4a') return { ext: 'm4a', contentType: 'audio/mp4' }
+  if (base === 'audio/ogg') return { ext: 'ogg', contentType: 'audio/ogg' }
+  return { ext: 'webm', contentType: 'audio/webm' }
+}
+
 // Uploads a recording to file storage and returns its path.
 export async function uploadRecording(folder: string, blob: Blob): Promise<string> {
-  const path = `${folder}/${Date.now()}.webm`
-  await uploadBytes(ref(storage, path), blob, { contentType: blob.type || 'audio/webm' })
+  const { ext, contentType } = fileKind(blob.type)
+  const path = `${folder}/${Date.now()}.${ext}`
+  await uploadBytes(ref(storage, path), blob, { contentType })
   return path
 }
 
 // Records up to MAX_SECONDS, lets the person listen back and record again (REQ-6.6, 5.13).
-// The first time, Chrome asks for permission to use the microphone.
+// The first time, the browser asks for permission to use the microphone.
 export function Recorder({ onReady, disabled = false }: { onReady: (blob: Blob | null) => void; disabled?: boolean }) {
   const { t } = useTranslation()
   const [state, setState] = useState<'idle' | 'recording' | 'done' | 'denied'>('idle')
@@ -42,13 +61,14 @@ export function Recorder({ onReady, disabled = false }: { onReady: (blob: Blob |
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const chunks: BlobPart[] = []
-      const rec = new MediaRecorder(stream)
+      const format = recordingFormat()
+      const rec = format ? new MediaRecorder(stream, { mimeType: format }) : new MediaRecorder(stream)
       recorder.current = rec
       rec.ondataavailable = (e) => chunks.push(e.data)
       rec.onstop = () => {
         stream.getTracks().forEach((tr) => tr.stop())
         window.clearInterval(timer.current)
-        const blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' })
+        const blob = new Blob(chunks, { type: rec.mimeType || format || chunks.map((c) => (c as Blob).type).find(Boolean) || 'audio/webm' })
         setUrl((old) => {
           if (old) URL.revokeObjectURL(old)
           return URL.createObjectURL(blob)
