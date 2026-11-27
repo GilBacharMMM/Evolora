@@ -1038,5 +1038,9 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 6. Undo: unticking brings the question back, and earlier answers count again (chosen); or removing is final.
 7. Co-teachers: all the class's teachers can change it and see the same (chosen); or only the teacher who gave the lesson.
 8. Confirming: only when students already answered the question (chosen); always; or never.
+9. Replacement (check-again) questions: always removed with their question, and also removable one by one under it (chosen); or only with their question.
+10. Removing the last replacement question: warn, then allow (chosen); or not allowed.
+11. Exams: only until the first student starts (chosen); any time; or never.
+12. Removing every question in a topic: allowed, with a warning (Gil's own answer); or keep at least one.
 **Reason:** A simple, reversible tool for the teacher, that never loses a student's work and never leaves a student unable to finish a topic.
 **Affects:** new REQ-5.36, future idea 4, the lesson player, the checking service and grades

@@ -927,6 +927,9 @@ A teacher can remove questions of a lesson for one class, without changing the l
 - **Bringing back:** unticking brings the question back for the class, and answers given before count again.
 - **Topic minimum:** if removing questions leaves fewer level 1 questions in a topic than its minimum (REQ-4.21), the minimum for this class drops to the number left, so students can always finish the topic. The teacher sees a short note about it next to the topic.
 - In the teacher's view, a removed question stays visible to the teacher, greyed out, with its checkbox ticked.
+- **Replacement questions** (check-again questions, REQ-4.17): removing a question always removes its replacement questions too. Under each question, a closed line **"שאלות חלופיות (2)"** opens to show its replacement questions, each with its own checkbox, so the teacher can also remove some of them and keep the question. A student who fails the question gets one of the remaining replacement questions at random. If the teacher removes the last one, they are warned first: "No replacement questions are left. A student who fails this question twice will see the solution and move on." The teacher can then remove it or cancel.
+- **A topic with no questions left:** allowed, with a warning first: "No questions are left in this topic. Students will only read its material." The teacher can then remove it or cancel.
+- **Exams** (REQ-4.26): questions can be removed only until the first student of the class starts the exam. After that, the checkboxes are locked, so every student gets the same exam.
 
 *Acceptance criteria:*
 - [ ] As Test Teacher 1, open a lesson from Test Class 7A's "קורסים בכיתה" tab: every question has a "הסרה מהכיתה" checkbox. Open the same lesson from the lesson library: no checkboxes.
@@ -936,6 +939,10 @@ A teacher can remove questions of a lesson for one class, without changing the l
 - [ ] Untick it: the question is back for the students, and the earlier answer counts again.
 - [ ] Remove level 1 questions in a topic until fewer remain than the minimum: a note appears next to the topic, and a student can still finish the topic.
 - [ ] As Test Teacher 2 (a co-teacher of the class, if set up), the same questions show as removed and can be unticked.
+- [ ] Open "שאלות חלופיות" under a question and remove one of its two replacement questions: a student who fails the question twice gets the other one.
+- [ ] Remove the last replacement question: the warning appears. After removing, a student who fails the question twice sees the solution and moves on.
+- [ ] Remove every question in a topic: the warning appears; after removing, a student reads the topic's material and moves on.
+- [ ] In an exam no student has started, remove a question: it's gone from the exam. After a student starts the exam, the checkboxes are locked.
 
 **REQ-5.17: Google Classroom connection** (Priority: Later)
 Import class lists from Google Classroom, and possibly post assignments and grades back to it. See the advice in the open questions summary.
