@@ -26,7 +26,7 @@ Entry format:
 
 **Decision:** Web app only, built for Chromebooks.
 **Reason:** The school's students and teachers all use Chromebooks.
-**Affects:** REQ-11.1
+**Affects:** REQ-11.1 (the "Chrome only" part replaced by D-84)
 
 ### D-2: Google sign-in, school accounts only during the pilot
 **Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
@@ -525,7 +525,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 
 **Decision:** Option 3 (Gil, 2026-11-22). Phones much later, if at all.
 **Reason:** One browser to build and test for, the same as on the Chromebooks. Other browsers show a "please open in Chrome" message.
-**Affects:** REQ-11.1
+**Affects:** REQ-11.1 (the "Chrome only" part replaced by D-84)
 
 ### D-46: Grading page, one answer at a time
 **Date:** 2026-11-22 · **Status:** Decided · **Decided by:** Gil
@@ -953,3 +953,11 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** the last option. The same code can run as several sites. Each site has its own address, data, sign-in, terms, features and languages, all in its own settings and not in the code. Students' and teachers' data never moves between sites. When a second site is set up, and how lessons are shared between sites, are decided later.
 **Reason:** keeps the choice open at little cost now. Adding a ministry or a country later means new settings, not a rebuild.
 **Affects:** new REQ-11.4; system-design (site settings); docs/moe-approval-steps.he.md, section 13
+
+### D-84: Support Chrome, Edge, Firefox and Safari
+**Date:** 2026-11-27 · **Status:** Decided · **Decided by:** Gil
+**Context:** D-45 limited Evolora to Google Chrome to save building and testing time. The Ministry of Education's compatibility standard asks for at least three browsers (Chrome, Edge, Safari, Firefox), latest versions.
+**Options considered:** keep Chrome only and ask the Ministry for an exception; support the four browsers named in the standard; also support phones.
+**Decision:** support the latest Chrome, Edge, Firefox and Safari, on Chromebooks and on Windows and Mac laptops. Other or older browsers show a message suggesting one of the four. Phones still later. This replaces the "Chrome only" part of D-45.
+**Reason:** meets the Ministry's standard without asking for an exception, and lets families use the browser they already have. There are no other tasks waiting, so the time is available now.
+**Affects:** REQ-11.1, REQ-11.2, Q-40, the "please use Chrome" screen, audio recording and playback, the automatic screen tests, terms/parents-letter.he.md
