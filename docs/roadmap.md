@@ -116,3 +116,4 @@ Each AI item first gets a cost estimate for Gil's approval.
 - REQ-6.8: game-like progress, points or coins
 - REQ-7.5: automatic translation
 - REQ-10.6: full privacy compliance (required before release beyond the pilot)
+- **Gil's future ideas, to discuss** (`docs/future-ideas.md`, 2026-11-27): lesson levels, lesson tags and a teacher README, language codes in lesson names, teachers skipping questions, matching two lists, ordering sentences

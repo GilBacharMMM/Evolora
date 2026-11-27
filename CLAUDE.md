@@ -25,6 +25,7 @@ Evolora is teaching software. It helps teachers create lessons and manage their 
 | `docs/system-design.md` | How the product is built, explained in plain language |
 | `docs/decisions.md` | Log of significant decisions |
 | `docs/roadmap.md` | What goes into each version, starting with the MVP |
+| `docs/future-ideas.md` | Gil's ideas for later, with open questions; to discuss before they become requirements |
 | `docs/glossary.md` | Agreed meaning of the terms we use |
 | `docs/setup-google-cloud.md` | Steps Gil does personally in Google Cloud (accounts, payment, sign-in) |
 | `docs/moe-approval-steps.he.md` | **Under research, not final.** Research and tracking: steps to get Ministry of Education approval, connect to school Google accounts and Classroom, ISO 27001 and penetration tests (in Hebrew, at Gil's request) |
