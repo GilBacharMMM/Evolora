@@ -963,7 +963,7 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Affects:** REQ-11.1, REQ-11.2, Q-40, the "please use Chrome" screen, audio recording and playback, the automatic screen tests, terms/parents-letter.he.md
 
 ### D-85: Automatic sign-out after 30 minutes without activity, and after 8 hours
-**Date:** 2026-11-27 · **Status:** Decided (the limits chosen by Claude; Gil to confirm) · **Decided by:** Gil
+**Date:** 2026-11-27 · **Status:** Decided · **Decided by:** Gil (limits confirmed by Gil on 2026-11-27)
 **Context:** The Ministry of Education's security standard asks for sign-out after 30 minutes (sensitive data) or 1 hour (public data) without activity, and after 8 hours (sensitive) or 12 hours (public) in any case.
 **Options considered:** 30 minutes and 8 hours; 1 hour and 12 hours.
 **Decision:** 30 minutes and 8 hours, with a warning 2 minutes before an inactivity sign-out, a "Stay signed in" button, and no lost work. A playing video or audio counts as activity.
