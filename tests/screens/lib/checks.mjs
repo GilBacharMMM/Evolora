@@ -40,7 +40,7 @@ function inspect(lang) {
   out.clientWidth = doc.clientWidth
   // Lesson content, lesson and course titles (marked with their own language), people's answers and
   // the test users' names are content, not interface text.
-  const CONTENT = 'article.lesson, [lang]:not(html), textarea, input, select option[value="en"], .switch-name, .account-name, .account-popup, [contenteditable], code, .grading-answer, .answer-text, .track-changes'
+  const CONTENT = 'article.lesson, [lang]:not(html), textarea, input, select option[value="en"], .switch-name, .account-name, .account-popup, .work-row .lesson-row-title, [contenteditable], code, .grading-answer, .answer-text, .track-changes'
   const visible = (el) => {
     const r = el.getBoundingClientRect()
     const s = getComputedStyle(el)
@@ -116,6 +116,9 @@ export class Screens {
       // The PhET simulations' sound, in WebKit's Windows test build, which has no sound decoding
       // (real Safari has it). It is the simulation's, not Evolora's.
       if (/decodeAudioData/.test(text) && /audioBufferProperty/.test(text)) return
+      // WebKit reports Firestore's open connection being cut, when the page moves on, as an
+      // "access control" error; it is the browser leaving the page, not a problem in the app.
+      if (/firestore\.googleapis\.com\/.*\/channel/.test(text) && /access control/.test(text)) return
       page._errors.push(`Page error: ${text.slice(0, 300)}`)
     })
   }
