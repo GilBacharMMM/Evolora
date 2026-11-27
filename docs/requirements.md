@@ -916,6 +916,27 @@ A class page has a fourth tab, **"קורסים בכיתה"** (Courses in the cla
 - [ ] Give the class a single lesson (not a course): it appears under "שיעורים בודדים".
 - [ ] Archive a course for the class: it moves to "קורסים בארכיון" at the bottom.
 
+**REQ-5.36: Teacher removes questions for a class** (Priority 2: should have; Gil, 2026-11-28, D-92)
+A teacher can remove questions of a lesson for one class, without changing the lesson itself. This was future idea 4.
+
+- **Where:** when a teacher opens a lesson from the class's "קורסים בכיתה" tab (REQ-5.35), each question in the whole-lesson view (D-90) has a checkbox **"הסרה מהכיתה"** (Remove from the class). Opening the same lesson from the lesson library shows no checkboxes.
+- **Who:** the removal is for the whole class. Any teacher of the class (including co-teachers, REQ-5.5) can tick or untick, and all of them see the same removed questions. Other classes that got the same lesson are not affected.
+- **Students:** removed questions simply aren't there, and the remaining questions are numbered without them.
+- **Answers already given:** they stay saved, and the teacher can still see them, but they don't count in the grade, which is worked out from the remaining questions (REQ-6.3).
+- **Confirming:** ticking removes the question at once, unless students already answered it. Then the teacher is asked: "3 students already answered this question; their answers won't count. Remove it?"
+- **Bringing back:** unticking brings the question back for the class, and answers given before count again.
+- **Topic minimum:** if removing questions leaves fewer level 1 questions in a topic than its minimum (REQ-4.21), the minimum for this class drops to the number left, so students can always finish the topic. The teacher sees a short note about it next to the topic.
+- In the teacher's view, a removed question stays visible to the teacher, greyed out, with its checkbox ticked.
+
+*Acceptance criteria:*
+- [ ] As Test Teacher 1, open a lesson from Test Class 7A's "קורסים בכיתה" tab: every question has a "הסרה מהכיתה" checkbox. Open the same lesson from the lesson library: no checkboxes.
+- [ ] Tick a question nobody answered: it greys out at once. As a student of the class, open the lesson: the question isn't there, and the questions are numbered without it.
+- [ ] As a student of another class that got the same lesson: the question is still there.
+- [ ] Tick a question a student already answered: the confirmation says how many students answered it. After removing, that student's grade for the lesson no longer counts the question.
+- [ ] Untick it: the question is back for the students, and the earlier answer counts again.
+- [ ] Remove level 1 questions in a topic until fewer remain than the minimum: a note appears next to the topic, and a student can still finish the topic.
+- [ ] As Test Teacher 2 (a co-teacher of the class, if set up), the same questions show as removed and can be unticked.
+
 **REQ-5.17: Google Classroom connection** (Priority: Later)
 Import class lists from Google Classroom, and possibly post assignments and grades back to it. See the advice in the open questions summary.
 

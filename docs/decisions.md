@@ -1025,3 +1025,18 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** The lesson itself; single lessons in a group "שיעורים בודדים"; archived courses collapsed at the bottom; settings stay where they are.
 **Reason:** The new tab is for finding and reading lessons quickly; settings and results already have their places.
 **Affects:** new REQ-5.35, the class page tabs
+
+### D-92: Teachers remove questions for a class
+**Date:** 2026-11-28 · **Status:** Decided · **Decided by:** Gil
+**Context:** Future idea 4: a teacher wants to take some questions of a lesson away from their class, without changing the lesson for everyone. Gil asked for a checkbox on each question in the teacher's view of a lesson opened from the class's courses tab (REQ-5.35).
+**Options considered and chosen:**
+1. For the whole class (chosen), or also for chosen students.
+2. Answers already given: kept but not counted in the grade (chosen); kept and counted; or deleted.
+3. If a topic has fewer level 1 questions left than its minimum: the minimum drops automatically for the class (chosen), or removing is not allowed.
+4. What students see: nothing, with the questions numbered without the removed one (chosen); or a note "your teacher removed this question".
+5. Where the checkboxes appear: only when the lesson is opened from the class's courses tab (chosen), or also from the lesson library with a choice of class.
+6. Undo: unticking brings the question back, and earlier answers count again (chosen); or removing is final.
+7. Co-teachers: all the class's teachers can change it and see the same (chosen); or only the teacher who gave the lesson.
+8. Confirming: only when students already answered the question (chosen); always; or never.
+**Reason:** A simple, reversible tool for the teacher, that never loses a student's work and never leaves a student unable to finish a topic.
+**Affects:** new REQ-5.36, future idea 4, the lesson player, the checking service and grades

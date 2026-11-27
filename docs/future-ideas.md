@@ -71,6 +71,8 @@
 
 ## 4. Teacher can skip questions in an assigned lesson
 
+> **Decided (Gil, 2026-11-28):** this is now REQ-5.36 in docs/requirements.md (decision D-92). The open questions below were answered there.
+
 **Description:**
 - When assigning a lesson, and also afterwards, the teacher can mark questions to skip.
 - Skipped questions are hidden from that teacher's class but not deleted from the lesson.
