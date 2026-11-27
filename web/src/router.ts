@@ -33,11 +33,13 @@ export type Route =
   | { name: 'studentClass'; classId: string }
   | { name: 'studentCourse'; classId: string; courseId: string }
   | { name: 'terms' }
+  | { name: 'accessibility' }
   | { name: 'notFound' }
 
 export function matchRoute(path: string): Route {
   if (path === '/' || path === '') return { name: 'home' }
   if (path === '/terms' || path === '/terms/') return { name: 'terms' }
+  if (path === '/accessibility' || path === '/accessibility/') return { name: 'accessibility' }
   const lesson = path.match(/^\/lesson\/([\w-]+)\/?$/)
   if (lesson) return { name: 'lesson', lessonId: lesson[1] }
   if (/^\/teacher\/lessons\/?$/.test(path)) return { name: 'library' }

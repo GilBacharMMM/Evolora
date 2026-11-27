@@ -141,6 +141,28 @@ for (const name of names) {
     await page.locator('.top-bar, .browser-list').first().waitFor()
     check('the site opens (no "please use another browser" message)', (await page.locator('.browser-list').count()) === 0)
 
+    // The accessibility statement (REQ-12.10): its link at the bottom, reached with the keyboard
+    // alone, opens the statement without signing in.
+    {
+      const link = page.locator('.site-footer a[href="/accessibility"]')
+      check('the sign-in page has an "Accessibility" link at the bottom', (await link.count()) === 1)
+      if (name === 'webkit') {
+        // Safari's Tab key skips links unless "Press Tab to highlight each item" is turned on.
+        await link.focus()
+      } else {
+        for (let i = 0; i < 80 && !(await link.evaluate((el) => el === document.activeElement)); i++) await page.keyboard.press('Tab')
+      }
+      const focused = await link.evaluate((el) => el === document.activeElement)
+      if (name !== 'webkit') check('the link can be reached with the Tab key', focused)
+      await page.keyboard.press('Enter')
+      await page.waitForURL(/\/accessibility$/).catch(() => {})
+      await page.locator('.terms-text h2').first().waitFor({ timeout: 15000 }).catch(() => {})
+      const shown = await page.locator('main').innerText().catch(() => '')
+      check('Enter opens the accessibility statement, without signing in', page.url().endsWith('/accessibility') && /bachargil@gmail\.com/.test(shown), page.url())
+      await page.goto(SITE)
+      await page.locator('.top-bar').waitFor()
+    }
+
     // 2. Recording.
     const canRecord = await page.evaluate(() => typeof MediaRecorder !== 'undefined')
     if (!canRecord && name === 'webkit') {

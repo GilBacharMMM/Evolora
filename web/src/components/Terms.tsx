@@ -2,11 +2,12 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSession } from '../session'
 import { navigate } from '../router'
-import { loadTerms, termsIn, type Terms } from '../terms'
+import { loadStatement, loadTerms, termsIn, type Statement, type Terms } from '../terms'
 import { Logo } from './Logo'
 
 // The terms of use (REQ-10.8, D-74, D-75): the screen that asks to agree, the full text page,
-// and the "Terms of use" link at the bottom of every page.
+// and the "Terms of use" link at the bottom of every page. Also the accessibility statement
+// (REQ-12.10, D-87) and its "Accessibility" link beside it.
 
 // **bold** inside a line.
 function inline(text: string): ReactNode[] {
@@ -141,19 +142,65 @@ export function TermsPage() {
   )
 }
 
+// The accessibility statement, in the person's language, signed in or not (REQ-12.10).
+export function AccessibilityPage() {
+  const { t, i18n } = useTranslation()
+  const [statement, setStatement] = useState<Statement | null | undefined>(undefined)
+  useEffect(() => {
+    let live = true
+    void loadStatement().then((x) => live && setStatement(x))
+    return () => {
+      live = false
+    }
+  }, [])
+  if (statement === undefined) {
+    return (
+      <main className="page narrow">
+        <p className="loading">{t('common.loading')}</p>
+      </main>
+    )
+  }
+  const text = statement ? statement.languages[i18n.language] || statement.languages.he || Object.values(statement.languages)[0] : null
+  return (
+    <main className="page narrow">
+      <section className="card list-card-padded">
+        {text ? (
+          <>
+            <h1 className="page-title">{text.title}</h1>
+            <FullText text={text.text} />
+          </>
+        ) : (
+          <p>{t('accessibility.none')}</p>
+        )}
+        <button type="button" className="button secondary" onClick={() => navigate('/')}>
+          {t('common.toHome')}
+        </button>
+      </section>
+    </main>
+  )
+}
+
+function FooterLink({ to, label }: { to: string; label: string }) {
+  return (
+    <a
+      href={to}
+      onClick={(e) => {
+        e.preventDefault()
+        navigate(to)
+      }}
+    >
+      {label}
+    </a>
+  )
+}
+
 export function Footer() {
   const { t } = useTranslation()
   return (
     <footer className="site-footer">
-      <a
-        href="/terms"
-        onClick={(e) => {
-          e.preventDefault()
-          navigate('/terms')
-        }}
-      >
-        {t('terms.link')}
-      </a>
+      <FooterLink to="/terms" label={t('terms.link')} />
+      <span aria-hidden="true"> · </span>
+      <FooterLink to="/accessibility" label={t('accessibility.link')} />
     </footer>
   )
 }

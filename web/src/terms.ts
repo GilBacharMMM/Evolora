@@ -32,3 +32,24 @@ export function loadTerms(fresh = false): Promise<Terms | null> {
 export function termsIn(terms: Terms, lang: string): TermsText {
   return terms.languages[lang] || terms.languages.he || Object.values(terms.languages)[0]
 }
+
+// The accessibility statement (REQ-12.10, D-87), loaded by Claude from the `terms` folder
+// together with the terms of use. Anyone can read it, even before signing in.
+export interface Statement {
+  version: string
+  languages: Record<string, { title: string; text: string }>
+}
+
+let statement: Promise<Statement | null> | null = null
+
+export function loadStatement(): Promise<Statement | null> {
+  if (!statement) {
+    statement = getDoc(doc(db, 'terms', 'accessibility'))
+      .then((s) => (s.exists() ? (s.data() as Statement) : null))
+      .catch(() => {
+        statement = null
+        return null
+      })
+  }
+  return statement
+}

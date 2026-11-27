@@ -562,6 +562,10 @@
     "failed": "Couldn't save. Please try again.",
     "none": "The terms of use haven't been published yet."
   },
+  "accessibility": {
+    "link": "Accessibility",
+    "none": "The accessibility statement hasn't been published yet."
+  },
   "blanks": {
     "blank": "Blank {{n}}",
     "fillAll": "Fill in every blank first.",

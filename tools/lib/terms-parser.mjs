@@ -56,3 +56,30 @@ export function checkSet(parsed) {
   if (versions.size > 1) problems.push(`The three files have different versions: ${[...versions].join(', ')}. They must be the same.`)
   return problems
 }
+
+// Reads an accessibility statement file (REQ-12.10, D-87):
+//
+//   version: 0.1
+//   title: Accessibility statement
+//   <!-- notes for Gil, never shown -->
+//   ## The text, in simple Markdown (headings, paragraphs, lists, **bold**)
+//
+// Returns { version, title, text } and a list of problems.
+export function parseStatement(source) {
+  const clean = source.replace(/\r\n/g, '\n').replace(/^﻿/, '').replace(/<!--[\s\S]*?-->/g, '')
+  const lines = clean.split('\n')
+  const problems = []
+  const out = { version: '', title: '', text: '' }
+  let i = 0
+  for (; i < lines.length; i++) {
+    const field = lines[i].match(/^(version|title):\s*(.*)$/)
+    if (field) out[field[1]] = field[2].trim()
+    else if (lines[i].trim()) break
+  }
+  out.text = lines.slice(i).join('\n').trim()
+  if (!/^\d+(\.\d+)*$/.test(out.version)) problems.push('The "version:" line is missing or not a number like 0.1 or 1.2.')
+  if (!out.title) problems.push('The "title:" line is missing.')
+  if (!out.text) problems.push('The text is missing.')
+  if (/\[[^\]]*\]/.test(out.text.replace(/\[[^\]]*\]\([^)]*\)/g, ''))) problems.push('A [placeholder] is still in the text.')
+  return { statement: out, problems }
+}

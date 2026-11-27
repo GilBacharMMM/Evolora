@@ -8,7 +8,7 @@ import { Header } from './components/Header'
 import { SignIn } from './pages/SignIn'
 import { StudentHome } from './pages/StudentHome'
 import { LessonLibrary, TeacherHome } from './pages/TeacherHome'
-import { Footer, TermsGate, TermsPage } from './components/Terms'
+import { AccessibilityPage, Footer, TermsGate, TermsPage } from './components/Terms'
 import { AutoSignOut } from './autoSignOut'
 
 // The lesson player, with its formula display, loads only when a lesson is opened,
@@ -84,6 +84,8 @@ function Screens() {
   if (session.state === 'loading') return <main className="page narrow"><p className="loading">{t('common.loading')}</p></main>
   // The full terms of use can be read at any time, signed in or not (REQ-10.8).
   if (route.name === 'terms') return <TermsPage />
+  // So can the accessibility statement (REQ-12.10).
+  if (route.name === 'accessibility') return <AccessibilityPage />
   if (session.state === 'signedOut') return <SignIn />
   // Nothing else opens until the person agrees to the current terms (REQ-10.8, D-75).
   if (!session.termsOk) return <TermsGate />
