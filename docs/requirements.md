@@ -1297,6 +1297,23 @@ Text is readable, colours are not the only way information is shown (status colo
 - [ ] With "Select to speak" turned on, a student selects a paragraph of a Hebrew lesson on a Chromebook and hears it read aloud; the same works in Arabic and English.
 - [ ] The teachers' guide explains how to turn on "Select to speak".
 
+**REQ-12.9: Accessibility checks and fixes, level AA** (Priority 1: foundation; Gil, 2026-11-27, D-86)
+To meet the Ministry of Education's accessibility procedure (Israeli standard 5568, based on WCAG 2.0 levels A and AA; see `docs/moe-approval-steps.he.md`, section 12.8), every screen of Evolora is checked automatically for accessibility problems, in all four browsers (REQ-11.1), as part of the automatic tests. Everything the check finds is fixed, in particular:
+- **colour contrast:** text and buttons stand out clearly from their background (at least 4.5 to 1 for normal text);
+- **font size:** text is at least 15 pixels, and can be enlarged to 200% without anything being cut off or overlapping;
+- **keyboard use:** everything can be done with the keyboard alone, in a sensible order, the focused item is clearly marked, and the keyboard never gets stuck;
+- **labels:** every field and button has a name that a screen reader reads aloud;
+- **error messages:** a screen reader reads them aloud, and they say what to fix.
+
+No "accessibility toolbar" or plug-in is added; the fixes are in Evolora itself. Not yet included (later, separate decisions): image descriptions and audio transcripts in lessons, plural forms instead of slashes in Hebrew texts, the accessibility statement page, and a screen-reader check by a person.
+
+*Acceptance criteria:*
+- [ ] Claude gives Gil a short report, in plain language, listing every screen checked in each of the four browsers, with no remaining level A or AA problems.
+- [ ] Gil opens a lesson, answers a question and moves to the next one using only the keyboard (Tab, Enter, arrows), and always sees where he is.
+- [ ] Gil enlarges the page to 200% (Ctrl and +) on the lesson page and the teacher's class page: everything can still be read and used, and nothing overlaps.
+- [ ] Leaving a required field empty and pressing save shows an error message next to the field, and the Chromebook's screen reader (ChromeVox) reads it aloud.
+- [ ] If a later change brings back an accessibility problem, the automatic tests fail and say which screen.
+
 **REQ-12.7: One design language** (Priority 1: foundation)
 All screens share one **design language** (in Hebrew: שפה עיצובית): colours, fonts, icons, spacing and the look of buttons and cards. Claude proposes it, with mockups Gil can click through, and Gil approves it before the screens are built (D-38).
 

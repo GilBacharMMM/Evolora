@@ -969,3 +969,11 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** 30 minutes and 8 hours, with a warning 2 minutes before an inactivity sign-out, a "Stay signed in" button, and no lost work. A playing video or audio counts as activity.
 **Reason:** Evolora holds students' answers, grades and voice recordings, which are likely to count as sensitive data.
 **Affects:** new REQ-3.5
+
+### D-86: Automatic accessibility checks and fixes, level AA
+**Date:** 2026-11-27 · **Status:** Decided · **Decided by:** Gil
+**Context:** Evolora has basic accessibility only (REQ-12.3). The Ministry of Education's accessibility procedure asks for Israeli standard 5568 (WCAG 2.0, levels A and AA), with no accessibility toolbars.
+**Options considered:** do everything in the Ministry procedure at once (checks, fixes, lesson content, Hebrew wording, statement, outside review); start with automatic checks of every screen and fixing what they find, and decide the rest later.
+**Decision:** start with automatic checks of every screen in all four browsers, as part of the automatic tests, and fix colour contrast, font size, keyboard use, labels and error messages. The rest is decided later.
+**Reason:** the checks catch most problems quickly, and keep them from coming back.
+**Affects:** new REQ-12.9; the automatic screen tests
