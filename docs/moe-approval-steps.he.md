@@ -36,11 +36,11 @@
 | גורם | מה הוא עושה בשבילנו | איך פונים | מקור |
 |---|---|---|---|
 | **מוקד ספקים, משרד החינוך** | שאלות כלליות לספקים, ובראשן "האם אנחנו צריכים אישור, ובאיזה מסלול" | Tmicha_Sapakim@education.gov.il | ✅ [צור קשר](https://sapakim.education.gov.il/contact-us/) |
-| **Experis** | בדיקות טכנולוגיה ואבטחת מידע, מבדק חדירה, חיבור להזדהות אחידה | איש הקשר והמייל מופיעים בדף "צור קשר" באתר הספקים | ✅ [צור קשר](https://sapakim.education.gov.il/contact-us/), [הזדהות אחידה](https://sapakim.education.gov.il/tech/idm/) |
+| **Experis** (קובי לביא) | בדיקות טכנולוגיה ואבטחת מידע, מבדק חדירה, חיבור להזדהות אחידה | KobiL@experis.co.il | ✅ [צור קשר](https://sapakim.education.gov.il/contact-us/), [הזדהות אחידה](https://sapakim.education.gov.il/tech/idm/) |
 | **האגף לאישור ספרי לימוד וחומרי למידה** | אישור פדגוגי לתוכן | דרך אתר המזכירות הפדגוגית | ✅ [נוהל אישור ספרים (חוזר מנכ"ל)](https://apps.education.gov.il/mankal/horaa.aspx?siduri=131), ❓ פרטי קשר: לא קראתי את העמוד |
 | **צוות הזדהות אחידה (IDM)** | תקלות אחרי שהחיבור כבר קיים | GR_IDM_Team@education.gov.il | ✅ [הזדהות אחידה](https://sapakim.education.gov.il/tech/idm/) |
 | **נגישות, משרד החינוך** | שאלות על תקן הנגישות | accessible@education.gov.il | ✅ [תקן נגישות](https://sapakim.education.gov.il/accessibility/tech-adjustments/) |
-| **תקן תאימות** | חריגים מתקן התאימות (מערכות הפעלה, דפדפנים) | איש הקשר מופיע בדף התקן | ✅ [תקן תאימות](https://sapakim.education.gov.il/tech-standards/tech-adjustment12/) |
+| **תקן תאימות** (ארז רונן) | חריגים מתקן התאימות (מערכות הפעלה, דפדפנים) | 073-3932221 | ✅ [תקן תאימות](https://sapakim.education.gov.il/tech-standards/tech-adjustment12/) |
 | **מנהל/ת בית הספר** | אחראי/ת על מה שקורה בבית הספר ועל הסכמת ההורים | ישירות | ❓ ראו סעיף 7 |
 | **רכז/ת התקשוב בבית הספר** | הקשר הראשון לנושאי מחשוב בבית הספר | ישירות | ❓ |
 | **רפרנט סביבות הענן ומפקח התקשוב במחוז תל אביב** | ככל הנראה מנהלי ה-Google של `taded.org.il` | דרך רכז התקשוב, או דרך [אתר התקשוב של המחוז](https://sites.google.com/view/tad-tikshuv/) | ✅ [פורטל עובדי הוראה](https://pop.education.gov.il/sherutey-tiksuv-bachinuch/anan-hinuch-google/) מפנה מנהלים ורכזים ל"רפרנטים המחוזיים" ול"מפקחי התקשוב המחוזיים". ❓ שהם אלה שמאשרים אפליקציות |
@@ -503,7 +503,7 @@
 ## נספח א: נוסח מוצע למייל בדיקה מקדימה (גיל שולח)
 
 > **אל:** Tmicha_Sapakim@education.gov.il
-> **העתק:** איש הקשר ב-Experis, מתוך [דף צור קשר](https://sapakim.education.gov.il/contact-us/)
+> **העתק:** KobiL@experis.co.il
 > **נושא:** בדיקה מקדימה: כלי לימוד חינמי בקוד פתוח, בפיילוט בבית ספר אחד
 >
 > שלום רב,
