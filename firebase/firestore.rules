@@ -123,6 +123,12 @@ service cloud.firestore {
         allow write: if isLoader();
       }
 
+      // Questions removed for the class (REQ-5.36, D-92): changed and read only through the
+      // checking service, which tells teachers and students what they need. Never read directly.
+      match /removals/{lessonId} {
+        allow read, write: if isLoader();
+      }
+
       // Private teacher notes about students: never the student (REQ-5.28).
       match /notes/{noteId} {
         allow read: if isLoader() || teachesThisClass();

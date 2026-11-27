@@ -14,7 +14,7 @@ import { setGlobalOptions } from 'firebase-functions/v2'
 import { onSchedule } from 'firebase-functions/v2/scheduler'
 import { getStorage } from 'firebase-admin/storage'
 import { randomUUID } from 'node:crypto'
-import { answerCheckAgain, answerMain, isFinished, judge, lessonFinished, lessonGrade, receives, sendBackForCorrections, teacherScore, examBlanks, validBlanks } from './check.js'
+import { answerCheckAgain, answerMain, checkAgainLeft, commonRemovals, isFinished, judge, lessonFinished, lessonGrade, NO_REMOVALS, readRemovals, receives, sendBackForCorrections, teacherScore, topicMinimum, examBlanks, validBlanks } from './check.js'
 import { averageGrade, coursePosition, dueFor, lateGrade, lessonCell, levelSuggestions, median, notMastered, sentBackLimit, sentBackTotals, studentStatus, toCsv, waitingAnswers } from './dashboard.js'
 import { applyTimeReport, awayALot, awayLimit, timeSummary, validReport } from './time.js'
 import { CLASS_COLORS, WAIT_MS, afterWrong, makeCode, normalizeCode, validateCode, waitLeft } from './classcode.js'
@@ -69,6 +69,15 @@ async function minimumFor(uid, classIds, lessonId, lesson) {
   return best ? best.value : lesson.minimumPerTopic || 0
 }
 
+// Questions the teachers removed for the student's classes (REQ-5.36, D-92). Saved per class
+// and lesson in classes/{classId}/removals/{lessonId}. With several classes, only what was
+// removed in all of them.
+async function removalsFor(classIds, lessonId) {
+  if (!classIds?.length) return NO_REMOVALS
+  const snaps = await db.getAll(...classIds.map((c) => db.doc(`classes/${c}/removals/${lessonId}`)))
+  return commonRemovals(snaps.map((s) => (s.exists ? s.data() : {})))
+}
+
 async function levelFor(uid, classIds) {
   if (!classIds.length) return 3
   const snaps = await db.getAll(...classIds.map((c) => db.doc(`classes/${c}/levels/${uid}`)))
@@ -102,8 +111,8 @@ function findQuestion(version, questionId) {
 
 // The last question that is checked automatically in a topic, used to tell whether a student
 // ran out of extra practice questions without reaching the minimum (REQ-4.21).
-function lastAutoQuestionId(topic, maxLevel = 3) {
-  const auto = topic.blocks.filter((b) => b.type === 'question' && (b.kind === 'choice' || b.kind === 'number') && receives(b, maxLevel))
+function lastAutoQuestionId(topic, maxLevel = 3, removals = NO_REMOVALS) {
+  const auto = topic.blocks.filter((b) => b.type === 'question' && (b.kind === 'choice' || b.kind === 'number') && receives(b, maxLevel) && !removals.questions.has(b.id))
   return auto.length ? auto[auto.length - 1].id : null
 }
 
@@ -117,7 +126,8 @@ export const answer = onCallAgreed({ enforceAppCheck: false }, async (request) =
   const classIds = await access(request.auth, lesson)
   const uid = request.auth.uid
   const maxLevel = await levelFor(uid, classIds)
-  const topicMinimum = await minimumFor(uid, classIds, lessonId, lesson)
+  const baseMinimum = await minimumFor(uid, classIds, lessonId, lesson)
+  const removals = await removalsFor(classIds, lessonId)
   // Exams are answered with examSave and examSubmit (REQ-4.26).
   if (lesson.type === 'exam') throw new HttpsError('failed-precondition', 'exam')
   const progressRef = db.doc(`progress/${progressId(uid, lessonId)}`)
@@ -141,11 +151,16 @@ export const answer = onCallAgreed({ enforceAppCheck: false }, async (request) =
     // A recorded answer is a file the student uploaded to their own place in file storage (REQ-6.6).
     if (q.kind === 'audio' && !checkAgain && !(typeof value === 'string' && value.startsWith(`recordings/${uid}/${lessonId}/${questionId}/`) && !value.includes('..'))) throw new HttpsError('invalid-argument', 'invalid-answer')
     if (!receives(q, maxLevel)) throw new HttpsError('failed-precondition', 'Not one of your questions.')
+    // A question the teacher removed for the class is not asked (REQ-5.36).
+    if (removals.questions.has(questionId)) throw new HttpsError('failed-precondition', 'removed')
     const secret = sSnap.data().questions[questionId] || {}
     const questions = progress?.questions || {}
     const before = questions[questionId]
 
-    const outcome = checkAgain ? answerCheckAgain(before, secret, value) : answerMain(before, q, secret, value, (bank) => bank[Math.floor(Math.random() * bank.length)])
+    // Only check-again questions the teacher didn't remove are given (REQ-5.36); one already given stays answerable.
+    const outcome = checkAgain
+      ? answerCheckAgain(before, secret, value)
+      : answerMain(before, q, { ...secret, checkAgain: checkAgainLeft(secret.checkAgain, removals, questionId) }, value, (bank) => bank[Math.floor(Math.random() * bank.length)])
     if (outcome.invalid) throw new HttpsError('invalid-argument', 'invalid-answer')
     if (outcome.reply.already) return { reply: outcome.reply, state: before }
 
@@ -158,15 +173,16 @@ export const answer = onCallAgreed({ enforceAppCheck: false }, async (request) =
     if (q.kind === 'audio' && audioUrl) newState.audioUrl = audioUrl
     // The time of every attempt, so time on the lesson can be worked out later (REQ-5.33, D-75).
     newState.answeredAt = [...(before?.answeredAt || []), Date.now()]
-    const minimum = topicMinimum
-    if (minimum && isFinished(newState) && lastAutoQuestionId(topic, maxLevel) === questionId && t.correct < minimum && !t.flagged) {
+    const minimum = baseMinimum
+    const thisTopicMinimum = topicMinimum(topic, minimum, removals)
+    if (thisTopicMinimum && isFinished(newState) && lastAutoQuestionId(topic, maxLevel, removals) === questionId && t.correct < thisTopicMinimum && !t.flagged) {
       t.flagged = true
       flagToRaise = flagToRaise || { kind: 'minimumNotReached', questionId, topicNumber: topic.number, topicName: topic.name }
       if (outcome.flag) flagToRaise.alsoMinimum = true
     }
 
     const nextQuestions = { ...questions, [questionId]: newState }
-    const grade = lessonGrade(nextQuestions)
+    const grade = lessonGrade(nextQuestions, {}, removals.questions)
     const update = {
       uid,
       lessonId,
@@ -181,7 +197,7 @@ export const answer = onCallAgreed({ enforceAppCheck: false }, async (request) =
     // Finished when every question the student received is answered (D-55).
     const nextTopics = update.topics
     const redoing = progress?.redo?.active === true
-    if ((!progress?.finished || redoing) && lessonFinished(vSnap.data(), nextQuestions, nextTopics, minimum, maxLevel)) {
+    if ((!progress?.finished || redoing) && lessonFinished(vSnap.data(), nextQuestions, nextTopics, minimum, maxLevel, removals)) {
       update.finished = true
       update.finishedAt = FieldValue.serverTimestamp()
       // A redo is finished (REQ-6.5).
@@ -244,7 +260,7 @@ export const finishLesson = onCallAgreed(async (request) => {
   if (progress?.finished) return { finished: true }
   const version = progress?.version || lesson.currentVersion
   const v = await lessonRef.collection('versions').doc(String(version)).get()
-  if (!lessonFinished(v.data(), progress?.questions || {}, progress?.topics || {}, await minimumFor(request.auth.uid, classIds, lessonId, lesson), await levelFor(request.auth.uid, classIds))) return { finished: false }
+  if (!lessonFinished(v.data(), progress?.questions || {}, progress?.topics || {}, await minimumFor(request.auth.uid, classIds, lessonId, lesson), await levelFor(request.auth.uid, classIds), await removalsFor(classIds, lessonId))) return { finished: false }
   const update = { uid: request.auth.uid, lessonId, version, classIds, finished: true, finishedAt: FieldValue.serverTimestamp(), updatedAt: FieldValue.serverTimestamp() }
   if (!progress) update.startedAt = FieldValue.serverTimestamp()
   await ref.set(update, { merge: true })
@@ -837,7 +853,7 @@ export const gradeAnswer = onCallAgreed(async (request) => {
     outcome.state.gradedBy = request.auth.uid
     outcome.state.gradedAt = Date.now()
     const questions = { ...p.questions, [questionId]: outcome.state }
-    const grade = lessonGrade(questions)
+    const grade = lessonGrade(questions, {}, (await removalsFor(p.classIds || [], lessonId)).questions)
     tx.update(ref, { questions, grade, updatedAt: FieldValue.serverTimestamp() })
     return { state: outcome.state, grade }
   })
@@ -922,7 +938,7 @@ export const sendBack = onCallAgreed(async (request) => {
       questions: r.questions,
       topics: r.topics,
       history: r.history,
-      grade: lessonGrade(r.questions),
+      grade: lessonGrade(r.questions, {}, (await removalsFor(p.classIds || [], lessonId)).questions),
       finished: false,
       sentBack: sentBackNow,
       // Every sending back for corrections is counted (REQ-5.34, D-75).
@@ -1018,14 +1034,18 @@ export const lessonView = onCallAgreed(async (request) => {
   const maxLevel = await levelFor(request.auth.uid, classIds)
   // Levels don't apply in exams: everyone gets the same questions (REQ-4.26).
   const minimum = await minimumFor(request.auth.uid, classIds, lessonId, lesson)
-  if (maxLevel >= 3 || lesson.type === 'exam') return { hidden: [], minimum }
+  const removals = await removalsFor(classIds, lessonId)
   const p = await db.doc(`progress/${progressId(request.auth.uid, lessonId)}`).get()
   const version = (p.exists && p.data().version) || lesson.currentVersion
   const v = (await lessonRef.collection('versions').doc(String(version)).get()).data()
   const answered = p.exists ? p.data().questions || {} : {}
-  // A question already answered stays (a level lowered later applies from the next question).
-  const hidden = v.topics.flatMap((t) => t.blocks.filter((b) => b.type === 'question' && !receives(b, maxLevel) && !answered[b.id]).map((b) => b.id))
-  return { hidden, minimum }
+  // Each topic's minimum for the class, lowered when the teacher removed questions (REQ-5.36).
+  const minimumByTopic = Object.fromEntries(v.topics.map((t) => [t.number, topicMinimum(t, minimum, removals)]))
+  // Levels don't apply in exams. A question already answered stays (a level lowered later applies
+  // from the next question). Questions removed for the class are hidden, answered or not (REQ-5.36).
+  const byLevel = (b) => maxLevel < 3 && lesson.type !== 'exam' && !receives(b, maxLevel) && !answered[b.id]
+  const hidden = v.topics.flatMap((t) => t.blocks.filter((b) => b.type === 'question' && (byLevel(b) || removals.questions.has(b.id))).map((b) => b.id))
+  return { hidden, minimum, minimumByTopic }
 })
 
 // Trying a lesson as a teacher (REQ-5.32): answers are checked as for a student, but nothing is
@@ -1258,6 +1278,7 @@ export const examSave = onCallAgreed(async (request) => {
   const found = findQuestion(v, questionId)
   const clean = found && examValue(found.q, value)
   if (clean === null || !found) throw new HttpsError('invalid-argument', 'invalid-answer')
+  if ((await removalsFor(classIds, lessonId)).questions.has(questionId)) throw new HttpsError('failed-precondition', 'removed')
   await ref.set(
     { uid, lessonId, version, classIds, exam: true, examAnswers: { [questionId]: clean }, updatedAt: FieldValue.serverTimestamp(), ...(p ? {} : { startedAt: FieldValue.serverTimestamp() }) },
     { merge: true },
@@ -1278,9 +1299,11 @@ async function submitExam(uid, lessonId, lesson, classIds, studentName) {
   const answers = p.examAnswers || {}
   const questions = {}
   const flags = []
+  const removals = await removalsFor(classIds, lessonId)
   for (const topic of vs.data().topics) {
     for (const b of topic.blocks) {
-      if (b.type !== 'question' || b.kind === 'audio') continue
+      // Questions removed for the class before the exam started are not part of it (REQ-5.36).
+      if (b.type !== 'question' || b.kind === 'audio' || removals.questions.has(b.id)) continue
       const given = answers[b.id]
       if (b.kind === 'open') {
         questions[b.id] = given && given.trim() ? { attempts: [given.trim()], result: 'pending', score: null } : { attempts: [], result: 'wrong', score: 0 }
@@ -1509,4 +1532,123 @@ export const lessonTime = onCallAgreed(async (request) => {
     await batch.commit()
   }
   return { counted: true, awayCount: next.awayCount }
+})
+
+// ---------------------------------------------------------------------------------------------
+// Removing questions for a class (REQ-5.36, D-92). The class's teachers (co-teachers too) tick a
+// question, or one of its check-again questions, in the whole-lesson view opened from the class's
+// "Courses in the class" tab. Saved in classes/{classId}/removals/{lessonId}. The lesson itself
+// doesn't change, and other classes are not affected.
+//
+//   removalInfo({ classId, lessonId })    what is removed, how many students answered each question,
+//                                         each question's check-again questions, and for an exam
+//                                         whether a student has started it (then nothing can change)
+//   setRemoval({ classId, lessonId, questionId, checkAgainId, removed })
+
+async function removalContext(auth, classId, lessonId) {
+  const { ref } = await requireClassTeacher(auth, classId)
+  if (!validId(lessonId)) throw new HttpsError('invalid-argument', 'Missing lesson.')
+  const lessonSnap = await db.doc(`lessons/${lessonId}`).get()
+  if (!lessonSnap.exists || !(lessonSnap.data().classIds || []).includes(classId)) throw new HttpsError('not-found', 'This lesson was not given to the class.')
+  const lesson = lessonSnap.data()
+  const students = (await classStudents(ref)).filter((s) => !s.removed)
+  const progress = Object.values(await progressMap(students.map((s) => [s.id, lessonId])))
+  const vRef = db.doc(`lessons/${lessonId}/versions/${lesson.currentVersion}`)
+  const [vs, ss] = await Promise.all([vRef.get(), vRef.collection('secret').doc('answers').get()])
+  return { ref, lesson, progress, version: vs.data(), secret: ss.exists ? ss.data().questions || {} : {} }
+}
+
+async function removalInfoFor(ctx, classId, lessonId) {
+  const saved = (await ctx.ref.collection('removals').doc(lessonId).get()).data() || {}
+  const isExam = ctx.lesson.type === 'exam'
+  const answered = {}
+  const checkAgain = {}
+  for (const topic of ctx.version.topics) {
+    for (const b of topic.blocks) {
+      if (b.type !== 'question') continue
+      answered[b.id] = ctx.progress.filter((p) => (isExam ? p.examAnswers?.[b.id] !== undefined : !!p.questions?.[b.id]?.result)).length
+      checkAgain[b.id] = (ctx.secret[b.id]?.checkAgain || []).map((c) => ({ id: c.id, prompt: c.prompt || '' }))
+    }
+  }
+  // The class's minimum per topic (the teacher's choice when giving the lesson, or the lesson's own),
+  // and what is left of it after removals, so the teacher sees where it dropped.
+  let base = ctx.lesson.minimumPerTopic || 0
+  let at = -1
+  for (const d of (await ctx.ref.collection('assignments').where('lessonIds', 'array-contains', lessonId).get()).docs) {
+    const a = d.data()
+    const t = a.createdAt?.toMillis?.() ?? 0
+    if (a.everyone && Number.isInteger(a.minimumPerTopic) && t > at) {
+      at = t
+      base = a.minimumPerTopic
+    }
+  }
+  const removals = readRemovals(saved)
+  const minimumByTopic = Object.fromEntries(ctx.version.topics.map((t) => [t.number, topicMinimum(t, base, removals)]))
+  return {
+    questions: saved.questions || [],
+    checkAgain: saved.checkAgain || {},
+    minimum: base,
+    minimumByTopic,
+    answered,
+    checkAgainBank: checkAgain,
+    // An exam can change only until the first student of the class starts it (REQ-5.36).
+    locked: isExam && ctx.progress.length > 0,
+  }
+}
+
+export const removalInfo = onCallAgreed(async (request) => {
+  const { classId, lessonId } = request.data || {}
+  const ctx = await removalContext(request.auth, classId, lessonId)
+  return removalInfoFor(ctx, classId, lessonId)
+})
+
+export const setRemoval = onCallAgreed(async (request) => {
+  const { classId, lessonId, questionId, checkAgainId, removed } = request.data || {}
+  const ctx = await removalContext(request.auth, classId, lessonId)
+  if (!validId(questionId) || typeof removed !== 'boolean' || (checkAgainId !== undefined && checkAgainId !== null && !validId(checkAgainId))) throw new HttpsError('invalid-argument', 'Missing details.')
+  if (!findQuestion(ctx.version, questionId)) throw new HttpsError('not-found', 'No such question.')
+  if (checkAgainId && !(ctx.secret[questionId]?.checkAgain || []).some((c) => c.id === checkAgainId)) throw new HttpsError('not-found', 'No such check-again question.')
+  if (ctx.lesson.type === 'exam' && ctx.progress.length > 0) throw new HttpsError('failed-precondition', 'examStarted')
+
+  const docRef = ctx.ref.collection('removals').doc(lessonId)
+  await db.runTransaction(async (tx) => {
+    const now = (await tx.get(docRef)).data() || {}
+    const questions = new Set(now.questions || [])
+    const checkAgain = Object.fromEntries(Object.entries(now.checkAgain || {}).map(([q, ids]) => [q, new Set(ids)]))
+    if (checkAgainId) {
+      const set = checkAgain[questionId] || new Set()
+      if (removed) set.add(checkAgainId)
+      else set.delete(checkAgainId)
+      checkAgain[questionId] = set
+    } else if (removed) questions.add(questionId)
+    else questions.delete(questionId)
+    tx.set(docRef, {
+      lessonId,
+      questions: [...questions],
+      checkAgain: Object.fromEntries(Object.entries(checkAgain).filter(([, ids]) => ids.size).map(([q, ids]) => [q, [...ids]])),
+      updatedBy: request.auth.uid,
+      updatedAt: FieldValue.serverTimestamp(),
+    })
+  })
+
+  // The grades of the class's students are worked out again without the removed questions (or with
+  // a question brought back). A lesson that is now complete is marked finished; a finished one stays.
+  if (!checkAgainId && ctx.lesson.type !== 'exam') {
+    const batch = db.batch()
+    for (const p of ctx.progress) {
+      if (!(p.classIds || []).includes(classId)) continue
+      const r = await removalsFor(p.classIds, lessonId)
+      const update = { grade: lessonGrade(p.questions || {}, {}, r.questions), updatedAt: FieldValue.serverTimestamp() }
+      if (!p.finished && Object.keys(p.questions || {}).length) {
+        const v = p.version === ctx.lesson.currentVersion ? ctx.version : (await db.doc(`lessons/${lessonId}/versions/${p.version}`).get()).data()
+        if (v && lessonFinished(v, p.questions || {}, p.topics || {}, await minimumFor(p.uid, p.classIds, lessonId, ctx.lesson), await levelFor(p.uid, p.classIds), r)) {
+          update.finished = true
+          update.finishedAt = FieldValue.serverTimestamp()
+        }
+      }
+      batch.set(db.doc(`progress/${progressId(p.uid, lessonId)}`), update, { merge: true })
+    }
+    await batch.commit()
+  }
+  return removalInfoFor(ctx, classId, lessonId)
 })

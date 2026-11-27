@@ -181,6 +181,7 @@ The teacher's screens read a class's work through the checking service, which fi
 | Courses | Name, list of lessons, public or private | Database |
 | Classes | Name, class code, teachers, students | Database |
 | Assignments | What was assigned, to whom, settings, due date | Database |
+| Questions removed for a class | For each class and lesson: the questions, and the check-again questions, its teachers removed (REQ-5.36, D-92). Only the checking service reads and changes them; it tells students which questions to skip, and grades without them | Database, in an area browsers can't read |
 | Time on lessons | For each student and lesson: when they first opened it, working time, times away | Database |
 | Student work | Answers, attempts (with the time of each), grades, place in the lesson, how many times it was sent back for corrections | Database |
 | Comments and messages | Teacher comments, student–teacher conversations | Database |

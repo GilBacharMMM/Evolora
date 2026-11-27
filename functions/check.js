@@ -257,13 +257,15 @@ export function isFinished(state) {
 }
 
 // The lesson grade (REQ-4.4, 6.3, system-design 5.3): weighted average of the questions the
-// student received. "pending" while an open answer waits for the teacher.
-export function lessonGrade(questionStates, weights = {}) {
+// student received. "pending" while an open answer waits for the teacher. Questions the teacher
+// removed for the class (REQ-5.36, D-92) don't count; their answers stay saved.
+export function lessonGrade(questionStates, weights = {}, removed = []) {
+  const gone = new Set(removed)
   let total = 0
   let got = 0
   let pending = false
   for (const [id, st] of Object.entries(questionStates)) {
-    if (!st || !st.result) continue
+    if (!st || !st.result || gone.has(id)) continue
     const w = weights[id] ?? 1
     // An open answer is pending until the teacher grades it (REQ-5.12).
     if (st.result === 'pending' && !st.graded) { pending = true; total += w; continue }
@@ -278,18 +280,59 @@ export function receives(question, maxLevel = 3) {
   return (question.level ?? 1) <= maxLevel
 }
 
+// Questions a teacher removed for a class (REQ-5.36, D-92), as saved: the removed questions'
+// ids, and for each question the ids of its removed check-again questions.
+export function readRemovals(r) {
+  return { questions: new Set(r?.questions || []), checkAgain: Object.fromEntries(Object.entries(r?.checkAgain || {}).map(([q, ids]) => [q, new Set(ids)])) }
+}
+export const NO_REMOVALS = readRemovals(null)
+
+// What a student has removed when the lesson is given to them in several classes: only what was
+// removed in every one of those classes (a question stays if any class still asks it).
+export function commonRemovals(list) {
+  if (!list.length) return NO_REMOVALS
+  const all = list.map(readRemovals)
+  const questions = new Set([...all[0].questions].filter((id) => all.every((r) => r.questions.has(id))))
+  const checkAgain = {}
+  for (const [q, ids] of Object.entries(all[0].checkAgain)) {
+    const both = [...ids].filter((id) => all.every((r) => r.checkAgain[q]?.has(id)))
+    if (both.length) checkAgain[q] = new Set(both)
+  }
+  return { questions, checkAgain }
+}
+
+// The check-again questions left for a question after removals (REQ-5.36).
+export function checkAgainLeft(bank, removals, questionId) {
+  const gone = removals?.checkAgain?.[questionId]
+  return gone ? (bank || []).filter((c) => !gone.has(c.id)) : bank || []
+}
+
+// Level 1 questions checked automatically, counted for a topic's minimum (REQ-4.21), as in the
+// lesson check: multiple choice, number and fill in the blanks, extra practice questions included.
+const countsForMinimum = (b) => b.type === 'question' && (b.level ?? 1) === 1 && ['choice', 'number', 'blanks'].includes(b.kind)
+
+// A topic's minimum for a class (REQ-5.36, D-92): when the teacher removed questions and fewer
+// level 1 questions are left than the minimum, the minimum drops to the number left.
+export function topicMinimum(topic, minimum, removals = NO_REMOVALS) {
+  if (!minimum) return 0
+  const left = (topic.blocks || []).filter((b) => countsForMinimum(b) && !removals.questions.has(b.id)).length
+  return Math.min(minimum, left)
+}
+
 // Is the lesson finished (D-55)? Every question the student received has been answered:
 // open and recorded (audio) answers count once sent (REQ-6.6, D-67), and extra
 // practice questions skipped because the topic's minimum was reached count as done (REQ-4.21).
+// Questions removed for the class are not asked (REQ-5.36).
 // The same rule the lesson player uses to show the end of the lesson.
-export function lessonFinished(version, questionStates, topics = {}, minimum = 0, maxLevel = 3) {
+export function lessonFinished(version, questionStates, topics = {}, minimum = 0, maxLevel = 3, removals = NO_REMOVALS) {
   for (const topic of version.topics || []) {
     const correct = topics[topic.number]?.correct || 0
+    const min = topicMinimum(topic, minimum, removals)
     for (const b of topic.blocks || []) {
-      if (b.type !== 'question' || !receives(b, maxLevel)) continue
+      if (b.type !== 'question' || !receives(b, maxLevel) || removals.questions.has(b.id)) continue
       const st = questionStates[b.id]
       if (isFinished(st)) continue
-      if (b.extra && !st && minimum > 0 && correct >= minimum) continue
+      if (b.extra && !st && min > 0 && correct >= min) continue
       return false
     }
   }

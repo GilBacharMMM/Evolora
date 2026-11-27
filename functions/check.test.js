@@ -310,3 +310,66 @@ test('fill in the blanks (REQ-4.30, D-78): typed, choice and word list; attempts
   assert.equal(examBlanks(typed, ts, ['זהב', 'משקל', 'צפיפות', 'מסה']).score, 0.75)
   assert.equal(examBlanks(typed, ts, ['', '', '', '']).score, 0)
 })
+
+// Questions a teacher removed for a class (REQ-5.36, D-92)
+test('removed questions do not count in the grade; their answers stay', async () => {
+  const states = { q1: { result: 'correct1', score: 1 }, q2: { result: 'wrong', score: 0 } }
+  assert.equal(lessonGrade(states).percent, 50)
+  assert.equal(lessonGrade(states, {}, ['q2']).percent, 100)
+  assert.equal(lessonGrade(states, {}, ['q2']).outOf, 1)
+  assert.ok(states.q2, 'the answer itself is kept')
+})
+
+test('removed questions are not needed to finish the lesson', async () => {
+  const { lessonFinished, readRemovals } = await import('./check.js')
+  const version = { topics: [{ number: 1, blocks: [{ type: 'question', id: 'a', kind: 'choice' }, { type: 'question', id: 'b', kind: 'choice' }] }] }
+  const done = { result: 'correct1', score: 1 }
+  assert.equal(lessonFinished(version, { a: done }, { 1: { correct: 1 } }, 1), false)
+  assert.equal(lessonFinished(version, { a: done }, { 1: { correct: 1 } }, 1, 3, readRemovals({ questions: ['b'] })), true)
+})
+
+test("a topic's minimum drops to the questions left after removals", async () => {
+  const { topicMinimum, readRemovals, lessonFinished } = await import('./check.js')
+  const topic = {
+    number: 1,
+    blocks: [
+      { type: 'question', id: 'a', kind: 'choice' },
+      { type: 'question', id: 'b', kind: 'number' },
+      { type: 'question', id: 'x', kind: 'choice', extra: true },
+      { type: 'question', id: 'o', kind: 'open' },
+      { type: 'question', id: 'l2', kind: 'choice', level: 2 },
+    ],
+  }
+  assert.equal(topicMinimum(topic, 2), 2)
+  assert.equal(topicMinimum(topic, 2, readRemovals({ questions: ['a', 'b'] })), 1, 'only the extra question is left')
+  assert.equal(topicMinimum(topic, 2, readRemovals({ questions: ['a', 'b', 'x'] })), 0, 'open and level 2 questions do not count')
+  // With the minimum lowered to 1, one right answer lets the extra question be skipped.
+  const version = { topics: [topic] }
+  const done = { result: 'correct1', score: 1 }
+  const removed = readRemovals({ questions: ['a'] })
+  assert.equal(topicMinimum(topic, 3, removed), 2)
+  assert.equal(lessonFinished(version, { b: done, x: done, o: { result: 'pending' }, l2: done }, { 1: { correct: 2 } }, 3, 3, removed), true)
+})
+
+test('removed check-again questions are not asked; with none left, the student moves on', async () => {
+  const { checkAgainLeft, readRemovals } = await import('./check.js')
+  const bank = [{ id: 'c1' }, { id: 'c2' }]
+  assert.deepEqual(checkAgainLeft(bank, readRemovals({ checkAgain: { q1: ['c1'] } }), 'q1').map((c) => c.id), ['c2'])
+  assert.deepEqual(checkAgainLeft(bank, readRemovals({ checkAgain: { q1: ['c1', 'c2'] } }), 'q1'), [])
+  assert.equal(checkAgainLeft(bank, readRemovals({ checkAgain: { q9: ['c1'] } }), 'q1').length, 2, 'other questions are not affected')
+  // A question whose check-again questions were all removed: after two wrong answers, the solution only.
+  const s = { correct: ['c1'], solution: 'SOL', checkAgain: [] }
+  const first = answerMain(undefined, { id: 'q1', kind: 'choice' }, s, ['c2'], pickFirst)
+  const second = answerMain(first.state, { id: 'q1', kind: 'choice' }, s, ['c2'], pickFirst)
+  assert.equal(second.state.result, 'wrong')
+  assert.equal(second.state.checkAgain, undefined)
+  assert.equal(isFinished(second.state), true)
+})
+
+test('a student in two classes has removed only what both classes removed', async () => {
+  const { commonRemovals } = await import('./check.js')
+  const r = commonRemovals([{ questions: ['a', 'b'], checkAgain: { q: ['c1', 'c2'] } }, { questions: ['b'], checkAgain: { q: ['c2'] } }])
+  assert.deepEqual([...r.questions], ['b'])
+  assert.deepEqual([...r.checkAgain.q], ['c2'])
+  assert.equal(commonRemovals([]).questions.size, 0)
+})

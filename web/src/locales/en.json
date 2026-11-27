@@ -583,5 +583,16 @@
     "howToWords": "Drag each word to its place in the text, or click a word and then the blank.",
     "someWrong_one": "1 blank was wrong (marked red) and was emptied. The right ones (green) stay.",
     "someWrong_other": "{{count}} blanks were wrong (marked red) and were emptied. The right ones (green) stay."
+  },
+  "removal": {
+    "removeFromClass": "Remove from the class",
+    "removedChip": "Removed from the class",
+    "replacements": "Replacement questions ({{count}})",
+    "confirmAnswered": "Students who already answered this question: {{count}}. Their answers won't count in the grade. Remove it from the class?",
+    "confirmLastReplacement": "No replacement questions are left. A student who fails this question twice will see the solution and move on. Remove it?",
+    "confirmEmptyTopic": "No questions are left in this topic. Students will only read its material. Remove it?",
+    "minimumLowered": "Because questions were removed, the number of right answers needed in this topic for the class dropped to {{count}}.",
+    "examLocked": "Students have already started the exam, so questions can't be removed from it.",
+    "failed": "The change wasn't saved. Please try again."
   }
 }

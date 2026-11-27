@@ -21,6 +21,7 @@ import type { Block, LessonVersion, Question } from '../lesson/types'
 import { TypeChip } from '../components/TypeChip'
 import { useLessonTime } from '../lessonTime'
 import { BackButton } from '../components/BackButton'
+import { RemovalControls, useRemovals } from '../components/RemovalControls'
 
 // What the teacher did with an answer (REQ-5.12, 5.13, 5.15) and, when the student may see
 // grades (REQ-5.22, D-59), the question's marks.
@@ -139,17 +140,23 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   // Questions above the student's level are left out, without saying so (REQ-6.10).
   const [hidden, setHidden] = useState<Set<string>>(new Set())
   const [minimumOverride, setMinimumOverride] = useState<number | null>(null)
+  // Each topic's minimum, lowered for the class when the teacher removed questions (REQ-5.36).
+  const [minimumByTopic, setMinimumByTopic] = useState<Record<string, number> | null>(null)
+  // Questions the teacher removed are among the hidden ones (REQ-5.36), so an exam waits for this.
+  const [viewReady, setViewReady] = useState(trying)
   useEffect(() => {
     if (trying || !user) return
     let live = true
-    httpsCallable<{ lessonId: string }, { hidden: string[]; minimum?: number }>(functions, 'lessonView')({ lessonId })
+    httpsCallable<{ lessonId: string }, { hidden: string[]; minimum?: number; minimumByTopic?: Record<string, number> }>(functions, 'lessonView')({ lessonId })
       .then((r) => {
         if (!live) return
         setHidden(new Set(r.data.hidden))
         // The teacher may change the lesson's minimum questions per topic (REQ-4.21, 5.9).
         if (typeof r.data.minimum === 'number') setMinimumOverride(r.data.minimum)
+        if (r.data.minimumByTopic) setMinimumByTopic(r.data.minimumByTopic)
+        setViewReady(true)
       })
-      .catch(() => {})
+      .catch(() => live && setViewReady(true))
     return () => {
       live = false
     }
@@ -182,6 +189,14 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const [currentVersion, setCurrentVersion] = useState<number | null>(null)
   const [lessonMinimum, setMinimum] = useState(0)
   const minimum = minimumOverride ?? lessonMinimum
+  // A teacher who opened the lesson from a class's courses tab can remove questions for that class (REQ-5.35, 5.36).
+  const removalClass = trying ? new URLSearchParams(location.search).get('class') : null
+  const removal = useRemovals(removalClass, lessonId)
+  const removedQuestions = useMemo(() => new Set(removal.info?.questions || []), [removal.info])
+  // The minimum of a topic: for a student, as the checking service says; for a teacher looking at
+  // a class, the class's; otherwise the lesson's.
+  const minimumFor = (topicNumber: number | undefined) =>
+    topicNumber === undefined ? minimum : (removal.info?.minimumByTopic?.[topicNumber] ?? minimumByTopic?.[topicNumber] ?? minimum)
   const [lesson, setLesson] = useState<LessonVersion | null>(null)
   const [progress, setProgress] = useState<Progress | null>(null)
   const [local, setLocal] = useState<Record<string, QuestionState>>({})
@@ -258,7 +273,9 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const skipped = (it: Item) =>
     !whole &&
     ((it.kind === 'block' && it.block.type === 'question' && hidden.has(it.block.id)) ||
-    (it.kind === 'block' && it.block.type === 'question' && it.block.extra && !states[it.block.id] && minimum > 0 && topicCorrect(it.topic) >= minimum))
+    // A teacher seeing the lesson as the class's students do doesn't see questions removed for the class (REQ-5.36).
+    (it.kind === 'block' && it.block.type === 'question' && removedQuestions.has(it.block.id)) ||
+    (it.kind === 'block' && it.block.type === 'question' && it.block.extra && !states[it.block.id] && minimumFor(it.topic) > 0 && topicCorrect(it.topic) >= minimumFor(it.topic)))
 
   const shown = items.filter((it) => !skipped(it))
   const stop = shown.findIndex((it) => it.kind === 'block' && it.block.type === 'question' && !isFinished(states[(it.block as Question).id]))
@@ -338,7 +355,16 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const d = lesson.details
   // Students take exams on the exam page (REQ-4.26); teachers try them like any lesson.
   if (d.type === 'exam' && role === 'student' && user) {
-    return <ExamPlayer lessonId={lessonId} lesson={lesson} uid={user.uid} saved={progress?.examAnswers || {}} submitted={!!progress?.submitted} exam={examInfo} />
+    if (!viewReady) {
+      return (
+        <main className="page narrow">
+          <p className="loading">{t('common.loading')}</p>
+        </main>
+      )
+    }
+    // Questions removed for the class before the exam started are not part of it (REQ-5.36).
+    const examLesson = { ...lesson, topics: lesson.topics.map((tp) => ({ ...tp, blocks: tp.blocks.filter((b) => b.type !== 'question' || !hidden.has(b.id)) })) }
+    return <ExamPlayer lessonId={lessonId} lesson={examLesson} uid={user.uid} saved={progress?.examAnswers || {}} submitted={!!progress?.submitted} exam={examInfo} />
   }
   let questionNumber = 0
   const numbers: Record<string, number> = {}
@@ -348,13 +374,13 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
     <main className="page narrow">
       <div className="player-top">
         <BackButton />
-        {minimum > 0 && activeTopic !== undefined && !finished && !whole && (
+        {minimumFor(activeTopic) > 0 && activeTopic !== undefined && !finished && !whole && (
           <div className="topic-progress" aria-live="polite">
             <span>
-              {t('q.topicCorrect')}: {Math.min(topicCorrect(activeTopic), minimum)} / {minimum}
+              {t('q.topicCorrect')}: {Math.min(topicCorrect(activeTopic), minimumFor(activeTopic))} / {minimumFor(activeTopic)}
             </span>
             <span className="dots" aria-hidden="true">
-              {Array.from({ length: minimum }, (_, i) => (
+              {Array.from({ length: minimumFor(activeTopic) }, (_, i) => (
                 <span key={i} className={`dot${i < topicCorrect(activeTopic) ? ' full' : ''}`} />
               ))}
             </span>
@@ -405,11 +431,27 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
         {visible.map((it) => (
           <Fragment key={it.kind === 'topic' ? `topic-${it.number}` : it.key}>
             {it.kind === 'topic' ? (
+              <>
               <h2 className="topic-heading">
                 <Ui className="topic-number">{t('lesson.topic', { number: it.number })}</Ui> <bdi>{it.name}</bdi>
               </h2>
+              {whole && removal.info && removal.info.minimumByTopic[it.number] < removal.info.minimum && (
+                <p className="removal-note" role="note">
+                  <Ui>{t('removal.minimumLowered', { count: removal.info.minimumByTopic[it.number] })}</Ui>
+                </p>
+              )}
+              </>
             ) : it.block.type === 'question' ? (
-              <>
+              <div className={`question-wrap${whole && removedQuestions.has(it.block.id) ? ' question-removed' : ''}`}>
+              {whole && removal.info && (
+                <RemovalControls
+                  q={it.block}
+                  lesson={lesson}
+                  info={removal.info}
+                  busy={removal.busy}
+                  onChange={(checkAgainId, removed) => removal.set((it.block as Question).id, checkAgainId, removed)}
+                />
+              )}
               {whole && (it.block.extra || (it.block.level ?? 1) > 1) && (
                 <p className="question-labels">
                   {it.block.extra && <span className="course-chip">{t('lesson.extraLabel')}</span>}
@@ -467,7 +509,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
                 />
               )}
               <TeacherNote state={states[it.block.id] as Graded | undefined} showGrades={showGrades} />
-              </>
+              </div>
             ) : (
               <BlockView block={it.block} />
             )}

@@ -105,7 +105,7 @@ export function TeacherCourses({ classId }: { classId: string }) {
       <section className="card list-card-padded class-courses">
         <p className="muted">{nothing ? t('follow.nothingGiven') : t('follow.coursesIntro')}</p>
         {active.map(({ course }) => (
-          <CourseItem key={course.id} course={course} />
+          <CourseItem key={course.id} course={course} classId={classId} />
         ))}
         {data.singles.length > 0 && (
           <details className="class-course">
@@ -115,7 +115,7 @@ export function TeacherCourses({ classId }: { classId: string }) {
             </summary>
             <ul className="class-course-lessons">
               {data.singles.map((l) => (
-                <LessonLine key={l.lessonId} lesson={l} />
+                <LessonLine key={l.lessonId} lesson={l} classId={classId} />
               ))}
             </ul>
           </details>
@@ -126,7 +126,7 @@ export function TeacherCourses({ classId }: { classId: string }) {
               {t('follow.archivedCourses')} ({archived.length})
             </summary>
             {archived.map(({ course }) => (
-              <CourseItem key={course.id} course={course} />
+              <CourseItem key={course.id} course={course} classId={classId} />
             ))}
           </details>
         )}
@@ -136,7 +136,7 @@ export function TeacherCourses({ classId }: { classId: string }) {
 }
 
 // One course: its title, opening to its lessons in order, practice lessons under their teaching lesson.
-function CourseItem({ course }: { course: Course }) {
+function CourseItem({ course, classId }: { course: Course; classId: string }) {
   const { t } = useTranslation()
   const count = course.items.reduce((n, it) => n + 1 + it.practice.length, 0)
   return (
@@ -149,11 +149,11 @@ function CourseItem({ course }: { course: Course }) {
       </summary>
       <ul className="class-course-lessons">
         {course.items.map((it) => (
-          <LessonLine key={it.lessonId} lesson={it}>
+          <LessonLine key={it.lessonId} lesson={it} classId={classId}>
             {it.practice.length > 0 && (
               <ul className="class-course-practice">
                 {it.practice.map((p) => (
-                  <LessonLine key={p.lessonId} lesson={p} />
+                  <LessonLine key={p.lessonId} lesson={p} classId={classId} />
                 ))}
               </ul>
             )}
@@ -164,11 +164,12 @@ function CourseItem({ course }: { course: Course }) {
   )
 }
 
-// A lesson that opens in the teacher's whole-lesson view (REQ-5.32, D-90).
-function LessonLine({ lesson, children }: { lesson: CourseEntry; children?: React.ReactNode }) {
+// A lesson that opens in the teacher's whole-lesson view (REQ-5.32, D-90), for this class, where the
+// teacher can remove questions for the class (REQ-5.36).
+function LessonLine({ lesson, classId, children }: { lesson: CourseEntry; classId: string; children?: React.ReactNode }) {
   return (
     <li>
-      <button type="button" className="class-course-lesson" onClick={() => navigate(`/lesson/${lesson.lessonId}`)}>
+      <button type="button" className="class-course-lesson" onClick={() => navigate(`/lesson/${lesson.lessonId}?class=${classId}`)}>
         <TypeChip type={lesson.type} />
         <span dir="auto">{lesson.title}</span>
       </button>

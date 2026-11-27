@@ -28,7 +28,8 @@ Small programs Claude runs while working on Evolora. Gil doesn't need to run the
 | `test-versions.mjs` | End-to-end test of lesson versions: a student who started keeps their version; a student who starts after a change gets the new one. Adds a changed version for a moment and puts the lesson back. | REQ-4.7 |
 | `test-exams.mjs` | End-to-end test of exams with the demo exam: saving and changing answers, no lesson-style answers, submitting, results hidden until released, the same questions for every level, opening early, red flags, the time window closing and submitting by itself, and allowing a retake. Takes about a minute (it waits for a window to end). Cleans up after itself. | REQ-4.26, 5.23 |
 | `test-audio.mjs` | End-to-end test of recorded answers and audio comments: saving into the student's own folder only, sound files only, size limit, sending, who can listen, and the teacher's recorded comment. Cleans up after itself. | REQ-6.6, 5.13 |
-| `test-blanks.mjs` | End-to-end test of fill-in-the-blanks questions: nothing secret reaches students, forgiving typed checking, marks and locking, attempts, the red flag, and credit per blank in exams. | REQ-4.30, D-78 |
+| `test-blanks.mjs` | End-to-end test of fill-in-the-blanks questions: nothing secret reaches students, forgiving typed checking, marks and locking, attempts, the red flag, and credit per blank in exams. Uses its own test-only lesson (`fixtures/blanks-test-teaching-1`), loaded and removed by the test. | REQ-4.30, D-78 |
+| `test-removals.mjs` | End-to-end test of removing questions for a class: removed questions are hidden and refused, answers stop counting and count again when brought back, topic minimums drop, replacement questions, finishing a lesson, exams lock once started, other teachers and students can't change or read it. Uses its own test-only lessons (`fixtures/removal-test-*`), loaded and removed by the test. | REQ-5.36, D-92 |
 | `test-drag.mjs` | End-to-end test of drag-and-drop questions: what students can read holds no answers, every place needs a card, attempts by the number of cards, right cards marked and locked, the hint, grades of full, half and a quarter, the red flag when every attempt fails, and a teacher trying it. | REQ-4.12, D-70 |
 | `lib/screen-test-data.mjs` | Used by the screen tests: puts only the test data they use into a known state, and puts the test users' languages and class settings back afterwards (D-80). | system-design 8.1 |
 | `test-permissions.mjs` | Automatic permission tests: signs in as test users and checks that what must be blocked is blocked (for example, a student reading the correct answers). | REQ-3.4, 10.1, 10.3 |
@@ -66,6 +67,7 @@ node tools/test-exams.mjs
 node tools/test-audio.mjs
 node tools/test-drag.mjs
 node tools/test-blanks.mjs
+node tools/test-removals.mjs
 node tools/test-terms.mjs
 node tools/test-sent-back.mjs
 node tools/test-time.mjs
