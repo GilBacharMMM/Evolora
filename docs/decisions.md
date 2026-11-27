@@ -26,7 +26,7 @@ Entry format:
 
 **Decision:** Web app only, built for Chromebooks.
 **Reason:** The school's students and teachers all use Chromebooks.
-**Affects:** REQ-11.1 (the "Chrome only" part replaced by D-84)
+**Affects:** REQ-11.1
 
 ### D-2: Google sign-in, school accounts only during the pilot
 **Date:** 2026-11-20 · **Status:** Decided · **Decided by:** Gil
