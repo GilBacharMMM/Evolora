@@ -20,7 +20,9 @@ const TEST_KEY = 'evolora.signOutTest'
 // Why the person was signed out, so the sign-in page can say so and the same page can open again.
 export const SIGNED_OUT_KEY = 'evolora.signedOut'
 
-const ACTIVITY_EVENTS = ['keydown', 'mousedown', 'pointerdown', 'touchstart', 'wheel', 'scroll', 'input'] as const
+// Scrolling counts through the wheel, the keys, touch and dragging the scroll bar (a mouse press).
+// The "scroll" event itself is not used: the page also fires it by itself, when its layout shifts.
+const ACTIVITY_EVENTS = ['keydown', 'mousedown', 'pointerdown', 'touchstart', 'touchmove', 'wheel', 'input'] as const
 
 // On the test site only, Claude can shorten both times for a demonstration (REQ-3.5):
 // open the site with ?signout-test=3,10 (3 minutes without activity, 10 minutes in all),

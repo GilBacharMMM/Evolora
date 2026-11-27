@@ -46,7 +46,7 @@ export async function uploadRecording(folder: string, blob: Blob): Promise<strin
 // The first time, the browser asks for permission to use the microphone.
 export function Recorder({ onReady, disabled = false }: { onReady: (blob: Blob | null) => void; disabled?: boolean }) {
   const { t } = useTranslation()
-  const [state, setState] = useState<'idle' | 'recording' | 'done' | 'denied'>('idle')
+  const [state, setState] = useState<'idle' | 'recording' | 'done' | 'denied' | 'unsupported'>('idle')
   const [seconds, setSeconds] = useState(0)
   const [url, setUrl] = useState<string | null>(null)
   const recorder = useRef<MediaRecorder | null>(null)
@@ -58,6 +58,7 @@ export function Recorder({ onReady, disabled = false }: { onReady: (blob: Blob |
   }, [])
 
   async function start() {
+    if (typeof MediaRecorder === 'undefined' || !navigator.mediaDevices?.getUserMedia) return setState('unsupported')
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const chunks: BlobPart[] = []
@@ -107,7 +108,8 @@ export function Recorder({ onReady, disabled = false }: { onReady: (blob: Blob |
         </button>
       )}
       {state === 'done' && url && <audio controls src={url} aria-label={t('audio.listenBack')} />}
-      {state === 'denied' && <p className="notice">{t('audio.denied')}</p>}
+      {state === 'denied' && <p className="notice" role="alert">{t('audio.denied')}</p>}
+      {state === 'unsupported' && <p className="notice" role="alert">{t('audio.unsupported')}</p>}
     </div>
   )
 }

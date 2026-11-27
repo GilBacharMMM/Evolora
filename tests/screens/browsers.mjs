@@ -5,10 +5,10 @@
 //   2. a recording is made with a pretend microphone, in the format Evolora chooses;
 //   3. every browser's recording plays in every other browser;
 //   4. formulas in a lesson are drawn, and the time on the lesson is sent;
-//   5. automatic sign-out: the warning after 28 minutes without activity, "Stay signed in",
-//      signing out after 30 minutes, a half-typed open answer kept, the same page after signing
-//      in again, and signing out after 8 hours even with activity. The browser's clock is moved
-//      forward, so the test doesn't take 8 hours.
+//   5. automatic sign-out, with the test site's shortened times (3 minutes without activity,
+//      1 minute in all): the warning 2 minutes before, "Stay signed in", signing out, a
+//      half-typed open answer kept, the same page after signing in again, and signing out at the
+//      time limit even with activity. It takes about 5 minutes per browser.
 //
 //   cd tests/screens
 //   node browsers.mjs                  (all four)
@@ -25,9 +25,19 @@ const LANG = 'en'
 const STUDENT = 'test-student-2'
 const LESSON = 'archimedes-density-teaching-1'
 const MIN = 60_000
+// A text in any of the three languages: lesson pages follow the class language (REQ-9.5),
+// which may differ from the student's own.
+const anyLang = (key) => ['he', 'ar', 'en'].map((l) => tr(l, key))
+const hasText = (text, key) => anyLang(key).some((t) => text.includes(t))
 
 let failures = 0
 let count = 0
+const notes = []
+// Something the robot can't check here, said in the report.
+function note(text) {
+  notes.push(text)
+  console.log(`  NOTE  ${text}`)
+}
 function check(label, ok, detail = '') {
   count++
   if (!ok) failures++
@@ -37,14 +47,13 @@ function check(label, ok, detail = '') {
 // The same choice as web/src/components/Recorder.tsx.
 const FORMATS = ['audio/webm;codecs=opus', 'audio/mp4;codecs=mp4a.40.2', 'audio/mp4', 'audio/webm', 'audio/ogg;codecs=opus']
 
-async function newPage(browser, { clock = false } = {}) {
+async function newPage(browser) {
   const context = await browser.newContext({ viewport: { width: 1366, height: 768 }, locale: 'en-US' })
   await context.addInitScript(() => {
     try {
       localStorage.setItem('evolora.language', 'en')
     } catch {}
   })
-  if (clock) await context.clock.install()
   const page = await context.newPage()
   page.setDefaultTimeout(20000)
   return page
@@ -133,7 +142,10 @@ for (const name of names) {
     check('the site opens (no "please use another browser" message)', (await page.locator('.browser-list').count()) === 0)
 
     // 2. Recording.
-    try {
+    const canRecord = await page.evaluate(() => typeof MediaRecorder !== 'undefined')
+    if (!canRecord && name === 'webkit') {
+      note('recording: not possible in WebKit for Windows (it has no recorder); check in Safari on a Mac')
+    } else try {
       const rec = await record(page)
       recordings[name] = rec
       check(`records a 2.5-second answer: ${rec.type || rec.format}, ${Math.round(rec.size / 1024)} KB`, rec.size > 1000, `${rec.size} bytes`)
@@ -154,6 +166,11 @@ for (const name of names) {
     const page = await newPage(browser)
     await page.goto(SITE)
     for (const [from, rec] of Object.entries(recordings)) {
+      const base = rec.type.split(';')[0]
+      if (name === 'webkit' && !(await page.evaluate((t) => new Audio().canPlayType(t), base))) {
+        note(`${BROWSERS[name].label} can't play ${base} in its Windows build; check in Safari on a Mac`)
+        continue
+      }
       const r = await plays(page, rec)
       check(`${BROWSERS[name].label} plays the recording made in ${BROWSERS[from].label} (${rec.type.split(';')[0]})`, r.ok, r.why)
     }
@@ -171,7 +188,7 @@ try {
     console.log(`\n=== ${BROWSERS[name].label}: lesson and automatic sign-out ===`)
     const browser = await BROWSERS[name].launch()
     try {
-      // 4. Formulas and time on the lesson (no pretend clock here: real seconds).
+      // 4. The time on the lesson.
       {
         const page = await newPage(browser)
         const sent = []
@@ -192,11 +209,13 @@ try {
         await page.context().close()
       }
 
-      // 5. Automatic sign-out, with the browser's clock moved forward.
+      // 5. Automatic sign-out, in real time, with the test site's shortened times (REQ-3.5):
+      //    3 minutes without activity (so the warning comes after 1 minute) and 60 minutes in all.
+      //    The rules for the real times (28, 30 minutes and 8 hours) are tested in web/tests.
       await data.freshStudentWork(STUDENT)
       await data.answerUpToOpen(STUDENT, LESSON)
-      const page = await newPage(browser, { clock: true })
-      await page.goto(SITE)
+      const page = await newPage(browser)
+      await page.goto(`${SITE}/?signout-test=3,60`)
       await signIn(page)
       await page.goto(`${SITE}/lesson/${LESSON}`)
       await page.locator('article.lesson').waitFor()
@@ -210,40 +229,50 @@ try {
       const half = 'Half an answer, typed just before going away'
       await box.fill(half)
       const warning = page.locator('.signout-warning')
+      const signedIn = async () => (await page.locator('.account-name').count()) > 0
 
-      await page.clock.runFor(27 * MIN)
-      check('no warning after 27 minutes without activity', (await warning.count()) === 0)
-      await page.clock.runFor(MIN + 2000)
-      await warning.waitFor({ timeout: 5000 }).catch(() => {})
+      await page.waitForTimeout(50_000)
+      check('no warning 50 seconds after the last activity', (await warning.count()) === 0 && (await signedIn()))
+      await warning.waitFor({ timeout: 20_000 }).catch(() => {})
       const text = (await warning.count()) ? await warning.innerText() : ''
-      check('the warning shows after 28 minutes, with "Stay signed in"', text.includes(tr(LANG, 'autoSignOut.warning')) && text.includes(tr(LANG, 'autoSignOut.stay')), text.slice(0, 80))
-      await page.getByRole('button', { name: tr(LANG, 'autoSignOut.stay') }).click()
-      await page.clock.runFor(2000)
+      check('the warning shows 2 minutes before the sign-out, with "Stay signed in"', hasText(text, 'autoSignOut.warning') && hasText(text, 'autoSignOut.stay'), text.slice(0, 80))
+      await page.waitForTimeout(5000)
+      await warning.locator('button').click()
+      await page.waitForTimeout(1500)
       check('"Stay signed in" closes the warning', (await warning.count()) === 0)
-      await page.clock.runFor(27 * MIN)
-      check('still signed in 27 minutes later', (await page.locator('.account-name').count()) > 0 && (await warning.count()) === 0)
-      await page.clock.runFor(3 * MIN + 2000)
-      await page.locator('.signed-out-notice').waitFor({ timeout: 10000 }).catch(() => {})
-      check('signed out 30 minutes after "Stay signed in", with a message why', (await page.locator('.signed-out-notice').count()) > 0 && (await page.locator('.account-name').count()) === 0)
+      const stayedAt = Date.now()
+      await page.waitForTimeout(50_000)
+      check('still signed in, with no warning, 50 seconds later', (await signedIn()) && (await warning.count()) === 0)
+      await page.locator('.signed-out-notice').waitFor({ timeout: 150_000 }).catch(() => {})
+      const outAfter = Math.round((Date.now() - stayedAt) / 1000)
+      check(`signed out 3 minutes after "Stay signed in" (after ${outAfter} seconds), with a message why`, !(await signedIn()) && outAfter >= 175 && outAfter <= 190, `${outAfter} seconds`)
       check('the address is still the lesson', page.url().endsWith(`/lesson/${LESSON}`), page.url())
       await signIn(page)
       await page.locator('article.lesson').waitFor()
       check('after signing in again, the same lesson opens', page.url().endsWith(`/lesson/${LESSON}`), page.url())
       const again = await openAnswerBox(page)
       check('the half-typed open answer is still there', (await again.inputValue()) === half, await again.inputValue())
-
-      // 8 hours with activity all the time: a click every 20 minutes.
-      let out = false
-      for (let i = 0; i < 26 && !out; i++) {
-        await page.mouse.click(10, 400)
-        await page.clock.runFor(20 * MIN)
-        out = (await page.locator('.account-name').count()) === 0
-        if (out) check(`signed out after 8 hours even with activity (after ${Math.round(((i + 1) * 20) / 60 * 10) / 10} hours)`, i + 1 >= 24, `${i + 1} times 20 minutes`)
-      }
-      if (!out) check('signed out after 8 hours even with activity', false, 'still signed in after 8 hours 40 minutes')
-      await page.locator('.signed-out-notice').waitFor({ timeout: 10000 }).catch(() => {})
-      check('the message says 8 hours have passed', ((await page.locator('.signed-out-notice').innerText().catch(() => '')) || '').includes(tr(LANG, 'autoSignOut.signedOutMax').slice(0, 30)))
+      await page.goto(`${SITE}/?signout-test=off`)
       await page.context().close()
+
+      // The limit in all (8 hours on the real site), shortened to 1 minute: signed out even when
+      // clicking every few seconds the whole time.
+      const short = await newPage(browser)
+      await short.goto(`${SITE}/?signout-test=30,1`)
+      const began = Date.now()
+      await signIn(short)
+      let out = false
+      while (!out && Date.now() - began < 100_000) {
+        await short.mouse.click(10, 400)
+        await short.waitForTimeout(3000)
+        out = (await short.locator('.account-name').count()) === 0
+      }
+      const after = Math.round((Date.now() - began) / 1000)
+      check(`signed out at the time limit even with activity (after ${after} seconds of a 60-second limit)`, out && after >= 55, out ? '' : 'still signed in')
+      await short.locator('.signed-out-notice').waitFor({ timeout: 10000 }).catch(() => {})
+      check('the message says 8 hours have passed', hasText((await short.locator('.signed-out-notice').innerText().catch(() => '')) || '', 'autoSignOut.signedOutMax'))
+      await short.goto(`${SITE}/?signout-test=off`)
+      await short.context().close()
     } catch (e) {
       check('the lesson and sign-out checks ran to the end', false, String(e.message || e).split('\n')[0])
     } finally {
@@ -256,4 +285,5 @@ try {
 }
 
 console.log(`\n${count} checks, ${failures} failed.`)
+if (notes.length) console.log(`Not checked here (${notes.length}): see the NOTE lines.`)
 process.exit(failures ? 1 : 0)

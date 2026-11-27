@@ -530,13 +530,14 @@
     "stop": "Stop",
     "recording": "Recording… {{seconds}} of {{max}} seconds",
     "listenBack": "Listen to your recording",
-    "denied": "The microphone isn't allowed. Click the camera or microphone sign in Chrome's address bar, allow the microphone, and try again.",
+    "denied": "The microphone isn't allowed. Click the camera or microphone sign in the browser's address bar (on a Mac, Safari asks in the Safari menu, under Settings for This Website), allow the microphone, and try again.",
     "yours": "Your recording",
     "missing": "This recording is no longer available.",
     "teacherComment": "Your teacher's recorded comment",
     "studentAnswer": "The student's recording",
     "commentTitle": "Recorded comment (optional, up to 30 seconds)",
-    "removeComment": "Remove the recorded comment"
+    "removeComment": "Remove the recorded comment",
+    "unsupported": "This browser can't record sound. Please use the latest Chrome, Edge, Firefox or Safari."
   },
   "drag": {
     "howTo": "Drag each card to its place on the picture, or click a card and then click its place.",

@@ -109,7 +109,13 @@ export class Screens {
       if (/net::ERR_(INTERNET_DISCONNECTED|NETWORK_CHANGED|CONNECTION_RESET|QUIC)/.test(m.text())) return
       page._errors.push(m.text().slice(0, 300))
     })
-    page.on('pageerror', (e) => page._errors.push(`Page error: ${String(e.message || e).slice(0, 300)}`))
+    page.on('pageerror', (e) => {
+      const text = String(e.message || e)
+      // The PhET simulations' sound, in WebKit's Windows test build, which has no sound decoding
+      // (real Safari has it). It is the simulation's, not Evolora's.
+      if (/decodeAudioData/.test(text) && /audioBufferProperty/.test(text)) return
+      page._errors.push(`Page error: ${text.slice(0, 300)}`)
+    })
   }
 
   async check(page, flow, name) {
