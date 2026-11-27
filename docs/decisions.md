@@ -945,3 +945,11 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** a question can carry its own picture (`- file:`, `- caption:`, `- source:` lines inside the question, as drag-and-drop questions already do). It shows under the question text, before answering, and is hidden with the question. The lesson check warns about an image block right after a question. This is a rule for writing lessons, in the lesson format and the teacher kit.
 **Reason:** the picture always goes with its question, with nothing for the writer to keep in step.
 **Affects:** new REQ-4.31, lessons/README.md, the teacher kit (lesson-rules-for-claude.md), the lesson check, the lesson reader, the lesson player, the exam page, the grading page, archimedes-density-practice-1
+
+### D-83: Build Evolora so it can run as several separate sites
+**Date:** 2026-11-27 · **Status:** Decided · **Decided by:** Gil
+**Context:** The Ministry of Education's rules (data in Israel, its own sign-in, approval, yearly checks) are heavy, and a change to an approved site may need a new check. Later, users abroad or other countries' ministries of education may want Evolora too, each with their own rules.
+**Options considered:** one site for everyone, with every rule applied to all users; two separate sites from the same code (one for the Israeli Ministry of Education, one general), set up now; build now so that separate sites are possible, and set up a second site only when needed.
+**Decision:** the last option. The same code can run as several sites. Each site has its own address, data, sign-in, terms, features and languages, all in its own settings and not in the code. Students' and teachers' data never moves between sites. When a second site is set up, and how lessons are shared between sites, are decided later.
+**Reason:** keeps the choice open at little cost now. Adding a ministry or a country later means new settings, not a rebuild.
+**Affects:** new REQ-11.4; system-design (site settings); docs/moe-approval-steps.he.md, section 13

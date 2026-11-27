@@ -1240,6 +1240,22 @@ Evolora supports 5 teachers and 120 students, with at least one full class of 30
 *Acceptance criteria:*
 - [ ] With 30 students working in the same lesson at once, pages still open quickly (see REQ-12.1).
 
+**REQ-11.4: Ready to run as several separate sites** (Priority 1: foundation; Gil, 2026-11-27, D-83)
+Evolora is built so that the same code can run as several **separate sites**, each with its own web address and its own data. Examples: a site for Israeli schools that meets the Ministry of Education's rules, a general site for everyone else, and later sites for other countries' ministries of education. Setting up a new site means changing only that site's **settings**, not the code. Each site's settings say:
+- its web address and name;
+- where its data is kept (which country and cloud region);
+- how people sign in (for example ordinary Google accounts, school Google accounts, or a ministry's own sign-in);
+- its terms of use, and whether parents' consent is needed;
+- which features are on, for example audio recordings and AI;
+- its languages.
+
+Students' and teachers' data never moves between sites. Lessons are open content (D-5), so they may later be shared between sites; how is decided separately. Only the readiness is built now; the second site itself is set up only when Gil decides (see `docs/moe-approval-steps.he.md`, section 13).
+
+*Acceptance criteria:*
+- [ ] Claude sets up a second, empty test site from the same code by changing only its settings. Gil opens it at its own address and signs in.
+- [ ] Nothing from the first test site (classes, students, answers) appears on the second site, and nothing from the second site appears on the first.
+- [ ] Turning audio recordings off in the second site's settings removes the "record an answer" option there, and the first site still has it.
+
 ---
 
 ## 12. Quality: speed, reliability, accessibility
