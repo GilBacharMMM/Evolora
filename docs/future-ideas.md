@@ -120,6 +120,22 @@
 
 ---
 
+## 7. A new look for the app (Gil, 2026-11-27)
+
+**Description:**
+- Today Evolora looks like many recent AI apps. It needs its own look, made for school students and teachers.
+- Suggested way (Claude): Gil names a few apps, sites or books whose look Gil likes (and ones Gil dislikes). Claude makes 3 different looks as clickable demos of the same 2 screens (a student in a lesson, the teacher's class dashboard). Gil picks one, or mixes them. Then the whole app changes in one place (its colours, fonts, shapes and icons), without changing how anything works.
+
+**Open questions:**
+1. What feeling should it give: playful, calm, serious, scientific, warm?
+2. Examples of looks Gil likes, and ones Gil doesn't?
+3. A logo and colours of its own, perhaps made by a designer?
+4. Should students and teachers see the same look, or should students' screens be more playful?
+5. Hebrew and Arabic fonts: which ones? (They must be easy to read for 12-year-olds.)
+6. Must keep: good contrast and readable text (REQ-12.3), right-to-left screens, and Chromebook screen sizes.
+
+---
+
 ## General questions
 1. Priority order among the six topics?
 2. Dependencies between topics (e.g. levels → tags → search)?
