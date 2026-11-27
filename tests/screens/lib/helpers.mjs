@@ -32,12 +32,14 @@ export async function signInAs(page, lang, name) {
   const popup = page.locator('.switch-popup')
   await popup.waitFor()
   await popup.locator('.switch-item', { has: page.locator('.switch-name', { hasText: new RegExp(`^${name}$`) }) }).click()
-  await page.locator('.account-name', { hasText: name }).waitFor({ timeout: 20000 })
+  // The name shown at the top may differ from the list: Test Teacher 1 is shown as "Math and
+  // Science teacher" and Test Teacher 2 as "English teacher" (REQ-12.6, Gil 2026-11-26).
+  await page.locator('.account-name').first().waitFor({ timeout: 20000 })
   await page.waitForLoadState('networkidle').catch(() => {})
 }
 
 export async function openSite(page, address = '/') {
-  await page.goto(`${SITE}${address}${address.includes('?') ? '&' : '?'}any-browser`)
+  await page.goto(`${SITE}${address}`)
   await page.locator('.top-bar').waitFor()
 }
 

@@ -1,4 +1,4 @@
-// A short report Gil can open in Chrome: out/report.html, with the screenshots beside it.
+// A short report Gil can open in any browser: out/report.html, with the screenshots beside it.
 
 import fs from 'node:fs'
 import path from 'node:path'
@@ -18,10 +18,13 @@ export function writeReport(results, { seconds }) {
   const n = (st) => steps.filter((s) => s.status === st).length
   const when = new Date().toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })
   const langs = [...new Set(results.map((r) => r.lang))]
-  const body = langs
-    .map((lang) => {
-      const flows = results.filter((r) => r.lang === lang)
-      return `<section><h2>${LANG_NAMES[lang]}</h2>${flows
+  const browsers = [...new Set(results.map((r) => r.browser))]
+  const groups = browsers.flatMap((b) => langs.map((lang) => [b, lang]))
+  const body = groups
+    .map(([browser, lang]) => {
+      const flows = results.filter((r) => r.lang === lang && r.browser === browser)
+      if (!flows.length) return ''
+      return `<section><h2>${h(browser)}: ${LANG_NAMES[lang]}</h2>${flows
         .map(
           (f) => `<h3>${h(f.title)}</h3><ol class="steps">${f.steps
             .map((s) => {
@@ -52,7 +55,7 @@ h1 { margin-bottom: 4px; } h2 { margin-top: 36px; border-bottom: 2px solid #0E6B
 .shots img { width: 220px; border: 1px solid #ccd; border-radius: 4px; }
 </style></head><body>
 <h1>Screen test report</h1>
-<p>Run on ${h(when)} against the test site (evolora-test.web.app), in Google Chrome at a Chromebook size of 1366 × 768, in ${langs.map((l) => LANG_NAMES[l]).join(', ')}. It took ${Math.round(seconds / 60)} minutes.</p>
+<p>Run on ${h(when)} against the test site (evolora-test.web.app), in ${browsers.map(h).join(', ')}, at a Chromebook size of 1366 × 768, in ${langs.map((l) => LANG_NAMES[l]).join(', ')}. It took ${Math.round(seconds / 60)} minutes.</p>
 <p>On every screen the robot checked: no text in another language (REQ-9.1), the page direction (REQ-9.2), no errors in the browser's console, no sideways scrolling (REQ-11.1), and no status shown by colour alone (REQ-12.3). Click a picture to see it full size.</p>
 <div class="summary"><div><span class="badge pass">Passed</span> ${n('pass')}</div><div><span class="badge warn">Screen problems</span> ${n('problems')}</div><div><span class="badge fail">Failed</span> ${n('fail')}</div><div><span class="badge skip">Not reached</span> ${n('skipped')}</div></div>
 ${body}

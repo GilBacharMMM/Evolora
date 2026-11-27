@@ -969,3 +969,19 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 **Decision:** 30 minutes and 8 hours, with a warning 2 minutes before an inactivity sign-out, a "Stay signed in" button, and no lost work. A playing video or audio counts as activity.
 **Reason:** Evolora holds students' answers, grades and voice recordings, which are likely to count as sensitive data.
 **Affects:** new REQ-3.5
+
+### D-86: What "latest versions" of the four browsers means
+**Date:** 2026-11-27 · **Status:** Decided by Claude, for Gil to confirm · **Decided by:** Claude
+**Context:** REQ-11.1 asks for the latest versions of Chrome, Edge, Firefox and Safari, and a message for older versions. Browsers update every few weeks, and school computers often update a little late; some schools use Firefox's long-term version (ESR), which updates about once a year.
+**Options considered:** only the very newest version of each (school computers a few weeks behind would be blocked); versions from about the last year; no version check at all (the Ministry's standard speaks of latest versions).
+**Decision:** let in versions from about the last year: in November 2026, Chrome and Edge 145 or newer, Firefox 153 or newer (the current long-term version) and Safari 26 or newer. Claude raises these numbers once a year. The test site's `?any-browser` way around the browser check (from D-45) is removed: the automatic tests now run in the four real browsers, so it isn't needed.
+**Reason:** blocks really old browsers, which may lack what Evolora needs or no longer get security updates, without blocking a school computer that is a few weeks behind.
+**Affects:** REQ-11.1, system-design 2.5.1, `web/src/browser.ts`
+
+### D-87: Drafts are kept in the browser tab only
+**Date:** 2026-11-27 · **Status:** Decided by Claude, for Gil to confirm · **Decided by:** Claude
+**Context:** REQ-3.5 says that nothing is lost at an automatic sign-out: an answer being typed is saved as a draft first. The draft has to be kept somewhere.
+**Options considered:** in the browser tab only (gone when the tab is closed); in the browser, kept even after it is closed; on Evolora's servers, so a draft would follow the student to another computer.
+**Decision:** in the browser tab only. A draft is gone when the text is sent, when the tab or the browser is closed, or when the person signs out themselves. Each draft belongs to one person, so another person signing in on the same computer never sees it. Exam answers are already saved on the server as the student types; just before an automatic sign-out, the last one is sent at once. On the grading page, the grade and comment being written are saved, as when moving to the next answer (D-68).
+**Reason:** covers what REQ-3.5 asks (signing out and in again, in the same place) and keeps half-written answers off shared school computers and off the servers. Drafts that follow the student to another computer can be added later if Gil wants them.
+**Affects:** REQ-3.5, system-design 4.1.1

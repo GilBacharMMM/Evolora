@@ -16,6 +16,9 @@ export const OUT = path.resolve(import.meta.dirname, '..', 'out')
 const ALLOWED_LATIN = [
   /Test (Student|Teacher) \d+/g,
   /Test Class 7A/g,
+  /Test English 7A/g,
+  /Math and Science teacher/g, // the test teachers' shown names (REQ-12.6)
+  /English teacher/g,
   /Test School/g,
   /\bEvolora\b/g,
   /\bGoogle( Chrome)?\b/g, // brand names, as in "Sign in with Google"
@@ -85,10 +88,12 @@ function stripAllowed(text) {
 
 export class Screens {
   // titles: lesson and course titles, which are content in their own language.
-  constructor(lang, titles = []) {
+  // folder: where the screenshots go, inside out/ (one per browser and language).
+  constructor(lang, titles = [], folder = lang) {
     this.lang = lang
     this.titles = titles
-    this.dir = path.join(OUT, lang)
+    this.folder = folder
+    this.dir = path.join(OUT, folder)
     fs.mkdirSync(this.dir, { recursive: true })
     this.screens = []
     this.count = 0
@@ -128,7 +133,7 @@ export class Screens {
     this.count++
     const file = `${String(this.count).padStart(2, '0')}-${flow}-${name}.png`.replace(/[^\w.-]+/g, '-')
     await page.screenshot({ path: path.join(this.dir, file), fullPage: false })
-    this.screens.push({ flow, name, file: `${this.lang}/${file}`, problems })
+    this.screens.push({ flow, name, file: `${this.folder}/${file}`, problems })
     return problems
   }
 }

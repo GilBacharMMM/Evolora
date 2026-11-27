@@ -73,13 +73,16 @@ node tools/test-student-5.mjs
 node tools/test-corrections.mjs
 ```
 
-**Screen tests (system-design 8.1, D-80).** A robot opens Google Chrome at a Chromebook size and goes through the main flows on the test site in Hebrew, Arabic and English: a student going through the Archimedes lesson, the terms of use coming first, joining a class with its code, and a teacher grading an open answer. On every screen it checks for text in the wrong language, the page direction, console errors, sideways scrolling and statuses shown only by colour (REQ-9.1, 9.2, 11.1, 12.3). They live in `tests/screens` (run `npm install` there once; they need Google Chrome on this computer). The report with screenshots is `tests/screens/out/report.html`. A run takes about 15 minutes.
+**Screen tests (system-design 8.1, D-80).** A robot opens a browser at a Chromebook size and goes through the main flows on the test site in Hebrew, Arabic and English, in Google Chrome, Microsoft Edge, Firefox and WebKit (Safari's engine) (REQ-11.1, D-84): a student going through the Archimedes lesson, the terms of use coming first, joining a class with its code, and a teacher grading an open answer. On every screen it checks for text in the wrong language, the page direction, console errors, sideways scrolling and statuses shown only by colour (REQ-9.1, 9.2, 11.1, 12.3). They live in `tests/screens` (run `npm install` and `npx playwright-core install firefox webkit` there once; Chrome and Edge must be installed on this computer). The report with screenshots is `tests/screens/out/report.html`. A run in all four browsers takes about an hour.
 
 ```
 cd tests/screens
-npm test               (all three languages)
-npm test -- en         (one language)
-npm test -- --show     (watch the robot in a Chrome window)
+npm test                      (all four browsers, all three languages)
+npm test -- en                (one language)
+npm test -- firefox webkit    (some browsers: chrome, edge, firefox, webkit)
+npm test -- --show            (watch the robot in a browser window)
+npm run browsers              (browser tests: recording and playing audio in every browser,
+                               formulas, time on lessons, automatic sign-out; REQ-11.1, 3.5)
 ```
 
 The checking service itself is in the `functions` folder (system-design 5). Its scoring rules have their own tests: `npm test` in that folder. It is put on the test site with `firebase deploy --only functions --project evolora-test`.

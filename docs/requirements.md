@@ -1235,7 +1235,7 @@ Before Evolora is used beyond the pilot, it must meet Israeli privacy law and Mi
 ## 11. Platform, hosting and scale
 
 **REQ-11.1: Web app for Chromebooks and laptops** (Priority 1: foundation)
-Evolora is a website. It works on school Chromebooks and on Windows and Mac laptops and computers, in the latest versions of **Google Chrome, Microsoft Edge, Mozilla Firefox and Apple Safari** (Safari is on Mac only). This replaces "Chrome only" (Gil, 2026-11-27, D-84), so that Evolora meets the Ministry of Education's compatibility standard (at least three browsers; see `docs/moe-approval-steps.he.md`, section 12.6). Older browser versions, and browsers not on this list, show a short message, in the person's language, suggesting one of the four browsers. Phones are not supported yet; they may come later, if needed.
+Evolora is a website. It works on school Chromebooks and on Windows and Mac laptops and computers, in the latest versions of **Google Chrome, Microsoft Edge, Mozilla Firefox and Apple Safari** (Safari is on Mac only). This replaces "Chrome only" (Gil, 2026-11-27, D-84), so that Evolora meets the Ministry of Education's compatibility standard (at least three browsers; see `docs/moe-approval-steps.he.md`, section 12.6). Older browser versions, and browsers not on this list, show a short message, in the person's language, suggesting one of the four browsers. "Latest versions" means versions from about the last year, so a school computer that updates a little late still works (D-86). Phones are not supported yet; they may come later, if needed.
 
 *Acceptance criteria:*
 - [ ] Every screen works on a school Chromebook, at its normal screen size, without zooming.

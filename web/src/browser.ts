@@ -9,12 +9,14 @@
 
 export type BrowserName = 'chrome' | 'edge' | 'firefox' | 'safari' | 'other'
 
-// The oldest version of each browser that Evolora lets in (D-86): about a year back, so that
-// a school computer that updates a little late still works. Raise these about once a year.
+// The oldest version of each browser that Evolora lets in (D-86): about a year back (in
+// November 2026 the newest are Chrome and Edge 158, Firefox 157 and Safari 27), so that a school
+// computer that updates a little late still works. Raised once a year.
 export const MIN_VERSION: Record<Exclude<BrowserName, 'other'>, number> = {
-  chrome: 140,
-  edge: 140,
-  firefox: 140,
+  chrome: 145,
+  edge: 145,
+  // 153 is Firefox's long-term version (ESR) that some schools use.
+  firefox: 153,
   safari: 26,
 }
 
@@ -40,7 +42,7 @@ export function whichBrowser(ua: string, brands: Brand[] | null): BrowserInfo {
   if (/\bCriOS\/(\d+)/.test(ua)) return { name: 'chrome', version: major(ua, /CriOS\/(\d+)/) }
   if (/\bFxiOS\/(\d+)/.test(ua)) return { name: 'firefox', version: major(ua, /FxiOS\/(\d+)/) }
   if (/\bFirefox\/(\d+)/.test(ua) && !/Seamonkey/i.test(ua)) return { name: 'firefox', version: major(ua, /Firefox\/(\d+)/) }
-  if (/\b(Chrome|Chromium|Edg|EdgA)\/\d+/.test(ua)) {
+  if (/(Chrome|Chromium|Edg|EdgA)\/\d+/.test(ua)) {
     // Chrome's engine: trust only the brand list, so Brave, Opera and the others are not mistaken for Chrome.
     const edge = brands?.find((b) => b.brand === 'Microsoft Edge')
     if (edge) return { name: 'edge', version: parseInt(edge.version, 10) || 0 }
@@ -61,17 +63,8 @@ export function isSupported(b: BrowserInfo): boolean {
   return b.name !== 'other' && b.version >= MIN_VERSION[b.name]
 }
 
-const OVERRIDE_KEY = 'evolora.anyBrowser'
-
-// On the test site only, Claude's automatic screen tests can also run in a test browser that is
-// not on the list (plain Chromium); they open the site once with ?any-browser to let it through.
-export function browserAllowed(isTestSite: boolean): boolean {
-  if (isSupported(thisBrowser())) return true
-  if (!isTestSite) return false
-  try {
-    if (new URLSearchParams(location.search).has('any-browser')) sessionStorage.setItem(OVERRIDE_KEY, '1')
-    return sessionStorage.getItem(OVERRIDE_KEY) === '1'
-  } catch {
-    return false
-  }
+// The automatic screen tests run in branded Chrome and Edge, Firefox and WebKit, which all pass
+// this check, so the test site no longer needs a way around it (D-86).
+export function browserAllowed(): boolean {
+  return isSupported(thisBrowser())
 }

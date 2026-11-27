@@ -93,3 +93,43 @@ export async function contentTitles() {
   }
   return [...new Set(titles)].sort((a, b) => b.length - a.length)
 }
+
+// Answers every question before the first open question of a lesson, right on the first try,
+// through the checking service as that student (for the browser tests' sign-out check, REQ-3.5).
+export async function answerUpToOpen(uid, lessonId) {
+  const { initializeApp, deleteApp, setLogLevel } = await import('firebase/app')
+  const { getAuth, signInWithEmailAndPassword } = await import('firebase/auth')
+  const { getFunctions, httpsCallable } = await import('firebase/functions')
+  const fs = await import('node:fs')
+  const path = await import('node:path')
+  const { ROOT, siteConfig, testPassword } = await import('./connect.mjs')
+  setLogLevel('silent')
+  const d = await db()
+  const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
+  const user = TEST.users.find((u) => u.uid === uid)
+  const lesson = (await getDoc(doc(d, 'lessons', lessonId))).data()
+  const v = String(lesson.currentVersion)
+  const version = (await getDoc(doc(d, 'lessons', lessonId, 'versions', v))).data()
+  const secret = (await getDoc(doc(d, 'lessons', lessonId, 'versions', v, 'secret', 'answers'))).data().questions
+  const app = initializeApp(siteConfig('test'), `answer-${Date.now()}`)
+  try {
+    await signInWithEmailAndPassword(getAuth(app), user.email, testPassword(user))
+    const call = async (name, data) => (await httpsCallable(getFunctions(app, 'me-west1'), name)(data)).data
+    const { hidden } = await call('lessonView', { lessonId })
+    for (const topic of version.topics) {
+      for (const q of topic.blocks.filter((b) => b.type === 'question')) {
+        if (hidden.includes(q.id)) continue
+        if (q.kind === 'open' || q.kind === 'audio') return q.id
+        const s = secret[q.id] || {}
+        let value
+        if (q.kind === 'number') value = String(s.answer)
+        else if (q.kind === 'blanks') value = q.blanks.map((_, i) => (q.blanksKind === 'typed' ? String(s.correct[i]).split('|')[0] : q.blanksKind === 'choice' ? s.correct[i] : q.cards.find((c) => c.text === s.correct[i]).id))
+        else value = s.correct
+        await call('answer', { lessonId, questionId: q.id, value })
+      }
+    }
+    return null
+  } finally {
+    await deleteApp(app)
+  }
+}

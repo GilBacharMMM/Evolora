@@ -14,19 +14,19 @@ You don't need to understand the technical names in this document. They're menti
 Evolora has three main parts:
 
 ```
-   Teacher's / student's Chromebook               Google Cloud (Israel region)
+   Teacher's / student's computer                 Google Cloud (Israel region)
   ┌──────────────────────────────┐          ┌──────────────────────────────────┐
   │                              │          │  Sign-in       (Google accounts) │
   │   The Evolora website        │ ◄──────► │  Database      (lessons, classes,│
-  │   (runs in Chrome)           │          │                 answers, grades) │
-  │                              │          │  File storage  (images, audio)   │
+  │   (Chrome, Edge, Firefox,    │          │                 answers, grades) │
+  │    Safari)                   │          │  File storage  (images, audio)   │
   └──────────────────────────────┘          │  Checking service (checks answers,│
                ▲                            │                 calculates grades)│
                │                            └──────────────────────────────────┘
        evoloraedu.org
 ```
 
-1. **The website**: everything people see and click. It runs in Chrome on the Chromebook.
+1. **The website**: everything people see and click. It runs in the browser: Chrome, Edge, Firefox or Safari, on a Chromebook or a Windows or Mac computer (REQ-11.1, D-84).
 2. **The database**: stores lessons, classes, assignments, answers, grades, comments and messages.
 3. **The checking service**: a small program running in Google Cloud that checks answers and calculates grades. It runs in Google Cloud, not on the student's Chromebook, so students can't see the correct answers or change their own grades.
 
@@ -66,7 +66,17 @@ Videos, simulations and podcasts from other websites are shown inside the lesson
 - Formulas are always shown left-to-right, even inside Hebrew text (REQ-4.3).
 
 ### 2.5 Screen size
-Screens are designed for a Chromebook screen (typically 11 to 14 inches) and work on larger screens too. They are tested in Chrome on a Chromebook, on Windows and on a Mac. Other browsers get only a "please open in Chrome" message (REQ-11.1). Phones aren't supported.
+Screens are designed for a Chromebook screen (typically 11 to 14 inches) and work on larger screens too. Phones aren't supported.
+
+### 2.5.1 Browsers (REQ-11.1, D-84, D-86)
+Evolora works in the latest versions of **Google Chrome, Microsoft Edge, Mozilla Firefox and Apple Safari**. When the website opens, it checks which browser it is in and which version:
+- Chrome and Edge say who they are in a list of names the browser gives. Other browsers built on the same engine as Chrome (Brave, Opera, Samsung Internet and others) give their own names, so they are not mistaken for Chrome.
+- Firefox and Safari are recognised by the description the browser gives of itself.
+- "Latest versions" means about a year back, so a school computer that updates a little late still works (D-86). Today (November 2026) that is Chrome and Edge 145 or newer, Firefox 153 or newer (153 is Firefox's long-term version that some schools use) and Safari 26 or newer. These numbers are raised once a year.
+
+Any other browser, or an older version, shows only a short message in the person's language, listing the four browsers with a link to each, and asking to update if they already use one. There is no way around this message, on the test site either: Claude's automatic tests run in the four real browsers (section 8.1).
+
+Nothing else in Evolora depends on the browser: the formulas (MathLive), right-to-left text, drag-and-drop, fonts, the time on lessons and the live dashboard use only things all four browsers have. Audio is the one difference (section 6).
 
 ### 2.6 Classes, class codes and assignments (stage 1, part 3)
 **Classes.** A teacher creates a class by typing its name (REQ-5.1). Evolora gives it a colour from a fixed set of 8, in turn (D-57), and a class code. The class page shows the code with a **Copy** button, a **Make a new code** button, a switch to turn joining on or off, the class list with a **Remove** button for each student (REQ-5.4), what the class was given, and a **Give lessons** form (REQ-5.7).
@@ -191,6 +201,15 @@ The database is backed up automatically every day, and backups are kept for 7 da
 ### 4.1 Signing in
 People sign in with "Sign in with Google" (REQ-3.1). People use a regular Google account such as Gmail (REQ-3.2, D-19). A newly signed-in person is a student with no classes and can see nothing until they enter a class code (REQ-10.1). Which accounts may sign in is decided in one place, so switching to school accounts later (REQ-3.3) is a small change.
 
+### 4.1.1 Automatic sign-out (REQ-3.5, D-85, D-87)
+The website signs a person out by itself:
+- **After 30 minutes with no activity.** Activity is typing, clicking, touching or scrolling in Evolora, and any video or audio playing in it (the same check as the time on lessons, section 2.13). Activity in one Evolora tab counts for all the person's Evolora tabs in that browser. A computer that was asleep or closed counts as no activity, so on opening it again after more than 30 minutes, the person is at the sign-in page.
+- **After 8 hours from signing in**, even with activity all the time. The 8 hours are counted by the person's own computer from the moment it saw the sign-in, so a computer whose clock is wrong still counts them correctly.
+- **The warning:** 2 minutes before an inactivity sign-out, a box in the middle of the screen says "You will be signed out in 2 minutes", with the time left and a **"Stay signed in"** button. Pressing it (or any typing, clicking or scrolling) counts as activity and closes the box. There is no warning before the 8-hour sign-out, since nothing can extend it; nothing is lost either way.
+- **Nothing is lost (D-87).** Whatever the person has typed and not yet sent (an open answer, a number, a message to the teacher, a teacher's private note) is kept as a **draft** as they type. Drafts are kept in that browser tab only, never on Evolora's servers. They are gone when the text is sent, when the tab or the browser is closed, and when the person signs out themselves. Each draft belongs to one person, so someone else signing in on the same computer never sees it. Just before an automatic sign-out, work that is waiting to be saved is saved first: an exam answer still being typed is sent, and on the grading page the grade and comment being written are saved (as when moving to the next answer, D-68).
+- **The same page.** The address stays as it was, so after signing in again the person is back on the same page, with their drafts in their boxes. The sign-in page says why the person was signed out. If a different person signs in, they start at their home page, and the previous person's drafts are removed.
+- **On the test site only**, Claude can shorten both times for a demonstration (REQ-3.5): opening the test site once with `?signout-test=3,10` at the end of the address signs out after 3 minutes without activity (the shortest, since the warning still comes 2 minutes before) and 10 minutes in all. That browser remembers this until the test site is opened with `?signout-test=off`. The real site has no such setting.
+
 ### 4.2 Roles
 - A person's **role** comes from the **staff list**: a list of email addresses with their role (teacher or system admin). Anyone not on it is a student. Only a system admin can change the staff list (REQ-2.2); in stage 1 Claude does this with a command (`node tools/admin.mjs`, D-47), and the person sees the teacher screens the next time they open Evolora.
 - The first system admin is set up by Claude directly, using a Google account Gil chooses.
@@ -264,7 +283,9 @@ The class dashboard colour for each student (REQ-5.10) is calculated by the chec
 
 ## 6. Audio recording
 
-Students record audio answers using the Chromebook's microphone, through Chrome (REQ-6.6). Chrome asks for microphone permission the first time. Recordings are saved in compressed form, so a one-minute answer takes up about half a megabyte. Recordings are private: only the student and the class's teachers can play them. Teachers record audio comments the same way (REQ-5.13).
+Students record audio answers using the computer's microphone, through the browser (REQ-6.6). The browser asks for microphone permission the first time.
+
+Browsers record in different formats (REQ-11.1, D-84): Chrome, Edge and Firefox record **WebM** (Opus sound); Safari may record **MP4** (AAC sound, saved with the ending `.m4a`). Evolora asks the browser which formats it can record and takes the first of: WebM, then MP4. Each recording is saved with its real format, so the teacher's browser knows how to play it. The latest versions of all four browsers play both formats, so a recording made in one browser plays in any other. Recordings saved before this change are WebM recordings from Chrome, so they keep playing everywhere. The teacher's recorded comments are sent to the checking service, which reads the format from the recording itself and saves it the same way. Recordings are saved in compressed form, so a one-minute answer takes up about half a megabyte. Recordings are private: only the student and the class's teachers can play them. Teachers record audio comments the same way (REQ-5.13).
 
 Automatic deletion at the end of the school year (REQ-10.5) is planned for later.
 
@@ -322,13 +343,15 @@ There are two levels of testing.
 Before anything goes to the test site, Claude runs automatic tests:
 - **Permission tests**: try to break the rules in section 4.3, for example a student trying to read another student's grades. These must all be blocked.
 - **Grading tests**: check every scoring case in REQ-6.3, due-date penalties and redo rules.
-- **Screen tests** (`tests/screens`, D-80): a robot opens Google Chrome at a Chromebook size (1366 by 768) on the test site and goes through the main flows, in Hebrew, Arabic and English:
+- **Screen tests** (`tests/screens`, D-80): a robot opens a browser at a Chromebook size (1366 by 768) on the test site and goes through the main flows, in Hebrew, Arabic and English, in each of the four browsers: Google Chrome, Microsoft Edge, Firefox and WebKit (REQ-11.1, D-84). WebKit is the engine inside Safari; Claude's computer runs Windows, so the robot can't open Safari itself. WebKit on Windows is close to Safari but not the same (for example in fonts, sound formats and microphone access), so Safari on a real Mac is checked by a person.
   1. a student goes through the Archimedes teaching lesson: right, wrong then right, wrong twice and a check-again question, fill in the blanks, an open answer, a reload (the lesson opens where the student stopped), and a number question in the practice lesson
   2. the terms of use come first for a student who hasn't agreed yet
   3. a student joins the test class with its class code, after a mistyped code shows "check the code"
   4. a teacher opens the class dashboard, sees a student's finished work, grades an open answer with a comment, and sees the grade in the grade table
 
   On every screen it visits, the robot checks: no text in another language, apart from lesson content and names (REQ-9.1); the page direction (REQ-9.2); no errors in the browser's console; no sideways scrolling (REQ-11.1); and no status shown by colour alone (REQ-12.3). It saves a screenshot of each screen and writes a short report (`tests/screens/out/report.html`).
+- **Browser tests** (`tests/screens/browsers.mjs`): in the same four browsers, the robot checks that the site opens; records an answer with a pretend microphone; plays every browser's recording in every other browser; checks that formulas are drawn and the time on a lesson is sent; and goes through the automatic sign-out (REQ-3.5): the warning after 28 minutes, "Stay signed in", signing out after 30 minutes, the half-typed open answer still there after signing in again on the same page, and signing out after 8 hours even with activity. The robot moves the browser's clock forward, so this takes minutes, not hours.
+- **Browser check and sign-out rules** (`npm test` in `web`): which browser descriptions are let in and which are not, and when the sign-out warning and sign-out come.
 
 ### 8.2 Acceptance checks (Gil)
 Gil checks each requirement's acceptance criteria on the test site. For each feature, Claude tells Gil:
@@ -374,6 +397,7 @@ Which part of the system delivers each group of requirements:
 | REQ-1.1 (open, attribution, licence) | Database: lesson creator and "based on" fields (3.2); licence shown in the lesson player (2.3) |
 | REQ-2.1 to 2.3 (roles, edit mode) | Accounts and permissions (4.2) |
 | REQ-3.1 to 3.4 (sign-in, access) | Accounts and permissions (4.1, 4.3) |
+| REQ-3.5 (automatic sign-out) | Automatic sign-out (4.1.1) |
 | REQ-4.1 to 4.10, 4.24 (lessons, courses, loading) | Getting lessons into Evolora (2.2), lesson versions (3.2), permissions (4.3) |
 | REQ-5.1 to 5.26 (classes, dashboards, review, messages, levels, grades shown or hidden, exam windows) | Website screens (2.1), classes and assignments (2.6), checking service (5), permissions (4.3), email (7.4) |
 | REQ-6.1 to 6.15 (student learning, help tips) | Lesson player (2.3), student home, class and course pages (2.6), checking service (5), audio (6) |
@@ -384,6 +408,6 @@ Which part of the system delivers each group of requirements:
 | REQ-10.8 (terms of use) | Terms of use (2.12, 2.13) |
 | REQ-5.33 (time on lessons), REQ-4.29 (word explanations), REQ-9.5 (class language) | 2.13 |
 | REQ-5.34 (sent-back count), REQ-5.33 groundwork (answer times) | Sent-back count and answer times (2.12) |
-| REQ-11.1 to 11.3 (platform, hosting, size) | Screen size (2.5), hosting (7) |
+| REQ-11.1 to 11.3 (platform, hosting, size) | Screen size and browsers (2.5, 2.5.1), audio formats (6), hosting (7) |
 | REQ-12.4 to 12.6, 12.8 (test site, user switching, test data, students-only address) | Test site (7.3) |
 | REQ-12.1 to 12.3 (speed, no lost work, accessibility) | Lesson player saves after every answer (2.3); tested in screen tests (8.1) |

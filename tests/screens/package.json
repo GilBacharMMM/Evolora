@@ -2,11 +2,12 @@
   "name": "evolora-screen-tests",
   "private": true,
   "type": "module",
-  "description": "Automatic screen tests: a robot opens Chrome and goes through the main flows in Hebrew, Arabic and English (system-design 8.1).",
+  "description": "Automatic screen tests: a robot opens Chrome, Edge, Firefox and WebKit and goes through the main flows in Hebrew, Arabic and English (system-design 8.1).",
   "scripts": {
-    "test": "node run.mjs"
+    "test": "node run.mjs",
+    "browsers": "node browsers.mjs"
   },
   "dependencies": {
-    "playwright-core": "1.57.0"
+    "playwright-core": "1.64.1"
   }
 }

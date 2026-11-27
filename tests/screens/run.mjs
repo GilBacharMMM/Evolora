@@ -1,17 +1,20 @@
 #!/usr/bin/env node
-// Automatic screen tests (system-design 8.1): a robot opens Google Chrome at a Chromebook size
+// Automatic screen tests (system-design 8.1): a robot opens a browser at a Chromebook size
 // (1366 by 768) and goes through the main flows on the test site, in Hebrew, Arabic and English,
-// checking every screen it visits. Screenshots and a report go to tests/screens/out/.
+// checking every screen it visits. It does this in Google Chrome, Microsoft Edge, Firefox and
+// WebKit, Safari's engine (REQ-11.1, D-84). Screenshots and a report go to tests/screens/out/.
 //
 //   cd tests/screens
-//   npm install          (once)
-//   npm test             (all three languages)
-//   npm test -- en       (one language)
-//   npm test -- --show   (watch the robot in a Chrome window)
+//   npm install                                  (once)
+//   npx playwright-core install firefox webkit   (once, and after updating playwright-core)
+//   npm test                                     (all four browsers, all three languages)
+//   npm test -- en                               (one language)
+//   npm test -- firefox webkit                   (some browsers)
+//   npm test -- --show                           (watch the robot in a browser window)
 
 import fs from 'node:fs'
 import path from 'node:path'
-import { chromium } from 'playwright-core'
+import { BROWSERS } from './lib/browsers.mjs'
 import { Screens, OUT } from './lib/checks.mjs'
 import { StepFailed, StepFailedGoOn } from './lib/helpers.mjs'
 import { joinClass, studentLesson, teacherGrades, termsFirst } from './lib/flows.mjs'
@@ -22,6 +25,8 @@ const argv = process.argv.slice(2)
 const LANGS = argv.filter((a) => ['he', 'ar', 'en'].includes(a))
 const langs = LANGS.length ? LANGS : ['he', 'ar', 'en']
 const show = argv.includes('--show')
+const asked = argv.filter((a) => a in BROWSERS)
+const browsers = asked.length ? asked : Object.keys(BROWSERS)
 
 const USERS = ['test-student-1', 'test-student-5', 'test-student-7', 'test-teacher-1']
 
@@ -34,13 +39,15 @@ const restoreLanguages = await data.rememberLanguages(USERS)
 const { code: classCode } = await data.classInfo()
 const titles = await data.contentTitles()
 
-const browser = await chromium.launch({ channel: 'chrome', headless: !show, args: ['--disable-quic'] })
 const results = []
 const started = Date.now()
+let browser = null
 try {
+  for (const name of browsers) {
+  browser = await BROWSERS[name].launch({ show })
   for (const lang of langs) {
-    console.log(`\n=== ${lang} ===`)
-    const screens = new Screens(lang, titles)
+    console.log(`\n=== ${BROWSERS[name].label}: ${lang} ===`)
+    const screens = new Screens(lang, titles, `${name}-${lang}`)
     for (const uid of USERS) await data.setLanguage(uid, lang)
     const flows = [
       ['1. A student goes through the Archimedes lesson', studentLesson, async () => data.freshStudentWork('test-student-1')],
@@ -50,7 +57,7 @@ try {
     ]
     let page = null
     for (const [title, flow, prepare] of flows) {
-      const result = { lang, title, steps: [] }
+      const result = { browser: BROWSERS[name].label, lang, title, steps: [] }
       results.push(result)
       console.log(title)
       // Flow 3 goes on from flow 2, in the same browser window (Test Student 7 has just agreed).
@@ -97,8 +104,11 @@ try {
     // Test Student 7 back as after a reset: not agreed, in no class.
     await data.freshStudent7()
   }
-} finally {
   await browser.close()
+  browser = null
+  }
+} finally {
+  await browser?.close()
   await data.freshStudentWork('test-student-1')
   await restoreLanguages()
   await restoreClass()
