@@ -1044,3 +1044,15 @@ Registrars considered: GoDaddy (reliable, but higher renewal prices and many add
 12. Removing every question in a topic: allowed, with a warning (Gil's own answer); or keep at least one.
 **Reason:** A simple, reversible tool for the teacher, that never loses a student's work and never leaves a student unable to finish a topic.
 **Affects:** new REQ-5.36, future idea 4, the lesson player, the checking service and grades
+
+### D-93: Teachers' comments on lessons, before the pilot
+**Date:** 2026-11-28 · **Status:** Decided · **Decided by:** Gil
+**Context:** Gil wants teachers to mark part of a lesson and send its creator a comment, as in Word. This was REQ-4.27, planned for stage 2. Lessons are not linked to their creator's account (they are files, and the creator is only a name, or anonymous, D-79), and Evolora doesn't send email yet.
+**Options considered and chosen:**
+1. Starting a comment: a button next to the marked words plus a keyboard shortcut, Ctrl+Alt+M (chosen); the browser's right-click menu (confusing, and missing on touch screens); or all three.
+2. Who receives comments for now: the system admin, Gil, in an inbox (chosen); or link each lesson to its creator's account now.
+3. Notifying: in Evolora and also by email (chosen, once an email service is set up); or in Evolora only.
+4. When: now, priority 1 before the pilot (chosen); or stage 2 as planned.
+**Reason:** Pilot teachers will find problems in the lessons; their comments should reach Gil easily, at the exact place in the lesson.
+**Affects:** REQ-4.27 (rewritten), the roadmap, docs/setup-google-cloud.md (email service)
+

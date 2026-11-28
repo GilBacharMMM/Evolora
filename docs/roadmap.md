@@ -34,6 +34,7 @@ REQ-1.2, 1.3 key principles; REQ-2.1, 2.2 roles and admin through Claude; REQ-2.
 | 3 | REQ-5.1, 5.2, 5.4, 5.6, 5.7, 4.10, 6.1, 6.4, 6.11, 6.12 | Classes and class codes, assigning lessons and courses, the student's home, class and course pages (lessons open one after another until REQ-5.8) |
 | 4 | REQ-5.27, 5.10, 5.24, 5.19, 5.20, 5.12, 5.13, 5.11, and 5.5 (D-66) | Teacher home and class dashboard, red flags and clearing them, opening lessons early for chosen students, the grading page with written comments, the grade table with CSV download |
 | any | REQ-10.8 | Terms of use: "I agree" at first sign-in, a link on every page (before real students start) |
+| any | REQ-4.27 | Teachers comment on marked words in a lesson; comments go to the system admin's inbox, and by email once the email service is set up (moved from stage 2, D-93) |
 
 **Progress:** part 1 is on the test site (2026-11-23), waiting for Gil's checks. At Gil's request, part 1 also has a simple class page for teachers: clicking a class shows its name and its students' names (the viewing part of REQ-5.4). Removing students and the rest of the class page come in part 3. Part 2 is on the test site too (2026-11-23), waiting for Gil's checks. Part 3 is on the test site (2026-11-23), waiting for Gil's checks: classes and class codes, removing students, giving lessons and courses, and the student's home, class and course pages. Lessons in a course open one after another (D-55); small open points are in D-57. Part 4 is on the test site too (2026-11-23), waiting for Gil's checks: teacher home with counts and a To do list, the class dashboard with the progress map, clearing red flags, opening lessons early, the grading page with written comments, and the grade table with CSV download. Small open points, and what waits for other requirements, are in D-58. Gil approved D-57 and D-58, and parts 1 to 4 are merged into main (2026-11-23).
 
@@ -104,7 +105,6 @@ Each AI item first gets a cost estimate for Gil's approval.
 | REQ-5.33 | Time on each lesson (total and net), times away, "away a lot" sign and red flag |
 | REQ-7.6 | Teacher sees a student's answered lesson, with the AI conversations |
 | REQ-7.7 | AI summary of a student's difficulties on the student card |
-| REQ-4.27 | Teachers send comments to the lesson's creator; email and suggestions inbox |
 | REQ-4.29 | Explanations of words, shown in a small window on hover (for example "אמות" in the circles lesson) |
 
 ## Later / ideas

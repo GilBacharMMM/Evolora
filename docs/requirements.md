@@ -433,18 +433,26 @@ A place to discover, rate and share lessons widely, beyond the school.
 
 *Acceptance criteria:* to be written when this requirement is planned in detail.
 
-**REQ-4.27: Teachers send comments to the lesson's creator** (Stage 2)
-While going over a lesson (trying it, REQ-5.32), a teacher can attach a comment to any place in it: a block of material, a question, an answer, a hint or a solution, much like adding a comment in Microsoft Word. The teacher sends the comments to the lesson's creator.
+**REQ-4.27: Teachers send comments to the lesson's creator** (Priority 1: must have; moved from stage 2 by Gil, 2026-11-28, D-93)
+While reading or trying a lesson (REQ-5.32), a teacher can comment on any part of it, much like adding a comment in Microsoft Word or Google Docs. For example: "I think you should define this term again here."
 
-- The creator gets an email saying that new comments arrived on the lesson, with a link.
-- The creator has a **suggestions inbox** in Evolora listing all comments on their lessons: which lesson, where in the lesson, who sent it, when, and the text. Clicking a comment opens the lesson at that place.
-- The creator can mark each comment "done" or "not taken"; the teacher who sent it sees that mark.
+- **Marking and commenting:** the teacher marks words in the lesson with the mouse (or a finger on a touch screen): in the material, a question, its answers, a hint or a solution. A small button **"💬 הערה ליוצר/ת השיעור"** appears next to the marked words. The keyboard shortcut **Ctrl+Alt+M** does the same.
+- **The comment window:** shows the marked words, a box for the comment, and **Send** and **Cancel**. After sending, the teacher sees "The comment was sent".
+- **What is kept with a comment:** the lesson, its version (REQ-4.7), the topic and block it is on, the marked words, the comment, who sent it and when. The marked words are kept so the comment still makes sense after the lesson changes.
+- **Who receives comments, for now:** lessons are not linked to their creator's Evolora account yet, so every comment goes to the system admin (Gil, REQ-2.2), who fixes the lesson or passes the comment on to its creator. Later, each lesson can be linked to its creator's account, privately in the database and never in the public lesson file (D-79), and comments go straight to the creator.
+- **The comments inbox:** a page for the system admin listing all comments, newest first: the lesson, where in it, the marked words, the comment, who sent it and when. Clicking a comment opens the lesson at that place. Each comment can be marked **"done"** or **"not taken"**.
+- **Notifying the receiver:** the system admin's home page shows how many new comments arrived. Each new comment is also sent by email, with a link to the inbox. Email needs an email service set up in Google Cloud first (docs/setup-google-cloud.md); until then, comments arrive in the inbox only.
+- **The teacher's own comments:** a teacher can see the comments they sent, with their mark ("done" or "not taken") once the admin sets it.
+- Students never see comments. A comment is about the lesson, so it should not name students; the comment window reminds the teacher of this.
 
 *Acceptance criteria:*
-- [ ] As a teacher, try a lesson, add a comment on a question and another on a block of text, and send them.
-- [ ] The lesson's creator receives an email about the new comments.
-- [ ] As the creator, the suggestions inbox shows both comments; clicking one opens the lesson at that place.
-- [ ] As the creator, mark one comment "done": as the teacher, you see it marked "done".
+- [ ] As a teacher, open a lesson and mark a few words in its material: the "הערה ליוצר/ת השיעור" button appears next to them. Press it, write a comment and send it: "The comment was sent" appears.
+- [ ] Mark words in a question's answer and press Ctrl+Alt+M: the comment window opens with those words.
+- [ ] As the system admin, the home page shows "1 new comment" (or more). The comments inbox lists them with the lesson, the marked words, the comment, the teacher and the time.
+- [ ] Click a comment in the inbox: the lesson opens at that place.
+- [ ] Mark a comment "done": as the teacher who sent it, see it marked "done" in your sent comments.
+- [ ] Once the email service is set up: sending a comment sends the system admin an email with a link to the inbox.
+- [ ] As a student, mark words in a lesson: no comment button appears.
 
 **REQ-4.28: Explanation after a right answer** (Priority 1: must have)
 When a student answers a multiple choice or type-a-number question correctly, Evolora tells them it is right **and shows a short explanation of why**, so the student knows they got it right for the right reason and grows more confident (Gil, 2026-11-23). The creator writes this explanation in advance, in 1 or 2 sentences ("Why it's right").
