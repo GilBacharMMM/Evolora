@@ -22,6 +22,7 @@ import { TypeChip } from '../components/TypeChip'
 import { useLessonTime } from '../lessonTime'
 import { BackButton } from '../components/BackButton'
 import { RemovalControls, useRemovals } from '../components/RemovalControls'
+import { CommentTool } from '../components/CommentTool'
 
 // What the teacher did with an answer (REQ-5.12, 5.13, 5.15) and, when the student may see
 // grades (REQ-5.22, D-59), the question's marks.
@@ -202,6 +203,8 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
   const [local, setLocal] = useState<Record<string, QuestionState>>({})
   const [problem, setProblem] = useState<'notFound' | 'notAllowed' | null>(null)
   const scrolled = useRef(false)
+  // The lesson on the page, where teachers mark words to comment on (REQ-4.27).
+  const articleRef = useRef<HTMLElement>(null)
 
   // Lesson details, and the student's saved work (live)
   useEffect(() => {
@@ -304,6 +307,22 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
     })
   }, [finished, role, progress, lessonId])
 
+  // Opening a comment from the comments inbox (REQ-4.27): the lesson opens at the comment's place.
+  const jumped = useRef(false)
+  useEffect(() => {
+    if (jumped.current || !lesson || !trying || !location.hash.startsWith('#place-')) return
+    const place = decodeURIComponent(location.hash.slice('#place-'.length))
+    requestAnimationFrame(() => {
+      const el = document.querySelector(`[data-place="${CSS.escape(place)}"]`)
+      const target = (el?.firstElementChild as HTMLElement | null) || (el as HTMLElement | null)
+      if (!target) return
+      jumped.current = true
+      target.scrollIntoView({ block: 'center' })
+      target.classList.add('place-flash')
+      window.setTimeout(() => target.classList.remove('place-flash'), 2500)
+    })
+  }, [lesson, trying])
+
   // Coming back to a lesson: scroll to where the student stopped (REQ-6.2).
   useEffect(() => {
     // Wait until the questions are on the page: while the lesson is still being checked, it shows "Loading".
@@ -387,7 +406,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
           </div>
         )}
       </div>
-      <article className="lesson" dir={d.language === 'en' ? 'ltr' : 'rtl'} lang={d.language}>
+      <article className="lesson" ref={articleRef} dir={d.language === 'en' ? 'ltr' : 'rtl'} lang={d.language}>
         <header className="lesson-head">
           <div className="lesson-meta">
             <TypeChip type={d.type} />
@@ -442,7 +461,7 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
               )}
               </>
             ) : it.block.type === 'question' ? (
-              <div className={`question-wrap${whole && removedQuestions.has(it.block.id) ? ' question-removed' : ''}`}>
+              <div className={`question-wrap${whole && removedQuestions.has(it.block.id) ? ' question-removed' : ''}`} data-place={it.key} data-topic={it.topic}>
               {whole && removal.info && (
                 <RemovalControls
                   q={it.block}
@@ -511,7 +530,10 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
               <TeacherNote state={states[it.block.id] as Graded | undefined} showGrades={showGrades} />
               </div>
             ) : (
-              <BlockView block={it.block} />
+              // data-place and data-topic tell a teacher's comment where it is (REQ-4.27).
+              <div className="place" data-place={it.key} data-topic={it.topic}>
+                <BlockView block={it.block} />
+              </div>
             )}
           </Fragment>
         ))}
@@ -548,6 +570,8 @@ export function LessonPlayer({ lessonId }: { lessonId: string }) {
           </footer>
         )}
       </article>
+      {/* Teachers comment on marked words (REQ-4.27); students never see this. */}
+      {trying && <CommentTool lessonId={lessonId} version={versionNumber} containerRef={articleRef} />}
     </main>
   )
 }

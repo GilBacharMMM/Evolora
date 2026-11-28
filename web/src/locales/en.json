@@ -594,5 +594,34 @@
     "minimumLowered": "Because questions were removed, the number of right answers needed in this topic for the class dropped to {{count}}.",
     "examLocked": "Students have already started the exam, so questions can't be removed from it.",
     "failed": "The change wasn't saved. Please try again."
+  },
+  "comments": {
+    "topic": "Topic {{number}}",
+    "button": "Comment to the lesson's creator",
+    "title": "Comment to the lesson's creator",
+    "yourComment": "Your comment",
+    "placeholder": "For example: I think you should define this term again here",
+    "noStudents": "The comment is about the lesson. Please don't write students' names in it.",
+    "send": "Send",
+    "cancel": "Cancel",
+    "sent": "The comment was sent",
+    "failed": "The comment wasn't sent. Please try again.",
+    "inboxTitle": "Comments inbox",
+    "inboxIntro": "Teachers' comments on lessons, newest first. Click a lesson's title to open it at the comment's place.",
+    "mineTitle": "Comments I sent",
+    "mineIntro": "The comments you sent on lessons, and whether they were dealt with.",
+    "loadFailed": "The comments couldn't be loaded. Please try again.",
+    "noneInbox": "No comments yet.",
+    "noneMine": "You haven't sent comments yet. To comment, mark words in a lesson.",
+    "all": "All",
+    "onlyNew": "New",
+    "openLesson": "Open the lesson",
+    "newCount_one": "1 new",
+    "newCount_other": "{{count}} new",
+    "status": {
+      "new": "New",
+      "done": "Done",
+      "notTaken": "Not taken"
+    }
   }
 }

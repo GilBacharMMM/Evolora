@@ -79,6 +79,18 @@ service cloud.firestore {
       allow write: if isLoader();
     }
 
+    // Teachers' comments on lessons (REQ-4.27, D-93), the email settings and outgoing emails:
+    // read and written only by the checking service (and the loading program).
+    match /lessonComments/{id} {
+      allow read, write: if isLoader();
+    }
+    match /settings/{id} {
+      allow read, write: if isLoader();
+    }
+    match /mail/{id} {
+      allow read, write: if isLoader();
+    }
+
     // The terms of use (REQ-10.8): anyone can read them, even before signing in.
     match /terms/{id} {
       allow read: if true;

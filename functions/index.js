@@ -1652,3 +1652,102 @@ export const setRemoval = onCallAgreed(async (request) => {
   }
   return removalInfoFor(ctx, classId, lessonId)
 })
+
+// ---------------------------------------------------------------------------------------------
+// Teachers' comments on lessons (REQ-4.27, D-93). A teacher marks words in a lesson and sends a
+// comment. For now every comment goes to the system admins (Gil), who see them in the comments
+// inbox and mark them "done" or "not taken"; the teacher sees that mark. Students never see them.
+// Saved in lessonComments; only these functions read or write them.
+//
+//   sendComment({ lessonId, version, topicNumber, place, quote, text })   a teacher sends a comment
+//   myComments()                                                         the comments a teacher sent
+//   commentsInbox()                                                      all comments (system admins)
+//   setCommentStatus({ id, status })                                     'new' | 'done' | 'notTaken'
+
+const COMMENT_STATUSES = ['new', 'done', 'notTaken']
+
+async function requireAdmin(auth) {
+  const staff = await requireTeacher(auth)
+  if (staff.role !== 'admin') throw new HttpsError('permission-denied', 'For the system admin only.')
+  return staff
+}
+
+const commentRow = (d) => {
+  const c = d.data()
+  return { id: d.id, lessonId: c.lessonId, lessonTitle: c.lessonTitle, version: c.version, topicNumber: c.topicNumber, place: c.place, quote: c.quote, text: c.text, byName: c.byName, status: c.status, at: toMillis(c.createdAt), statusAt: c.statusAt || null }
+}
+
+// An email to the system admins about a new comment, once the email service is set up
+// (docs/setup-google-cloud.md). It writes a message to the "mail" collection, which the email
+// service sends. Until settings/email says it is on, nothing is written.
+async function emailAdmins(comment, id) {
+  try {
+    const settings = (await db.doc('settings/email').get()).data()
+    if (!settings?.enabled) return
+    const admins = (await db.collection('staff').where('role', '==', 'admin').get()).docs.map((d) => d.id)
+    if (!admins.length) return
+    const site = settings.siteUrl || ''
+    const esc = (t) => String(t || '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch])
+    await db.collection('mail').add({
+      to: admins,
+      message: {
+        subject: `Evolora: הערה חדשה על השיעור "${comment.lessonTitle}"`,
+        html: `<div dir="rtl"><p><b>${esc(comment.byName)}</b> שלח/ה הערה על השיעור <b>${esc(comment.lessonTitle)}</b>.</p><blockquote>${esc(comment.quote)}</blockquote><p>${esc(comment.text)}</p><p><a href="${esc(site)}/admin/comments#${id}">לתיבת ההערות</a></p></div>`,
+      },
+      createdAt: FieldValue.serverTimestamp(),
+    })
+  } catch (e) {
+    console.error('emailAdmins', e)
+  }
+}
+
+export const sendComment = onCallAgreed(async (request) => {
+  await requireTeacher(request.auth)
+  const { lessonId, version, topicNumber, place, quote, text } = request.data || {}
+  const clean = (t, max) => (typeof t === 'string' ? t.trim().slice(0, max) : '')
+  const body = clean(text, 3000)
+  const marked = clean(quote, 1000)
+  if (!validId(lessonId) || !body || !marked) throw new HttpsError('invalid-argument', 'Missing details.')
+  const lessonSnap = await db.doc(`lessons/${lessonId}`).get()
+  if (!lessonSnap.exists) throw new HttpsError('not-found', 'No such lesson.')
+  const lesson = lessonSnap.data()
+  const comment = {
+    lessonId,
+    lessonTitle: lesson.title || lessonId,
+    version: Number.isInteger(version) ? version : lesson.currentVersion,
+    topicNumber: Number.isInteger(topicNumber) ? topicNumber : null,
+    place: clean(place, 100) || null,
+    quote: marked,
+    text: body,
+    byUid: request.auth.uid,
+    byName: await personName(request.auth),
+    status: 'new',
+    createdAt: FieldValue.serverTimestamp(),
+  }
+  const ref = await db.collection('lessonComments').add(comment)
+  await emailAdmins(comment, ref.id)
+  return { id: ref.id }
+})
+
+export const myComments = onCallAgreed(async (request) => {
+  await requireTeacher(request.auth)
+  const snap = await db.collection('lessonComments').where('byUid', '==', request.auth.uid).get()
+  return { comments: snap.docs.map(commentRow).sort((a, b) => (b.at || 0) - (a.at || 0)) }
+})
+
+export const commentsInbox = onCallAgreed(async (request) => {
+  await requireAdmin(request.auth)
+  const snap = await db.collection('lessonComments').orderBy('createdAt', 'desc').limit(500).get()
+  const comments = snap.docs.map(commentRow)
+  return { comments, newCount: comments.filter((c) => c.status === 'new').length }
+})
+
+export const setCommentStatus = onCallAgreed(async (request) => {
+  await requireAdmin(request.auth)
+  const { id, status } = request.data || {}
+  if (!validId(id) || !COMMENT_STATUSES.includes(status)) throw new HttpsError('invalid-argument', 'Missing details.')
+  const ref = db.doc(`lessonComments/${id}`)
+  if (!(await ref.get()).exists) throw new HttpsError('not-found', 'No such comment.')
+  await ref.update({ status, statusAt: Date.now(), statusBy: request.auth.uid })
+  return { ok: true }
+})

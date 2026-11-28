@@ -1424,6 +1424,8 @@ The test site can be filled with a standard set of test data with one command, b
 - Test Teacher 2 is shown as **"English teacher"** and teaches a second test class, "Test English 7A" (test students 1 to 3), whose class language is English (REQ-9.5), with the English course (`courses/english-present-tenses.md`).
 - So test students 1 to 3 are in both classes, and see Math and Science in Hebrew and English in English.
 
+**A test system admin (2026-11-28, D-93):** "Test Admin" (admin@evolora.test) is a system admin (REQ-2.2) in no class, so Gil can try the comments inbox (REQ-4.27). Like the test teachers, it has its own password and is not on the students-only address.
+
 **Test Student 5 comes with finished work (Gil, 2026-11-25):** after every reset, Test Student 5 has finished the Archimedes teaching lesson and the circles teaching lesson, so Gil can try grading without filling in answers first.
 - The answers are chosen at random on each reset: some right on the first attempt, some on the second, some wrong.
 - Written answers are filler text ("lorem ipsum"); the audio answer is a short test recording.

@@ -105,7 +105,8 @@ export function teacherPassword() {
 }
 
 export function testPassword(user) {
-  if (user.role === 'teacher') return teacherPassword()
+  // Test staff (teachers and the test system admin) have their own password (D-71).
+  if (user.role === 'teacher' || user.role === 'admin') return teacherPassword()
   return JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8')).password
 }
 

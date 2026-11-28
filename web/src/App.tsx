@@ -16,6 +16,7 @@ import { AutoSignOut } from './autoSignOut'
 const LessonPlayer = lazyFresh(() => import('./pages/LessonPlayer').then((m) => ({ default: m.LessonPlayer })))
 const TeacherClass = lazyFresh(() => import('./pages/TeacherClass').then((m) => ({ default: m.TeacherClass })))
 const TeacherCourses = lazyFresh(() => import('./pages/TeacherCourses').then((m) => ({ default: m.TeacherCourses })))
+const Comments = lazyFresh(() => import('./pages/Comments').then((m) => ({ default: m.Comments })))
 const follow = () => import('./pages/TeacherFollow')
 const ClassDashboard = lazyFresh(() => follow().then((m) => ({ default: m.ClassDashboard })))
 const GradeTable = lazyFresh(() => follow().then((m) => ({ default: m.GradeTable })))
@@ -103,6 +104,23 @@ function Screens() {
     case 'library':
       // Teacher screens can't be opened by students, even by typing the address (REQ-3.4).
       return isTeacher ? <LessonLibrary /> : <Message text={t('common.teachersOnly')} />
+    case 'commentsInbox':
+      // The comments inbox is for the system admin only (REQ-4.27, D-93).
+      return session.role === 'admin' ? (
+        <Suspense fallback={loading}>
+          <Comments mode="inbox" />
+        </Suspense>
+      ) : (
+        <Message text={t('common.teachersOnly')} />
+      )
+    case 'myComments':
+      return isTeacher ? (
+        <Suspense fallback={loading}>
+          <Comments mode="mine" />
+        </Suspense>
+      ) : (
+        <Message text={t('common.teachersOnly')} />
+      )
     case 'teacherClass':
     case 'teacherGrades':
     case 'teacherManage':

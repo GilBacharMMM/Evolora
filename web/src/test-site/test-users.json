@@ -15,6 +15,12 @@
       "role": "teacher"
     },
     {
+      "uid": "test-admin",
+      "email": "admin@evolora.test",
+      "name": "Test Admin",
+      "role": "admin"
+    },
+    {
       "uid": "test-student-1",
       "email": "student1@evolora.test",
       "name": "Test Student 1",

@@ -11,7 +11,9 @@ import testUsers from './test-users.json'
 // (web/vite.config.ts); the students-only address lists only students and has no teachers'
 // password (D-71).
 declare const __TEACHER_PASSWORD__: string | null
-const people = STUDENTS_ONLY ? testUsers.users.filter((u) => u.role !== 'teacher') : testUsers.users
+// Test staff (teachers and the test system admin) have their own password (D-71).
+const isStaff = (role: string) => role === 'teacher' || role === 'admin'
+const people = STUDENTS_ONLY ? testUsers.users.filter((u) => !isStaff(u.role)) : testUsers.users
 export function SwitchUser({ variant = 'menu' }: { variant?: 'menu' | 'list' }) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
@@ -37,7 +39,7 @@ export function SwitchUser({ variant = 'menu' }: { variant?: 'menu' | 'list' }) 
     setBusy(email)
     setError(false)
     try {
-      const password = role === 'teacher' ? __TEACHER_PASSWORD__ : testUsers.password
+      const password = isStaff(role) ? __TEACHER_PASSWORD__ : testUsers.password
       if (!password) throw new Error('no password')
       // Switching from one person to another opens the home page; signing in again after an
       // automatic sign-out stays on the same page (REQ-3.5).
@@ -56,7 +58,7 @@ export function SwitchUser({ variant = 'menu' }: { variant?: 'menu' | 'list' }) 
   const list = (
     <ul className="switch-list" role="list">
       {people.map((u) => {
-        const role = u.role === 'teacher' ? t('roles.teacher') : t('roles.student')
+        const role = u.role === 'admin' ? t('roles.admin') : u.role === 'teacher' ? t('roles.teacher') : t('roles.student')
         const extra = 'level' in u && u.level ? ` · ${t('test.level', { level: u.level })}` : 'noClass' in u && u.noClass ? ` · ${t('test.noClass')}` : ''
         return (
           <li key={u.uid}>

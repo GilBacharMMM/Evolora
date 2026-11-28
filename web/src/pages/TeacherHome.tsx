@@ -29,7 +29,19 @@ type TodoItem =
 // come with REQ-5.16 and 5.18. Also: creating a class (REQ-5.1), and the lessons in Evolora.
 export function TeacherHome() {
   const { t } = useTranslation()
-  const { user } = useSession()
+  const { user, role } = useSession()
+  // The system admin sees how many new comments on lessons arrived (REQ-4.27, D-93).
+  const [newComments, setNewComments] = useState<number | null>(null)
+  useEffect(() => {
+    if (role !== 'admin') return
+    let live = true
+    httpsCallable<unknown, { newCount: number }>(functions, 'commentsInbox')({})
+      .then((r) => live && setNewComments(r.data.newCount))
+      .catch(() => {})
+    return () => {
+      live = false
+    }
+  }, [role])
   const [data, setData] = useState<{ classes: ClassCard[]; todo: TodoItem[] } | null>(null)
   const [reload, setReload] = useState(0)
 
@@ -49,9 +61,20 @@ export function TeacherHome() {
     <main className="page">
       <div className="page-head">
         <h1 className="page-title">{t('home.hello', { name: user?.displayName || '' })}</h1>
-        <button type="button" className="button secondary" onClick={() => navigate('/teacher/lessons')}>
-          {t('teacher.lessons')}
-        </button>
+        <div className="page-head-actions">
+          {role === 'admin' && (
+            <button type="button" className="button secondary" onClick={() => navigate('/admin/comments')}>
+              {t('comments.inboxTitle')}
+              {newComments ? <span className="count-badge">{t('comments.newCount', { count: newComments })}</span> : null}
+            </button>
+          )}
+          <button type="button" className="button secondary" onClick={() => navigate('/teacher/comments')}>
+            {t('comments.mineTitle')}
+          </button>
+          <button type="button" className="button secondary" onClick={() => navigate('/teacher/lessons')}>
+            {t('teacher.lessons')}
+          </button>
+        </div>
       </div>
       {classes === null ? (
         <p className="loading">{t('common.loading')}</p>

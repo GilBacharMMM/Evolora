@@ -88,6 +88,8 @@ async function main() {
   // Both test teachers are in the same test school, so they can teach a class together (D-69).
   await addSchool(db, 'test-school', 'Test School')
   for (const t of teachers) await setStaff(db, t.email, 'teacher', t.name, 'test-school')
+  // The test system admin (REQ-2.2), who receives teachers' comments on lessons (REQ-4.27, D-93).
+  for (const a of TEST.users.filter((u) => u.role === 'admin')) await setStaff(db, a.email, 'admin', a.name)
   const batch = writeBatch(db)
   for (const u of TEST.users) batch.set(doc(db, 'users', u.uid), { name: u.name, email: u.email, createdAt: serverTimestamp() })
   const classTeacher = teachers[0]

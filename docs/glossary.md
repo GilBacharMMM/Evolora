@@ -22,7 +22,8 @@ These are the terms we use in all documents and in the app. When a term is used,
 | **Away** | The Evolora tab is not in front, or there has been no mouse, keyboard or touch use for 2 minutes (REQ-5.33). | agreed |
 | **Terms of use** | The short text everyone agrees to on first sign-in, saying what Evolora records, who sees it and how long it is kept (REQ-10.8). | agreed |
 | **Why it's right** | A short explanation the creator writes for a question, shown to the student after a correct answer (REQ-4.28). | agreed |
-| **Suggestions inbox** | The place in Evolora where a creator sees the comments teachers sent about their lessons (REQ-4.27). | agreed |
+| **Comments inbox** (formerly "suggestions inbox") | The page where the system admin sees teachers' comments on lessons, and marks each "done" or "not taken" (REQ-4.27, D-93). Later, each lesson's creator gets one for their own lessons. In Hebrew: תיבת ההערות. | agreed |
+| **Comment on a lesson** | A note a teacher sends about marked words in a lesson, for the lesson's creator (REQ-4.27). Different from a **comment** on a student's answer. In Hebrew: הערה ליוצר/ת השיעור. | agreed |
 | **Topic** | A part of a lesson about one subject (for example, "the area of a circle"), with a minimum number of questions every student must answer before moving on. The creator sets a default minimum; the teacher can change it when assigning. In Hebrew: נושא. | proposed |
 | **Extra practice question** | A question in a topic that is asked only to students who haven't yet answered the topic's minimum number of questions correctly. In Hebrew: שאלת תרגול נוספת. | agreed |
 | **Help tip** | A short explanation written in the lesson file for a question, with a title the student can choose ("What is a radius?"). Shown from the help line before AI is ready. It never gives the answer. In Hebrew: טיפ עזרה. | proposed |

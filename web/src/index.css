@@ -2970,3 +2970,155 @@ details.image-source summary {
   opacity: 0.45;
   pointer-events: none;
 }
+
+/* Teachers' comments on lessons (REQ-4.27, D-93) */
+.page-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.count-badge {
+  display: inline-block;
+  margin-inline-start: 8px;
+  padding-inline: 8px;
+  border-radius: 999px;
+  background: #c62828;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+/* Each block of a lesson is marked with its place, without changing the layout. */
+.place {
+  display: contents;
+}
+.place-flash {
+  outline: 3px solid #f5b400;
+  outline-offset: 4px;
+  border-radius: 8px;
+  transition: outline-color 0.5s;
+}
+.comment-button {
+  position: absolute;
+  z-index: 40;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding-inline: 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--teal-dark);
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.2);
+  cursor: pointer;
+}
+.comment-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(15 23 32 / 0.45);
+}
+.comment-dialog {
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.comment-quote {
+  margin: 0;
+  padding: 8px 12px;
+  border-inline-start: 4px solid #f5b400;
+  background: #fffbea;
+  border-radius: 6px;
+  white-space: pre-wrap;
+}
+.comment-label {
+  font-weight: 700;
+}
+.comment-dialog textarea {
+  width: 100%;
+  font: inherit;
+  padding: 10px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  resize: vertical;
+}
+.comment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.comment-toast {
+  position: fixed;
+  inset-block-end: 24px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: #1f2933;
+  color: #fff;
+  font-weight: 700;
+}
+[dir='rtl'] .comment-toast {
+  transform: translateX(50%);
+}
+.comment-filter {
+  display: flex;
+  gap: 8px;
+  margin-block: 12px;
+}
+.comment-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.comment-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.comment-item.status-new {
+  border-inline-start: 4px solid var(--teal);
+}
+.comment-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.comment-lesson {
+  font-weight: 700;
+  text-align: start;
+}
+.comment-status {
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 999px;
+  padding-inline: 10px;
+  background: #eceff3;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.comment-status.status-new {
+  background: #e3f2f2;
+  color: var(--teal-dark);
+}
+.comment-status.status-done {
+  background: #e6f4ea;
+  color: #1e6b34;
+}
+.comment-text {
+  margin: 0;
+  white-space: pre-wrap;
+}

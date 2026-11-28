@@ -11,6 +11,6 @@ import path from 'node:path'
 import { ROOT, importAccounts, siteConfig, testPassword } from './lib/connect.mjs'
 
 const TEST = JSON.parse(fs.readFileSync(path.join(ROOT, 'web/src/test-site/test-users.json'), 'utf8'))
-const teachers = TEST.users.filter((u) => u.role === 'teacher')
+const teachers = TEST.users.filter((u) => u.role === 'teacher' || u.role === 'admin')
 importAccounts(siteConfig('test').projectId, teachers.map((u) => ({ ...u, password: testPassword(u) })))
 console.log(`Gave ${teachers.length} test teachers their own password. Rebuild and publish the test site (npm run build:test in web).`)

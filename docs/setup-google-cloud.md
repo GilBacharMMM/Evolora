@@ -73,3 +73,32 @@ Claude created a second project, **evolora-test**, for the test site (decision D
 3. Set a budget alert, for example 20 ILS per month.
 
 Claude will tell you when this step is needed.
+
+## Step 6: Email (for teachers' comments on lessons)
+
+Teachers' comments on lessons (REQ-4.27, D-93) arrive in your comments inbox in Evolora already. This step also sends you an email for each new comment, from **noreply@evoloraedu.org** (system design 7.4). It's free. Do it on the test project first; the real project gets the same steps later.
+
+**Only you do these steps. Claude never sees the email service's password or key.**
+
+**A. Open an email-sending account and verify the address** (about 20 minutes)
+1. Open a free account at an email-sending service. Claude suggests **Brevo** (https://www.brevo.com, free for up to 300 emails a day). Any service that offers "SMTP" works the same way.
+2. In Brevo, go to **Senders, Domains & Dedicated IPs → Domains → Add a domain**, and type **evoloraedu.org**.
+3. Brevo shows a few lines to add to the domain's settings (DNS records: a "Brevo code", "DKIM" and "DMARC"). Open **Cloudflare → evoloraedu.org → DNS → Records**, and add each line exactly as Brevo shows it (type, name and value).
+4. Back in Brevo, click **Verify**. It can take up to an hour.
+5. In Brevo, add the sender **noreply@evoloraedu.org** (name: **Evolora**).
+6. In Brevo, go to **SMTP & API → SMTP**. Note the **SMTP server**, **port**, **login**, and create an **SMTP key**. Keep this page open for part B; don't send the key to anyone, Claude included.
+
+**B. Connect it to the test project** (about 10 minutes)
+1. Open **https://console.firebase.google.com/project/evolora-test/extensions**.
+2. Find **Trigger Email from Firestore** (by Firebase) and click **Install**.
+3. When it asks for its settings:
+   - **SMTP connection URI:** `smtp://LOGIN@smtp-relay.brevo.com:587` (put your Brevo login instead of LOGIN).
+   - **SMTP password:** the SMTP key from Brevo.
+   - **Email documents collection:** `mail`
+   - **Default FROM address:** `Evolora <noreply@evoloraedu.org>`
+   - **Firestore instance location:** the same as the project (me-west1, Tel Aviv).
+   - Leave the rest as they are.
+4. Click **Install extension**. It takes a few minutes.
+5. Tell Claude it's done. Claude switches the emails on for the test site (a setting called `settings/email`), sends a test comment, and checks that the email arrived.
+
+Until part B is done, nothing is emailed: the comments only wait in the inbox.

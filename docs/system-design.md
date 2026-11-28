@@ -328,6 +328,8 @@ This way, real students never see a half-finished feature, and testing never mix
 ### 7.4 Email
 Email invites to classes (REQ-5.3) are sent through a free email service from **noreply@evoloraedu.org**. This needs a few extra settings in Cloudflare and is set up in Milestone B.
 
+The first emails Evolora sends are about teachers' comments on lessons (REQ-4.27, D-93): one email to the system admins for each new comment. The checking service writes the email to the `mail` collection in the database, and Firebase's "Trigger Email from Firestore" extension sends it through the email service (SMTP). Nothing is written to `mail` until the setting `settings/email` says emails are on, so comments work without email until Gil finishes the setup (docs/setup-google-cloud.md, step 6). The email service's key is entered by Gil in the extension's settings and kept by Google; it is never in the project.
+
 ### 7.5 Costs
 For the pilot, Firebase's free allowance should cover almost everything. Storage for images and audio may cost a few shekels a month. The 50 ILS monthly alert (D-15) warns Gil well before costs become significant.
 
