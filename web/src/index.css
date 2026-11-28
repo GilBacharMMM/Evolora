@@ -2268,10 +2268,13 @@ figcaption {
   flex-wrap: wrap;
 }
 
+/* The teacher's Skip and Show answer buttons (REQ-5.32), in a row under the question card,
+   lined up with the card's start edge. */
 .try-buttons {
   display: flex;
   gap: 8px;
-  margin-block: -8px 16px;
+  justify-content: flex-start;
+  margin-block: 10px 16px;
   flex-wrap: wrap;
 }
 
